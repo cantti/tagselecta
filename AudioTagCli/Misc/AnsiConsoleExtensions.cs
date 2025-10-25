@@ -36,7 +36,6 @@ public static class AnsiConsoleExtensions
             table.AddRow($"[cyan]{field}[/]", displayValue);
         }
 
-        AddRow("Path", meta.Path);
         AddRow("Artist", meta.Artist);
         AddRow("Album Artist", meta.AlbumArtistJoined);
         AddRow("Album", meta.Album);
@@ -49,7 +48,7 @@ public static class AnsiConsoleExtensions
         AddRow("Disc Total", meta.DiscTotal > 0 ? meta.DiscTotal.ToString() : null);
         AddRow("Label", meta.Label);
         AddRow("Catalog Number", meta.CatalogNumber);
-        AddRow("Comments", meta.Comments);
+        AddRow("Comments", meta.Comment);
         AddRow(
             "Pictures",
             meta.Pictures.Count > 0 ? meta.Pictures.Select(x => x.Type.ToString()) : null

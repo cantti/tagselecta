@@ -1,44 +1,22 @@
-using AudioTagCli.Misc;
+using AudioTagCli.BaseCommands;
 using AudioTagCli.Tagging;
 using Spectre.Console;
-using Spectre.Console.Cli;
 
 namespace AudioTagCli.Commands;
 
-public class CleanSettings : CommandSettings
-{
-    [CommandOption("-p|--path", true)]
-    public required string Path { get; set; }
-}
+public class CleanSettings : FileProcessingSettings { }
 
-public class CleanCommand : Command<CleanSettings>
+public class CleanCommand(IAnsiConsole console) : FileProcessingCommandBase<CleanSettings>(console)
 {
-    private static readonly HashSet<string> allowedExtended = ["label", "catalognumber"];
-
-    public override int Execute(CommandContext context, CleanSettings settings)
+    protected override async Task ProcessFileAsync(
+        StatusContext ctx,
+        CleanSettings settings,
+        string file
+    )
     {
-        var files = Helper.GetAllAudioFiles(settings.Path, true);
-        foreach (var file in files)
-        {
-            AnsiConsole.MarkupLineInterpolated($"[blue]Current file: {file}[/]");
-            try
-            {
-                var tags = Tagger.ReadTags(file);
-                AnsiConsole.MarkupLine("[blue]Current tags[/]");
-                AnsiConsole.WriteLine(tags.ToString());
-                // tags.Extended = tags
-                //     .Extended.Where(x => allowedExtended.Contains(x.Key.ToLower()))
-                //     .ToDictionary();
-                Tagger.WriteTags(file, tags);
-                AnsiConsole.MarkupLine("[blue]Updated tags[/]");
-                AnsiConsole.WriteLine(Tagger.ReadTags(file).ToString());
-            }
-            catch (Exception ex)
-            {
-                AnsiConsole.MarkupLineInterpolated($"[red]{ex.ToString()}[/]");
-            }
-            AnsiConsole.WriteLine();
-        }
-        return 0;
+        var tags = Tagger.ReadTags(file);
+        Tagger.RemoveTags(file);
+        Tagger.WriteTags(file, tags);
+        await Task.CompletedTask;
     }
 }

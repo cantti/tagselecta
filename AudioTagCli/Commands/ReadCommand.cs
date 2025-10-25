@@ -1,6 +1,4 @@
 using AudioTagCli.BaseCommands;
-using AudioTagCli.Misc;
-using AudioTagCli.Tagging;
 using Spectre.Console;
 
 namespace AudioTagCli.Commands;
@@ -15,8 +13,6 @@ public class ReadCommand(IAnsiConsole console) : FileProcessingCommandBase<ReadS
         string file
     )
     {
-        var tags = Tagger.ReadTags(file);
-        Console.PrintTagData(tags);
         await Task.CompletedTask;
     }
 }

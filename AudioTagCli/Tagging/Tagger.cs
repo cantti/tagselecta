@@ -14,7 +14,6 @@ public static class Tagger
         var tag = tfile.Tag;
         return new TagData
         {
-            Path = file,
             Album = tag.Album,
             Artist = [.. tag.Performers],
             AlbumArtist = [.. tag.AlbumArtists],
@@ -25,7 +24,7 @@ public static class Tagger
             TrackTotal = tag.TrackCount,
             Disc = tag.Disc,
             DiscTotal = tag.DiscCount,
-            Comments = tag.Comment,
+            Comment = tag.Comment,
             Label = GetExtValue(tfile, "label"),
             CatalogNumber = GetExtValue(tfile, "catalognumber"),
             Pictures = [.. tag.Pictures],
@@ -51,7 +50,7 @@ public static class Tagger
         commonTags.TrackCount = tagData.TrackTotal;
         commonTags.Disc = tagData.Disc;
         commonTags.DiscCount = tagData.DiscTotal;
-        commonTags.Comment = tagData.Comments;
+        commonTags.Comment = tagData.Comment;
         commonTags.Pictures = [.. tagData.Pictures];
         SetExtValue(tfile, "label", tagData.Label);
         tfile.Save();
@@ -113,7 +112,7 @@ public static class Tagger
         frame.Text = [value];
     }
 
-    private static void RemoveTags(string file)
+    public static void RemoveTags(string file)
     {
         using var tfile = TagLib.File.Create(file);
         tfile.RemoveTags(TagLib.TagTypes.AllTags);

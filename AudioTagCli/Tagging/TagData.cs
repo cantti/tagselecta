@@ -24,12 +24,11 @@ public class TagData
 
     public uint DiscTotal { get; set; }
 
-    public string? Comments { get; set; }
+    public string? Comment { get; set; }
 
     public string? Label { get; set; }
 
     public string? CatalogNumber { get; set; }
 
     public List<TagLib.IPicture> Pictures { get; set; } = [];
-    public string Path { get; internal set; }
 }

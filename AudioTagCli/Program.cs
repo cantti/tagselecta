@@ -11,10 +11,12 @@ class Program
 
         app.Configure(config =>
         {
-            config.AddCommand<FixAlbumArtistCommand>("fixalbumartist");
-            config.AddCommand<CleanCommand>("clean");
-            config.AddCommand<ReadCommand>("read");
-            config.AddCommand<WriteCommand>("write");
+            config.AddCommand<ReadCommand>("read").WithDescription("Read tags.");
+            config.AddCommand<WriteCommand>("write").WithDescription("Write tags.");
+            config.AddCommand<CleanCommand>("clean").WithDescription("Remove unsupported tags.");
+            config
+                .AddCommand<FixAlbumArtistCommand>("fixalbumartist")
+                .WithDescription("Fix album artist. WIP.");
         });
 
         return app.Run(args);

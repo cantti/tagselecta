@@ -26,14 +26,26 @@ public class WriteSettings : FileProcessingSettings
     [CommandOption("--year|-y")]
     public uint? Year { get; set; }
 
+    [CommandOption("--track|-n")]
+    public uint? Track { get; set; }
+
+    [CommandOption("--tracktotal|-N")]
+    public uint? TrackTotal { get; set; }
+
+    [CommandOption("--comment|-c")]
+    public string? Comment { get; set; }
+
+    [CommandOption("--disc|-d")]
+    public uint? Disc { get; set; }
+
+    [CommandOption("--disctotal|-D")]
+    public uint? DiscTotal { get; set; }
+
     [CommandOption("--label|-L")]
     public string? Label { get; set; }
 
-    [CommandOption("--catalogno|-c")]
+    [CommandOption("--catalogno|-C")]
     public string? CatalogNumber { get; set; }
-
-    [CommandOption("--track|-T")]
-    public uint? Track { get; set; }
 }
 
 public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<WriteSettings>(console)
@@ -56,9 +68,12 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
         tags.Label = settings.Label ?? tags.Label;
         tags.CatalogNumber = settings.CatalogNumber ?? tags.CatalogNumber;
         tags.Track = settings.Track ?? tags.Track;
+        tags.TrackTotal = settings.TrackTotal ?? tags.TrackTotal;
+        tags.Disc = settings.Disc ?? tags.Disc;
+        tags.DiscTotal = settings.DiscTotal ?? tags.DiscTotal;
+        tags.Comment = settings.Comment ?? tags.Comment;
         ctx.Status("Writing tags...");
         Tagger.WriteTags(file, tags);
-        Console.PrintTagData(Tagger.ReadTags(file));
         await Task.CompletedTask;
     }
 

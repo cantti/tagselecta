@@ -1,4 +1,5 @@
 using AudioTagCli.Misc;
+using AudioTagCli.Tagging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -45,6 +46,9 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
                 Console.PrintCurrentFile(file, index, files.Count);
                 ctx.Status("Processing...");
                 await ProcessFileAsync(ctx, settings, file);
+
+                // print file after processing
+                Console.PrintTagData(Tagger.ReadTags(file));
                 successCount++;
             }
             catch (Exception ex)
