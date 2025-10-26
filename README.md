@@ -1,6 +1,6 @@
-# Audio Tag Helper
+# songtagcli
 
-Audio Tag Helper is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).  
+Songtagcli is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).  
 Currently, only **MP3** and **FLAC** formats are supported.
 
 This tool is under active development and primarily built for personal use.
