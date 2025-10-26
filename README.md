@@ -24,6 +24,12 @@ To display all available commands and options, run:
 
 ### Example Output
 
+Help output:
+
+```bash
+./AudioTagCli -h
+```
+
 ```
 USAGE:
     AudioTagCli [OPTIONS] <COMMAND>
@@ -37,6 +43,37 @@ COMMANDS:
     clean <path>        Remove unsupported tags
     fixalbum <path>     Set album name and album artist to the same value for all files in the directory
     autotrack <path>    Automatically assign track numbers to files
+```
+
+Read command output:
+
+```
+./AudioTagCli read song.mp3
+```
+
+```
+1 file found.
+> (1/1) /home/kirill/code/audio-tag-cli/tmp/01 SampleAlbum/01 Song 1.mp3
+╭────────────────┬─────────────╮
+│ Field          │ Value       │
+├────────────────┼─────────────┤
+│ Album Artist   │ Test Artist │
+│ Artist         │ Test Artist │
+│ Album          │ Test Album  │
+│ Title          │ Song 1      │
+│ Genre          │ Rock        │
+│                │ Pop         │
+│ Year           │ 1990        │
+│ Track          │ 1           │
+│ Track Total    │ 3           │
+│ Disc           │ 1           │
+│ Disc Total     │ 1           │
+│ Label          │ —           │
+│ Catalog Number │ —           │
+│ Comments       │ Test        │
+│ Pictures       │ —           │
+╰────────────────┴─────────────╯
+Finished! Processed 1 files, 0 failed.
 ```
 
 ## Notes

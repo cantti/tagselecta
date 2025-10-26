@@ -59,15 +59,13 @@ public class FixAlbumCommand(IAnsiConsole console)
                 ?.Key;
 
             // find most common album year in dir
-            var albumYear =
-                dirTagData
-                    .Select(x => x.Year)
-                    .Where(x => x != 0)
-                    .GroupBy(x => x)
-                    .OrderByDescending(g => g.Count())
-                    .FirstOrDefault()
-                    ?.Key
-                ?? 0;
+            var albumYear = dirTagData
+                .Select(x => x.Year)
+                .Where(x => x != 0)
+                .GroupBy(x => x)
+                .OrderByDescending(g => g.Count())
+                .First()
+                .Key;
 
             // get all artists on album
             var artistList = dirTagData
