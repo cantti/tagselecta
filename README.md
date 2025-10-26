@@ -24,7 +24,7 @@ To display all available commands and options, run:
 
 ### Example Output
 
-```sh
+```
 USAGE:
     AudioTagCli [OPTIONS] <COMMAND>
 
