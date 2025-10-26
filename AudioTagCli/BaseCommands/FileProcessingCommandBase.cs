@@ -46,7 +46,7 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
             {
                 Console.PrintCurrentFile(file, index, files.Count);
                 ctx.Status("Processing...");
-                await ProcessFileAsync(ctx, settings, [.. files], file);
+                await ProcessFileAsync(ctx, settings, files, file);
 
                 // print file after processing
                 Console.PrintTagData(Tagger.ReadTags(file));
@@ -85,7 +85,7 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
     protected abstract Task ProcessFileAsync(
         StatusContext ctx,
         TSettings settings,
-        string[] files,
+        List<string> files,
         string file
     );
 }

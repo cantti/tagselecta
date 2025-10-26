@@ -31,7 +31,7 @@ public class FixAlbumCommand(IAnsiConsole console)
     protected override async Task ProcessFileAsync(
         StatusContext ctx,
         FixAlbumSettings settings,
-        string[] files,
+        List<string> files,
         string file
     )
     {

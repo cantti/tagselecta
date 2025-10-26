@@ -52,7 +52,7 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
     protected override async Task ProcessFileAsync(
         StatusContext ctx,
         WriteSettings settings,
-        string[] files,
+        List<string> files,
         string file
     )
     {

@@ -19,7 +19,7 @@ public class AutoTrackCommand(IAnsiConsole console)
     protected override async Task ProcessFileAsync(
         StatusContext ctx,
         AutoTrackSettings settings,
-        string[] files,
+        List<string> files,
         string file
     )
     {
