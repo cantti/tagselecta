@@ -49,7 +49,7 @@ public class WriteSettings : FileProcessingSettings
 
 public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<WriteSettings>(console)
 {
-    protected override async Task ProcessFileAsync(
+    protected override async Task<ProcessFileResult> ProcessFileAsync(
         StatusContext ctx,
         WriteSettings settings,
         List<string> files,
@@ -72,7 +72,7 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
         tags.Comment = settings.Comment ?? tags.Comment;
         ctx.Status("Writing tags...");
         Tagger.WriteTags(file, tags);
-        await Task.CompletedTask;
+        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
     }
 
     private static string? UpdateString(string? newVal, string? oldVal)

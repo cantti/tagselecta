@@ -20,6 +20,7 @@ class Program
                     "Set album name and album artists to the same value to all files in the same directory."
                 );
             config.AddCommand<AutoTrackCommand>("autotrack").WithDescription("Auto track.");
+            config.AddCommand<RenameDirCommand>("renamedir").WithDescription("Rename directories.");
         });
 
         return app.Run(args);

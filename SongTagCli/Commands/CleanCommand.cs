@@ -8,7 +8,7 @@ public class CleanSettings : FileProcessingSettings { }
 
 public class CleanCommand(IAnsiConsole console) : FileProcessingCommandBase<CleanSettings>(console)
 {
-    protected override async Task ProcessFileAsync(
+    protected override async Task<ProcessFileResult> ProcessFileAsync(
         StatusContext ctx,
         CleanSettings settings,
         List<string> files,
@@ -18,6 +18,6 @@ public class CleanCommand(IAnsiConsole console) : FileProcessingCommandBase<Clea
         var tags = Tagger.ReadTags(file);
         Tagger.RemoveTags(file);
         Tagger.WriteTags(file, tags);
-        await Task.CompletedTask;
+        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
     }
 }

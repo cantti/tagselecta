@@ -28,7 +28,7 @@ public class FixAlbumCommand(IAnsiConsole console)
 
     private readonly List<Album> _albums = [];
 
-    protected override async Task ProcessFileAsync(
+    protected override async Task<ProcessFileResult> ProcessFileAsync(
         StatusContext ctx,
         FixAlbumSettings settings,
         List<string> files,
@@ -127,6 +127,6 @@ public class FixAlbumCommand(IAnsiConsole console)
         tagData.Album = album.AlbumName;
         tagData.Year = album.Year;
         Tagger.WriteTags(file, tagData);
-        await Task.CompletedTask;
+        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
     }
 }
