@@ -1,7 +1,7 @@
-﻿using AudioTagCli.Commands;
+﻿using SongTagCli.Commands;
 using Spectre.Console.Testing;
 
-namespace AudioTagCli.Tests;
+namespace SongTagCli.Tests;
 
 [Collection("Console")]
 public class ReadCommandTests

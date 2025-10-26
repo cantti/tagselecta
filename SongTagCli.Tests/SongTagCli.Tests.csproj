@@ -23,6 +23,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AudioTagCli\AudioTagCli.csproj"/>
+    <ProjectReference Include="..\SongTagCli\SongTagCli.csproj"/>
   </ItemGroup>
 </Project>

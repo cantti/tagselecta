@@ -1,7 +1,7 @@
-using AudioTagCli.BaseCommands;
+using SongTagCli.BaseCommands;
 using Spectre.Console;
 
-namespace AudioTagCli.Commands;
+namespace SongTagCli.Commands;
 
 public class ReadSettings : FileProcessingSettings { }
 

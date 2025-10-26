@@ -1,4 +1,4 @@
-namespace AudioTagCli.Misc;
+namespace SongTagCli.Misc;
 
 public static class Helper
 {

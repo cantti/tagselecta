@@ -1,4 +1,4 @@
-namespace AudioTagCli.Tagging;
+namespace SongTagCli.Tagging;
 
 public static class Tagger
 {
@@ -9,7 +9,7 @@ public static class Tagger
         using var tfile = TagLib.File.Create(file);
         if (!allowedMime.Contains(tfile.MimeType))
         {
-            throw new AudioTagHelperException("Invalid file type");
+            throw new SongTagCliException("Invalid file type");
         }
         var tag = tfile.Tag;
         return new TagData

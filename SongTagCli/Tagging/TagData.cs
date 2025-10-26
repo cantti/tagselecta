@@ -1,4 +1,4 @@
-namespace AudioTagCli.Tagging;
+namespace SongTagCli.Tagging;
 
 public class TagData
 {

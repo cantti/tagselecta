@@ -1,9 +1,9 @@
-using AudioTagCli.Misc;
-using AudioTagCli.Tagging;
+using SongTagCli.Misc;
+using SongTagCli.Tagging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace AudioTagCli.BaseCommands;
+namespace SongTagCli.BaseCommands;
 
 public abstract class FileProcessingSettings : CommandSettings
 {

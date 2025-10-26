@@ -1,7 +1,7 @@
-﻿using AudioTagCli.Commands;
+﻿using SongTagCli.Commands;
 using Spectre.Console.Cli;
 
-namespace AudioTagCli;
+namespace SongTagCli;
 
 class Program
 {

@@ -19,7 +19,7 @@ Each command provides its own help information.
 To display all available commands and options, run:
 
 ```bash
-./AudioTagCli -h
+./songtagcli -h
 ```
 
 ### Example Output
@@ -27,12 +27,12 @@ To display all available commands and options, run:
 Help output:
 
 ```bash
-./AudioTagCli -h
+./songtagcli -h
 ```
 
 ```
 USAGE:
-    AudioTagCli [OPTIONS] <COMMAND>
+    songtagcli [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -48,7 +48,7 @@ COMMANDS:
 Read command output:
 
 ```
-./AudioTagCli read song.mp3
+./songtagcli read song.mp3
 ```
 
 ```

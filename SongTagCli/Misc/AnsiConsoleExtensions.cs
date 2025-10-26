@@ -1,7 +1,7 @@
-using AudioTagCli.Tagging;
+using SongTagCli.Tagging;
 using Spectre.Console;
 
-namespace AudioTagCli.Misc;
+namespace SongTagCli.Misc;
 
 public static class AnsiConsoleExtensions
 {
