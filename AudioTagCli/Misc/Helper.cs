@@ -4,45 +4,47 @@ public static class Helper
 {
     private static readonly HashSet<string> allowedExtensions = [".mp3", ".flac", ".ogg"];
 
-    public static List<string> GetAllAudioFiles(string path, bool recursive = false)
+    public static List<string> GetAllAudioFiles(IEnumerable<string> paths, bool recursive = false)
     {
-        path = Path.GetFullPath(path);
-        if (File.Exists(path))
+        var files = new List<string>();
+        foreach (var path in paths)
         {
-            if (allowedExtensions.Contains(Path.GetExtension(path).ToLower()))
+            var fullPath = Path.GetFullPath(path);
+            if (File.Exists(fullPath))
             {
-                return [path];
+                if (allowedExtensions.Contains(Path.GetExtension(fullPath).ToLower()))
+                {
+                    files.Add(fullPath);
+                }
             }
             else
             {
-                return [];
+                // Common audio file extensions
+                string[] audioExtensions = [".mp3", ".flac", ".ogg"];
+
+                var searchOption = recursive
+                    ? SearchOption.AllDirectories
+                    : SearchOption.TopDirectoryOnly;
+
+                files.AddRange(
+                    [
+                        .. Directory
+                            .GetFiles(fullPath, "*", searchOption)
+                            .Where(f =>
+                            {
+                                var fileName = Path.GetFileName(f);
+                                var dirName = new DirectoryInfo(
+                                    Path.GetDirectoryName(f) ?? string.Empty
+                                ).Name;
+                                return !fileName.StartsWith('.')
+                                    && !dirName.StartsWith('.')
+                                    && audioExtensions.Contains(Path.GetExtension(f).ToLower());
+                            })
+                            .Order(),
+                    ]
+                );
             }
         }
-        else
-        {
-            // Common audio file extensions
-            string[] audioExtensions = [".mp3", ".flac", ".ogg"];
-
-            // Decide search option based on the flag
-            var searchOption = recursive
-                ? SearchOption.AllDirectories
-                : SearchOption.TopDirectoryOnly;
-
-            return
-            [
-                .. Directory
-                    .GetFiles(path, "*", searchOption)
-                    .Where(f =>
-                    {
-                        var fileName = Path.GetFileName(f);
-                        var dirName = new DirectoryInfo(
-                            Path.GetDirectoryName(f) ?? string.Empty
-                        ).Name;
-                        return !fileName.StartsWith('.')
-                            && !dirName.StartsWith('.')
-                            && audioExtensions.Contains(Path.GetExtension(f).ToLower());
-                    }),
-            ];
-        }
+        return files;
     }
 }

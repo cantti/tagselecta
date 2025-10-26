@@ -17,6 +17,7 @@ class Program
             config
                 .AddCommand<FixAlbumArtistCommand>("fixalbumartist")
                 .WithDescription("Fix album artist. WIP.");
+            config.AddCommand<AutoTrackCommand>("autotrack").WithDescription("Auto track.");
         });
 
         return app.Run(args);

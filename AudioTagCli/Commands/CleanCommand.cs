@@ -11,6 +11,7 @@ public class CleanCommand(IAnsiConsole console) : FileProcessingCommandBase<Clea
     protected override async Task ProcessFileAsync(
         StatusContext ctx,
         CleanSettings settings,
+        string[] files,
         string file
     )
     {

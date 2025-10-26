@@ -8,7 +8,7 @@ namespace AudioTagCli.BaseCommands;
 public abstract class FileProcessingSettings : CommandSettings
 {
     [CommandArgument(0, "<path>")]
-    public required string Path { get; set; }
+    public required string[] Path { get; set; }
 }
 
 public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
@@ -30,6 +30,7 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
     {
         ctx.Status("Finding files...");
         var files = Helper.GetAllAudioFiles(settings.Path, true);
+
         var failedFiles = new List<(string File, Exception Error)>();
 
         Console.MarkupLine($"{files.Count} {(files.Count == 1 ? "file" : "files")} found.");
@@ -45,7 +46,7 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
             {
                 Console.PrintCurrentFile(file, index, files.Count);
                 ctx.Status("Processing...");
-                await ProcessFileAsync(ctx, settings, file);
+                await ProcessFileAsync(ctx, settings, [.. files], file);
 
                 // print file after processing
                 Console.PrintTagData(Tagger.ReadTags(file));
@@ -83,5 +84,10 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
         }
     }
 
-    protected abstract Task ProcessFileAsync(StatusContext ctx, TSettings settings, string file);
+    protected abstract Task ProcessFileAsync(
+        StatusContext ctx,
+        TSettings settings,
+        string[] files,
+        string file
+    );
 }

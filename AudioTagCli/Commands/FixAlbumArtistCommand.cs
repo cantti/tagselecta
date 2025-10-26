@@ -9,7 +9,7 @@ namespace AudioTagCli.Commands;
 public class AddSettings : CommandSettings
 {
     [CommandOption("-p|--path", true)]
-    public required string Path { get; set; }
+    public string[] Path { get; set; } = [];
 
     [CommandOption("-a|--apply")]
     [Description("Commit changes")]
@@ -65,7 +65,7 @@ public class FixAlbumArtistCommand : Command<AddSettings>
     private static bool VerifyAllTheSameAlbumArtist(string file)
     {
         var parentDir = Directory.GetParent(file)!.FullName;
-        var filesInSameDir = Helper.GetAllAudioFiles(parentDir, false).Order().ToList();
+        var filesInSameDir = Helper.GetAllAudioFiles([parentDir], false).Order().ToList();
         AnsiConsole.WriteLine($"Files in the same directory: {filesInSameDir.Count}");
         var albumArtists = new List<string>();
         foreach (var file2 in filesInSameDir)
@@ -87,7 +87,7 @@ public class FixAlbumArtistCommand : Command<AddSettings>
     private static List<string> GenerateNewAlbumArtistsValue(string file)
     {
         var parentDir = Directory.GetParent(file)!.FullName;
-        var filesInSameDir = Helper.GetAllAudioFiles(parentDir, false).Order().ToList();
+        var filesInSameDir = Helper.GetAllAudioFiles([parentDir], false).Order().ToList();
         AnsiConsole.WriteLine($"Files in the same directory: {filesInSameDir.Count}");
         var albumArtists = new List<string>();
         foreach (var file2 in filesInSameDir)

@@ -10,6 +10,7 @@ public class ReadCommand(IAnsiConsole console) : FileProcessingCommandBase<ReadS
     protected override async Task ProcessFileAsync(
         StatusContext ctx,
         ReadSettings settings,
+        string[] files,
         string file
     )
     {

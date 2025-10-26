@@ -9,7 +9,7 @@ namespace AudioTagCli.Commands;
 public class WriteSettings : FileProcessingSettings
 {
     [CommandOption("--genre|-g")]
-    public string? Genre { get; set; }
+    public string[]? Genre { get; set; }
 
     [CommandOption("--artist|-a")]
     public string? Artist { get; set; }
@@ -53,28 +53,56 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
     protected override async Task ProcessFileAsync(
         StatusContext ctx,
         WriteSettings settings,
+        string[] files,
         string file
     )
     {
         var tags = Tagger.ReadTags(file);
-        tags.Genre = settings.Genre is not null ? GetMultiValue(settings.Genre) : tags.Genre;
+        tags.Genre = UpdateList(settings.Genre, tags.Genre);
         tags.Artist = settings.Artist is not null ? GetMultiValue(settings.Artist) : tags.Artist;
         tags.AlbumArtist = settings.AlbumArtist is not null
             ? GetMultiValue(settings.AlbumArtist)
             : tags.AlbumArtist;
-        tags.Title = settings.Title ?? tags.Title;
-        tags.Album = settings.Album ?? tags.Album;
-        tags.Year = settings.Year ?? tags.Year;
-        tags.Label = settings.Label ?? tags.Label;
-        tags.CatalogNumber = settings.CatalogNumber ?? tags.CatalogNumber;
-        tags.Track = settings.Track ?? tags.Track;
-        tags.TrackTotal = settings.TrackTotal ?? tags.TrackTotal;
-        tags.Disc = settings.Disc ?? tags.Disc;
-        tags.DiscTotal = settings.DiscTotal ?? tags.DiscTotal;
+        tags.Title = UpdateString(settings.Title, tags.Title);
+        tags.Album = UpdateString(settings.Album, tags.Album);
+        tags.Year = UpdateInt(settings.Year, tags.Year);
+        tags.Label = UpdateString(settings.Label, tags.Label);
+        tags.CatalogNumber = UpdateString(settings.CatalogNumber, tags.CatalogNumber);
+        tags.Track = UpdateInt(settings.Track, tags.Track);
+        tags.TrackTotal = UpdateInt(settings.TrackTotal, tags.TrackTotal);
+        tags.Disc = UpdateInt(settings.Disc, tags.Disc);
+        tags.DiscTotal = UpdateInt(settings.DiscTotal, tags.DiscTotal);
         tags.Comment = settings.Comment ?? tags.Comment;
         ctx.Status("Writing tags...");
         Tagger.WriteTags(file, tags);
         await Task.CompletedTask;
+    }
+
+    private static string? UpdateString(string? newVal, string? oldVal)
+    {
+        if (newVal != null)
+        {
+            return newVal.Trim();
+        }
+        return oldVal;
+    }
+
+    private static uint UpdateInt(uint? newVal, uint oldVal)
+    {
+        if (newVal != null)
+        {
+            return newVal.Value;
+        }
+        return oldVal;
+    }
+
+    private static List<string> UpdateList(IEnumerable<string>? newList, List<string> currentList)
+    {
+        if (newList != null)
+        {
+            return [.. newList.Where(x => !string.IsNullOrEmpty(x))];
+        }
+        return currentList;
     }
 
     private static List<string> GetMultiValue(string value)
