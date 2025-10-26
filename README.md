@@ -7,7 +7,7 @@ This tool is under active development and primarily built for personal use.
 However, if you need additional features - for example, support for new tag types - feel free to open an [open an issue](https://github.com/cantti/audio-tag-helper/issues).
 Adding new tags or functionality is straightforward and contributions are welcome.
 
-The CLI is built using **[Spectre.Console](https://github.com/spectreconsole/spectre.console)** for rich command-line output and **[TagLibSharp](https://github.com/mono/taglib-sharp)** for tag manipulation.
+The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spectre.console) for rich command-line output and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 
 ## Download
 
