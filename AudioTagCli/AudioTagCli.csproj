@@ -17,10 +17,4 @@
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
   </PropertyGroup>
-  <!-- <ItemGroup> -->
-  <!--   <None Include="../TestData/**"> -->
-  <!--     <Link>TestData\%(RecursiveDir)%(Filename)%(Extension)</Link> -->
-  <!--     <CopyToOutputDirectory>Always</CopyToOutputDirectory> -->
-  <!--   </None> -->
-  <!-- </ItemGroup> -->
 </Project>
