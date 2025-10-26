@@ -15,8 +15,10 @@ class Program
             config.AddCommand<WriteCommand>("write").WithDescription("Write tags.");
             config.AddCommand<CleanCommand>("clean").WithDescription("Remove unsupported tags.");
             config
-                .AddCommand<FixAlbumArtistCommand>("fixalbumartist")
-                .WithDescription("Fix album artist. WIP.");
+                .AddCommand<FixAlbumCommand>("fixalbum")
+                .WithDescription(
+                    "Set album name and album artists to the same value to all files in the same directory."
+                );
             config.AddCommand<AutoTrackCommand>("autotrack").WithDescription("Auto track.");
         });
 

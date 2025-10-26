@@ -6,8 +6,6 @@ public class TagData
 
     public List<string> AlbumArtist { get; set; } = [];
 
-    public string AlbumArtistJoined => string.Join("; ", AlbumArtist);
-
     public string? Album { get; set; } = "";
 
     public string? Title { get; set; }

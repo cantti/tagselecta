@@ -28,7 +28,7 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
 
     private async Task ProcessFilesAsync(StatusContext ctx, TSettings settings)
     {
-        ctx.Status("Finding files...");
+        ctx.Status("Processing files...");
         var files = Helper.GetAllAudioFiles(settings.Path, true);
 
         var failedFiles = new List<(string File, Exception Error)>();
@@ -56,10 +56,8 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
             {
                 failCount++;
                 failedFiles.Add((file, ex));
-                console.MarkupLineInterpolated($"[red]Error processing {file}: {ex.Message}[/]");
+                console.MarkupLineInterpolated($"[red]Error processing {file}: {ex.ToString()}[/]");
             }
-
-            Console.WriteLine();
         }
 
         Console.MarkupLineInterpolated(

@@ -36,8 +36,8 @@ public static class AnsiConsoleExtensions
             table.AddRow($"[cyan]{field}[/]", displayValue);
         }
 
+        AddRow("Album Artist", meta.AlbumArtist);
         AddRow("Artist", meta.Artist);
-        AddRow("Album Artist", meta.AlbumArtistJoined);
         AddRow("Album", meta.Album);
         AddRow("Title", meta.Title);
         AddRow("Genre", meta.Genre);

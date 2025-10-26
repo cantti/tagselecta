@@ -1,5 +1,4 @@
 using AudioTagCli.BaseCommands;
-using AudioTagCli.Misc;
 using AudioTagCli.Tagging;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -12,10 +11,10 @@ public class WriteSettings : FileProcessingSettings
     public string[]? Genre { get; set; }
 
     [CommandOption("--artist|-a")]
-    public string? Artist { get; set; }
+    public string[]? Artist { get; set; }
 
     [CommandOption("--albumartist|-A")]
-    public string? AlbumArtist { get; set; }
+    public string[]? AlbumArtist { get; set; }
 
     [CommandOption("--title|-t")]
     public string? Title { get; set; }
@@ -59,10 +58,8 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
     {
         var tags = Tagger.ReadTags(file);
         tags.Genre = UpdateList(settings.Genre, tags.Genre);
-        tags.Artist = settings.Artist is not null ? GetMultiValue(settings.Artist) : tags.Artist;
-        tags.AlbumArtist = settings.AlbumArtist is not null
-            ? GetMultiValue(settings.AlbumArtist)
-            : tags.AlbumArtist;
+        tags.Artist = UpdateList(settings.Artist, tags.Artist);
+        tags.AlbumArtist = UpdateList(settings.AlbumArtist, tags.AlbumArtist);
         tags.Title = UpdateString(settings.Title, tags.Title);
         tags.Album = UpdateString(settings.Album, tags.Album);
         tags.Year = UpdateInt(settings.Year, tags.Year);
@@ -103,16 +100,5 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
             return [.. newList.Where(x => !string.IsNullOrEmpty(x))];
         }
         return currentList;
-    }
-
-    private static List<string> GetMultiValue(string value)
-    {
-        return
-        [
-            .. value.Split(
-                ';',
-                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-            ),
-        ];
     }
 }
