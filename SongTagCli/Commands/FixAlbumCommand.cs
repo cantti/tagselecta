@@ -23,7 +23,7 @@ public class FixAlbumCommand(IAnsiConsole console)
         public required string Dir { get; set; }
         public required FixType FixType { get; set; }
         public required List<string> AlbumArtist { get; set; } = [];
-        public required string? AlbumName { get; set; }
+        public required string AlbumName { get; set; }
         public required uint Year { get; set; }
     }
 
@@ -51,13 +51,15 @@ public class FixAlbumCommand(IAnsiConsole console)
             }
 
             // find most common album name in dir
-            var albumName = dirTagData
-                .Select(x => x.Album)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .GroupBy(x => x)
-                .OrderByDescending(g => g.Count())
-                .FirstOrDefault()
-                ?.Key;
+            var albumName =
+                dirTagData
+                    .Select(x => x.Album)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .GroupBy(x => x)
+                    .OrderByDescending(g => g.Count())
+                    .FirstOrDefault()
+                    ?.Key
+                ?? "";
 
             // find most common album year in dir
             var albumYear = dirTagData
@@ -127,7 +129,7 @@ public class FixAlbumCommand(IAnsiConsole console)
         var tagData = Tagger.ReadTags(file);
         if (
             tagData.AlbumArtist.SequenceEqual(album.AlbumArtist)
-            && (tagData.Album ?? "") == (album.AlbumName ?? "")
+            && tagData.Album == album.AlbumName
             && tagData.Year == album.Year
         )
         {

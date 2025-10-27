@@ -6,9 +6,9 @@ public class TagData
 
     public List<string> AlbumArtist { get; set; } = [];
 
-    public string? Album { get; set; } = "";
+    public string Album { get; set; } = "";
 
-    public string? Title { get; set; }
+    public string Title { get; set; } = "";
 
     public List<string> Genre { get; set; } = [];
 
@@ -22,11 +22,11 @@ public class TagData
 
     public uint DiscTotal { get; set; }
 
-    public string? Comment { get; set; }
+    public string Comment { get; set; } = "";
 
-    public string? Label { get; set; }
+    public string Label { get; set; } = "";
 
-    public string? CatalogNumber { get; set; }
+    public string CatalogNumber { get; set; } = "";
 
     public List<TagLib.IPicture> Pictures { get; set; } = [];
 }

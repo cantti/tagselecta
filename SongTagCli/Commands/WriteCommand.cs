@@ -75,7 +75,7 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
         return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
     }
 
-    private static string? UpdateString(string? newVal, string? oldVal)
+    private static string UpdateString(string? newVal, string oldVal)
     {
         if (newVal != null)
         {

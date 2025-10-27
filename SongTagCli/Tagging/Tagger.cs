@@ -1,3 +1,5 @@
+using SongTagCli.Misc;
+
 namespace SongTagCli.Tagging;
 
 public static class Tagger
@@ -14,17 +16,17 @@ public static class Tagger
         var tag = tfile.Tag;
         return new TagData
         {
-            Album = tag.Album,
+            Album = tag.Album ?? "",
             Artist = [.. tag.Performers],
             AlbumArtist = [.. tag.AlbumArtists],
-            Title = tag.Title,
+            Title = tag.Title ?? "",
             Genre = [.. tag.Genres],
             Year = tag.Year,
             Track = tag.Track,
             TrackTotal = tag.TrackCount,
             Disc = tag.Disc,
             DiscTotal = tag.DiscCount,
-            Comment = tag.Comment,
+            Comment = tag.Comment ?? "",
             Label = GetExtValue(tfile, "label"),
             CatalogNumber = GetExtValue(tfile, "catalognumber"),
             Pictures = [.. tag.Pictures],
@@ -53,10 +55,11 @@ public static class Tagger
         commonTags.Comment = tagData.Comment;
         commonTags.Pictures = [.. tagData.Pictures];
         SetExtValue(tfile, "label", tagData.Label);
+        SetExtValue(tfile, "catalognumber", tagData.CatalogNumber);
         tfile.Save();
     }
 
-    private static string? GetExtValue(TagLib.File tfile, string key)
+    private static string GetExtValue(TagLib.File tfile, string key)
     {
         string mime = tfile.MimeType.ToLowerInvariant();
         if (mime == "taglib/mp3")
@@ -69,24 +72,24 @@ public static class Tagger
         }
         else
         {
-            return null;
+            return "";
         }
     }
 
-    private static string? GetMp3ExtValue(TagLib.File tfile, string key)
+    private static string GetMp3ExtValue(TagLib.File tfile, string key)
     {
         var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagLib.TagTypes.Id3v2, false);
         var frame = TagLib.Id3v2.UserTextInformationFrame.Get(id3v2, key, create: false);
-        return frame?.Text.FirstOrDefault();
+        return frame?.Text.FirstOrDefault() ?? "";
     }
 
-    private static string? GetFlacExtValue(TagLib.File tfile, string key)
+    private static string GetFlacExtValue(TagLib.File tfile, string key)
     {
         var xiph = (TagLib.Ogg.XiphComment)tfile.GetTag(TagLib.TagTypes.Xiph, false);
-        return xiph?.GetField(key).FirstOrDefault();
+        return xiph?.GetField(key).FirstOrDefault() ?? "";
     }
 
-    private static void SetExtValue(TagLib.File tfile, string key, string? value)
+    private static void SetExtValue(TagLib.File tfile, string key, string value)
     {
         string mime = tfile.MimeType.ToLowerInvariant();
         if (mime == "taglib/mp3")
@@ -99,17 +102,27 @@ public static class Tagger
         }
     }
 
-    private static void SetFlacExtValue(TagLib.File tfile, string key, string? value)
+    private static void SetFlacExtValue(TagLib.File tfile, string key, string value)
     {
         var xiph = (TagLib.Ogg.XiphComment)tfile.GetTag(TagLib.TagTypes.Xiph, true);
-        xiph.SetField(key, [value]);
+        // TagLib automatically removes fields that are empty arrays
+        xiph.SetField(key, value == "" ? [] : [value]);
     }
 
-    private static void SetMp3ExtValue(TagLib.File tfile, string key, string? value)
+    private static void SetMp3ExtValue(TagLib.File tfile, string key, string value)
     {
         var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagLib.TagTypes.Id3v2, true);
         var frame = TagLib.Id3v2.UserTextInformationFrame.Get(id3v2, key, true);
         frame.Text = [value];
+        // TagLib does not automatically removes empty user text frames
+        if (value == "")
+        {
+            id3v2.RemoveFrame(frame);
+        }
+        else
+        {
+            frame.Text = [value];
+        }
     }
 
     public static void RemoveTags(string file)
