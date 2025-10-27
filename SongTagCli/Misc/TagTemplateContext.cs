@@ -9,7 +9,7 @@ public class TagTemplateContext
         Path = path;
         ArtistList = tag.Artist;
         AlbumArtistList = tag.AlbumArtist;
-        Album = tag.Album ?? "";
+        Album = tag.Album;
         Title = tag.Title ?? "";
         GenreList = tag.Genre;
         Year = tag.Year;

@@ -8,7 +8,7 @@ namespace SongTagCli.BaseCommands;
 public abstract class FileProcessingSettings : CommandSettings
 {
     [CommandArgument(0, "<path>")]
-    public required string[] Path { get; set; }
+    public string[] Path { get; set; } = [];
 }
 
 public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)

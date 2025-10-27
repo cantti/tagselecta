@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text;
-using Scriban;
+using SmartFormat;
+using SmartFormat.Core.Settings;
 using SongTagCli.BaseCommands;
 using SongTagCli.Misc;
 using SongTagCli.Tagging;
@@ -13,7 +14,7 @@ public class RenameDirSettings : FileProcessingSettings
 {
     [CommandOption("--template|-t")]
     [Description("Template. For example: {{ year }} - {{ album }}")]
-    public string? Template { get; set; }
+    public string Template { get; set; } = "";
 
     [CommandOption("--dry-run")]
     public bool DryRun { get; set; }
@@ -50,8 +51,10 @@ public class RenameDirCommand(IAnsiConsole console)
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
 
-        var template = Template.Parse(settings.Template);
-        var newName = template.Render(new TagTemplateContext(tagData, file));
+        var newName = TagTemplateFormatter.Format(
+            settings.Template,
+            new TagTemplateContext(tagData, file)
+        );
 
         var newPath = GetNewPath(dir, newName);
 
