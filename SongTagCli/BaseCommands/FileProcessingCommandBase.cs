@@ -50,10 +50,6 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
                 Console.PrintCurrentFile(file, index, files.Count);
                 ctx.Status("Processing...");
                 result = await ProcessFileAsync(ctx, settings, files, file);
-                if (!string.IsNullOrEmpty(result.Message))
-                {
-                    Console.WriteLine(result.Message);
-                }
             }
             catch (Exception ex)
             {
@@ -76,9 +72,13 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
                 successCount++;
                 Console.MarkupLine("Status: success!");
             }
-            if (!string.IsNullOrEmpty(result.Message))
+            if (result.Exception is not null)
             {
-                Console.WriteLine(result.Message);
+                Console.WriteException(result.Exception);
+            }
+            else if (!string.IsNullOrEmpty(result.Message))
+            {
+                Console.MarkupLine(result.Message.TrimEnd('\r', '\n'));
             }
             if (PrintFileAfterProcessing)
             {

@@ -1,11 +1,32 @@
+using System.ComponentModel;
+using System.Text;
+using Scriban;
 using SongTagCli.BaseCommands;
 using SongTagCli.Misc;
 using SongTagCli.Tagging;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace SongTagCli.Commands;
 
-public class RenameDirSettings : FileProcessingSettings { }
+public class RenameDirSettings : FileProcessingSettings
+{
+    [CommandOption("--template|-t")]
+    [Description("Template. For example: {{ year }} - {{ album }}")]
+    public string? Template { get; set; }
+
+    [CommandOption("--dry-run")]
+    public bool DryRun { get; set; }
+
+    public override ValidationResult Validate()
+    {
+        if (string.IsNullOrWhiteSpace(Template))
+        {
+            return ValidationResult.Error("Template is required");
+        }
+        return base.Validate();
+    }
+}
 
 public class RenameDirCommand(IAnsiConsole console)
     : FileProcessingCommandBase<RenameDirSettings>(console)
@@ -28,25 +49,47 @@ public class RenameDirCommand(IAnsiConsole console)
         }
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
-        var newName = $"{tagData.Year} - {tagData.AlbumArtist.Print()} - {tagData.Album}";
-        RenameDirectory(dir, newName);
-        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
-    }
 
-    private void RenameDirectory(string dirPath, string newName)
-    {
-        if (!Directory.Exists(dirPath))
-            throw new DirectoryNotFoundException($"Source directory not found: {dirPath}");
+        var template = Template.Parse(settings.Template);
+        var newName = template.Render(new TagTemplateContext(tagData, file));
 
-        string parentDir = Path.GetDirectoryName(dirPath)!;
-        string newPath = Path.Combine(parentDir, newName);
-        Console.MarkupLine($"Directory rename details:");
-        Console.MarkupLine("  Old: {0}", dirPath);
-        Console.MarkupLine("  New: {0}", newPath);
+        var newPath = GetNewPath(dir, newName);
+
+        if (newPath == dir)
+        {
+            return await Task.FromResult(
+                ProcessFileResult.Skipped("Directory name already matches the desired format.")
+            );
+        }
 
         if (Directory.Exists(newPath))
-            throw new SongTagCliException($"Target directory already exists: {newPath}");
+        {
+            return await Task.FromResult(
+                ProcessFileResult.Error(
+                    $"Target directory already exists: {newPath.EscapeMarkup()}."
+                )
+            );
+        }
 
-        Directory.Move(dirPath, newPath);
+        var sb = new StringBuilder();
+        sb.AppendLine("Directory rename details:");
+        sb.AppendLine($"  Old: {dir.EscapeMarkup()}");
+        sb.AppendLine($"  New: {newPath.EscapeMarkup()}");
+
+        if (settings.DryRun)
+        {
+            sb.AppendLine("Dry run.");
+            return await Task.FromResult(ProcessFileResult.Success(sb.ToString()));
+        }
+
+        Directory.Move(dir, newPath);
+
+        return await Task.FromResult(ProcessFileResult.Success(sb.ToString()));
+    }
+
+    private static string GetNewPath(string dirPath, string newName)
+    {
+        string parentDir = Path.GetDirectoryName(dirPath)!;
+        return Path.Combine(parentDir, newName);
     }
 }

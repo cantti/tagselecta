@@ -1,3 +1,4 @@
+using System.Text;
 using SongTagCli.BaseCommands;
 using SongTagCli.Misc;
 using SongTagCli.Tagging;
@@ -109,6 +110,7 @@ public class FixAlbumCommand(IAnsiConsole console)
             };
             _albums.Add(album);
         }
+        var sb = new StringBuilder();
         string albumArtistMessage = album.FixType switch
         {
             FixType.PrimaryArtists =>
@@ -119,14 +121,23 @@ public class FixAlbumCommand(IAnsiConsole console)
                 $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtist.Print().EscapeMarkup()}[/]",
             _ => "",
         };
-        Console.MarkupLine(albumArtistMessage);
-        Console.MarkupLineInterpolated($"The most common album mame: [yellow]{album.AlbumName}[/]");
-        Console.MarkupLineInterpolated($"The most common album year: [yellow]{album.Year}[/]");
+        sb.AppendLine(albumArtistMessage);
+        sb.AppendLine($"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]");
+        sb.AppendLine($"The most common album year: [yellow]{album.Year}[/]");
         var tagData = Tagger.ReadTags(file);
+        if (
+            tagData.AlbumArtist.SequenceEqual(album.AlbumArtist)
+            && (tagData.Album ?? "") == (album.AlbumName ?? "")
+            && tagData.Year == album.Year
+        )
+        {
+            sb.AppendLine("Skipped");
+            return await Task.FromResult(ProcessFileResult.Skipped(sb.ToString()));
+        }
         tagData.AlbumArtist = album.AlbumArtist;
         tagData.Album = album.AlbumName;
         tagData.Year = album.Year;
         Tagger.WriteTags(file, tagData);
-        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
+        return await Task.FromResult(ProcessFileResult.Success(sb.ToString()));
     }
 }

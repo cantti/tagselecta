@@ -34,6 +34,6 @@ public class AutoTrackCommand(IAnsiConsole console)
             tags.DiscTotal = 0;
         }
         Tagger.WriteTags(file, tags);
-        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
+        return await Task.FromResult(ProcessFileResult.Success());
     }
 }

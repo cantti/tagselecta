@@ -9,9 +9,10 @@
     <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Spectre.Console" Version="0.52.0"/>
-    <PackageReference Include="Spectre.Console.Cli" Version="0.52.0"/>
-    <PackageReference Include="TagLibSharp" Version="2.3.0"/>
+    <PackageReference Include="Scriban" Version="6.5.0" />
+    <PackageReference Include="Spectre.Console" Version="0.52.0" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.52.0" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugSymbols>False</DebugSymbols>

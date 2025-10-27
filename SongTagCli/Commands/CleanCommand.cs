@@ -18,6 +18,6 @@ public class CleanCommand(IAnsiConsole console) : FileProcessingCommandBase<Clea
         var tags = Tagger.ReadTags(file);
         Tagger.RemoveTags(file);
         Tagger.WriteTags(file, tags);
-        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
+        return await Task.FromResult(ProcessFileResult.Success());
     }
 }
