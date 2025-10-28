@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Text;
-using SmartFormat;
 using SmartFormat.Core.Settings;
 using SongTagCli.BaseCommands;
 using SongTagCli.Misc;
@@ -32,12 +31,9 @@ public class RenameDirSettings : FileProcessingSettings
 public class RenameDirCommand(IAnsiConsole console)
     : FileProcessingCommandBase<RenameDirSettings>(console)
 {
-    protected override bool PrintFileAfterProcessing => false;
-
     private readonly List<string> _renamed = [];
 
-    protected override async Task<ProcessFileResult> ProcessFileAsync(
-        StatusContext ctx,
+    protected override Task<ResultStatus> ProcessFileAsync(
         RenameDirSettings settings,
         List<string> files,
         string file
@@ -46,7 +42,7 @@ public class RenameDirCommand(IAnsiConsole console)
         var dir = Path.GetDirectoryName(file)!;
         if (_renamed.Contains(dir))
         {
-            return new ProcessFileResult(ProcessFileResultStatus.Skipped);
+            return Task.FromResult(ResultStatus.Skipped);
         }
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
@@ -60,34 +56,32 @@ public class RenameDirCommand(IAnsiConsole console)
 
         if (newPath == dir)
         {
-            return await Task.FromResult(
-                ProcessFileResult.Skipped("Directory name already matches the desired format.")
-            );
+            Console.MarkupLine("Directory name already matches the desired format.");
+            return Task.FromResult(ResultStatus.Skipped);
         }
 
         if (Directory.Exists(newPath))
         {
-            return await Task.FromResult(
-                ProcessFileResult.Error(
-                    $"Target directory already exists: {newPath.EscapeMarkup()}."
-                )
-            );
+            Console.MarkupLine($"Target directory already exists: {newPath.EscapeMarkup()}.");
+            return Task.FromResult(ResultStatus.Error);
         }
 
-        var sb = new StringBuilder();
-        sb.AppendLine("Directory rename details:");
-        sb.AppendLine($"  Old: {dir.EscapeMarkup()}");
-        sb.AppendLine($"  New: {newPath.EscapeMarkup()}");
+        Console.MarkupLine("Directory rename details:");
+        Console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
+        Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
         if (settings.DryRun)
         {
-            sb.AppendLine("Dry run.");
-            return await Task.FromResult(ProcessFileResult.Success(sb.ToString()));
+            Console.MarkupLine("Dry run.");
+            return Task.FromResult(ResultStatus.Success);
         }
 
-        Directory.Move(dir, newPath);
-
-        return await Task.FromResult(ProcessFileResult.Success(sb.ToString()));
+        if (Confirm())
+        {
+            Directory.Move(dir, newPath);
+            return Task.FromResult(ResultStatus.Success);
+        }
+        return Task.FromResult(ResultStatus.Skipped);
     }
 
     private static string GetNewPath(string dirPath, string newName)

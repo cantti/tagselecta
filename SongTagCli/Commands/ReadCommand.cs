@@ -1,4 +1,5 @@
 using SongTagCli.BaseCommands;
+using SongTagCli.Tagging;
 using Spectre.Console;
 
 namespace SongTagCli.Commands;
@@ -7,13 +8,21 @@ public class ReadSettings : FileProcessingSettings { }
 
 public class ReadCommand(IAnsiConsole console) : FileProcessingCommandBase<ReadSettings>(console)
 {
-    protected override async Task<ProcessFileResult> ProcessFileAsync(
-        StatusContext ctx,
+    protected override Task<ResultStatus> ProcessFileAsync(
         ReadSettings settings,
         List<string> files,
         string file
     )
     {
-        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
+        var tags = Tagger.ReadTags(file);
+        PrintTagData(tags);
+        if (Continue())
+        {
+            return Task.FromResult(ResultStatus.Success);
+        }
+        else
+        {
+            return Task.FromResult(ResultStatus.Success);
+        }
     }
 }

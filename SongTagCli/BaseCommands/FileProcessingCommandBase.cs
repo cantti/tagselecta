@@ -16,20 +16,12 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
     where TSettings : FileProcessingSettings
 {
     protected IAnsiConsole Console => console;
-
-    protected virtual bool PrintFileAfterProcessing => true;
+    private bool _allConfirmed;
+    private bool _canceled;
+    private bool _isLast = false;
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {
-        await AnsiConsole
-            .Status()
-            .StartAsync("Processing files...", ctx => ProcessFilesAsync(ctx, settings));
-        return 0;
-    }
-
-    private async Task ProcessFilesAsync(StatusContext ctx, TSettings settings)
-    {
-        ctx.Status("Processing files...");
         var files = Helper.GetAllAudioFiles(settings.Path, true);
 
         var failedFiles = new List<(string File, string Error)>();
@@ -39,59 +31,43 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
         int successCount = 0;
         int failCount = 0;
         int skipCount = 0;
-        int index = 0;
+        int index = -1;
 
         foreach (var file in files)
         {
             index++;
-            ProcessFileResult result;
+            _isLast = index == files.Count - 1;
+            ResultStatus result;
             try
             {
                 Console.PrintCurrentFile(file, index, files.Count);
-                ctx.Status("Processing...");
-                result = await ProcessFileAsync(ctx, settings, files, file);
+                result = await ProcessFileAsync(settings, files, file);
             }
             catch (Exception ex)
             {
                 failCount++;
-                result = new ProcessFileResult(ex);
+                result = ResultStatus.Error;
+                Console.WriteException(ex);
             }
-            if (result.Status == ProcessFileResultStatus.Skipped)
+            if (_canceled)
+            {
+                skipCount++;
+                break;
+            }
+            if (result == ResultStatus.Skipped)
             {
                 skipCount++;
                 Console.MarkupLine("Status: skipped!");
             }
-            else if (result.Status == ProcessFileResultStatus.Error)
+            else if (result == ResultStatus.Error)
             {
                 failCount++;
-                failedFiles.Add((file, result.Message ?? ""));
                 console.MarkupLineInterpolated($"Status: [red]error![/]");
             }
             else
             {
                 successCount++;
                 Console.MarkupLine("Status: success!");
-            }
-            if (result.Exception is not null)
-            {
-                Console.WriteException(result.Exception);
-            }
-            else if (!string.IsNullOrEmpty(result.Message))
-            {
-                Console.MarkupLine(result.Message.TrimEnd('\r', '\n'));
-            }
-            if (PrintFileAfterProcessing)
-            {
-                try
-                {
-                    Console.PrintTagData(Tagger.ReadTags(file));
-                }
-                catch (Exception ex)
-                {
-#if DEBUG
-                    AnsiConsole.WriteException(ex);
-#endif
-                }
             }
         }
 
@@ -115,10 +91,94 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
             }
             Console.Write(table);
         }
+
+        return 0;
     }
 
-    protected abstract Task<ProcessFileResult> ProcessFileAsync(
-        StatusContext ctx,
+    protected bool Continue()
+    {
+        if (_allConfirmed || _isLast)
+            return true;
+
+        var choices = new Dictionary<ConfirmChoice, string>
+        {
+            { ConfirmChoice.Yes, "y" },
+            { ConfirmChoice.No, "n" },
+            { ConfirmChoice.All, "a" },
+        };
+
+        var confirmation = AnsiConsole.Prompt(
+            new TextPrompt<ConfirmChoice>("Continue?")
+                .AddChoices(choices.Keys)
+                .DefaultValue(ConfirmChoice.Yes)
+                .WithConverter(choice => choices[choice])
+        );
+
+        switch (confirmation)
+        {
+            case ConfirmChoice.Yes:
+                return true;
+
+            case ConfirmChoice.No:
+                _canceled = true;
+                return false;
+
+            case ConfirmChoice.All:
+                _allConfirmed = true;
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    protected bool Confirm()
+    {
+        if (_allConfirmed)
+            return true;
+
+        var choices = new Dictionary<ConfirmChoice, string>
+        {
+            { ConfirmChoice.Yes, "y" },
+            { ConfirmChoice.No, "n" },
+            { ConfirmChoice.All, "a" },
+            { ConfirmChoice.Cancel, "c" },
+        };
+
+        var confirmation = AnsiConsole.Prompt(
+            new TextPrompt<ConfirmChoice>("Confirm changes?")
+                .AddChoices(choices.Keys)
+                .DefaultValue(ConfirmChoice.Yes)
+                .WithConverter(choice => choices[choice])
+        );
+
+        switch (confirmation)
+        {
+            case ConfirmChoice.Yes:
+                return true;
+
+            case ConfirmChoice.No:
+                return false;
+
+            case ConfirmChoice.All:
+                _allConfirmed = true;
+                return true;
+
+            case ConfirmChoice.Cancel:
+                _canceled = true;
+                return false;
+
+            default:
+                return false;
+        }
+    }
+
+    protected void PrintTagData(TagData tagData)
+    {
+        Console.PrintTagData(tagData);
+    }
+
+    protected abstract Task<ResultStatus> ProcessFileAsync(
         TSettings settings,
         List<string> files,
         string file

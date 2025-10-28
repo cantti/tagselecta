@@ -1,6 +1,6 @@
 namespace SongTagCli.BaseCommands;
 
-public enum ProcessFileResultStatus
+public enum ResultStatus
 {
     Success,
     Error,

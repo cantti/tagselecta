@@ -12,7 +12,9 @@ public static class AnsiConsoleExtensions
         int total
     )
     {
-        console.MarkupLineInterpolated($"[dim]>[/] [yellow]({index}/{total})[/] [green]{file}[/]");
+        console.MarkupLineInterpolated(
+            $"[dim]>[/] [yellow]({index + 1}/{total})[/] [green]{file}[/]"
+        );
     }
 
     public static void PrintTagData(this IAnsiConsole console, TagData meta)

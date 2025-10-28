@@ -49,8 +49,7 @@ public class WriteSettings : FileProcessingSettings
 
 public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<WriteSettings>(console)
 {
-    protected override async Task<ProcessFileResult> ProcessFileAsync(
-        StatusContext ctx,
+    protected override Task<ResultStatus> ProcessFileAsync(
         WriteSettings settings,
         List<string> files,
         string file
@@ -70,9 +69,16 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
         tags.Disc = UpdateInt(settings.Disc, tags.Disc);
         tags.DiscTotal = UpdateInt(settings.DiscTotal, tags.DiscTotal);
         tags.Comment = settings.Comment ?? tags.Comment;
-        ctx.Status("Writing tags...");
-        Tagger.WriteTags(file, tags);
-        return await Task.FromResult(new ProcessFileResult(ProcessFileResultStatus.Success));
+        PrintTagData(tags);
+        if (Confirm())
+        {
+            Tagger.WriteTags(file, tags);
+            return Task.FromResult(ResultStatus.Success);
+        }
+        else
+        {
+            return Task.FromResult(ResultStatus.Skipped);
+        }
     }
 
     private static string UpdateString(string? newVal, string oldVal)

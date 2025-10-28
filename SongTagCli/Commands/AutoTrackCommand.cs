@@ -16,8 +16,7 @@ public class AutoTrackSettings : FileProcessingSettings
 public class AutoTrackCommand(IAnsiConsole console)
     : FileProcessingCommandBase<AutoTrackSettings>(console)
 {
-    protected override async Task<ProcessFileResult> ProcessFileAsync(
-        StatusContext ctx,
+    protected override Task<ResultStatus> ProcessFileAsync(
         AutoTrackSettings settings,
         List<string> files,
         string file
@@ -34,6 +33,7 @@ public class AutoTrackCommand(IAnsiConsole console)
             tags.DiscTotal = 0;
         }
         Tagger.WriteTags(file, tags);
-        return await Task.FromResult(ProcessFileResult.Success());
+        PrintTagData(tags);
+        return Task.FromResult(ResultStatus.Success);
     }
 }

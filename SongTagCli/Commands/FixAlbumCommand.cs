@@ -29,8 +29,7 @@ public class FixAlbumCommand(IAnsiConsole console)
 
     private readonly List<Album> _albums = [];
 
-    protected override async Task<ProcessFileResult> ProcessFileAsync(
-        StatusContext ctx,
+    protected override Task<ResultStatus> ProcessFileAsync(
         FixAlbumSettings settings,
         List<string> files,
         string file
@@ -134,12 +133,13 @@ public class FixAlbumCommand(IAnsiConsole console)
         )
         {
             sb.AppendLine("Skipped");
-            return await Task.FromResult(ProcessFileResult.Skipped(sb.ToString()));
+            Console.MarkupLine(sb.ToString());
+            return Task.FromResult(ResultStatus.Skipped);
         }
         tagData.AlbumArtist = album.AlbumArtist;
         tagData.Album = album.AlbumName;
         tagData.Year = album.Year;
         Tagger.WriteTags(file, tagData);
-        return await Task.FromResult(ProcessFileResult.Success(sb.ToString()));
+        return Task.FromResult(ResultStatus.Success);
     }
 }
