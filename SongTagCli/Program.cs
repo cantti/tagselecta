@@ -32,6 +32,9 @@ class Program
             config
                 .AddCommand<FileCommand<RenameDirSettings, RenameDirAction>>("renamedir")
                 .WithDescription("Rename directories.");
+            config
+                .AddCommand<FileCommand<RenameFileSettings, RenameFileAction>>("renamefile")
+                .WithDescription("Rename files.");
         });
 
         return app.Run(args);

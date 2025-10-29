@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace SongTagCli.Misc;
 
 public static class StringListExtensions
@@ -17,5 +19,17 @@ public static class StringListExtensions
             Console.WriteLine("Value is whitespace only");
         else
             Console.WriteLine($"Value: \"{value}\" (Length: {value.Length})");
+    }
+
+    public static string CleanFileName(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        input = input
+            .Replace(Path.DirectorySeparatorChar.ToString(), "")
+            .Replace(Path.AltDirectorySeparatorChar.ToString(), "");
+        input = Regex.Replace(input, @"\s+", " ");
+        return input;
     }
 }
