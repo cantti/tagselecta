@@ -1,6 +1,6 @@
-# songtagcli
+# TagSelecta
 
-Songtagcli is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).  
+TagSelecta is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).  
 Currently, only **MP3** and **FLAC** formats are supported.
 
 This tool is under active development and primarily built for personal use.
@@ -19,7 +19,7 @@ Each command provides its own help information.
 To display all available commands and options, run:
 
 ```bash
-./songtagcli -h
+./TagSelecta -h
 ```
 
 ### Example Output
@@ -27,12 +27,12 @@ To display all available commands and options, run:
 Help output:
 
 ```bash
-./songtagcli -h
+./TagSelecta -h
 ```
 
 ```
 USAGE:
-    songtagcli [OPTIONS] <COMMAND>
+    TagSelecta [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -48,7 +48,7 @@ COMMANDS:
 Read command output:
 
 ```
-./songtagcli read song.mp3
+./TagSelecta read song.mp3
 ```
 
 ```
