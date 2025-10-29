@@ -1,4 +1,4 @@
-using SongTagCli.Misc;
+using SongTagCli.Actions.Base;
 
 namespace SongTagCli.Tagging;
 
@@ -11,7 +11,7 @@ public static class Tagger
         using var tfile = TagLib.File.Create(file);
         if (!allowedMime.Contains(tfile.MimeType))
         {
-            throw new SongTagCliException("Invalid file type");
+            throw new ActionException("Invalid file type");
         }
         var tag = tfile.Tag;
         return new TagData

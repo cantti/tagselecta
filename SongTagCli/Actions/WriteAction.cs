@@ -1,11 +1,12 @@
+using SongTagCli.Actions.Base;
 using SongTagCli.BaseCommands;
+using SongTagCli.Misc;
 using SongTagCli.Tagging;
-using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace SongTagCli.Commands;
+namespace SongTagCli.Actions;
 
-public class WriteSettings : FileProcessingSettings
+public class WriteSettings : FileSettings
 {
     [CommandOption("--genre|-g")]
     public string[]? Genre { get; set; }
@@ -47,37 +48,29 @@ public class WriteSettings : FileProcessingSettings
     public string? CatalogNumber { get; set; }
 }
 
-public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<WriteSettings>(console)
+public class WriteAction : IAction<WriteSettings>
 {
-    protected override Task<ResultStatus> ProcessFileAsync(
-        WriteSettings settings,
-        List<string> files,
-        string file
-    )
+    public void Execute(ActionContext<WriteSettings> context)
     {
-        var tags = Tagger.ReadTags(file);
-        tags.Genre = UpdateList(settings.Genre, tags.Genre);
-        tags.Artist = UpdateList(settings.Artist, tags.Artist);
-        tags.AlbumArtist = UpdateList(settings.AlbumArtist, tags.AlbumArtist);
-        tags.Title = UpdateString(settings.Title, tags.Title);
-        tags.Album = UpdateString(settings.Album, tags.Album);
-        tags.Year = UpdateInt(settings.Year, tags.Year);
-        tags.Label = UpdateString(settings.Label, tags.Label);
-        tags.CatalogNumber = UpdateString(settings.CatalogNumber, tags.CatalogNumber);
-        tags.Track = UpdateInt(settings.Track, tags.Track);
-        tags.TrackTotal = UpdateInt(settings.TrackTotal, tags.TrackTotal);
-        tags.Disc = UpdateInt(settings.Disc, tags.Disc);
-        tags.DiscTotal = UpdateInt(settings.DiscTotal, tags.DiscTotal);
-        tags.Comment = settings.Comment ?? tags.Comment;
-        PrintTagData(tags);
-        if (ConfirmPrompt())
+        var tags = Tagger.ReadTags(context.File);
+        tags.Genre = UpdateList(context.Settings.Genre, tags.Genre);
+        tags.Artist = UpdateList(context.Settings.Artist, tags.Artist);
+        tags.AlbumArtist = UpdateList(context.Settings.AlbumArtist, tags.AlbumArtist);
+        tags.Title = UpdateString(context.Settings.Title, tags.Title);
+        tags.Album = UpdateString(context.Settings.Album, tags.Album);
+        tags.Year = UpdateInt(context.Settings.Year, tags.Year);
+        tags.Label = UpdateString(context.Settings.Label, tags.Label);
+        tags.CatalogNumber = UpdateString(context.Settings.CatalogNumber, tags.CatalogNumber);
+        tags.Track = UpdateInt(context.Settings.Track, tags.Track);
+        tags.TrackTotal = UpdateInt(context.Settings.TrackTotal, tags.TrackTotal);
+        tags.Disc = UpdateInt(context.Settings.Disc, tags.Disc);
+        tags.DiscTotal = UpdateInt(context.Settings.DiscTotal, tags.DiscTotal);
+        tags.Comment = context.Settings.Comment ?? tags.Comment;
+        context.Console.PrintTagData(tags);
+        if (context.ConfirmPrompt())
         {
-            Tagger.WriteTags(file, tags);
-            return Task.FromResult(ResultStatus.Success);
-        }
-        else
-        {
-            return Task.FromResult(ResultStatus.Skipped);
+            Tagger.WriteTags(context.File, tags);
+            return;
         }
     }
 

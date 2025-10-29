@@ -1,4 +1,5 @@
-using SongTagCli.Commands;
+using SongTagCli.Actions;
+using SongTagCli.BaseCommands;
 using Spectre.Console.Testing;
 
 namespace SongTagCli.Tests;
@@ -11,7 +12,7 @@ public class AutoTrackCommandTests
     {
         // Given
         var app = new CommandAppTester();
-        app.SetDefaultCommand<AutoTrackCommand>();
+        app.SetDefaultCommand<FileCommand<AutoTrackSettings, AutoTrackAction>>();
 
         // When
         var result = app.Run("./TestData/AutoTrackTest");

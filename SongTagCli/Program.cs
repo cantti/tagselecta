@@ -1,4 +1,5 @@
-﻿using SongTagCli.Commands;
+﻿using SongTagCli.Actions;
+using SongTagCli.BaseCommands;
 using Spectre.Console.Cli;
 
 namespace SongTagCli;
@@ -11,16 +12,26 @@ class Program
 
         app.Configure(config =>
         {
-            config.AddCommand<ReadCommand>("read").WithDescription("Read tags.");
-            config.AddCommand<WriteCommand>("write").WithDescription("Write tags.");
-            config.AddCommand<CleanCommand>("clean").WithDescription("Remove unsupported tags.");
             config
-                .AddCommand<FixAlbumCommand>("fixalbum")
+                .AddCommand<FileCommand<ReadSettings, ReadAction>>("read")
+                .WithDescription("Read tags.");
+            config
+                .AddCommand<FileCommand<WriteSettings, WriteAction>>("write")
+                .WithDescription("Write tags.");
+            config
+                .AddCommand<FileCommand<CleanSettings, CleanAction>>("clean")
+                .WithDescription("Remove unsupported tags.");
+            config
+                .AddCommand<FileCommand<FixAlbumSettings, FixAlbumAction>>("fixalbum")
                 .WithDescription(
                     "Set album name and album artists to the same value to all files in the same directory."
                 );
-            config.AddCommand<AutoTrackCommand>("autotrack").WithDescription("Auto track.");
-            config.AddCommand<RenameDirCommand>("renamedir").WithDescription("Rename directories.");
+            config
+                .AddCommand<FileCommand<AutoTrackSettings, AutoTrackAction>>("autotrack")
+                .WithDescription("Auto track.");
+            config
+                .AddCommand<FileCommand<RenameDirSettings, RenameDirAction>>("renamedir")
+                .WithDescription("Rename directories.");
         });
 
         return app.Run(args);

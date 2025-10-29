@@ -1,15 +1,15 @@
 using System.Text;
+using SongTagCli.Actions.Base;
 using SongTagCli.BaseCommands;
 using SongTagCli.Misc;
 using SongTagCli.Tagging;
 using Spectre.Console;
 
-namespace SongTagCli.Commands;
+namespace SongTagCli.Actions;
 
-public class FixAlbumSettings : FileProcessingSettings { }
+public class FixAlbumSettings : FileSettings { }
 
-public class FixAlbumCommand(IAnsiConsole console)
-    : FileProcessingCommandBase<FixAlbumSettings>(console)
+public class FixAlbumAction : IAction<FixAlbumSettings>
 {
     private enum FixType
     {
@@ -29,18 +29,14 @@ public class FixAlbumCommand(IAnsiConsole console)
 
     private readonly List<Album> _albums = [];
 
-    protected override Task<ResultStatus> ProcessFileAsync(
-        FixAlbumSettings settings,
-        List<string> files,
-        string file
-    )
+    public void Execute(ActionContext<FixAlbumSettings> context)
     {
-        var dir = Directory.GetParent(file)!.FullName;
+        var dir = Directory.GetParent(context.File)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
-            var filesInDir = files
-                .Where(x => Directory.GetParent(x)?.FullName == dir)
+            var filesInDir = context
+                .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
                 .Order()
                 .ToList();
             var dirTagData = new List<TagData>();
@@ -111,7 +107,6 @@ public class FixAlbumCommand(IAnsiConsole console)
             };
             _albums.Add(album);
         }
-        var sb = new StringBuilder();
         string albumArtistMessage = album.FixType switch
         {
             FixType.PrimaryArtists =>
@@ -122,24 +117,28 @@ public class FixAlbumCommand(IAnsiConsole console)
                 $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtist.Print().EscapeMarkup()}[/]",
             _ => "",
         };
-        sb.AppendLine(albumArtistMessage);
-        sb.AppendLine($"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]");
-        sb.AppendLine($"The most common album year: [yellow]{album.Year}[/]");
-        var tagData = Tagger.ReadTags(file);
+        context.Console.MarkupLine(albumArtistMessage);
+        context.Console.MarkupLine(
+            $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
+        );
+        context.Console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
+        var tagData = Tagger.ReadTags(context.File);
         if (
             tagData.AlbumArtist.SequenceEqual(album.AlbumArtist)
             && tagData.Album == album.AlbumName
             && tagData.Year == album.Year
         )
         {
-            sb.AppendLine("Skipped");
-            Console.MarkupLine(sb.ToString());
-            return Task.FromResult(ResultStatus.Skipped);
+            context.Console.MarkupLine("Skipped");
+            context.Skip();
+            return;
         }
         tagData.AlbumArtist = album.AlbumArtist;
         tagData.Album = album.AlbumName;
         tagData.Year = album.Year;
-        Tagger.WriteTags(file, tagData);
-        return Task.FromResult(ResultStatus.Success);
+        if (context.ConfirmPrompt())
+        {
+            Tagger.WriteTags(context.File, tagData);
+        }
     }
 }

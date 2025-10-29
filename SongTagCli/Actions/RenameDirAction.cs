@@ -1,14 +1,15 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using SongTagCli.Actions.Base;
 using SongTagCli.BaseCommands;
-using SongTagCli.Misc;
 using SongTagCli.Tagging;
+using SongTagCli.TagTemplate;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace SongTagCli.Commands;
+namespace SongTagCli.Actions;
 
-public class RenameDirSettings : FileProcessingSettings
+public class RenameDirSettings : FileSettings
 {
     [CommandOption("--template|-t")]
     [Description("Template. For example: {{ year }} - {{ album }}")]
@@ -27,28 +28,24 @@ public class RenameDirSettings : FileProcessingSettings
     }
 }
 
-public class RenameDirCommand(IAnsiConsole console)
-    : FileProcessingCommandBase<RenameDirSettings>(console)
+public class RenameDirAction : IAction<RenameDirSettings>
 {
     private readonly List<string> _renamed = [];
 
-    protected override Task<ResultStatus> ProcessFileAsync(
-        RenameDirSettings settings,
-        List<string> files,
-        string file
-    )
+    public void Execute(ActionContext<RenameDirSettings> context)
     {
-        var dir = Path.GetDirectoryName(file)!;
+        var dir = Path.GetDirectoryName(context.File)!;
         if (_renamed.Contains(dir))
         {
-            return Task.FromResult(ResultStatus.Skipped);
+            context.Skip();
+            return;
         }
         _renamed.Add(dir);
-        var tagData = Tagger.ReadTags(file);
+        var tagData = Tagger.ReadTags(context.File);
 
         var newName = TagTemplateFormatter.Format(
-            settings.Template,
-            new TagTemplateContext(tagData, file)
+            context.Settings.Template,
+            new TagTemplateContext(tagData, context.File)
         );
 
         newName = newName
@@ -61,32 +58,31 @@ public class RenameDirCommand(IAnsiConsole console)
 
         if (newPath == dir)
         {
-            Console.MarkupLine("Directory name already matches the desired format.");
-            return Task.FromResult(ResultStatus.Skipped);
+            context.Console.MarkupLine("Directory name already matches the desired format.");
+            context.Skip();
+            return;
         }
 
         if (Directory.Exists(newPath))
         {
-            Console.MarkupLine($"Target directory already exists: {newPath.EscapeMarkup()}.");
-            return Task.FromResult(ResultStatus.Error);
+            throw new ActionException($"Target directory already exists: {newPath}.");
         }
 
-        Console.MarkupLine("Directory rename details:");
-        Console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
-        Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
+        context.Console.MarkupLine("Directory rename details:");
+        context.Console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
+        context.Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
-        if (settings.DryRun)
+        if (context.Settings.DryRun)
         {
-            Console.MarkupLine("Dry run.");
-            return Task.FromResult(ResultStatus.Success);
+            context.Console.MarkupLine("Dry run.");
+            context.Skip();
+            return;
         }
 
-        if (ConfirmPrompt())
+        if (context.ConfirmPrompt())
         {
             Directory.Move(dir, newPath);
-            return Task.FromResult(ResultStatus.Success);
         }
-        return Task.FromResult(ResultStatus.Skipped);
     }
 
     private static string GetNewPath(string dirPath, string newName)

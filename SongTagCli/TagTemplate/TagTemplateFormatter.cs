@@ -1,7 +1,7 @@
 using SmartFormat;
 using SmartFormat.Core.Settings;
 
-namespace SongTagCli.Misc;
+namespace SongTagCli.TagTemplate;
 
 public static class TagTemplateFormatter
 {

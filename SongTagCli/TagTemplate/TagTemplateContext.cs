@@ -1,6 +1,7 @@
+using SongTagCli.Misc;
 using SongTagCli.Tagging;
 
-namespace SongTagCli.Misc;
+namespace SongTagCli.TagTemplate;
 
 public class TagTemplateContext
 {

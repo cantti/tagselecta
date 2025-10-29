@@ -1,4 +1,5 @@
-﻿using SongTagCli.Commands;
+﻿using SongTagCli.Actions;
+using SongTagCli.BaseCommands;
 using Spectre.Console.Testing;
 
 namespace SongTagCli.Tests;
@@ -11,7 +12,7 @@ public class ReadCommandTests
     {
         // Given
         var app = new CommandAppTester();
-        app.SetDefaultCommand<ReadCommand>();
+        app.SetDefaultCommand<FileCommand<ReadSettings, ReadAction>>();
 
         // When
         var result = app.Run("./TestData/ReadTest/01 Song 1.mp3");

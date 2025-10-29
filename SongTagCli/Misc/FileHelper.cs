@@ -1,6 +1,6 @@
 namespace SongTagCli.Misc;
 
-public static class Helper
+public static class FileHelper
 {
     private static readonly HashSet<string> allowedExtensions = [".mp3", ".flac", ".ogg"];
 
