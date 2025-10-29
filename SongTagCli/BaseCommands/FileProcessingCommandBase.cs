@@ -95,7 +95,7 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
         return 0;
     }
 
-    protected bool Continue()
+    protected bool ContinuePrompt()
     {
         if (_allConfirmed || _isLast)
             return true;
@@ -132,7 +132,7 @@ public abstract class FileProcessingCommandBase<TSettings>(IAnsiConsole console)
         }
     }
 
-    protected bool Confirm()
+    protected bool ConfirmPrompt()
     {
         if (_allConfirmed)
             return true;

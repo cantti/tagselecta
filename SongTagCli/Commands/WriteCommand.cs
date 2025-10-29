@@ -70,7 +70,7 @@ public class WriteCommand(IAnsiConsole console) : FileProcessingCommandBase<Writ
         tags.DiscTotal = UpdateInt(settings.DiscTotal, tags.DiscTotal);
         tags.Comment = settings.Comment ?? tags.Comment;
         PrintTagData(tags);
-        if (Confirm())
+        if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
             return Task.FromResult(ResultStatus.Success);

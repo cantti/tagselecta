@@ -1,6 +1,5 @@
 using System.ComponentModel;
-using System.Text;
-using SmartFormat.Core.Settings;
+using System.Text.RegularExpressions;
 using SongTagCli.BaseCommands;
 using SongTagCli.Misc;
 using SongTagCli.Tagging;
@@ -52,6 +51,12 @@ public class RenameDirCommand(IAnsiConsole console)
             new TagTemplateContext(tagData, file)
         );
 
+        newName = newName
+            .Replace(Path.DirectorySeparatorChar.ToString(), "")
+            .Replace(Path.AltDirectorySeparatorChar.ToString(), "");
+
+        newName = Regex.Replace(newName, @"\s+", " ");
+
         var newPath = GetNewPath(dir, newName);
 
         if (newPath == dir)
@@ -76,7 +81,7 @@ public class RenameDirCommand(IAnsiConsole console)
             return Task.FromResult(ResultStatus.Success);
         }
 
-        if (Confirm())
+        if (ConfirmPrompt())
         {
             Directory.Move(dir, newPath);
             return Task.FromResult(ResultStatus.Success);

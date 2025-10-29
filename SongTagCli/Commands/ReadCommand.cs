@@ -16,13 +16,7 @@ public class ReadCommand(IAnsiConsole console) : FileProcessingCommandBase<ReadS
     {
         var tags = Tagger.ReadTags(file);
         PrintTagData(tags);
-        if (Continue())
-        {
-            return Task.FromResult(ResultStatus.Success);
-        }
-        else
-        {
-            return Task.FromResult(ResultStatus.Success);
-        }
+        ContinuePrompt();
+        return Task.FromResult(ResultStatus.Success);
     }
 }
