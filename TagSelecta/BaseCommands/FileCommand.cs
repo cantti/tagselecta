@@ -2,6 +2,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.Misc;
+using TagSelecta.Print;
 
 namespace TagSelecta.BaseCommands;
 

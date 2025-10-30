@@ -1,8 +1,8 @@
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
-using TagSelecta.Misc;
 using TagSelecta.Tagging;
 using Spectre.Console.Cli;
+using TagSelecta.Print;
 
 namespace TagSelecta.Actions;
 
