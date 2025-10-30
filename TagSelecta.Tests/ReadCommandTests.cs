@@ -1,6 +1,5 @@
 ﻿using TagSelecta.Actions;
 using TagSelecta.BaseCommands;
-using Spectre.Console.Testing;
 
 namespace TagSelecta.Tests;
 
@@ -11,8 +10,7 @@ public class ReadCommandTests
     public void ReadTest()
     {
         // Given
-        var app = new CommandAppTester();
-        app.SetDefaultCommand<FileCommand<ReadSettings, ReadAction>>();
+        var app = CommandAppFactory.CreateTestApp<FileCommand<ReadSettings>>();
 
         // When
         var result = app.Run("./TestData/ReadTest/01 Song 1.mp3");

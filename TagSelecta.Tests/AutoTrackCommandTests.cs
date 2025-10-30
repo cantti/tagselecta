@@ -1,6 +1,5 @@
 using TagSelecta.Actions;
 using TagSelecta.BaseCommands;
-using Spectre.Console.Testing;
 
 namespace TagSelecta.Tests;
 
@@ -11,8 +10,7 @@ public class AutoTrackCommandTests
     public void AutoTrackTest()
     {
         // Given
-        var app = new CommandAppTester();
-        app.SetDefaultCommand<FileCommand<AutoTrackSettings, AutoTrackAction>>();
+        var app = CommandAppFactory.CreateTestApp<FileCommand<AutoTrackSettings>>();
 
         // When
         var result = app.Run("./TestData/AutoTrackTest");

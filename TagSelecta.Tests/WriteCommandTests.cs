@@ -1,6 +1,5 @@
 using TagSelecta.Actions;
 using TagSelecta.BaseCommands;
-using Spectre.Console.Testing;
 
 namespace TagSelecta.Tests;
 
@@ -11,8 +10,7 @@ public class WriteCommandTests
     public void WriteTest()
     {
         // Given
-        var app = new CommandAppTester();
-        app.SetDefaultCommand<FileCommand<WriteSettings, WriteAction>>();
+        var app = CommandAppFactory.CreateTestApp<FileCommand<WriteSettings>>();
 
         // When
         var result = app.Run(

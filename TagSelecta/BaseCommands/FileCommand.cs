@@ -1,19 +1,18 @@
-using TagSelecta.Actions.Base;
-using TagSelecta.Misc;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.Actions.Base;
+using TagSelecta.Misc;
 
 namespace TagSelecta.BaseCommands;
 
-public sealed class FileCommand<TSettings, TAction>(IAnsiConsole console) : AsyncCommand<TSettings>
+public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettings> action)
+    : AsyncCommand<TSettings>
     where TSettings : FileSettings
-    where TAction : IAction<TSettings>, new()
 {
     private bool _allConfirmed;
     private bool _canceled;
     private bool _skipped;
     private bool _isLastFile;
-    readonly TAction _action = new();
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {
@@ -33,7 +32,7 @@ public sealed class FileCommand<TSettings, TAction>(IAnsiConsole console) : Asyn
             try
             {
                 console.PrintCurrentFile(file, index, files.Count);
-                _action.Execute(
+                action.Execute(
                     new ActionContext<TSettings>()
                     {
                         ConfirmPrompt = ConfirmPrompt,
