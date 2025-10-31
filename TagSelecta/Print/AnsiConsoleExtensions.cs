@@ -25,7 +25,7 @@ public static class AnsiConsoleExtensions
     {
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
         {
-            Modifiers = { JsonSerializationModifiers.ApplySkipEmptyOrZero },
+            // Modifiers = { JsonSerializationModifiers.ApplySkipEmptyOrZero },
         },
     };
 

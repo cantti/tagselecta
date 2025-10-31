@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace TagSelecta.Tagging;
 
 public static class Tagger
@@ -12,24 +14,11 @@ public static class Tagger
             throw new ActionException("Invalid file type");
         }
         var tag = tfile.Tag;
-        return new TagData
-        {
-            Album = tag.Album ?? "",
-            Artist = [.. tag.Performers],
-            AlbumArtist = [.. tag.AlbumArtists],
-            Title = tag.Title ?? "",
-            Genre = [.. tag.Genres],
-            Year = tag.Year,
-            Track = tag.Track,
-            TrackTotal = tag.TrackCount,
-            Disc = tag.Disc,
-            DiscTotal = tag.DiscCount,
-            Comment = tag.Comment ?? "",
-            Label = GetExtValue(tfile, "label"),
-            CatalogNumber = GetExtValue(tfile, "catalognumber"),
-            Pictures = [.. tag.Pictures],
-            Bpm = tag.BeatsPerMinute,
-        };
+        var mapper = new TagLibToTagDataMapper();
+        var tagData = mapper.Map(tag);
+        tagData.Label = GetExtValue(tfile, "label");
+        tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");
+        return tagData;
     }
 
     public static void WriteTags(string file, TagData tagData)
@@ -40,20 +29,10 @@ public static class Tagger
             throw new Exception("Invalid file type");
         }
 
+        // todo use mapperly
         var tag = tfile.Tag;
-        tag.Album = tagData.Album;
-        tag.Performers = [.. tagData.Artist];
-        tag.AlbumArtists = [.. tagData.AlbumArtist];
-        tag.Title = tagData.Title;
-        tag.Genres = [.. tagData.Genre];
-        tag.Year = tagData.Year;
-        tag.Track = tagData.Track;
-        tag.TrackCount = tagData.TrackTotal;
-        tag.Disc = tagData.Disc;
-        tag.DiscCount = tagData.DiscTotal;
-        tag.Comment = tagData.Comment;
-        tag.Pictures = [.. tagData.Pictures];
-        tag.BeatsPerMinute = tagData.Bpm;
+        var mapper = new TagDataToTagLibMapper();
+        mapper.Map(tagData, tag);
         SetExtValue(tfile, "label", tagData.Label);
         SetExtValue(tfile, "catalognumber", tagData.CatalogNumber);
         tfile.Save();
