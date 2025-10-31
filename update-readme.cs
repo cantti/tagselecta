@@ -12,14 +12,14 @@ Console.WriteLine("Updating README.md CLI help section...\n");
 // Define all CLI commands to document
 var commands = new (string DisplayName, string CommandLine)[]
 {
-    ("Help", "dotnet run --project ./TagSelecta -- --help"),
-    ("Read", "dotnet run --project ./TagSelecta -- read --help"),
-    ("Write", "dotnet run --project ./TagSelecta -- write --help"),
-    ("RenameDir", "dotnet run --project ./TagSelecta -- renamedir --help"),
-    ("RenameFile", "dotnet run --project ./TagSelecta -- renamefile --help"),
-    ("Clean", "dotnet run --project ./TagSelecta -- clean --help"),
-    ("FixAlbum", "dotnet run --project ./TagSelecta -- fixalbum --help"),
-    ("AutoTrack", "dotnet run --project ./TagSelecta -- autotrack --help"),
+    ("Help", "run --project ./TagSelecta -- --help"),
+    ("Read", "run --project ./TagSelecta -- read --help"),
+    ("Write", "run --project ./TagSelecta -- write --help"),
+    ("RenameDir", "run --project ./TagSelecta -- renamedir --help"),
+    ("RenameFile", "run --project ./TagSelecta -- renamefile --help"),
+    ("Clean", "run --project ./TagSelecta -- clean --help"),
+    ("FixAlbum", "run --project ./TagSelecta -- fixalbum --help"),
+    ("AutoTrack", "run --project ./TagSelecta -- autotrack --help"),
 };
 
 // Generate new content for README
@@ -27,7 +27,8 @@ var sb = new StringBuilder();
 foreach (var (name, commandLine) in commands)
 {
     Console.WriteLine($"Capturing help for {name}...");
-    string output = Run("dotnet", commandLine.Replace("dotnet ", "")); // split below
+    string output = Run("dotnet", commandLine);
+    output = output.Replace("tagselecta.dll", "tagselecta");
     sb.AppendLine($"**{name} command**\n");
     sb.AppendLine("```");
     sb.AppendLine(output);
