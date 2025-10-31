@@ -13,67 +13,77 @@ The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spect
 
 Download the latest release from the [Releases page](https://github.com/cantti/audio-tag-helper/releases).
 
+## Features
+
+- Works with both files and directories (recursively) as input
+- Read command to read tags
+- Write command to update tags
+- Clean command to remove unsupported tags
+- Fix album command to set album name and album artists to the same value to all files in the same directory.
+- Autotrack command
+
 ## Usage
 
 Each command provides its own help information.  
 To display all available commands and options, run:
 
 ```bash
-./TagSelecta -h
-```
-
-### Example Output
-
-Help output:
-
-```bash
-./TagSelecta -h
+./tagselecta -h
 ```
 
 ```
 USAGE:
-    TagSelecta [OPTIONS] <COMMAND>
+    tagselecta.dll [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    read <path>         Read tags
-    write <path>        Write tags
-    clean <path>        Remove unsupported tags
-    fixalbum <path>     Set album name and album artist to the same value for all files in the directory
-    autotrack <path>    Automatically assign track numbers to files
+    read <path>          Read tags
+    write <path>         Write tags
+    clean <path>         Remove unsupported tags
+    fixalbum <path>      Set album name and album artists to the same value to all files in the same directory
+    autotrack <path>     Auto track
+    renamedir <path>     Rename directories
+    renamefile <path>    Rename files
 ```
 
 Read command output:
 
 ```
-./TagSelecta read song.mp3
+./tagselecta read song.mp3
 ```
 
 ```
 1 file found.
-> (1/1) /home/kirill/code/audio-tag-cli/tmp/01 SampleAlbum/01 Song 1.mp3
-╭────────────────┬─────────────╮
-│ Field          │ Value       │
-├────────────────┼─────────────┤
-│ Album Artist   │ Test Artist │
-│ Artist         │ Test Artist │
-│ Album          │ Test Album  │
-│ Title          │ Song 1      │
-│ Genre          │ Rock        │
-│                │ Pop         │
-│ Year           │ 1990        │
-│ Track          │ 1           │
-│ Track Total    │ 3           │
-│ Disc           │ 1           │
-│ Disc Total     │ 1           │
-│ Label          │ —           │
-│ Catalog Number │ —           │
-│ Comments       │ Test        │
-│ Pictures       │ —           │
-╰────────────────┴─────────────╯
-Finished! Processed 1 files, 0 failed.
+> (1/1) /home/kirill/code/songtagcli/TestData/01 SampleAlbum/01 Song 1.mp3
+{
+   "Artist": [
+      "Test Artist"
+   ],
+   "AlbumArtist": [
+      "Test Album Artist"
+   ],
+   "Album": "Test Album",
+   "Title": "Song 1",
+   "Genre": [
+      "Rock",
+      "Pop"
+   ],
+   "Year": 1990,
+   "Track": 1,
+   "TrackTotal": 3,
+   "Disc": 1,
+   "DiscTotal": 1,
+   "Comment": "Test",
+   "Label": "",
+   "CatalogNumber": "",
+   "Bpm": 0,
+   "Pictures": [
+   ]
+}
+Status: success!
+Finished! Processed 1 files, 0 skipped, 0 failed.```
 ```
 
 ## Notes
