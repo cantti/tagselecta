@@ -43,19 +43,19 @@ jobs:
             -p:PublishSingleFile=true \
             -p:IncludeNativeLibrariesForSelfExtract=true \
             -o artifacts/${{ matrix.rid }} \
-            SongTagCli
+            TagSelecta
 
       - name: Zip output
         run: |
           cd artifacts/${{ matrix.rid }}
-          zip -r ../songtagcli-${{ matrix.rid }}.zip .
+          zip -r ../tagselecta-${{ matrix.rid }}.zip .
           cd ../..
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: songtagcli-${{ matrix.rid }}
-          path: artifacts/songtagcli-${{ matrix.rid }}.zip
+          name: tagselecta-${{ matrix.rid }}
+          path: artifacts/tagselecta-${{ matrix.rid }}.zip
 
   release:
     needs: build-and-release

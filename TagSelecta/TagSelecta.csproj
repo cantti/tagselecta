@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <NoWarn>$(NoWarn);CA2254</NoWarn>
     <PublishSingleFile>true</PublishSingleFile>
-  </PropertyGroup>
+    <AssemblyName>tagselecta</AssemblyName>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10"/>
     <PackageReference Include="Riok.Mapperly" Version="4.3.0"/>
