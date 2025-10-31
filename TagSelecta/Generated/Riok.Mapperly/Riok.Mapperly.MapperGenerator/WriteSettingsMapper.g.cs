@@ -5,7 +5,7 @@ namespace TagSelecta.Actions
     public partial class WriteSettingsMapper
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        public partial void FromSettings(global::TagSelecta.Actions.WriteSettings settings, global::TagSelecta.Tagging.TagData tagData)
+        public partial void Map(global::TagSelecta.Actions.WriteSettings settings, global::TagSelecta.Tagging.TagData tagData)
         {
             if (settings.Artist != null)
             {

@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Riok.Mapperly.Abstractions;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
@@ -81,22 +82,24 @@ public class WriteAction : FileAction<WriteSettings>
 {
     public override void Execute(ActionContext<WriteSettings> context)
     {
-        // todo find better way
-        // reflection?
-        context.Settings.Artist =
-            context.Settings.Artist?.First() == "" ? null : context.Settings.Artist;
-        context.Settings.AlbumArtist =
-            context.Settings.AlbumArtist?.First() == "" ? null : context.Settings.AlbumArtist;
-        context.Settings.Genre =
-            context.Settings.Genre?.First() == "" ? null : context.Settings.Genre;
-        context.Settings.Composers =
-            context.Settings.Composers?.First() == "" ? null : context.Settings.Composers;
+        // convert arrays with empty first element to empty arrays
+        foreach (var prop in typeof(WriteSettings).GetProperties())
+        {
+            if (prop.PropertyType == typeof(string[]))
+            {
+                var value = (string[]?)prop.GetValue(context.Settings);
+                if (value != null && value.First() == "")
+                {
+                    prop.SetValue(context.Settings, Array.Empty<string>());
+                }
+            }
+        }
 
         var mapper = new WriteSettingsMapper();
 
         var tags = Tagger.ReadTags(context.File);
 
-        mapper.FromSettings(context.Settings, tags);
+        mapper.Map(context.Settings, tags);
 
         context.Console.PrintTagData(tags);
 
@@ -139,5 +142,5 @@ public partial class WriteSettingsMapper
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumPeak))]
     [MapperIgnoreTarget(nameof(TagData.Pictures))]
     [MapperIgnoreTarget(nameof(TagData.AmazonId))]
-    public partial void FromSettings(WriteSettings settings, TagData tagData);
+    public partial void Map(WriteSettings settings, TagData tagData);
 }
