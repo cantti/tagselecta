@@ -1,0 +1,47 @@
+name: Update README with CLI help
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'TagSelecta/**'
+      - 'update-readme.cs'
+      - '.github/workflows/update-readme.yml'
+  workflow_dispatch:
+
+jobs:
+  update-readme: runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run README update script
+        run: |
+          ./update-readme.cs
+
+      - name: Check if README changed
+        id: git_diff
+        run: |
+          if git diff --quiet README.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.git_diff.outputs.changed == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: auto-update README CLI help [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
