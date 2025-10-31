@@ -32,7 +32,7 @@ The program support multiple commands:
 
 ```
 USAGE:
-    tagselecta.dll [OPTIONS] <COMMAND>
+    tagselecta [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -55,7 +55,7 @@ DESCRIPTION:
 Read tags
 
 USAGE:
-    tagselecta.dll read <path> [OPTIONS]
+    tagselecta read <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -71,7 +71,7 @@ DESCRIPTION:
 Write tags
 
 USAGE:
-    tagselecta.dll write <path> [OPTIONS]
+    tagselecta write <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -109,7 +109,7 @@ DESCRIPTION:
 Rename directories
 
 USAGE:
-    tagselecta.dll renamedir <path> [OPTIONS]
+    tagselecta renamedir <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -127,7 +127,7 @@ DESCRIPTION:
 Rename files
 
 USAGE:
-    tagselecta.dll renamefile <path> [OPTIONS]
+    tagselecta renamefile <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -145,7 +145,7 @@ DESCRIPTION:
 Remove unsupported tags
 
 USAGE:
-    tagselecta.dll clean <path> [OPTIONS]
+    tagselecta clean <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -162,7 +162,7 @@ Set album name and album artists to the same value to all files in the same
 directory
 
 USAGE:
-    tagselecta.dll fixalbum <path> [OPTIONS]
+    tagselecta fixalbum <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -178,7 +178,7 @@ DESCRIPTION:
 Auto track
 
 USAGE:
-    tagselecta.dll autotrack <path> [OPTIONS]
+    tagselecta autotrack <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
