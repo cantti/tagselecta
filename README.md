@@ -38,12 +38,13 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    read <path>          Read tags                                                                            
-    write <path>         Write tags                                                                           
-    clean <path>         Remove unsupported tags                                                              
-    fixalbum <path>      Set album name and album artists to the same value to all files in the same directory
-    autotrack <path>     Auto track                                                                           
-    renamedir <path>     Rename directories                                                                   
+    read <path>          Read tags                                              
+    write <path>         Write tags                                             
+    clean <path>         Remove unsupported tags                                
+    fixalbum <path>      Set album name and album artists to the same value to  
+                         all files in the same directory                        
+    autotrack <path>     Auto track                                             
+    renamedir <path>     Rename directories                                     
     renamefile <path>    Rename files
 ```
 
@@ -157,7 +158,8 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Set album name and album artists to the same value to all files in the same directory
+Set album name and album artists to the same value to all files in the same 
+directory
 
 USAGE:
     tagselecta.dll fixalbum <path> [OPTIONS]
