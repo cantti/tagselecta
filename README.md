@@ -26,9 +26,10 @@ Download the latest release from the [Releases page](https://github.com/cantti/a
 
 The program support multiple commands:
 
-**General usage**
+<!-- start:cli-help -->
 
-<!-- start:help -->
+**Help command**
+
 ```
 USAGE:
     tagselecta.dll [OPTIONS] <COMMAND>
@@ -45,17 +46,15 @@ COMMANDS:
     renamedir <path>     Rename directories                                                                   
     renamefile <path>    Rename files
 ```
-<!-- end:help -->
 
-**Read command help**
+**Read command**
 
-<!-- start:read -->
 ```
 DESCRIPTION:
 Read tags
 
 USAGE:
-    tagselecta.dll [4mread[0m <path> [OPTIONS]
+    tagselecta.dll read <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -63,7 +62,132 @@ ARGUMENTS:
 OPTIONS:
     -h, --help    Prints help information
 ```
-<!-- end:read -->
+
+**Write command**
+
+```
+DESCRIPTION:
+Write tags
+
+USAGE:
+    tagselecta.dll write <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help           Prints help information
+    -g, --genre                                 
+    -a, --artist                                
+    -A, --albumartist                           
+    -t, --title                                 
+        --subtitle                              
+    -l, --album                                 
+    -y, --year                                  
+    -n, --track                                 
+    -N, --tracktotal                            
+    -c, --comment                               
+    -d, --disc                                  
+    -D, --disctotal                             
+    -L, --label                                 
+    -C, --catalogno                             
+        --bpm                                   
+        --description                           
+        --composers                             
+        --conductor                             
+        --isrc                                  
+        --lyrics                                
+        --publisher                             
+        --copyright
+```
+
+**RenameDir command**
+
+```
+DESCRIPTION:
+Rename directories
+
+USAGE:
+    tagselecta.dll renamedir <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information                        
+    -t, --template    Template. For example: {{ year }} - {{ album }}
+        --dry-run
+```
+
+**RenameFile command**
+
+```
+DESCRIPTION:
+Rename files
+
+USAGE:
+    tagselecta.dll renamefile <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information                        
+    -t, --template    Template. For example: {{ year }} - {{ album }}
+        --dry-run
+```
+
+**Clean command**
+
+```
+DESCRIPTION:
+Remove unsupported tags
+
+USAGE:
+    tagselecta.dll clean <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help    Prints help information
+```
+
+**FixAlbum command**
+
+```
+DESCRIPTION:
+Set album name and album artists to the same value to all files in the same directory
+
+USAGE:
+    tagselecta.dll fixalbum <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help    Prints help information
+```
+
+**AutoTrack command**
+
+```
+DESCRIPTION:
+Auto track
+
+USAGE:
+    tagselecta.dll autotrack <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information  
+        --keepdisk    Remove Disc and DiscTotal
+```
+
+
+<!-- end:cli-help -->
 
 ## Notes
 
