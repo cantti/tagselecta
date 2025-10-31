@@ -1,51 +1,66 @@
 #!/usr/bin/dotnet run
 using System.Diagnostics;
 
-string readmePath = "README.md";
-string cliCommand = "dotnet run --project ./TagSelecta -- --help"; // Change to your CLI command
+const string readmePath = "README.md";
 
-Console.WriteLine("Capturing CLI help output...");
-string helpOutput = Run(cliCommand);
+Console.WriteLine("📘 Updating README.md CLI sections...\n");
 
-Console.WriteLine("Reading README.md...");
-string readme = File.ReadAllText(readmePath);
+UpdateReadmeSection("help", "dotnet", "run --project ./TagSelecta -- --help");
+UpdateReadmeSection("read", "dotnet", "run --project ./TagSelecta -- read --help");
 
-const string START = "<!-- CLI_HELP_START -->";
-const string END = "<!-- CLI_HELP_END -->";
+Console.WriteLine("\n✅ All README sections updated successfully!");
 
-if (!readme.Contains(START) || !readme.Contains(END))
+static void UpdateReadmeSection(string sectionName, string cmd, string args)
 {
-    Console.WriteLine("⚠️  Markers not found, adding them.");
-    readme += $"\n\n## Usage\n{START}\n{END}\n";
+    string start = $"<!-- start:{sectionName} -->";
+    string end = $"<!-- end:{sectionName} -->";
+
+    Console.WriteLine($"➡️  Updating section: {sectionName}");
+
+    string helpOutput = Run(cmd, args);
+
+    string readme = File.ReadAllText(readmePath);
+
+    // Add section if not present
+    if (!readme.Contains(start) || !readme.Contains(end))
+    {
+        Console.WriteLine($"   ⚠️  Markers for '{sectionName}' not found. Adding them.");
+        readme += $"\n\n## {sectionName}\n{start}\n{end}\n";
+    }
+
+    // Split file into before/after the markers
+    string before = readme.Split(start)[0];
+    string after = readme.Split(end)[1];
+
+    // Build new README content
+    string updated = $"{before}{start}\n```\n{helpOutput}\n```\n{end}{after}";
+
+    File.WriteAllText(readmePath, updated);
+    Console.WriteLine($"   ✅ Section '{sectionName}' updated.\n");
 }
 
-string before = readme.Split(START)[0];
-string after = readme.Split(END)[1];
-
-string updated = $"{before}{START}\n```\n{helpOutput}\n```\n{END}{after}";
-
-File.WriteAllText(readmePath, updated);
-
-Console.WriteLine("✅ README.md updated successfully!");
-
-static string Run(string cmd)
+static string Run(string cmd, string args)
 {
     var psi = new ProcessStartInfo
     {
-        FileName = "bash",
-        Arguments = $"-c \"{cmd}\"",
+        FileName = cmd,
+        Arguments = args,
         RedirectStandardOutput = true,
         RedirectStandardError = true,
         UseShellExecute = false,
         CreateNoWindow = true,
     };
-    using var p = Process.Start(psi);
-    string output = p!.StandardOutput.ReadToEnd();
+
+    psi.Environment["NO_COLOR"] = "1";
+    psi.Environment["DOTNET_ENVIRONMENT"] = "Production";
+
+    using var p = Process.Start(psi)!;
+    string output = p.StandardOutput.ReadToEnd();
     string err = p.StandardError.ReadToEnd();
     p.WaitForExit();
 
     if (p.ExitCode != 0)
-        throw new Exception($"Command failed: {cmd}\n{err}");
+        throw new Exception($"Command failed: {cmd} {args}\n{err}");
 
     return output.Trim();
 }

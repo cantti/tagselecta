@@ -24,24 +24,46 @@ Download the latest release from the [Releases page](https://github.com/cantti/a
 
 ## Usage
 
-<!-- CLI_HELP_START -->
-```
-[38;5;11mUSAGE:[0m
-    tagselecta.dll [38;5;8m[OPTIONS][0m [38;5;14m<COMMAND>[0m
+The program support multiple commands:
 
-[38;5;11mOPTIONS:[0m
+**General usage**
+
+<!-- start:help -->
+```
+USAGE:
+    tagselecta.dll [OPTIONS] <COMMAND>
+
+OPTIONS:
     -h, --help    Prints help information
 
-[38;5;11mCOMMANDS:[0m
-    [38;5;7mread[0m [38;5;7m<path>[0m          Read tags                                                                            
-    [38;5;7mwrite[0m [38;5;7m<path>[0m         Write tags                                                                           
-    [38;5;7mclean[0m [38;5;7m<path>[0m         Remove unsupported tags                                                              
-    [38;5;7mfixalbum[0m [38;5;7m<path>[0m      Set album name and album artists to the same value to all files in the same directory
-    [38;5;7mautotrack[0m [38;5;7m<path>[0m     Auto track                                                                           
-    [38;5;7mrenamedir[0m [38;5;7m<path>[0m     Rename directories                                                                   
-    [38;5;7mrenamefile[0m [38;5;7m<path>[0m    Rename files
+COMMANDS:
+    read <path>          Read tags                                                                            
+    write <path>         Write tags                                                                           
+    clean <path>         Remove unsupported tags                                                              
+    fixalbum <path>      Set album name and album artists to the same value to all files in the same directory
+    autotrack <path>     Auto track                                                                           
+    renamedir <path>     Rename directories                                                                   
+    renamefile <path>    Rename files
 ```
-<!-- CLI_HELP_END -->
+<!-- end:help -->
+
+**Read command help**
+
+<!-- start:read -->
+```
+DESCRIPTION:
+Read tags
+
+USAGE:
+    tagselecta.dll [4mread[0m <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help    Prints help information
+```
+<!-- end:read -->
 
 ## Notes
 
