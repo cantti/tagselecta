@@ -10,7 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-readme: runs-on: ubuntu-latest
+  update-readme: 
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
