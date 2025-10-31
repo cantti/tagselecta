@@ -1,8 +1,8 @@
+using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
-using TagSelecta.Tagging;
-using Spectre.Console.Cli;
 using TagSelecta.Print;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Actions;
 
@@ -48,9 +48,9 @@ public class WriteSettings : FileSettings
     public string? CatalogNumber { get; set; }
 }
 
-public class WriteAction : IAction<WriteSettings>
+public class WriteAction : FileAction<WriteSettings>
 {
-    public void Execute(ActionContext<WriteSettings> context)
+    public override void Execute(ActionContext<WriteSettings> context)
     {
         var tags = Tagger.ReadTags(context.File);
         tags.Genre = UpdateList(context.Settings.Genre, tags.Genre);

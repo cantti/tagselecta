@@ -9,7 +9,7 @@ namespace TagSelecta.Actions;
 
 public class FixAlbumSettings : FileSettings { }
 
-public class FixAlbumAction : IAction<FixAlbumSettings>
+public class FixAlbumAction : FileAction<FixAlbumSettings>
 {
     private enum FixType
     {
@@ -29,7 +29,7 @@ public class FixAlbumAction : IAction<FixAlbumSettings>
 
     private readonly List<Album> _albums = [];
 
-    public void Execute(ActionContext<FixAlbumSettings> context)
+    public override void Execute(ActionContext<FixAlbumSettings> context)
     {
         var dir = Directory.GetParent(context.File)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);

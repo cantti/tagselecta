@@ -14,9 +14,9 @@ public class AutoTrackSettings : FileSettings
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackAction : IAction<AutoTrackSettings>
+public class AutoTrackAction : FileAction<AutoTrackSettings>
 {
-    public void Execute(ActionContext<AutoTrackSettings> context)
+    public override void Execute(ActionContext<AutoTrackSettings> context)
     {
         var dir = Directory.GetParent(context.File)?.FullName;
         var filesInDir = context

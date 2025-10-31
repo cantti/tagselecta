@@ -8,13 +8,13 @@ public static class DependencyInjectionConfig
 {
     private static void AddActions(IServiceCollection services)
     {
-        services.AddTransient<IAction<ReadSettings>, ReadAction>();
-        services.AddTransient<IAction<AutoTrackSettings>, AutoTrackAction>();
-        services.AddTransient<IAction<CleanSettings>, CleanAction>();
-        services.AddTransient<IAction<FixAlbumSettings>, FixAlbumAction>();
-        services.AddTransient<IAction<RenameDirSettings>, RenameDirAction>();
-        services.AddTransient<IAction<RenameFileSettings>, RenameFileAction>();
-        services.AddTransient<IAction<WriteSettings>, WriteAction>();
+        services.AddTransient<FileAction<ReadSettings>, ReadAction>();
+        services.AddTransient<FileAction<AutoTrackSettings>, AutoTrackAction>();
+        services.AddTransient<FileAction<CleanSettings>, CleanAction>();
+        services.AddTransient<FileAction<FixAlbumSettings>, FixAlbumAction>();
+        services.AddTransient<FileAction<RenameDirSettings>, RenameDirAction>();
+        services.AddTransient<FileAction<RenameFileSettings>, RenameFileAction>();
+        services.AddTransient<FileAction<WriteSettings>, WriteAction>();
     }
 
     public static TypeRegistrar Configure()

@@ -29,4 +29,6 @@ public class TagData
     public string CatalogNumber { get; set; } = "";
 
     public List<TagLib.IPicture> Pictures { get; set; } = [];
+
+    public uint Bpm { get; set; }
 }

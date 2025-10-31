@@ -1,12 +1,12 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using Spectre.Console;
+using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Misc;
 using TagSelecta.Tagging;
 using TagSelecta.TagTemplate;
-using Spectre.Console;
-using Spectre.Console.Cli;
 
 namespace TagSelecta.Actions;
 
@@ -29,11 +29,11 @@ public class RenameDirSettings : FileSettings
     }
 }
 
-public class RenameDirAction : IAction<RenameDirSettings>
+public class RenameDirAction : FileAction<RenameDirSettings>
 {
     private readonly List<string> _renamed = [];
 
-    public void Execute(ActionContext<RenameDirSettings> context)
+    public override void Execute(ActionContext<RenameDirSettings> context)
     {
         var dir = Path.GetDirectoryName(context.File)!;
         if (_renamed.Contains(dir))

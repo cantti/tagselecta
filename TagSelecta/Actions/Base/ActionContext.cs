@@ -10,5 +10,4 @@ public class ActionContext<TSettings>
     public required Func<bool> ConfirmPrompt { get; init; }
     public required IAnsiConsole Console { get; init; }
     public required Action Skip { get; init; }
-    public required Action ContinuePrompt { get; init; }
 }

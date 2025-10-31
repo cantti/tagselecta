@@ -6,9 +6,9 @@ namespace TagSelecta.Actions;
 
 public class CleanSettings : FileSettings { }
 
-public class CleanAction : IAction<CleanSettings>
+public class CleanAction : FileAction<CleanSettings>
 {
-    public void Execute(ActionContext<CleanSettings> context)
+    public override void Execute(ActionContext<CleanSettings> context)
     {
         var tags = Tagger.ReadTags(context.File);
         Tagger.RemoveTags(context.File);

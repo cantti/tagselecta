@@ -6,16 +6,20 @@ using TagSelecta.Print;
 
 namespace TagSelecta.BaseCommands;
 
-public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettings> action)
+public sealed class FileCommand<TSettings>(IAnsiConsole console, FileAction<TSettings> action)
     : AsyncCommand<TSettings>
     where TSettings : FileSettings
 {
     private bool _isLastFile;
     private bool _allConfirmed;
-    private ExecuteStatus _executeStatus;
+    private bool _cancelRequested;
+    private bool _skipped;
+    public ActionConfig _config = new();
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {
+        action.Configure(_config);
+
         var files = FileHelper.GetAllAudioFiles(settings.Path, true);
 
         console.MarkupLine($"{files.Count} {(files.Count == 1 ? "file" : "files")} found.");
@@ -27,8 +31,8 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
 
         foreach (var file in files)
         {
-            _executeStatus = ExecuteStatus.Success;
             index++;
+            _skipped = false;
             _isLastFile = index == files.Count - 1;
             try
             {
@@ -37,7 +41,6 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
                     new ActionContext<TSettings>()
                     {
                         ConfirmPrompt = ConfirmPrompt,
-                        ContinuePrompt = ContinuePrompt,
                         Skip = Skip,
                         File = file,
                         Files = files,
@@ -53,17 +56,12 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
                 console.WriteException(ex);
                 continue;
             }
-            if (_executeStatus == ExecuteStatus.CancelRequested)
+            if (_cancelRequested)
             {
+                skipCount = files.Count - index;
                 break;
             }
-            else if (_executeStatus == ExecuteStatus.DoNotContinueRequested)
-            {
-                successCount++;
-                skipCount = files.Count - index - 1;
-                break;
-            }
-            else if (_executeStatus == ExecuteStatus.Skipped)
+            else if (_skipped)
             {
                 skipCount++;
                 console.MarkupLine("Status: skipped!");
@@ -72,6 +70,11 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
             {
                 successCount++;
                 console.MarkupLine("Status: success!");
+                if (_config.ShowContinue && !ContinuePrompt())
+                {
+                    skipCount = files.Count - index - 1;
+                    break;
+                }
             }
         }
 
@@ -84,7 +87,7 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
 
     public void Skip()
     {
-        _executeStatus = ExecuteStatus.Skipped;
+        _skipped = true;
     }
 
     bool ConfirmPrompt()
@@ -107,7 +110,7 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
 
         if (confirmation == "n")
         {
-            _executeStatus = ExecuteStatus.Skipped;
+            _skipped = true;
         }
 
         if (confirmation == "a")
@@ -118,24 +121,21 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
 
         if (confirmation == "c")
         {
-            _executeStatus = ExecuteStatus.CancelRequested;
+            _cancelRequested = true;
         }
 
         return confirmed;
     }
 
-    void ContinuePrompt()
+    private bool ContinuePrompt()
     {
         if (_allConfirmed || _isLastFile)
-            return;
+            return false;
 
         var confirmation = console.Prompt(
             new TextPrompt<string>("Continue?").AddChoices(["y", "n"]).DefaultValue("y")
         );
 
-        if (confirmation == "n")
-        {
-            _executeStatus = ExecuteStatus.DoNotContinueRequested;
-        }
+        return confirmation == "y";
     }
 }

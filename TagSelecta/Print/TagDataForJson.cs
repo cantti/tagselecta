@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 using TagLib;
 using TagSelecta.Tagging;
 
@@ -21,15 +23,23 @@ public class TagDataForJson(TagData t)
 
     public uint TrackTotal => t.TrackTotal;
 
+    [SkipEmptyOrZero]
     public uint Disc => t.Disc;
 
+    [SkipEmptyOrZero]
     public uint DiscTotal => t.DiscTotal;
 
+    [SkipEmptyOrZero]
     public string Comment => t.Comment;
 
+    [SkipEmptyOrZero]
     public string Label => t.Label;
 
+    [SkipEmptyOrZero]
     public string CatalogNumber => t.CatalogNumber;
+
+    [SkipEmptyOrZero]
+    public uint Bpm => t.Bpm;
 
     public List<PictureDataForJson> Pictures =>
         [.. t.Pictures.Select(x => new PictureDataForJson(x))];

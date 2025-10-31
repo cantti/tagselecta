@@ -30,6 +30,7 @@ public static class Tagger
             Label = GetExtValue(tfile, "label"),
             CatalogNumber = GetExtValue(tfile, "catalognumber"),
             Pictures = [.. tag.Pictures],
+            Bpm = tag.BeatsPerMinute,
         };
     }
 
@@ -54,6 +55,7 @@ public static class Tagger
         commonTags.DiscCount = tagData.DiscTotal;
         commonTags.Comment = tagData.Comment;
         commonTags.Pictures = [.. tagData.Pictures];
+        commonTags.BeatsPerMinute = tagData.Bpm;
         SetExtValue(tfile, "label", tagData.Label);
         SetExtValue(tfile, "catalognumber", tagData.CatalogNumber);
         tfile.Save();
