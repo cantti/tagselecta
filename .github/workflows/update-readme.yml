@@ -45,6 +45,7 @@ jobs:
       - name: Commit and push changes
         if: steps.git_diff.outputs.changed == 'true'
         run: |
+          git switch main
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
