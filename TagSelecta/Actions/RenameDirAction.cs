@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;

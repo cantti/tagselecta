@@ -1,3 +1,4 @@
+using System.Reflection;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
@@ -46,6 +47,9 @@ public class WriteSettings : FileSettings
 
     [CommandOption("--catalogno|-C")]
     public string? CatalogNumber { get; set; }
+
+    [CommandOption("--bpm")]
+    public uint? Bpm { get; set; }
 }
 
 public class WriteAction : FileAction<WriteSettings>
@@ -53,51 +57,41 @@ public class WriteAction : FileAction<WriteSettings>
     public override void Execute(ActionContext<WriteSettings> context)
     {
         var tags = Tagger.ReadTags(context.File);
-        tags.Genre = UpdateList(context.Settings.Genre, tags.Genre);
-        tags.Artist = UpdateList(context.Settings.Artist, tags.Artist);
-        tags.AlbumArtist = UpdateList(context.Settings.AlbumArtist, tags.AlbumArtist);
-        tags.Title = UpdateString(context.Settings.Title, tags.Title);
-        tags.Album = UpdateString(context.Settings.Album, tags.Album);
-        tags.Year = UpdateInt(context.Settings.Year, tags.Year);
-        tags.Label = UpdateString(context.Settings.Label, tags.Label);
-        tags.CatalogNumber = UpdateString(context.Settings.CatalogNumber, tags.CatalogNumber);
-        tags.Track = UpdateInt(context.Settings.Track, tags.Track);
-        tags.TrackTotal = UpdateInt(context.Settings.TrackTotal, tags.TrackTotal);
-        tags.Disc = UpdateInt(context.Settings.Disc, tags.Disc);
-        tags.DiscTotal = UpdateInt(context.Settings.DiscTotal, tags.DiscTotal);
-        tags.Comment = context.Settings.Comment ?? tags.Comment;
+
+        var tagProps = tags.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        var settingsProps = context
+            .Settings.GetType()
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var tagProp in tagProps)
+        {
+            var settingProp = settingsProps.FirstOrDefault(p => p.Name == tagProp.Name);
+
+            if (settingProp == null)
+                continue;
+
+            var settingValue = settingProp.GetValue(context.Settings);
+
+            if (settingValue == null)
+                continue;
+
+            if (settingValue is string[] array)
+            {
+                settingValue = array.Where(x => !string.IsNullOrEmpty(x)).ToList();
+            }
+            else if (settingValue is string s)
+            {
+                settingValue = s.Trim();
+            }
+            tagProp.SetValue(tags, settingValue);
+        }
         context.Console.PrintTagData(tags);
+
         if (context.ConfirmPrompt())
         {
             Tagger.WriteTags(context.File, tags);
             return;
         }
-    }
-
-    private static string UpdateString(string? newVal, string oldVal)
-    {
-        if (newVal != null)
-        {
-            return newVal.Trim();
-        }
-        return oldVal;
-    }
-
-    private static uint UpdateInt(uint? newVal, uint oldVal)
-    {
-        if (newVal != null)
-        {
-            return newVal.Value;
-        }
-        return oldVal;
-    }
-
-    private static List<string> UpdateList(IEnumerable<string>? newList, List<string> currentList)
-    {
-        if (newList != null)
-        {
-            return [.. newList.Where(x => !string.IsNullOrEmpty(x))];
-        }
-        return currentList;
     }
 }

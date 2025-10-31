@@ -1,5 +1,3 @@
-using TagSelecta.Actions.Base;
-
 namespace TagSelecta.Tagging;
 
 public static class Tagger
@@ -42,20 +40,20 @@ public static class Tagger
             throw new Exception("Invalid file type");
         }
 
-        var commonTags = tfile.Tag;
-        commonTags.Album = tagData.Album;
-        commonTags.Performers = [.. tagData.Artist];
-        commonTags.AlbumArtists = [.. tagData.AlbumArtist];
-        commonTags.Title = tagData.Title;
-        commonTags.Genres = [.. tagData.Genre];
-        commonTags.Year = tagData.Year;
-        commonTags.Track = tagData.Track;
-        commonTags.TrackCount = tagData.TrackTotal;
-        commonTags.Disc = tagData.Disc;
-        commonTags.DiscCount = tagData.DiscTotal;
-        commonTags.Comment = tagData.Comment;
-        commonTags.Pictures = [.. tagData.Pictures];
-        commonTags.BeatsPerMinute = tagData.Bpm;
+        var tag = tfile.Tag;
+        tag.Album = tagData.Album;
+        tag.Performers = [.. tagData.Artist];
+        tag.AlbumArtists = [.. tagData.AlbumArtist];
+        tag.Title = tagData.Title;
+        tag.Genres = [.. tagData.Genre];
+        tag.Year = tagData.Year;
+        tag.Track = tagData.Track;
+        tag.TrackCount = tagData.TrackTotal;
+        tag.Disc = tagData.Disc;
+        tag.DiscCount = tagData.DiscTotal;
+        tag.Comment = tagData.Comment;
+        tag.Pictures = [.. tagData.Pictures];
+        tag.BeatsPerMinute = tagData.Bpm;
         SetExtValue(tfile, "label", tagData.Label);
         SetExtValue(tfile, "catalognumber", tagData.CatalogNumber);
         tfile.Save();
