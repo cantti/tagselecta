@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TagSelecta.Actions;
 using TagSelecta.Actions.Base;
-using TagSelecta.Infrastructure;
 
 namespace TagSelecta.DependencyInjection;
 

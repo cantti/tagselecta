@@ -42,14 +42,14 @@ public class WriteCommandTests
         // Then
         Assert.Equal(0, result.ExitCode);
         Assert.Matches(@"Artist\W+New Test Artist", result.Output);
-        Assert.Matches(@"Album Artist\W+New Test Album Artist", result.Output);
+        Assert.Matches(@"AlbumArtist\W+New Test Album Artist", result.Output);
         Assert.Matches(@"Title\W+New Song 1", result.Output);
         Assert.Matches(@"Album\W+New Test Album", result.Output);
         Assert.Matches(@"Genre\W+Reggae\W+Dub", result.Output);
         Assert.Matches(@"Year\W+2000", result.Output);
         Assert.Matches(@"Track\W+10", result.Output);
-        Assert.Matches(@"Track Total\W+20", result.Output);
+        Assert.Matches(@"TrackTotal\W+20", result.Output);
         Assert.Matches(@"Disc\W+30", result.Output);
-        Assert.Matches(@"Disc Total\W+40", result.Output);
+        Assert.Matches(@"DiscTotal\W+40", result.Output);
     }
 }

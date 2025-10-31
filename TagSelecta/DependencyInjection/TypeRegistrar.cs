@@ -1,17 +1,11 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Infrastructure;
+namespace TagSelecta.DependencyInjection;
 
-public sealed class TypeRegistrar : ITypeRegistrar
+public sealed class TypeRegistrar(IServiceCollection builder) : ITypeRegistrar
 {
-    private readonly IServiceCollection _builder;
-
-    public TypeRegistrar(IServiceCollection builder)
-    {
-        _builder = builder;
-    }
+    private readonly IServiceCollection _builder = builder;
 
     public ITypeResolver Build()
     {
@@ -30,11 +24,7 @@ public sealed class TypeRegistrar : ITypeRegistrar
 
     public void RegisterLazy(Type service, Func<object> func)
     {
-        if (func is null)
-        {
-            throw new ArgumentNullException(nameof(func));
-        }
-
+        ArgumentNullException.ThrowIfNull(func);
         _builder.AddSingleton(service, (provider) => func());
     }
 }

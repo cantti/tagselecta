@@ -1,14 +1,13 @@
-using System;
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Infrastructure;
+namespace TagSelecta.DependencyInjection;
 
 public sealed class TypeResolver(IServiceProvider provider) : ITypeResolver, IDisposable
 {
     private readonly IServiceProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
 
-    public object Resolve(Type type)
+    public object? Resolve(Type? type)
     {
         if (type == null)
         {

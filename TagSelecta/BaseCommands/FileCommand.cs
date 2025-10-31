@@ -10,10 +10,9 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
     : AsyncCommand<TSettings>
     where TSettings : FileSettings
 {
-    private bool _allConfirmed;
-    private bool _canceled;
-    private bool _skipped;
     private bool _isLastFile;
+    private bool _allConfirmed;
+    private ExecuteStatus _executeStatus;
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {
@@ -28,6 +27,7 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
 
         foreach (var file in files)
         {
+            _executeStatus = ExecuteStatus.Success;
             index++;
             _isLastFile = index == files.Count - 1;
             try
@@ -53,11 +53,17 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
                 console.WriteException(ex);
                 continue;
             }
-            if (_canceled)
+            if (_executeStatus == ExecuteStatus.CancelRequested)
             {
                 break;
             }
-            else if (_skipped)
+            else if (_executeStatus == ExecuteStatus.DoNotContinueRequested)
+            {
+                successCount++;
+                skipCount = files.Count - index - 1;
+                break;
+            }
+            else if (_executeStatus == ExecuteStatus.Skipped)
             {
                 skipCount++;
                 console.MarkupLine("Status: skipped!");
@@ -78,51 +84,44 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
 
     public void Skip()
     {
-        _skipped = true;
+        _executeStatus = ExecuteStatus.Skipped;
     }
 
     bool ConfirmPrompt()
     {
-        _skipped = false;
-
         if (_allConfirmed)
             return true;
 
-        var choices = new Dictionary<ConfirmChoice, string>
-        {
-            { ConfirmChoice.Yes, "y" },
-            { ConfirmChoice.No, "n" },
-            { ConfirmChoice.All, "a" },
-            { ConfirmChoice.Cancel, "c" },
-        };
-
-        var confirmation = AnsiConsole.Prompt(
-            new TextPrompt<ConfirmChoice>("Confirm changes?")
-                .AddChoices(choices.Keys)
-                .DefaultValue(ConfirmChoice.Yes)
-                .WithConverter(choice => choices[choice])
+        var confirmation = console.Prompt(
+            new TextPrompt<string>("Confirm changes?")
+                .AddChoices(["y", "n", "a", "c"])
+                .DefaultValue("y")
         );
 
-        switch (confirmation)
+        var confirmed = false;
+
+        if (confirmation == "y")
         {
-            case ConfirmChoice.Yes:
-                return true;
-
-            case ConfirmChoice.No:
-                _skipped = true;
-                return false;
-
-            case ConfirmChoice.All:
-                _allConfirmed = true;
-                return true;
-
-            case ConfirmChoice.Cancel:
-                _canceled = true;
-                return false;
-
-            default:
-                return false;
+            confirmed = true;
         }
+
+        if (confirmation == "n")
+        {
+            _executeStatus = ExecuteStatus.Skipped;
+        }
+
+        if (confirmation == "a")
+        {
+            _allConfirmed = true;
+            confirmed = true;
+        }
+
+        if (confirmation == "c")
+        {
+            _executeStatus = ExecuteStatus.CancelRequested;
+        }
+
+        return confirmed;
     }
 
     void ContinuePrompt()
@@ -130,22 +129,13 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, IAction<TSettin
         if (_allConfirmed || _isLastFile)
             return;
 
-        var choices = new Dictionary<ConfirmChoice, string>
-        {
-            { ConfirmChoice.Yes, "y" },
-            { ConfirmChoice.No, "n" },
-        };
-
-        var confirmation = AnsiConsole.Prompt(
-            new TextPrompt<ConfirmChoice>("Continue?")
-                .AddChoices(choices.Keys)
-                .DefaultValue(ConfirmChoice.Yes)
-                .WithConverter(choice => choices[choice])
+        var confirmation = console.Prompt(
+            new TextPrompt<string>("Continue?").AddChoices(["y", "n"]).DefaultValue("y")
         );
 
-        if (confirmation == ConfirmChoice.No)
+        if (confirmation == "n")
         {
-            _canceled = true;
+            _executeStatus = ExecuteStatus.DoNotContinueRequested;
         }
     }
 }
