@@ -23,6 +23,10 @@ namespace TagSelecta.Actions
             {
                 tagData.Title = settings.Title;
             }
+            if (settings.Subtitle != null)
+            {
+                tagData.Subtitle = settings.Subtitle;
+            }
             if (settings.Genre != null)
             {
                 tagData.Genre = global::System.Linq.Enumerable.ToList(settings.Genre);
@@ -86,10 +90,6 @@ namespace TagSelecta.Actions
             if (settings.Publisher != null)
             {
                 tagData.Publisher = settings.Publisher;
-            }
-            if (settings.Subtitle != null)
-            {
-                tagData.Subtitle = settings.Subtitle;
             }
             if (settings.Copyright != null)
             {

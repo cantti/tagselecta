@@ -24,6 +24,10 @@ namespace TagSelecta.Tagging
             {
                 target.Title = tag.Title;
             }
+            if (tag.Subtitle != null)
+            {
+                target.Subtitle = tag.Subtitle;
+            }
             if (tag.Genres != null)
             {
                 target.Genre = MapToListOfString(tag.Genres);
@@ -114,10 +118,6 @@ namespace TagSelecta.Tagging
             target.ReplayGainTrackPeak = tag.ReplayGainTrackPeak;
             target.ReplayGainAlbumGain = tag.ReplayGainAlbumGain;
             target.ReplayGainAlbumPeak = tag.ReplayGainAlbumPeak;
-            if (tag.Subtitle != null)
-            {
-                target.Subtitle = tag.Subtitle;
-            }
             if (tag.Copyright != null)
             {
                 target.Copyright = tag.Copyright;
