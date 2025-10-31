@@ -10,6 +10,8 @@ public class TagData
 
     public string Title { get; set; } = "";
 
+    public string Subtitle { get; set; } = "";
+
     public List<string> Genre { get; set; } = [];
 
     public uint Year { get; set; }
@@ -73,8 +75,6 @@ public class TagData
     public double ReplayGainAlbumGain { get; set; }
 
     public double ReplayGainAlbumPeak { get; set; }
-
-    public string Subtitle { get; set; } = "";
 
     public string Copyright { get; set; } = "";
 }
