@@ -2,12 +2,14 @@ name: Update README with CLI help
 
 on:
   push:
-    branches: [ main ]
-    paths:
-      - 'TagSelecta/**'
-      - 'update-readme.cs'
-      - '.github/workflows/update-readme.yml'
+    tags:
+      - "v*"
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Version (e.g. v1.0.0)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -17,8 +19,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag_name || github.ref }}
 
       - name: Setup .NET 10 SDK
         uses: actions/setup-dotnet@v4
