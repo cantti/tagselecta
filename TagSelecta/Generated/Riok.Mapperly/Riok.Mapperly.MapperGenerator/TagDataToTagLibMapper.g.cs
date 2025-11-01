@@ -2,10 +2,10 @@
 #nullable enable
 namespace TagSelecta.Tagging
 {
-    public partial class TagDataToTagLibMapper
+    public static partial class TagDataToTagLibMapper
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        public partial void Map(global::TagSelecta.Tagging.TagData tagData, global::TagLib.Tag tag)
+        public static partial void Map(global::TagSelecta.Tagging.TagData tagData, global::TagLib.Tag tag)
         {
             tag.Title = tagData.Title;
             tag.Subtitle = tagData.Subtitle;
@@ -36,10 +36,10 @@ namespace TagSelecta.Tagging
             tag.MusicBrainzReleaseStatus = tagData.MusicBrainzReleaseStatus;
             tag.MusicBrainzReleaseType = tagData.MusicBrainzReleaseType;
             tag.MusicBrainzReleaseCountry = tagData.MusicBrainzReleaseCountry;
-            tag.ReplayGainTrackGain = tagData.ReplayGainTrackGain;
-            tag.ReplayGainTrackPeak = tagData.ReplayGainTrackPeak;
-            tag.ReplayGainAlbumGain = tagData.ReplayGainAlbumGain;
-            tag.ReplayGainAlbumPeak = tagData.ReplayGainAlbumPeak;
+            tag.ReplayGainTrackGain = Double(tagData.ReplayGainTrackGain);
+            tag.ReplayGainTrackPeak = Double(tagData.ReplayGainTrackPeak);
+            tag.ReplayGainAlbumGain = Double(tagData.ReplayGainAlbumGain);
+            tag.ReplayGainAlbumPeak = Double(tagData.ReplayGainAlbumPeak);
             tag.Publisher = tagData.Publisher;
             tag.ISRC = tagData.Isrc;
             tag.Pictures = global::System.Linq.Enumerable.ToArray(tagData.Pictures);

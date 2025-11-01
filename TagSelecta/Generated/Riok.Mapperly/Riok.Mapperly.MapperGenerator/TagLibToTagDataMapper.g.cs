@@ -2,10 +2,10 @@
 #nullable enable
 namespace TagSelecta.Tagging
 {
-    public partial class TagLibToTagDataMapper
+    public static partial class TagLibToTagDataMapper
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        public partial global::TagSelecta.Tagging.TagData Map(global::TagLib.Tag tag)
+        public static partial global::TagSelecta.Tagging.TagData Map(global::TagLib.Tag tag)
         {
             var target = new global::TagSelecta.Tagging.TagData();
             if (tag.Performers != null)
@@ -44,10 +44,6 @@ namespace TagSelecta.Tagging
             if (tag.Description != null)
             {
                 target.Description = tag.Description;
-            }
-            if (tag.Pictures != null)
-            {
-                target.Pictures = MapToListOfIPicture(tag.Pictures);
             }
             target.Bpm = tag.BeatsPerMinute;
             if (tag.Composers != null)
@@ -114,19 +110,23 @@ namespace TagSelecta.Tagging
             {
                 target.MusicIpId = tag.MusicIpId;
             }
-            target.ReplayGainTrackGain = tag.ReplayGainTrackGain;
-            target.ReplayGainTrackPeak = tag.ReplayGainTrackPeak;
-            target.ReplayGainAlbumGain = tag.ReplayGainAlbumGain;
-            target.ReplayGainAlbumPeak = tag.ReplayGainAlbumPeak;
+            target.ReplayGainTrackGain = Double(tag.ReplayGainTrackGain);
+            target.ReplayGainTrackPeak = Double(tag.ReplayGainTrackPeak);
+            target.ReplayGainAlbumGain = Double(tag.ReplayGainAlbumGain);
+            target.ReplayGainAlbumPeak = Double(tag.ReplayGainAlbumPeak);
             if (tag.Copyright != null)
             {
                 target.Copyright = tag.Copyright;
+            }
+            if (tag.Pictures != null)
+            {
+                target.Pictures = MapToListOfIPicture(tag.Pictures);
             }
             return target;
         }
 
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        private global::System.Collections.Generic.List<string> MapToListOfString(global::System.Collections.Generic.IReadOnlyCollection<string?> source)
+        private static global::System.Collections.Generic.List<string> MapToListOfString(global::System.Collections.Generic.IReadOnlyCollection<string?> source)
         {
             var target = new global::System.Collections.Generic.List<string>(source.Count);
             foreach (var item in source)
@@ -137,7 +137,7 @@ namespace TagSelecta.Tagging
         }
 
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        private global::System.Collections.Generic.List<global::TagLib.IPicture> MapToListOfIPicture(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.IPicture?> source)
+        private static global::System.Collections.Generic.List<global::TagLib.IPicture> MapToListOfIPicture(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.IPicture?> source)
         {
             var target = new global::System.Collections.Generic.List<global::TagLib.IPicture>(source.Count);
             foreach (var item in source)

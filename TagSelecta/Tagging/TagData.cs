@@ -32,8 +32,6 @@ public class TagData
 
     public string CatalogNumber { get; set; } = "";
 
-    public List<TagLib.IPicture> Pictures { get; set; } = [];
-
     public uint Bpm { get; set; }
 
     public List<string> Composers { get; set; } = [];
@@ -68,13 +66,15 @@ public class TagData
 
     public string MusicIpId { get; set; } = "";
 
-    public double ReplayGainTrackGain { get; set; }
+    public double? ReplayGainTrackGain { get; set; }
 
-    public double ReplayGainTrackPeak { get; set; }
+    public double? ReplayGainTrackPeak { get; set; }
 
-    public double ReplayGainAlbumGain { get; set; }
+    public double? ReplayGainAlbumGain { get; set; }
 
-    public double ReplayGainAlbumPeak { get; set; }
+    public double? ReplayGainAlbumPeak { get; set; }
 
     public string Copyright { get; set; } = "";
+
+    public List<TagLib.IPicture> Pictures { get; set; } = [];
 }

@@ -1,48 +1,122 @@
-using System.ComponentModel;
-using System.Text.Json.Serialization;
 using TagLib;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Print;
 
-public class TagDataForJson(TagData t)
+public class TagDataForJson
 {
-    public List<string> Artist => t.Artist;
+    [SkipNoValue]
+    public List<string> Artist { get; set; } = [];
 
-    public List<string> AlbumArtist => t.AlbumArtist;
+    [SkipNoValue]
+    public List<string> AlbumArtist { get; set; } = [];
 
-    public string Album => t.Album;
+    [SkipNoValue]
+    public List<string> Composers { get; set; } = [];
 
-    public string Title => t.Title;
+    [SkipNoValue]
+    public string Album { get; set; } = "";
 
-    public List<string> Genre => t.Genre;
+    [SkipNoValue]
+    public string Title { get; set; } = "";
 
-    public uint Year => t.Year;
+    [SkipNoValue]
+    public string Subtitle { get; set; } = "";
 
-    public uint Track => t.Track;
+    [SkipNoValue]
+    public List<string> Genre { get; set; } = [];
 
-    public uint TrackTotal => t.TrackTotal;
+    [SkipNoValue]
+    public uint Year { get; set; }
 
-    [SkipEmptyOrZero]
-    public uint Disc => t.Disc;
+    [SkipNoValue]
+    public uint Track { get; set; }
 
-    [SkipEmptyOrZero]
-    public uint DiscTotal => t.DiscTotal;
+    [SkipNoValue]
+    public uint TrackTotal { get; set; }
 
-    [SkipEmptyOrZero]
-    public string Comment => t.Comment;
+    [SkipNoValue]
+    public uint Disc { get; set; }
 
-    [SkipEmptyOrZero]
-    public string Label => t.Label;
+    [SkipNoValue]
+    public uint DiscTotal { get; set; }
 
-    [SkipEmptyOrZero]
-    public string CatalogNumber => t.CatalogNumber;
+    [SkipNoValue]
+    public string Comment { get; set; } = "";
 
-    [SkipEmptyOrZero]
-    public uint Bpm => t.Bpm;
+    [SkipNoValue]
+    public string Description { get; set; } = "";
 
-    public List<PictureDataForJson> Pictures =>
-        [.. t.Pictures.Select(x => new PictureDataForJson(x))];
+    [SkipNoValue]
+    public string Label { get; set; } = "";
+
+    [SkipNoValue]
+    public string CatalogNumber { get; set; } = "";
+
+    [SkipNoValue]
+    public uint Bpm { get; set; }
+
+    [SkipNoValue]
+    public string Conductor { get; set; } = "";
+
+    [SkipNoValue]
+    public string Isrc { get; set; } = "";
+
+    [SkipNoValue]
+    public string Lyrics { get; set; } = "";
+
+    [SkipNoValue]
+    public string Publisher { get; set; } = "";
+
+    [SkipNoValue]
+    public string AmazonId { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzArtistId { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzDiscId { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzReleaseGroupId { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzReleaseId { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzReleaseArtistId { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzTrackId { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzReleaseStatus { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzReleaseType { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicBrainzReleaseCountry { get; set; } = "";
+
+    [SkipNoValue]
+    public string MusicIpId { get; set; } = "";
+
+    [SkipNoValue]
+    public double? ReplayGainTrackGain { get; set; }
+
+    [SkipNoValue]
+    public double? ReplayGainTrackPeak { get; set; }
+
+    [SkipNoValue]
+    public double? ReplayGainAlbumGain { get; set; }
+
+    [SkipNoValue]
+    public double? ReplayGainAlbumPeak { get; set; }
+
+    [SkipNoValue]
+    public string Copyright { get; set; } = "";
+
+    [SkipNoValue]
+    public List<PictureDataForJson> Pictures { get; set; } = [];
 }
 
 public class PictureDataForJson(IPicture pic)

@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -25,13 +26,17 @@ public static class AnsiConsoleExtensions
     {
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
         {
-            // Modifiers = { JsonSerializationModifiers.ApplySkipEmptyOrZero },
+            Modifiers = { JsonSerializationModifiers.ApplySkipNoValue },
         },
+        // Ensures special characters like '&' are displayed correctly
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
     };
 
-    public static void PrintTagData(this IAnsiConsole console, TagData meta)
+    public static void PrintTagData(this IAnsiConsole console, TagData tagdata)
     {
-        var json = new JsonText(JsonSerializer.Serialize(new TagDataForJson(meta), _jsonOpts));
+        var tagDataForJson = TagDataForJsonMapper.Map(tagdata);
+        var json = new JsonText(JsonSerializer.Serialize(tagDataForJson, _jsonOpts));
         console.Write(json);
         console.WriteLine();
     }

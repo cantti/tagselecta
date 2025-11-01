@@ -14,8 +14,7 @@ public static class Tagger
             throw new ActionException("Invalid file type");
         }
         var tag = tfile.Tag;
-        var mapper = new TagLibToTagDataMapper();
-        var tagData = mapper.Map(tag);
+        var tagData = TagLibToTagDataMapper.Map(tag);
         tagData.Label = GetExtValue(tfile, "label");
         tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");
         return tagData;
@@ -31,8 +30,7 @@ public static class Tagger
 
         // todo use mapperly
         var tag = tfile.Tag;
-        var mapper = new TagDataToTagLibMapper();
-        mapper.Map(tagData, tag);
+        TagDataToTagLibMapper.Map(tagData, tag);
         SetExtValue(tfile, "label", tagData.Label);
         SetExtValue(tfile, "catalognumber", tagData.CatalogNumber);
         tfile.Save();

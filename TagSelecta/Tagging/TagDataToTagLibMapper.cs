@@ -8,7 +8,7 @@ namespace TagSelecta.Tagging;
     PropertyNameMappingStrategy = PropertyNameMappingStrategy.CaseInsensitive,
     IgnoreObsoleteMembersStrategy = IgnoreObsoleteMembersStrategy.Both
 )]
-public partial class TagDataToTagLibMapper
+public static partial class TagDataToTagLibMapper
 {
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
@@ -48,5 +48,8 @@ public partial class TagDataToTagLibMapper
     // ignore target
     [MapperIgnoreSource(nameof(TagData.Label))]
     [MapperIgnoreSource(nameof(TagData.CatalogNumber))]
-    public partial void Map(TagData tagData, Tag tag);
+    public static partial void Map(TagData tagData, Tag tag);
+
+    // taglib stores no value as nan for double
+    public static double Double(double? source) => source is null ? double.NaN : source.Value;
 }
