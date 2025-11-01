@@ -34,18 +34,22 @@ The program support multiple commands:
 USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
+EXAMPLES:
+    tagselecta write -t Song1 -a Artist1 -a Artist2
+    tagselecta clean -e artist -e title
+
 OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
     read <path>          Read tags                                              
     write <path>         Write tags                                             
-    clean <path>         Remove unsupported tags                                
-    fixalbum <path>      Set album name and album artists to the same value to  
-                         all files in the same directory                        
+    clean <path>         Cleans metadata, except the specified tags             
     autotrack <path>     Auto track                                             
     renamedir <path>     Rename directories                                     
-    renamefile <path>    Rename files
+    renamefile <path>    Rename files                                           
+    fixalbum <path>      Set album name, year and album artists to the same     
+                         value to all files in the same directory
 ```
 
 **Read command**
@@ -72,6 +76,9 @@ Write tags
 
 USAGE:
     tagselecta write <path> [OPTIONS]
+
+EXAMPLES:
+    tagselecta write -t Song1 -a Artist1 -a Artist2
 
 ARGUMENTS:
     <path>     
@@ -142,24 +149,30 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Remove unsupported tags
+Cleans metadata, except the specified tags
 
 USAGE:
     tagselecta clean <path> [OPTIONS]
+
+EXAMPLES:
+    tagselecta clean -e artist -e title
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help    Prints help information
+    -h, --help      Prints help information                                     
+    -e, --except    Tag to keep (can be used multiple times).                   
+                    Can also be set globally using TAGSELECTA_CLEAN_EXCEPT      
+                    variable (split by any non-word character)
 ```
 
 **FixAlbum command**
 
 ```
 DESCRIPTION:
-Set album name and album artists to the same value to all files in the same 
-directory
+Set album name, year and album artists to the same value to all files in the 
+same directory
 
 USAGE:
     tagselecta fixalbum <path> [OPTIONS]
