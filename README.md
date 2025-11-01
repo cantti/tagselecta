@@ -28,7 +28,7 @@ The program support multiple commands:
 
 <!-- start:cli-help -->
 
-**Help command**
+### Help command
 
 ```
 USAGE:
@@ -52,7 +52,7 @@ COMMANDS:
                          value to all files in the same directory
 ```
 
-**Read command**
+### Read command
 
 ```
 DESCRIPTION:
@@ -68,7 +68,7 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-**Write command**
+### Write command
 
 ```
 DESCRIPTION:
@@ -109,7 +109,7 @@ OPTIONS:
         --copyright
 ```
 
-**RenameDir command**
+### RenameDir command
 
 ```
 DESCRIPTION:
@@ -127,7 +127,7 @@ OPTIONS:
         --dry-run
 ```
 
-**RenameFile command**
+### RenameFile command
 
 ```
 DESCRIPTION:
@@ -145,7 +145,7 @@ OPTIONS:
         --dry-run
 ```
 
-**Clean command**
+### Clean command
 
 ```
 DESCRIPTION:
@@ -167,7 +167,7 @@ OPTIONS:
                     variable (split by any non-word character)
 ```
 
-**FixAlbum command**
+### FixAlbum command
 
 ```
 DESCRIPTION:
@@ -184,7 +184,7 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-**AutoTrack command**
+### AutoTrack command
 
 ```
 DESCRIPTION:
