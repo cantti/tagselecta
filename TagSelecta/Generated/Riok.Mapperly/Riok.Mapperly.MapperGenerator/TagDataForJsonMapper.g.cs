@@ -50,14 +50,65 @@ namespace TagSelecta.Print
         }
 
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
+        private static partial global::TagSelecta.Print.PictureDataForJson PictureMap(global::TagLib.IPicture pic)
+        {
+            var target = new global::TagSelecta.Print.PictureDataForJson();
+            if (pic.MimeType != null)
+            {
+                target.MimeType = pic.MimeType;
+            }
+            target.Type = MapToString(pic.Type);
+            if (pic.Filename != null)
+            {
+                target.Filename = pic.Filename;
+            }
+            if (pic.Description != null)
+            {
+                target.Description = pic.Description;
+            }
+            return target;
+        }
+
+        [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
         private static global::System.Collections.Generic.List<global::TagSelecta.Print.PictureDataForJson> MapToListOfPictureDataForJson(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.IPicture> source)
         {
             var target = new global::System.Collections.Generic.List<global::TagSelecta.Print.PictureDataForJson>(source.Count);
             foreach (var item in source)
             {
-                target.Add(new global::TagSelecta.Print.PictureDataForJson(item));
+                target.Add(PictureMap(item));
             }
             return target;
+        }
+
+        [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
+        private static string MapToString(global::TagLib.PictureType source)
+        {
+            return source switch
+            {
+                global::TagLib.PictureType.Other => nameof(global::TagLib.PictureType.Other),
+                global::TagLib.PictureType.FileIcon => nameof(global::TagLib.PictureType.FileIcon),
+                global::TagLib.PictureType.OtherFileIcon => nameof(global::TagLib.PictureType.OtherFileIcon),
+                global::TagLib.PictureType.FrontCover => nameof(global::TagLib.PictureType.FrontCover),
+                global::TagLib.PictureType.BackCover => nameof(global::TagLib.PictureType.BackCover),
+                global::TagLib.PictureType.LeafletPage => nameof(global::TagLib.PictureType.LeafletPage),
+                global::TagLib.PictureType.Media => nameof(global::TagLib.PictureType.Media),
+                global::TagLib.PictureType.LeadArtist => nameof(global::TagLib.PictureType.LeadArtist),
+                global::TagLib.PictureType.Artist => nameof(global::TagLib.PictureType.Artist),
+                global::TagLib.PictureType.Conductor => nameof(global::TagLib.PictureType.Conductor),
+                global::TagLib.PictureType.Band => nameof(global::TagLib.PictureType.Band),
+                global::TagLib.PictureType.Composer => nameof(global::TagLib.PictureType.Composer),
+                global::TagLib.PictureType.Lyricist => nameof(global::TagLib.PictureType.Lyricist),
+                global::TagLib.PictureType.RecordingLocation => nameof(global::TagLib.PictureType.RecordingLocation),
+                global::TagLib.PictureType.DuringRecording => nameof(global::TagLib.PictureType.DuringRecording),
+                global::TagLib.PictureType.DuringPerformance => nameof(global::TagLib.PictureType.DuringPerformance),
+                global::TagLib.PictureType.MovieScreenCapture => nameof(global::TagLib.PictureType.MovieScreenCapture),
+                global::TagLib.PictureType.ColoredFish => nameof(global::TagLib.PictureType.ColoredFish),
+                global::TagLib.PictureType.Illustration => nameof(global::TagLib.PictureType.Illustration),
+                global::TagLib.PictureType.BandLogo => nameof(global::TagLib.PictureType.BandLogo),
+                global::TagLib.PictureType.PublisherLogo => nameof(global::TagLib.PictureType.PublisherLogo),
+                global::TagLib.PictureType.NotAPicture => nameof(global::TagLib.PictureType.NotAPicture),
+                _ => source.ToString(),
+            };
         }
     }
 }

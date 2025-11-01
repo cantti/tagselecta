@@ -119,10 +119,17 @@ public class TagDataForJson
     public List<PictureDataForJson> Pictures { get; set; } = [];
 }
 
-public class PictureDataForJson(IPicture pic)
+public class PictureDataForJson
 {
-    public string MimeType => pic.MimeType ?? "";
-    public string Type => pic.Type.ToString();
-    public string Filename => pic.Filename ?? "";
-    public string Description => pic.Description ?? "";
+    [SkipNoValue]
+    public string MimeType { get; set; } = "";
+
+    [SkipNoValue]
+    public string Type { get; set; } = "";
+
+    [SkipNoValue]
+    public string Filename { get; set; } = "";
+
+    [SkipNoValue]
+    public string Description { get; set; } = "";
 }
