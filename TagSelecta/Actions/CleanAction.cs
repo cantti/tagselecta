@@ -18,7 +18,7 @@ public class CleanSettings : FileSettings
     public string[]? Except { get; set; }
 }
 
-public class CleanAction : FileAction<CleanSettings>
+public class CleanAction(IAnsiConsole console, Printer printer) : FileAction<CleanSettings>
 {
     public override void Execute(ActionContext<CleanSettings> context)
     {
@@ -41,7 +41,7 @@ public class CleanAction : FileAction<CleanSettings>
 
         if (tagsToKeepList.Count == 0)
         {
-            context.Console.MarkupLine("No tags to keep provided! It will remove all known tags");
+            console.MarkupLine("No tags to keep provided! It will remove all known tags");
         }
 
         tagsToKeepList = [.. tagsToKeepList.Select(x => x.ToLower().Trim())];
@@ -71,7 +71,7 @@ public class CleanAction : FileAction<CleanSettings>
             }
         }
 
-        context.Console.PrintTagData(newTags);
+        printer.PrintTagData(newTags);
 
         if (context.ConfirmPrompt())
         {

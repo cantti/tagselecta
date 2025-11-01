@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
@@ -29,7 +28,7 @@ public class RenameFileSettings : FileSettings
     }
 }
 
-public class RenameFileAction : FileAction<RenameFileSettings>
+public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSettings>
 {
     public override void Execute(ActionContext<RenameFileSettings> context)
     {
@@ -47,18 +46,18 @@ public class RenameFileAction : FileAction<RenameFileSettings>
 
         if (newPath == context.File)
         {
-            context.Console.MarkupLine("File name already matches the desired format.");
+            console.MarkupLine("File name already matches the desired format.");
             context.Skip();
             return;
         }
 
-        context.Console.MarkupLine("File rename details:");
-        context.Console.MarkupLine($"  Old: {context.File.EscapeMarkup()}");
-        context.Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
+        console.MarkupLine("File rename details:");
+        console.MarkupLine($"  Old: {context.File.EscapeMarkup()}");
+        console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
         if (context.Settings.DryRun)
         {
-            context.Console.MarkupLine("Dry run.");
+            console.MarkupLine("Dry run.");
             context.Skip();
             return;
         }

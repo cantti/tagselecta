@@ -7,7 +7,7 @@ namespace TagSelecta.Actions;
 
 public class ReadSettings : FileSettings { }
 
-public class ReadAction : FileAction<ReadSettings>
+public class ReadAction(Printer printer) : FileAction<ReadSettings>
 {
     public override void Configure(ActionConfig cfg)
     {
@@ -17,6 +17,6 @@ public class ReadAction : FileAction<ReadSettings>
     public override void Execute(ActionContext<ReadSettings> context)
     {
         var tags = Tagger.ReadTags(context.File);
-        context.Console.PrintTagData(tags);
+        printer.PrintTagData(tags);
     }
 }

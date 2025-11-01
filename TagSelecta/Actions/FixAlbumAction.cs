@@ -1,4 +1,3 @@
-using System.Text;
 using Spectre.Console;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
@@ -9,7 +8,7 @@ namespace TagSelecta.Actions;
 
 public class FixAlbumSettings : FileSettings { }
 
-public class FixAlbumAction : FileAction<FixAlbumSettings>
+public class FixAlbumAction(IAnsiConsole console) : FileAction<FixAlbumSettings>
 {
     private enum FixType
     {
@@ -117,11 +116,11 @@ public class FixAlbumAction : FileAction<FixAlbumSettings>
                 $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtist.Print().EscapeMarkup()}[/]",
             _ => "",
         };
-        context.Console.MarkupLine(albumArtistMessage);
-        context.Console.MarkupLine(
+        console.MarkupLine(albumArtistMessage);
+        console.MarkupLine(
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
-        context.Console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
+        console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
         var tagData = Tagger.ReadTags(context.File);
         if (
             tagData.AlbumArtist.SequenceEqual(album.AlbumArtist)
@@ -129,7 +128,7 @@ public class FixAlbumAction : FileAction<FixAlbumSettings>
             && tagData.Year == album.Year
         )
         {
-            context.Console.MarkupLine("Skipped");
+            console.MarkupLine("Skipped");
             context.Skip();
             return;
         }

@@ -28,7 +28,7 @@ public class RenameDirSettings : FileSettings
     }
 }
 
-public class RenameDirAction : FileAction<RenameDirSettings>
+public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSettings>
 {
     private readonly List<string> _renamed = [];
 
@@ -51,7 +51,7 @@ public class RenameDirAction : FileAction<RenameDirSettings>
 
         if (newPath == dir)
         {
-            context.Console.MarkupLine("Directory name already matches the desired format.");
+            console.MarkupLine("Directory name already matches the desired format.");
             context.Skip();
             return;
         }
@@ -61,18 +61,16 @@ public class RenameDirAction : FileAction<RenameDirSettings>
             throw new ActionException($"Target directory already exists: {newPath}.");
         }
 
-        context.Console.MarkupLine("Directory rename details:");
-        context.Console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
-        context.Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
+        console.MarkupLine("Directory rename details:");
+        console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
+        console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
         if (context.Settings.DryRun)
         {
-            context.Console.MarkupLine("Dry run.");
+            console.MarkupLine("Dry run.");
             context.Skip();
-            return;
         }
-
-        if (context.ConfirmPrompt())
+        else if (context.ConfirmPrompt())
         {
             Directory.Move(dir, newPath);
         }

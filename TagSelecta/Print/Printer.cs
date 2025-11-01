@@ -8,20 +8,8 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Print;
 
-public static class AnsiConsoleExtensions
+public class Printer(IAnsiConsole console)
 {
-    public static void PrintCurrentFile(
-        this IAnsiConsole console,
-        string file,
-        int index,
-        int total
-    )
-    {
-        console.MarkupLineInterpolated(
-            $"[dim]>[/] [yellow]({index + 1}/{total})[/] [green]{file}[/]"
-        );
-    }
-
     private static readonly JsonSerializerOptions _jsonOpts = new()
     {
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
@@ -33,11 +21,18 @@ public static class AnsiConsoleExtensions
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
     };
 
-    public static void PrintTagData(this IAnsiConsole console, TagData tagdata)
+    public void PrintTagData(TagData tagdata)
     {
         var tagDataForJson = TagDataForJsonMapper.Map(tagdata);
         var json = new JsonText(JsonSerializer.Serialize(tagDataForJson, _jsonOpts));
         console.Write(json);
         console.WriteLine();
+    }
+
+    public void PrintCurrentFile(string file, int index, int total)
+    {
+        console.MarkupLineInterpolated(
+            $"[dim]>[/] [yellow]({index + 1}/{total})[/] [green]{file}[/]"
+        );
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
@@ -14,7 +15,7 @@ public class AutoTrackSettings : FileSettings
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackAction : FileAction<AutoTrackSettings>
+public class AutoTrackAction(Printer printer) : FileAction<AutoTrackSettings>
 {
     public override void Execute(ActionContext<AutoTrackSettings> context)
     {
@@ -31,7 +32,7 @@ public class AutoTrackAction : FileAction<AutoTrackSettings>
             tags.Disc = 0;
             tags.DiscTotal = 0;
         }
-        context.Console.PrintTagData(tags);
+        printer.PrintTagData(tags);
         if (context.ConfirmPrompt())
         {
             Tagger.WriteTags(context.File, tags);

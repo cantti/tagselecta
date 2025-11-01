@@ -204,6 +204,15 @@ OPTIONS:
 
 <!-- end:cli-help -->
 
+## Settings
+
+Some global settings can be set via environment variables:
+
+```
+# fields to keep in clean command when no --except (-e) flag provided
+TAGSELECTA_CLEAN_EXCEPT="artist;albumartist;title;album;year;track;tracktotal;disc;disctotal;label;catalognumber"
+```
+
 ## Notes
 
 - Designed for consistent and efficient tag management.  

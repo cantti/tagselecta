@@ -29,7 +29,7 @@ foreach (var (name, commandLine) in commands)
     Console.WriteLine($"Capturing help for {name}...");
     string output = Run("dotnet", commandLine);
     output = output.Replace("tagselecta.dll", "tagselecta");
-    sb.AppendLine($"**{name} command**\n");
+    sb.AppendLine($"### {name} command\n");
     sb.AppendLine("```");
     sb.AppendLine(output);
     sb.AppendLine("```");

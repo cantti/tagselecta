@@ -6,8 +6,11 @@ using TagSelecta.Print;
 
 namespace TagSelecta.BaseCommands;
 
-public sealed class FileCommand<TSettings>(IAnsiConsole console, FileAction<TSettings> action)
-    : AsyncCommand<TSettings>
+public sealed class FileCommand<TSettings>(
+    IAnsiConsole console,
+    Printer printer,
+    FileAction<TSettings> action
+) : AsyncCommand<TSettings>
     where TSettings : FileSettings
 {
     private bool _isLastFile;
@@ -36,7 +39,7 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, FileAction<TSet
             _isLastFile = index == files.Count - 1;
             try
             {
-                console.PrintCurrentFile(file, index, files.Count);
+                printer.PrintCurrentFile(file, index, files.Count);
                 action.Execute(
                     new ActionContext<TSettings>()
                     {
@@ -45,7 +48,6 @@ public sealed class FileCommand<TSettings>(IAnsiConsole console, FileAction<TSet
                         File = file,
                         Files = files,
                         Settings = settings,
-                        Console = console,
                     }
                 );
             }

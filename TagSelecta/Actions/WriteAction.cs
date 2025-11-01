@@ -77,7 +77,7 @@ public class WriteSettings : FileSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteAction : FileAction<WriteSettings>
+public class WriteAction(Printer printer) : FileAction<WriteSettings>
 {
     public override void Execute(ActionContext<WriteSettings> context)
     {
@@ -100,7 +100,7 @@ public class WriteAction : FileAction<WriteSettings>
 
         mapper.Map(context.Settings, tags);
 
-        context.Console.PrintTagData(tags);
+        printer.PrintTagData(tags);
 
         if (context.ConfirmPrompt())
         {
