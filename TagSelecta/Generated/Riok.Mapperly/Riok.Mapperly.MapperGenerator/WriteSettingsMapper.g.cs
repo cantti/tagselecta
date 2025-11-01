@@ -73,7 +73,7 @@ namespace TagSelecta.Actions
             }
             if (settings.Composers != null)
             {
-                tagData.Composers = settings.Composers;
+                tagData.Composers = global::System.Linq.Enumerable.ToList(settings.Composers);
             }
             if (settings.Conductor != null)
             {

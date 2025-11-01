@@ -52,7 +52,7 @@ namespace TagSelecta.Tagging
             target.Bpm = tag.BeatsPerMinute;
             if (tag.Composers != null)
             {
-                target.Composers = MapToStringArray(tag.Composers);
+                target.Composers = MapToListOfString(tag.Composers);
             }
             if (tag.Conductor != null)
             {
@@ -143,17 +143,6 @@ namespace TagSelecta.Tagging
             foreach (var item in source)
             {
                 target.Add(item ?? throw new global::System.ArgumentNullException(nameof(item)));
-            }
-            return target;
-        }
-
-        [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        private string[] MapToStringArray(string?[] source)
-        {
-            var target = new string[source.Length];
-            for (var i = 0; i < source.Length; i++)
-            {
-                target[i] = source[i] ?? throw new global::System.NullReferenceException($"Sequence {nameof(source)}, contained a null value at index {i}.");
             }
             return target;
         }

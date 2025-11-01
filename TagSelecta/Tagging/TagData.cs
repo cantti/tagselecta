@@ -36,7 +36,7 @@ public class TagData
 
     public uint Bpm { get; set; }
 
-    public string[] Composers { get; set; } = [];
+    public List<string> Composers { get; set; } = [];
 
     public string Conductor { get; set; } = "";
 

@@ -12,7 +12,7 @@ namespace TagSelecta.Tagging
             tag.Description = tagData.Description;
             tag.Performers = global::System.Linq.Enumerable.ToArray(tagData.Artist);
             tag.AlbumArtists = global::System.Linq.Enumerable.ToArray(tagData.AlbumArtist);
-            tag.Composers = (string?[])tagData.Composers;
+            tag.Composers = global::System.Linq.Enumerable.ToArray(tagData.Composers);
             tag.Album = tagData.Album;
             tag.Comment = tagData.Comment;
             tag.Genres = global::System.Linq.Enumerable.ToArray(tagData.Genre);

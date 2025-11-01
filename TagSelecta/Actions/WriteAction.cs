@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Riok.Mapperly.Abstractions;
-using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
@@ -106,7 +105,6 @@ public class WriteAction : FileAction<WriteSettings>
         if (context.ConfirmPrompt())
         {
             Tagger.WriteTags(context.File, tags);
-            return;
         }
     }
 }

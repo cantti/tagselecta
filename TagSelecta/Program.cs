@@ -17,15 +17,14 @@ class Program
         app.Configure(config =>
         {
             config.AddCommand<FileCommand<ReadSettings>>("read").WithDescription("Read tags.");
-            config.AddCommand<FileCommand<WriteSettings>>("write").WithDescription("Write tags.");
+            config
+                .AddCommand<FileCommand<WriteSettings>>("write")
+                .WithDescription("Write tags.")
+                .WithExample(["write", "-t", "Song1", "-a", "Artist1", "-a", "Artist2"]);
             config
                 .AddCommand<FileCommand<CleanSettings>>("clean")
-                .WithDescription("Remove unsupported tags.");
-            config
-                .AddCommand<FileCommand<FixAlbumSettings>>("fixalbum")
-                .WithDescription(
-                    "Set album name and album artists to the same value to all files in the same directory."
-                );
+                .WithDescription("Cleans metadata, except the specified tags.")
+                .WithExample(["clean", "-e", "artist", "-e", "title"]);
             config
                 .AddCommand<FileCommand<AutoTrackSettings>>("autotrack")
                 .WithDescription("Auto track.");
@@ -35,6 +34,11 @@ class Program
             config
                 .AddCommand<FileCommand<RenameFileSettings>>("renamefile")
                 .WithDescription("Rename files.");
+            config
+                .AddCommand<FileCommand<FixAlbumSettings>>("fixalbum")
+                .WithDescription(
+                    "Set album name, year and album artists to the same value to all files in the same directory."
+                );
         });
 
         return app.Run(args);
