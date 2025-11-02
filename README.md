@@ -45,6 +45,7 @@ COMMANDS:
     read <path>          Read tags                                              
     write <path>         Write tags                                             
     clean <path>         Cleans metadata, except the specified tags             
+    split <path>         Split artists, album artists and composers             
     autotrack <path>     Auto track                                             
     renamedir <path>     Rename directories                                     
     renamefile <path>    Rename files                                           
@@ -162,9 +163,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help        Prints help information                        
-    -t, --template    Template. For example: {{ year }} - {{ album }}
-        --dry-run
+    -h, --help        Prints help information                
+    -t, --template    Template. For example: {year} - {album}
 ```
 
 ### Rename File command
@@ -180,9 +180,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help        Prints help information                        
-    -t, --template    Template. For example: {{ year }} - {{ album }}
-        --dry-run
+    -h, --help        Prints help information                
+    -t, --template    Template. For example: {year} - {album}
 ```
 
 ### Fix Album command
