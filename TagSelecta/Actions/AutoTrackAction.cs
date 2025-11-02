@@ -17,7 +17,7 @@ public class AutoTrackSettings : FileSettings
 
 public class AutoTrackAction(Printer printer) : FileAction<AutoTrackSettings>
 {
-    public override void Execute(ActionContext<AutoTrackSettings> context)
+    public override Task Execute(ActionContext<AutoTrackSettings> context)
     {
         var dir = Directory.GetParent(context.File)?.FullName;
         var filesInDir = context
@@ -37,5 +37,6 @@ public class AutoTrackAction(Printer printer) : FileAction<AutoTrackSettings>
         {
             Tagger.WriteTags(context.File, tags);
         }
+        return Task.CompletedTask;
     }
 }

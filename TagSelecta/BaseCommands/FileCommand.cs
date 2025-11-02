@@ -23,15 +23,44 @@ public sealed class FileCommand<TSettings>(
     {
         action.Configure(_config);
 
+        console.MarkupLine("Searching for files...");
+
+        console.WriteLine();
+
         var files = FileHelper.GetAllAudioFiles(settings.Path, true);
 
-        console.MarkupLine($"{files.Count} {(files.Count == 1 ? "file" : "files")} found.");
+        console.MarkupLineInterpolated(
+            $"[yellow]{files.Count}[/] {(files.Count == 1 ? "file" : "files")} found."
+        );
 
+        console.WriteLine();
+
+        await action.BeforeExecute(
+            new ActionBeforeContext<TSettings> { Cancel = Cancel, Settings = settings }
+        );
+
+        console.WriteLine();
+
+        if (!_cancelRequested)
+        {
+            var (successCount, skipCount, failCount) = await ExecuteForFiles(files, settings);
+            console.MarkupLineInterpolated(
+                $"[green]Finished![/] Processed [yellow]{successCount}[/] files, [cyan]{skipCount}[/] skipped, [red]{failCount}[/] failed."
+            );
+        }
+
+        return 0;
+    }
+
+    private async Task<(int SuccessCount, int SkipCount, int FailCount)> ExecuteForFiles(
+        List<string> files,
+        TSettings settings
+    )
+    {
         int successCount = 0;
         int failCount = 0;
         int skipCount = 0;
         int index = -1;
-
         foreach (var file in files)
         {
             index++;
@@ -40,12 +69,14 @@ public sealed class FileCommand<TSettings>(
             try
             {
                 printer.PrintCurrentFile(file, index, files.Count);
-                action.Execute(
+                await action.Execute(
                     new ActionContext<TSettings>()
                     {
                         ConfirmPrompt = ConfirmPrompt,
+                        Cancel = Cancel,
                         Skip = Skip,
                         File = file,
+                        FileIndex = index,
                         Files = files,
                         Settings = settings,
                     }
@@ -78,18 +109,19 @@ public sealed class FileCommand<TSettings>(
                     break;
                 }
             }
+            console.WriteLine();
         }
-
-        console.MarkupLineInterpolated(
-            $"[green]Finished![/] Processed [yellow]{successCount}[/] files, [cyan]{skipCount}[/] skipped, [red]{failCount}[/] failed."
-        );
-
-        return 0;
+        return (successCount, skipCount, failCount);
     }
 
     public void Skip()
     {
         _skipped = true;
+    }
+
+    public void Cancel()
+    {
+        _cancelRequested = true;
     }
 
     bool ConfirmPrompt()

@@ -35,4 +35,11 @@ public class Printer(IAnsiConsole console)
             $"[dim]>[/] [yellow]({index + 1}/{total})[/] [green]{file}[/]"
         );
     }
+
+    public void PrintAsJson(object obj)
+    {
+        var json = new JsonText(JsonSerializer.Serialize(obj));
+        console.Write(json);
+        console.WriteLine();
+    }
 }

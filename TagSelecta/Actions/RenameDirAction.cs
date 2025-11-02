@@ -32,13 +32,13 @@ public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSetting
 {
     private readonly List<string> _renamed = [];
 
-    public override void Execute(ActionContext<RenameDirSettings> context)
+    public override Task Execute(ActionContext<RenameDirSettings> context)
     {
         var dir = Path.GetDirectoryName(context.File)!;
         if (_renamed.Contains(dir))
         {
             context.Skip();
-            return;
+            return Task.CompletedTask;
         }
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(context.File);
@@ -53,7 +53,7 @@ public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSetting
         {
             console.MarkupLine("Directory name already matches the desired format.");
             context.Skip();
-            return;
+            return Task.CompletedTask;
         }
 
         if (Directory.Exists(newPath))
@@ -74,6 +74,7 @@ public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSetting
         {
             Directory.Move(dir, newPath);
         }
+        return Task.CompletedTask;
     }
 
     private static string GetNewPath(string dirPath, string newName)

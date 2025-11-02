@@ -79,7 +79,7 @@ public class WriteSettings : FileSettings
 
 public class WriteAction(Printer printer) : FileAction<WriteSettings>
 {
-    public override void Execute(ActionContext<WriteSettings> context)
+    public override Task Execute(ActionContext<WriteSettings> context)
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
@@ -106,6 +106,8 @@ public class WriteAction(Printer printer) : FileAction<WriteSettings>
         {
             Tagger.WriteTags(context.File, tags);
         }
+
+        return Task.CompletedTask;
     }
 }
 
@@ -140,5 +142,6 @@ public partial class WriteSettingsMapper
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumPeak))]
     [MapperIgnoreTarget(nameof(TagData.Pictures))]
     [MapperIgnoreTarget(nameof(TagData.AmazonId))]
+    [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     public partial void Map(WriteSettings settings, TagData tagData);
 }

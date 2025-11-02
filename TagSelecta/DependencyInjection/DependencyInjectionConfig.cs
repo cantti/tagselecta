@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TagSelecta.Actions;
 using TagSelecta.Actions.Base;
+using TagSelecta.Discogs;
 using TagSelecta.Print;
 
 namespace TagSelecta.DependencyInjection;
@@ -16,8 +17,11 @@ public static class DependencyInjectionConfig
         services.AddTransient<FileAction<RenameDirSettings>, RenameDirAction>();
         services.AddTransient<FileAction<RenameFileSettings>, RenameFileAction>();
         services.AddTransient<FileAction<WriteSettings>, WriteAction>();
+        services.AddTransient<FileAction<DiscogsSettings>, DiscogsAction>();
 
         services.AddTransient<Printer>();
+
+        services.AddDiscogs();
     }
 
     public static TypeRegistrar Configure()

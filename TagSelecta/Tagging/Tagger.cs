@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace TagSelecta.Tagging;
 
 public static class Tagger
@@ -17,6 +15,8 @@ public static class Tagger
         var tagData = TagLibToTagDataMapper.Map(tag);
         tagData.Label = GetExtValue(tfile, "label");
         tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");
+        tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");
+        tagData.DiscogsReleaseId = GetExtValue(tfile, "discogs_release_id");
         return tagData;
     }
 
@@ -33,6 +33,7 @@ public static class Tagger
         TagDataToTagLibMapper.Map(tagData, tag);
         SetExtValue(tfile, "label", tagData.Label);
         SetExtValue(tfile, "catalognumber", tagData.CatalogNumber);
+        SetExtValue(tfile, "discogs_release_id", tagData.DiscogsReleaseId);
         tfile.Save();
     }
 

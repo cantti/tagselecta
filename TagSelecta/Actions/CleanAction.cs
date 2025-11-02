@@ -20,7 +20,7 @@ public class CleanSettings : FileSettings
 
 public class CleanAction(IAnsiConsole console, Printer printer) : FileAction<CleanSettings>
 {
-    public override void Execute(ActionContext<CleanSettings> context)
+    public override Task Execute(ActionContext<CleanSettings> context)
     {
         var existingTags = Tagger.ReadTags(context.File);
 
@@ -78,5 +78,7 @@ public class CleanAction(IAnsiConsole console, Printer printer) : FileAction<Cle
             Tagger.RemoveTags(context.File);
             Tagger.WriteTags(context.File, newTags);
         }
+
+        return Task.CompletedTask;
     }
 }

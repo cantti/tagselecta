@@ -7,5 +7,10 @@ public abstract class FileAction<TSettings>
 {
     public virtual void Configure(ActionConfig cfg) { }
 
-    public abstract void Execute(ActionContext<TSettings> context);
+    public virtual Task BeforeExecute(ActionBeforeContext<TSettings> context)
+    {
+        return Task.CompletedTask;
+    }
+
+    public abstract Task Execute(ActionContext<TSettings> context);
 }
