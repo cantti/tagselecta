@@ -28,7 +28,7 @@ public class FixAlbumAction(IAnsiConsole console) : FileAction<FixAlbumSettings>
 
     private readonly List<Album> _albums = [];
 
-    public override void Execute(ActionContext<FixAlbumSettings> context)
+    public override Task Execute(ActionContext<FixAlbumSettings> context)
     {
         var dir = Directory.GetParent(context.File)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
@@ -130,14 +130,17 @@ public class FixAlbumAction(IAnsiConsole console) : FileAction<FixAlbumSettings>
         {
             console.MarkupLine("Skipped");
             context.Skip();
-            return;
         }
-        tagData.AlbumArtist = album.AlbumArtist;
-        tagData.Album = album.AlbumName;
-        tagData.Year = album.Year;
-        if (context.ConfirmPrompt())
+        else
         {
-            Tagger.WriteTags(context.File, tagData);
+            tagData.AlbumArtist = album.AlbumArtist;
+            tagData.Album = album.AlbumName;
+            tagData.Year = album.Year;
+            if (context.ConfirmPrompt())
+            {
+                Tagger.WriteTags(context.File, tagData);
+            }
         }
+        return Task.CompletedTask;
     }
 }

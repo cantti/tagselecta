@@ -7,4 +7,5 @@ public class ActionContext<TSettings>
     public required string File { get; init; }
     public required Func<bool> ConfirmPrompt { get; init; }
     public required Action Skip { get; init; }
+    public required Action Cancel { get; set; }
 }

@@ -30,7 +30,7 @@ public class RenameFileSettings : FileSettings
 
 public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSettings>
 {
-    public override void Execute(ActionContext<RenameFileSettings> context)
+    public override Task Execute(ActionContext<RenameFileSettings> context)
     {
         var dir = Path.GetDirectoryName(context.File)!;
 
@@ -48,7 +48,7 @@ public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSetti
         {
             console.MarkupLine("File name already matches the desired format.");
             context.Skip();
-            return;
+            return Task.CompletedTask;
         }
 
         console.MarkupLine("File rename details:");
@@ -59,12 +59,13 @@ public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSetti
         {
             console.MarkupLine("Dry run.");
             context.Skip();
-            return;
+            return Task.CompletedTask;
         }
 
         if (context.ConfirmPrompt())
         {
             File.Move(context.File, newPath);
         }
+        return Task.CompletedTask;
     }
 }

@@ -39,6 +39,9 @@ class Program
                 .WithDescription(
                     "Set album name, year and album artists to the same value to all files in the same directory."
                 );
+            config
+                .AddCommand<FileCommand<DiscogsSettings>>("discogs")
+                .WithDescription("Update album from discogs release id.");
         });
 
         return app.Run(args);

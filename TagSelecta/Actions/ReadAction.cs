@@ -14,9 +14,10 @@ public class ReadAction(Printer printer) : FileAction<ReadSettings>
         cfg.ShowContinue = true;
     }
 
-    public override void Execute(ActionContext<ReadSettings> context)
+    public override Task Execute(ActionContext<ReadSettings> context)
     {
         var tags = Tagger.ReadTags(context.File);
         printer.PrintTagData(tags);
+        return Task.CompletedTask;
     }
 }

@@ -40,10 +40,11 @@ public sealed class FileCommand<TSettings>(
             try
             {
                 printer.PrintCurrentFile(file, index, files.Count);
-                action.Execute(
+                await action.Execute(
                     new ActionContext<TSettings>()
                     {
                         ConfirmPrompt = ConfirmPrompt,
+                        Cancel = Cancel,
                         Skip = Skip,
                         File = file,
                         Files = files,
@@ -90,6 +91,11 @@ public sealed class FileCommand<TSettings>(
     public void Skip()
     {
         _skipped = true;
+    }
+
+    public void Cancel()
+    {
+        _cancelRequested = true;
     }
 
     bool ConfirmPrompt()
