@@ -12,11 +12,8 @@ namespace TagSelecta.Actions;
 public class RenameDirSettings : FileSettings
 {
     [CommandOption("--template|-t")]
-    [Description("Template. For example: {{ year }} - {{ album }}")]
+    [Description("Template. For example: {year} - {album}")]
     public string Template { get; set; } = "";
-
-    [CommandOption("--dry-run")]
-    public bool DryRun { get; set; }
 
     public override ValidationResult Validate()
     {
@@ -44,7 +41,7 @@ public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSetting
         var tagData = Tagger.ReadTags(context.File);
 
         var newName = TagTemplateFormatter
-            .Format(context.Settings.Template, new TagTemplateContext(tagData, context.File))
+            .Format(context.Settings.Template, tagData)
             .CleanFileName();
 
         var newPath = GetNewPath(dir, newName);
@@ -65,12 +62,7 @@ public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSetting
         console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
         console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
-        if (context.Settings.DryRun)
-        {
-            console.MarkupLine("Dry run.");
-            context.Skip();
-        }
-        else if (context.ConfirmPrompt())
+        if (context.ConfirmPrompt())
         {
             Directory.Move(dir, newPath);
         }

@@ -66,6 +66,7 @@ public class DiscogsAction(
             _image = bytes;
         }
         _release = selectedRelease;
+        console.WriteLine();
     }
 
     public override async Task Execute(ActionContext<DiscogsSettings> context)

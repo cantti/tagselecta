@@ -26,6 +26,9 @@ class Program
                 .WithDescription("Cleans metadata, except the specified tags.")
                 .WithExample(["clean", "-e", "artist", "-e", "title"]);
             config
+                .AddCommand<FileCommand<SplitSettings>>("split")
+                .WithDescription("Split artists, album artists and composers");
+            config
                 .AddCommand<FileCommand<AutoTrackSettings>>("autotrack")
                 .WithDescription("Auto track.");
             config

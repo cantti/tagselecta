@@ -39,8 +39,6 @@ public sealed class FileCommand<TSettings>(
             new ActionBeforeContext<TSettings> { Cancel = Cancel, Settings = settings }
         );
 
-        console.WriteLine();
-
         if (!_cancelRequested)
         {
             var (successCount, skipCount, failCount) = await ExecuteForFiles(files, settings);

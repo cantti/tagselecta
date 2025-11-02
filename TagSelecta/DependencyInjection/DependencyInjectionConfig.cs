@@ -18,6 +18,7 @@ public static class DependencyInjectionConfig
         services.AddTransient<FileAction<RenameFileSettings>, RenameFileAction>();
         services.AddTransient<FileAction<WriteSettings>, WriteAction>();
         services.AddTransient<FileAction<DiscogsSettings>, DiscogsAction>();
+        services.AddTransient<FileAction<SplitSettings>, SplitAction>();
 
         services.AddTransient<Printer>();
 

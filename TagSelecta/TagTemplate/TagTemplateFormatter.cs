@@ -1,5 +1,6 @@
 using SmartFormat;
 using SmartFormat.Core.Settings;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.TagTemplate;
 
@@ -10,8 +11,8 @@ public static class TagTemplateFormatter
     );
     public static SmartFormatter Formatter => _formatter;
 
-    public static string Format(string format, TagTemplateContext context)
+    public static string Format(string format, TagData tagData)
     {
-        return _formatter.Format(format, context);
+        return _formatter.Format(format, TagTemplateContextMapper.Map(tagData));
     }
 }

@@ -12,11 +12,8 @@ namespace TagSelecta.Actions;
 public class RenameFileSettings : FileSettings
 {
     [CommandOption("--template|-t")]
-    [Description("Template. For example: {{ year }} - {{ album }}")]
+    [Description("Template. For example: {year} - {album}")]
     public string Template { get; set; } = "";
-
-    [CommandOption("--dry-run")]
-    public bool DryRun { get; set; }
 
     public override ValidationResult Validate()
     {
@@ -37,7 +34,7 @@ public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSetti
         var tagData = Tagger.ReadTags(context.File);
 
         var newName = TagTemplateFormatter
-            .Format(context.Settings.Template, new TagTemplateContext(tagData, context.File))
+            .Format(context.Settings.Template, tagData)
             .CleanFileName();
 
         newName = Path.ChangeExtension(newName, Path.GetExtension(context.File));
@@ -54,13 +51,6 @@ public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSetti
         console.MarkupLine("File rename details:");
         console.MarkupLine($"  Old: {context.File.EscapeMarkup()}");
         console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
-
-        if (context.Settings.DryRun)
-        {
-            console.MarkupLine("Dry run.");
-            context.Skip();
-            return Task.CompletedTask;
-        }
 
         if (context.ConfirmPrompt())
         {
