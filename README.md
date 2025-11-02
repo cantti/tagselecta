@@ -49,7 +49,8 @@ COMMANDS:
     renamedir <path>     Rename directories                                     
     renamefile <path>    Rename files                                           
     fixalbum <path>      Set album name, year and album artists to the same     
-                         value to all files in the same directory
+                         value to all files in the same directory               
+    discogs <path>       Update album from discogs release id
 ```
 
 ### Read command
@@ -109,42 +110,6 @@ OPTIONS:
         --copyright
 ```
 
-### RenameDir command
-
-```
-DESCRIPTION:
-Rename directories
-
-USAGE:
-    tagselecta renamedir <path> [OPTIONS]
-
-ARGUMENTS:
-    <path>     
-
-OPTIONS:
-    -h, --help        Prints help information                        
-    -t, --template    Template. For example: {{ year }} - {{ album }}
-        --dry-run
-```
-
-### RenameFile command
-
-```
-DESCRIPTION:
-Rename files
-
-USAGE:
-    tagselecta renamefile <path> [OPTIONS]
-
-ARGUMENTS:
-    <path>     
-
-OPTIONS:
-    -h, --help        Prints help information                        
-    -t, --template    Template. For example: {{ year }} - {{ album }}
-        --dry-run
-```
-
 ### Clean command
 
 ```
@@ -167,24 +132,7 @@ OPTIONS:
                     variable (split by any non-word character)
 ```
 
-### FixAlbum command
-
-```
-DESCRIPTION:
-Set album name, year and album artists to the same value to all files in the 
-same directory
-
-USAGE:
-    tagselecta fixalbum <path> [OPTIONS]
-
-ARGUMENTS:
-    <path>     
-
-OPTIONS:
-    -h, --help    Prints help information
-```
-
-### AutoTrack command
+### Auto Track command
 
 ```
 DESCRIPTION:
@@ -199,6 +147,59 @@ ARGUMENTS:
 OPTIONS:
     -h, --help        Prints help information  
         --keepdisk    Remove Disc and DiscTotal
+```
+
+### Rename Directory command
+
+```
+DESCRIPTION:
+Rename directories
+
+USAGE:
+    tagselecta renamedir <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information                        
+    -t, --template    Template. For example: {{ year }} - {{ album }}
+        --dry-run
+```
+
+### Rename File command
+
+```
+DESCRIPTION:
+Rename files
+
+USAGE:
+    tagselecta renamefile <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information                        
+    -t, --template    Template. For example: {{ year }} - {{ album }}
+        --dry-run
+```
+
+### Fix Album command
+
+```
+DESCRIPTION:
+Set album name, year and album artists to the same value to all files in the 
+same directory
+
+USAGE:
+    tagselecta fixalbum <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help    Prints help information
 ```
 
 
