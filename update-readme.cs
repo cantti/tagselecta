@@ -15,11 +15,13 @@ var commands = new (string DisplayName, string CommandLine)[]
     ("Help", "run --project ./TagSelecta -- --help"),
     ("Read", "run --project ./TagSelecta -- read --help"),
     ("Write", "run --project ./TagSelecta -- write --help"),
+    ("Split", "run --project ./TagSelecta -- split --help"),
     ("Clean", "run --project ./TagSelecta -- clean --help"),
     ("Auto Track", "run --project ./TagSelecta -- autotrack --help"),
     ("Rename Directory", "run --project ./TagSelecta -- renamedir --help"),
     ("Rename File", "run --project ./TagSelecta -- renamefile --help"),
     ("Fix Album", "run --project ./TagSelecta -- fixalbum --help"),
+    ("Discogs", "run --project ./TagSelecta -- discogs --help"),
 };
 
 // Generate new content for README
