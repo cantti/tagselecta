@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Refit;
 
 namespace TagSelecta.Discogs;
@@ -12,8 +13,14 @@ public interface IDiscogsApi
     Task<Release> GetRelease(int id);
 
     [Get("/masters/{id}")]
-    Task<Release> GetMaster(int id);
+    Task<Master> GetMaster(int id);
 
-    [Get("/database/search?type=master")]
-    Task<SearchResult> Search(string q);
+    [Get("/masters/{id}/versions")]
+    Task<MasterVersionList> GetMasterVersions(int id);
+
+    [Get("/database/search")]
+    Task<SearchResult> Search(string type, [AliasAs("q")] string query);
+
+    [Get("")]
+    Task<HttpResponseMessage> DownloadImage(string url);
 }

@@ -45,6 +45,7 @@ namespace TagSelecta.Print
             target.ReplayGainAlbumGain = tag.ReplayGainAlbumGain;
             target.ReplayGainAlbumPeak = tag.ReplayGainAlbumPeak;
             target.Copyright = tag.Copyright;
+            target.DiscogsReleaseId = tag.DiscogsReleaseId;
             target.Pictures = MapToListOfPictureDataForJson(tag.Pictures);
             return target;
         }

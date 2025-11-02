@@ -48,6 +48,7 @@ public static partial class TagDataToTagLibMapper
     // ignore target
     [MapperIgnoreSource(nameof(TagData.Label))]
     [MapperIgnoreSource(nameof(TagData.CatalogNumber))]
+    [MapperIgnoreSource(nameof(TagData.DiscogsReleaseId))]
     public static partial void Map(TagData tagData, Tag tag);
 
     // taglib stores no value as nan for double

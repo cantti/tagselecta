@@ -142,5 +142,6 @@ public partial class WriteSettingsMapper
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumPeak))]
     [MapperIgnoreTarget(nameof(TagData.Pictures))]
     [MapperIgnoreTarget(nameof(TagData.AmazonId))]
+    [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     public partial void Map(WriteSettings settings, TagData tagData);
 }

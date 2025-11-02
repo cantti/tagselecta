@@ -116,6 +116,9 @@ public class TagDataForJson
     public string Copyright { get; set; } = "";
 
     [SkipNoValue]
+    public string DiscogsReleaseId { get; set; } = "";
+
+    [SkipNoValue]
     public List<PictureDataForJson> Pictures { get; set; } = [];
 }
 

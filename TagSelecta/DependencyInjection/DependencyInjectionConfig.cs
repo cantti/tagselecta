@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Refit;
 using TagSelecta.Actions;
 using TagSelecta.Actions.Base;
 using TagSelecta.Discogs;
@@ -20,21 +19,9 @@ public static class DependencyInjectionConfig
         services.AddTransient<FileAction<WriteSettings>, WriteAction>();
         services.AddTransient<FileAction<DiscogsSettings>, DiscogsAction>();
 
-        services
-            .AddRefitClient<IDiscogsApi>(
-                new()
-                {
-                    AuthorizationHeaderValueGetter = (_, _) =>
-                    {
-                        return Task.FromResult(
-                            "key=irBlmropPHHUtaZceGyW, secret=rmnYnuNKxHLxTfVMuJJAjtRRhOuBPQmS"
-                        );
-                    },
-                }
-            )
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.discogs.com"));
-
         services.AddTransient<Printer>();
+
+        services.AddDiscogs();
     }
 
     public static TypeRegistrar Configure()
