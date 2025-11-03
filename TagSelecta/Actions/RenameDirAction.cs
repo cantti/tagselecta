@@ -25,20 +25,21 @@ public class RenameDirSettings : FileSettings
     }
 }
 
-public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSettings>
+public class RenameDirAction(IAnsiConsole console, ActionContext<RenameDirSettings> context)
+    : IFileAction<RenameDirSettings>
 {
     private readonly List<string> _renamed = [];
 
-    public override Task Execute(ActionContext<RenameDirSettings> context)
+    public Task Execute(string file, int index)
     {
-        var dir = Path.GetDirectoryName(context.File)!;
+        var dir = Path.GetDirectoryName(file)!;
         if (_renamed.Contains(dir))
         {
             context.Skip();
             return Task.CompletedTask;
         }
         _renamed.Add(dir);
-        var tagData = Tagger.ReadTags(context.File);
+        var tagData = Tagger.ReadTags(file);
 
         var newName = TagTemplateFormatter
             .Format(context.Settings.Template, tagData)

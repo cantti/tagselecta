@@ -25,23 +25,24 @@ public class RenameFileSettings : FileSettings
     }
 }
 
-public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSettings>
+public class RenameFileAction(IAnsiConsole console, ActionContext<RenameFileSettings> context)
+    : IFileAction<RenameFileSettings>
 {
-    public override Task Execute(ActionContext<RenameFileSettings> context)
+    public Task Execute(string file, int index)
     {
-        var dir = Path.GetDirectoryName(context.File)!;
+        var dir = Path.GetDirectoryName(file)!;
 
-        var tagData = Tagger.ReadTags(context.File);
+        var tagData = Tagger.ReadTags(file);
 
         var newName = TagTemplateFormatter
             .Format(context.Settings.Template, tagData)
             .CleanFileName();
 
-        newName = $"{newName}{Path.GetExtension(context.File)}";
+        newName = $"{newName}{Path.GetExtension(file)}";
 
         var newPath = Path.Combine(dir, newName);
 
-        if (newPath == context.File)
+        if (newPath == file)
         {
             console.MarkupLine("File name already matches the desired format.");
             context.Skip();
@@ -49,12 +50,12 @@ public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSetti
         }
 
         console.MarkupLine("File rename details:");
-        console.MarkupLine($"  Old: {context.File.EscapeMarkup()}");
+        console.MarkupLine($"  Old: {file.EscapeMarkup()}");
         console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
         if (context.ConfirmPrompt())
         {
-            File.Move(context.File, newPath);
+            File.Move(file, newPath);
         }
         return Task.CompletedTask;
     }

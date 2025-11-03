@@ -16,35 +16,39 @@ class Program
         var app = new CommandApp(DependencyInjectionConfig.Configure());
         app.Configure(config =>
         {
-            config.AddCommand<FileCommand<ReadSettings>>("read").WithDescription("Read tags.");
             config
-                .AddCommand<FileCommand<WriteSettings>>("write")
+                .AddCommand<FileCommand<ReadAction, ReadSettings>>("read")
+                .WithDescription("Read tags.");
+            config
+                .AddCommand<FileCommand<WriteAction, WriteSettings>>("write")
                 .WithDescription("Write tags.")
                 .WithExample(["write", "-t", "Song1", "-a", "Artist1", "-a", "Artist2"]);
             config
-                .AddCommand<FileCommand<CleanSettings>>("clean")
+                .AddCommand<FileCommand<CleanAction, CleanSettings>>("clean")
                 .WithDescription("Cleans metadata, except the specified tags.")
                 .WithExample(["clean", "-e", "artist", "-e", "title"]);
             config
-                .AddCommand<FileCommand<SplitSettings>>("split")
+                .AddCommand<FileCommand<SplitAction, SplitSettings>>("split")
                 .WithDescription("Split artists, album artists and composers");
             config
-                .AddCommand<FileCommand<AutoTrackSettings>>("autotrack")
+                .AddCommand<FileCommand<AutoTrackAction, AutoTrackSettings>>("autotrack")
                 .WithDescription("Auto track.");
             config
-                .AddCommand<FileCommand<RenameDirSettings>>("renamedir")
+                .AddCommand<FileCommand<RenameDirAction, RenameDirSettings>>("renamedir")
                 .WithDescription("Rename directories.");
             config
-                .AddCommand<FileCommand<RenameFileSettings>>("renamefile")
+                .AddCommand<FileCommand<RenameFileAction, RenameFileSettings>>("renamefile")
                 .WithDescription("Rename files.");
             config
-                .AddCommand<FileCommand<FixAlbumSettings>>("fixalbum")
+                .AddCommand<FileCommand<FixAlbumAction, FixAlbumSettings>>("fixalbum")
                 .WithDescription(
                     "Set album name, year and album artists to the same value to all files in the same directory."
                 );
             config
-                .AddCommand<FileCommand<DiscogsSettings>>("discogs")
-                .WithDescription("Update album from discogs release id.");
+                .AddCommand<FileCommand<DiscogsAction, DiscogsSettings>>("discogs")
+                .WithDescription(
+                    "Update album from discogs. You can pass discogs release id (not master) or query to search."
+                );
         });
 
         return app.Run(args);

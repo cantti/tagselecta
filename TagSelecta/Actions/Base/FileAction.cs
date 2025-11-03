@@ -2,15 +2,15 @@ using TagSelecta.BaseCommands;
 
 namespace TagSelecta.Actions.Base;
 
-public abstract class FileAction<TSettings>
+public interface IFileAction<TSettings>
     where TSettings : FileSettings
 {
-    public virtual void Configure(ActionConfig cfg) { }
+    void Configure(ActionConfig cfg) { }
 
-    public virtual Task BeforeExecute(ActionBeforeContext<TSettings> context)
+    Task BeforeExecute()
     {
         return Task.CompletedTask;
     }
 
-    public abstract Task Execute(ActionContext<TSettings> context);
+    Task Execute(string file, int index);
 }

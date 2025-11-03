@@ -31,13 +31,14 @@ public class DiscogsAction(
     IDiscogsApi discogsApi,
     DiscogsImageDownloader discogsImageDownloader,
     IAnsiConsole console,
-    Printer printer
-) : FileAction<DiscogsSettings>
+    Printer printer,
+    ActionContext<DiscogsSettings> context
+) : IFileAction<DiscogsSettings>
 {
     private Release? _release;
     private byte[]? _image;
 
-    public override async Task BeforeExecute(ActionBeforeContext<DiscogsSettings> context)
+    public async Task BeforeExecute()
     {
         if (context.Settings.Release is not null)
         {
@@ -107,12 +108,12 @@ public class DiscogsAction(
         console.WriteLine();
     }
 
-    public override async Task Execute(ActionContext<DiscogsSettings> context)
+    public async Task Execute(string file, int index)
     {
         if (_release is null)
             return;
-        var tags = Tagger.ReadTags(context.File);
-        var track = _release.TrackList[context.FileIndex];
+        var tags = Tagger.ReadTags(file);
+        var track = _release.TrackList[index];
         var albumArtist = _release.Artists.Select(x => x.Name).ToList();
         var artist = track.Artists.Select(x => x.Name).ToList();
         SetField(tags, x => x.AlbumArtist, albumArtist, context.Settings.Field);
@@ -124,7 +125,7 @@ public class DiscogsAction(
         );
         SetField(tags, x => x.Album, _release.Title, context.Settings.Field);
         SetField(tags, x => x.Title, track.Title, context.Settings.Field);
-        SetField(tags, x => x.Track, (uint)context.FileIndex + 1, context.Settings.Field);
+        SetField(tags, x => x.Track, (uint)index + 1, context.Settings.Field);
         SetField(tags, x => x.TrackTotal, (uint)_release.TrackList.Count, context.Settings.Field);
         SetField(tags, x => x.Disc, (uint)0, context.Settings.Field);
         SetField(tags, x => x.DiscTotal, (uint)0, context.Settings.Field);
@@ -140,7 +141,7 @@ public class DiscogsAction(
         printer.PrintTagData(tags);
         if (context.ConfirmPrompt())
         {
-            Tagger.WriteTags(context.File, tags);
+            Tagger.WriteTags(file, tags);
         }
     }
 

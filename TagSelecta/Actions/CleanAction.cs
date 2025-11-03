@@ -18,11 +18,15 @@ public class CleanSettings : FileSettings
     public string[]? Except { get; set; }
 }
 
-public class CleanAction(IAnsiConsole console, Printer printer) : FileAction<CleanSettings>
+public class CleanAction(
+    IAnsiConsole console,
+    Printer printer,
+    ActionContext<CleanSettings> context
+) : IFileAction<CleanSettings>
 {
-    public override Task Execute(ActionContext<CleanSettings> context)
+    public Task Execute(string file, int index)
     {
-        var existingTags = Tagger.ReadTags(context.File);
+        var existingTags = Tagger.ReadTags(file);
 
         var tagsToKeepList = new List<string>();
 
@@ -75,8 +79,8 @@ public class CleanAction(IAnsiConsole console, Printer printer) : FileAction<Cle
 
         if (context.ConfirmPrompt())
         {
-            Tagger.RemoveTags(context.File);
-            Tagger.WriteTags(context.File, newTags);
+            Tagger.RemoveTags(file);
+            Tagger.WriteTags(file, newTags);
         }
 
         return Task.CompletedTask;

@@ -10,7 +10,9 @@ public class AutoTrackCommandTests
     public void AutoTrackTest()
     {
         // Given
-        var app = CommandAppFactory.CreateTestApp<FileCommand<AutoTrackSettings>>();
+        var app = CommandAppFactory.CreateTestApp<
+            FileCommand<AutoTrackAction, AutoTrackSettings>
+        >();
 
         // When
         var result = app.Run("./TestData/AutoTrackTest");

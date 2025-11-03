@@ -10,7 +10,7 @@ public class WriteCommandTests
     public void WriteTest()
     {
         // Given
-        var app = CommandAppFactory.CreateTestApp<FileCommand<WriteSettings>>();
+        var app = CommandAppFactory.CreateTestApp<FileCommand<WriteAction, WriteSettings>>();
 
         // When
         var result = app.Run(

@@ -8,7 +8,8 @@ namespace TagSelecta.Actions;
 
 public class FixAlbumSettings : FileSettings { }
 
-public class FixAlbumAction(IAnsiConsole console) : FileAction<FixAlbumSettings>
+public class FixAlbumAction(IAnsiConsole console, ActionContext<FixAlbumSettings> context)
+    : IFileAction<FixAlbumSettings>
 {
     private enum FixType
     {
@@ -28,9 +29,9 @@ public class FixAlbumAction(IAnsiConsole console) : FileAction<FixAlbumSettings>
 
     private readonly List<Album> _albums = [];
 
-    public override Task Execute(ActionContext<FixAlbumSettings> context)
+    public Task Execute(string file, int index)
     {
-        var dir = Directory.GetParent(context.File)!.FullName;
+        var dir = Directory.GetParent(file)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
@@ -121,7 +122,7 @@ public class FixAlbumAction(IAnsiConsole console) : FileAction<FixAlbumSettings>
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
         console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
-        var tagData = Tagger.ReadTags(context.File);
+        var tagData = Tagger.ReadTags(file);
         if (
             tagData.AlbumArtist.SequenceEqual(album.AlbumArtist)
             && tagData.Album == album.AlbumName
@@ -138,7 +139,7 @@ public class FixAlbumAction(IAnsiConsole console) : FileAction<FixAlbumSettings>
             tagData.Year = album.Year;
             if (context.ConfirmPrompt())
             {
-                Tagger.WriteTags(context.File, tagData);
+                Tagger.WriteTags(file, tagData);
             }
         }
         return Task.CompletedTask;

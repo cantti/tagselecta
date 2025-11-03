@@ -15,17 +15,18 @@ public class AutoTrackSettings : FileSettings
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackAction(Printer printer) : FileAction<AutoTrackSettings>
+public class AutoTrackAction(Printer printer, ActionContext<AutoTrackSettings> context)
+    : IFileAction<AutoTrackSettings>
 {
-    public override Task Execute(ActionContext<AutoTrackSettings> context)
+    public Task Execute(string file, int index)
     {
-        var dir = Directory.GetParent(context.File)?.FullName;
+        var dir = Directory.GetParent(file)?.FullName;
         var filesInDir = context
             .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
             .Order()
             .ToList();
-        var tags = Tagger.ReadTags(context.File);
-        tags.Track = (uint)filesInDir.IndexOf(context.File) + 1;
+        var tags = Tagger.ReadTags(file);
+        tags.Track = (uint)filesInDir.IndexOf(file) + 1;
         tags.TrackTotal = (uint)filesInDir.Count;
         if (!context.Settings.KeepDisk)
         {
@@ -35,7 +36,7 @@ public class AutoTrackAction(Printer printer) : FileAction<AutoTrackSettings>
         printer.PrintTagData(tags);
         if (context.ConfirmPrompt())
         {
-            Tagger.WriteTags(context.File, tags);
+            Tagger.WriteTags(file, tags);
         }
         return Task.CompletedTask;
     }
