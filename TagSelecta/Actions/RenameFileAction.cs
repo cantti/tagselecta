@@ -37,7 +37,7 @@ public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSetti
             .Format(context.Settings.Template, tagData)
             .CleanFileName();
 
-        newName = Path.ChangeExtension(newName, Path.GetExtension(context.File));
+        newName = $"{newName}{Path.GetExtension(context.File)}";
 
         var newPath = Path.Combine(dir, newName);
 
