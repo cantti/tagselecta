@@ -18,7 +18,7 @@ public sealed class FileCommand<TAction, TSettings>(
     private bool _allConfirmed;
     private bool _cancelRequested;
     private bool _skipped;
-    public ActionConfig _config = new();
+    private readonly ActionConfig _config = new();
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {

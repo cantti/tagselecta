@@ -78,5 +78,5 @@ public class TagData
 
     public string DiscogsReleaseId { get; set; } = "";
 
-    public List<TagLib.IPicture> Pictures { get; set; } = [];
+    public List<TagLib.IPicture> Picture { get; set; } = [];
 }

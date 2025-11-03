@@ -22,11 +22,13 @@ class Program
             config
                 .AddCommand<FileCommand<WriteAction, WriteSettings>>("write")
                 .WithDescription("Write tags.")
-                .WithExample(["write", "-t", "Song1", "-a", "Artist1", "-a", "Artist2"]);
+                .WithExample(
+                    ["write", "song.mp3", "-t", "Song1", "-a", "Artist1", "-a", "Artist2"]
+                );
             config
                 .AddCommand<FileCommand<CleanAction, CleanSettings>>("clean")
                 .WithDescription("Cleans metadata, except the specified tags.")
-                .WithExample(["clean", "-e", "artist", "-e", "title"]);
+                .WithExample(["clean", "song.mp3", "-e", "artist", "-e", "title"]);
             config
                 .AddCommand<FileCommand<SplitAction, SplitSettings>>("split")
                 .WithDescription("Split artists, album artists and composers");
@@ -48,7 +50,10 @@ class Program
                 .AddCommand<FileCommand<DiscogsAction, DiscogsSettings>>("discogs")
                 .WithDescription(
                     "Update album from discogs. You can pass discogs release id (not master) or query to search."
-                );
+                )
+                .WithExample(["discogs", "path-to-album", "-r", "4202979"])
+                .WithExample(["discogs", "song.mp3", "-r", "4202979", "-f", "picture"])
+                .WithExample(["discogs", "path-to-album", "-q", "King Tubby Dub From The Roots"]);
         });
 
         return app.Run(args);

@@ -1,3 +1,4 @@
+using Spectre.Console.Testing;
 using TagSelecta.Actions;
 using TagSelecta.BaseCommands;
 
@@ -13,6 +14,8 @@ public class AutoTrackCommandTests
         var app = CommandAppFactory.CreateTestApp<
             FileCommand<AutoTrackAction, AutoTrackSettings>
         >();
+        app.Console.Interactive();
+        app.Console.Input.PushTextWithEnter("y");
 
         // When
         var result = app.Run("./TestData/AutoTrackTest");

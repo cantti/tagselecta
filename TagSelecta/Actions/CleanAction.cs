@@ -24,63 +24,54 @@ public class CleanAction(
     ActionContext<CleanSettings> context
 ) : IFileAction<CleanSettings>
 {
-    public Task Execute(string file, int index)
+    private List<string> _fieldToKeepList = [];
+
+    public Task BeforeExecute()
     {
-        var existingTags = Tagger.ReadTags(file);
-
-        var tagsToKeepList = new List<string>();
-
         if (context.Settings.Except is not null)
         {
-            tagsToKeepList = [.. context.Settings.Except];
+            _fieldToKeepList = [.. context.Settings.Except];
         }
         else
         {
             var tagsToKeepVar = Environment.GetEnvironmentVariable("TAGSELECTA_CLEAN_EXCEPT");
             if (!string.IsNullOrEmpty(tagsToKeepVar))
             {
-                tagsToKeepList = [.. Regex.Split(tagsToKeepVar, @"\W+")];
+                _fieldToKeepList = [.. Regex.Split(tagsToKeepVar, @"\W+")];
             }
         }
-
-        if (tagsToKeepList.Count == 0)
+        if (_fieldToKeepList.Count == 0)
         {
-            console.MarkupLine("No tags to keep provided! It will remove all known tags");
+            console.MarkupLine("No tags to keep provided! It will remove all tags");
         }
-
-        tagsToKeepList = [.. tagsToKeepList.Select(x => x.ToLower().Trim())];
-
-        var tagDataProps = typeof(TagData).GetProperties();
-
-        // check list of tags to keep correctness
-        foreach (var tagToKeep in tagsToKeepList)
+        _fieldToKeepList = ActionHelper.NormalizeFields(_fieldToKeepList);
+        if (!ActionHelper.ValidateFieldNameList(_fieldToKeepList, console))
         {
-            if (
-                !tagDataProps.Any(x =>
-                    x.Name.Equals(tagToKeep, StringComparison.CurrentCultureIgnoreCase)
-                )
-            )
+            context.Cancel();
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task Execute(string file, int index)
+    {
+        var existingTags = Tagger.ReadTags(file);
+
+        var tagDataToKeep = new TagData();
+
+        foreach (var prop in typeof(TagData).GetProperties())
+        {
+            if (_fieldToKeepList.Contains(prop.Name.ToLower()))
             {
-                throw new ActionException($"Unknown tag: {tagToKeep})");
+                prop.SetValue(tagDataToKeep, prop.GetValue(existingTags));
             }
         }
 
-        var newTags = new TagData();
-
-        foreach (var prop in tagDataProps)
-        {
-            if (tagsToKeepList.Contains(prop.Name.ToLower()))
-            {
-                prop.SetValue(newTags, prop.GetValue(existingTags));
-            }
-        }
-
-        printer.PrintTagData(newTags);
+        printer.PrintTagData(tagDataToKeep);
 
         if (context.ConfirmPrompt())
         {
             Tagger.RemoveTags(file);
-            Tagger.WriteTags(file, newTags);
+            Tagger.WriteTags(file, tagDataToKeep);
         }
 
         return Task.CompletedTask;
