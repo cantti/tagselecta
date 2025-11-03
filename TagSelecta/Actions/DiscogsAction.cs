@@ -118,6 +118,7 @@ public class DiscogsAction(
         tags.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
         tags.CatalogNumber = _release.Labels.FirstOrDefault()?.CatNo ?? "";
         tags.Year = _release.Year;
+        tags.DiscogsReleaseId = _release.Id.ToString();
         if (_image is not null)
         {
             tags.Pictures = [new TagLib.Picture(_image)];
