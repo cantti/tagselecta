@@ -42,14 +42,15 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    read <path>          Read tags                                                                                  
-    write <path>         Write tags                                                                                 
-    clean <path>         Cleans metadata, except the specified tags                                                 
-    split <path>         Split artists, album artists and composers                                                 
-    autotrack <path>     Auto track                                                                                 
-    renamedir <path>     Rename directories                                                                         
-    renamefile <path>    Rename files                                                                               
-    fixalbum <path>      Set album name, year and album artists to the same value to all files in the same directory
+    read <path>          Read tags                                              
+    write <path>         Write tags                                             
+    clean <path>         Cleans metadata, except the specified tags             
+    split <path>         Split artists, album artists and composers             
+    autotrack <path>     Auto track                                             
+    renamedir <path>     Rename directories                                     
+    renamefile <path>    Rename files                                           
+    fixalbum <path>      Set album name, year and album artists to the same     
+                         value to all files in the same directory               
     discogs <path>       Update album from discogs release id
 ```
 
@@ -143,9 +144,10 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help      Prints help information                                                                          
-    -e, --except    Tag to keep (can be used multiple times).                                                        
-                    Can also be set globally using TAGSELECTA_CLEAN_EXCEPT variable (split by any non-word character)
+    -h, --help      Prints help information                                     
+    -e, --except    Tag to keep (can be used multiple times).                   
+                    Can also be set globally using TAGSELECTA_CLEAN_EXCEPT      
+                    variable (split by any non-word character)
 ```
 
 ### Auto Track command
@@ -203,7 +205,8 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Set album name, year and album artists to the same value to all files in the same directory
+Set album name, year and album artists to the same value to all files in the 
+same directory
 
 USAGE:
     tagselecta fixalbum <path> [OPTIONS]
@@ -228,7 +231,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help     Prints help information
+    -h, --help       Prints help information
+    -r, --release                           
     -q, --query
 ```
 
