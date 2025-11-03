@@ -10,7 +10,7 @@ public class ReadCommandTests
     public void ReadTest()
     {
         // Given
-        var app = CommandAppFactory.CreateTestApp<FileCommand<ReadSettings>>();
+        var app = CommandAppFactory.CreateTestApp<FileCommand<ReadAction, ReadSettings>>();
 
         // When
         var result = app.Run("./TestData/ReadTest/01 Song 1.mp3");

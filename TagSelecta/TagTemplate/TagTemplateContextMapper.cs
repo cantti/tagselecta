@@ -7,7 +7,7 @@ namespace TagSelecta.TagTemplate;
 [Mapper]
 public partial class TagTemplateContextMapper
 {
-    [MapperIgnoreSource(nameof(TagData.Pictures))]
+    [MapperIgnoreSource(nameof(TagData.Picture))]
     [MapProperty(nameof(TagData.Artist), nameof(TagTemplateContext.ArtistList))]
     [MapProperty(nameof(TagData.AlbumArtist), nameof(TagTemplateContext.AlbumArtistList))]
     [MapProperty(nameof(TagData.Genre), nameof(TagTemplateContext.GenreList))]

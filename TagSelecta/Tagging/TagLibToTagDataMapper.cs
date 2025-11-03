@@ -19,6 +19,7 @@ public static partial class TagLibToTagDataMapper
     [MapProperty(nameof(Tag.DiscCount), nameof(TagData.DiscTotal))]
     [MapProperty(nameof(Tag.Genres), nameof(TagData.Genre))]
     [MapProperty(nameof(Tag.BeatsPerMinute), nameof(TagData.Bpm))]
+    [MapProperty(nameof(Tag.Pictures), nameof(TagData.Picture))]
     // ignore source
     [MapperIgnoreSource(nameof(Tag.IsEmpty))]
     [MapperIgnoreSource(nameof(Tag.Length))]

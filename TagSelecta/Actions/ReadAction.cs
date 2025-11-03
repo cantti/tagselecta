@@ -7,16 +7,16 @@ namespace TagSelecta.Actions;
 
 public class ReadSettings : FileSettings { }
 
-public class ReadAction(Printer printer) : FileAction<ReadSettings>
+public class ReadAction(Printer printer) : IFileAction<ReadSettings>
 {
-    public override void Configure(ActionConfig cfg)
+    public void Configure(ActionConfig cfg)
     {
         cfg.ShowContinue = true;
     }
 
-    public override Task Execute(ActionContext<ReadSettings> context)
+    public Task Execute(string file, int index)
     {
-        var tags = Tagger.ReadTags(context.File);
+        var tags = Tagger.ReadTags(file);
         printer.PrintTagData(tags);
         return Task.CompletedTask;
     }

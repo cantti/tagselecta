@@ -1,5 +1,3 @@
-using TagLib;
-
 namespace TagSelecta.Print;
 
 public class TagDataForJson
@@ -119,7 +117,7 @@ public class TagDataForJson
     public string DiscogsReleaseId { get; set; } = "";
 
     [SkipNoValue]
-    public List<PictureDataForJson> Pictures { get; set; } = [];
+    public List<PictureDataForJson> Picture { get; set; } = [];
 }
 
 public class PictureDataForJson

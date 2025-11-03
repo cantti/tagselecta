@@ -6,28 +6,40 @@ using TagSelecta.Print;
 
 namespace TagSelecta.BaseCommands;
 
-public sealed class FileCommand<TSettings>(
+public sealed class FileCommand<TAction, TSettings>(
     IAnsiConsole console,
     Printer printer,
-    FileAction<TSettings> action
+    FileActionFactory<TAction, TSettings> actionFactory
 ) : AsyncCommand<TSettings>
+    where TAction : IFileAction<TSettings>
     where TSettings : FileSettings
 {
     private bool _isLastFile;
     private bool _allConfirmed;
     private bool _cancelRequested;
     private bool _skipped;
-    public ActionConfig _config = new();
+    private readonly ActionConfig _config = new();
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {
-        action.Configure(_config);
-
         console.MarkupLine("Searching for files...");
 
         console.WriteLine();
 
         var files = FileHelper.GetAllAudioFiles(settings.Path, true);
+
+        var actionContext = new ActionContext<TSettings>()
+        {
+            ConfirmPrompt = ConfirmPrompt,
+            Cancel = Cancel,
+            Skip = Skip,
+            Files = files,
+            Settings = settings,
+        };
+
+        var action = actionFactory.Create(actionContext);
+
+        action.Configure(_config);
 
         console.MarkupLineInterpolated(
             $"[yellow]{files.Count}[/] {(files.Count == 1 ? "file" : "files")} found."
@@ -35,13 +47,11 @@ public sealed class FileCommand<TSettings>(
 
         console.WriteLine();
 
-        await action.BeforeExecute(
-            new ActionBeforeContext<TSettings> { Cancel = Cancel, Settings = settings }
-        );
+        await action.BeforeExecute();
 
         if (!_cancelRequested)
         {
-            var (successCount, skipCount, failCount) = await ExecuteForFiles(files, settings);
+            var (successCount, skipCount, failCount) = await ExecuteForFiles(files, action);
             console.MarkupLineInterpolated(
                 $"[green]Finished![/] Processed [yellow]{successCount}[/] files, [cyan]{skipCount}[/] skipped, [red]{failCount}[/] failed."
             );
@@ -52,7 +62,7 @@ public sealed class FileCommand<TSettings>(
 
     private async Task<(int SuccessCount, int SkipCount, int FailCount)> ExecuteForFiles(
         List<string> files,
-        TSettings settings
+        IFileAction<TSettings> action
     )
     {
         int successCount = 0;
@@ -67,18 +77,7 @@ public sealed class FileCommand<TSettings>(
             try
             {
                 printer.PrintCurrentFile(file, index, files.Count);
-                await action.Execute(
-                    new ActionContext<TSettings>()
-                    {
-                        ConfirmPrompt = ConfirmPrompt,
-                        Cancel = Cancel,
-                        Skip = Skip,
-                        File = file,
-                        FileIndex = index,
-                        Files = files,
-                        Settings = settings,
-                    }
-                );
+                await action.Execute(file, index);
             }
             catch (Exception ex)
             {

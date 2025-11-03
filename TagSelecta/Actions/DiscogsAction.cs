@@ -31,14 +31,26 @@ public class DiscogsAction(
     IDiscogsApi discogsApi,
     DiscogsImageDownloader discogsImageDownloader,
     IAnsiConsole console,
-    Printer printer
-) : FileAction<DiscogsSettings>
+    Printer printer,
+    ActionContext<DiscogsSettings> context
+) : IFileAction<DiscogsSettings>
 {
     private Release? _release;
     private byte[]? _image;
+    private List<string> _fieldToWriteList = [];
 
-    public override async Task BeforeExecute(ActionBeforeContext<DiscogsSettings> context)
+    public async Task BeforeExecute()
     {
+        // set field list to write if any
+        if (context.Settings.Field is not null)
+        {
+            _fieldToWriteList = ActionHelper.NormalizeFields(context.Settings.Field);
+            if (!ActionHelper.ValidateFieldNameList(_fieldToWriteList, console))
+            {
+                context.Cancel();
+                return;
+            }
+        }
         if (context.Settings.Release is not null)
         {
             _release = await discogsApi.GetRelease(context.Settings.Release.Value);
@@ -107,48 +119,39 @@ public class DiscogsAction(
         console.WriteLine();
     }
 
-    public override async Task Execute(ActionContext<DiscogsSettings> context)
+    public async Task Execute(string file, int index)
     {
         if (_release is null)
             return;
-        var tags = Tagger.ReadTags(context.File);
-        var track = _release.TrackList[context.FileIndex];
+        var tags = Tagger.ReadTags(file);
+        var track = _release.TrackList[index];
         var albumArtist = _release.Artists.Select(x => x.Name).ToList();
         var artist = track.Artists.Select(x => x.Name).ToList();
-        SetField(tags, x => x.AlbumArtist, albumArtist, context.Settings.Field);
-        SetField(
-            tags,
-            x => x.Artist,
-            artist.Count != 0 ? artist : albumArtist,
-            context.Settings.Field
-        );
-        SetField(tags, x => x.Album, _release.Title, context.Settings.Field);
-        SetField(tags, x => x.Title, track.Title, context.Settings.Field);
-        SetField(tags, x => x.Track, (uint)context.FileIndex + 1, context.Settings.Field);
-        SetField(tags, x => x.TrackTotal, (uint)_release.TrackList.Count, context.Settings.Field);
-        SetField(tags, x => x.Disc, (uint)0, context.Settings.Field);
-        SetField(tags, x => x.DiscTotal, (uint)0, context.Settings.Field);
-        SetField(tags, x => x.Genre, _release.Genres, context.Settings.Field);
-        // tags.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
-        // tags.CatalogNumber = _release.Labels.FirstOrDefault()?.CatNo ?? "";
-        // tags.Year = _release.Year;
-        // tags.DiscogsReleaseId = _release.Id.ToString();
-        if (_image is not null)
-        {
-            tags.Pictures = [new TagLib.Picture(_image)];
-        }
+        SetField(tags, x => x.AlbumArtist, albumArtist);
+        SetField(tags, x => x.Artist, artist.Count != 0 ? artist : albumArtist);
+        SetField(tags, x => x.Album, _release.Title);
+        SetField(tags, x => x.Title, track.Title);
+        SetField(tags, x => x.Track, (uint)index + 1);
+        SetField(tags, x => x.TrackTotal, (uint)_release.TrackList.Count);
+        SetField(tags, x => x.Disc, (uint)0);
+        SetField(tags, x => x.DiscTotal, (uint)0);
+        SetField(tags, x => x.Genre, _release.Styles);
+        SetField(tags, x => x.Label, _release.Labels.FirstOrDefault()?.Name ?? "");
+        SetField(tags, x => x.CatalogNumber, _release.Labels.FirstOrDefault()?.CatNo ?? "");
+        SetField(tags, x => x.Year, _release.Year);
+        SetField(tags, x => x.DiscogsReleaseId, _release.Id.ToString());
+        SetField(tags, x => x.Picture, [new TagLib.Picture(_image)]);
         printer.PrintTagData(tags);
         if (context.ConfirmPrompt())
         {
-            Tagger.WriteTags(context.File, tags);
+            Tagger.WriteTags(file, tags);
         }
     }
 
-    public static void SetField<TProp>(
+    private void SetField<TProp>(
         TagData target,
         Expression<Func<TagData, TProp>> tagDataSelector,
-        TProp newValue,
-        string[]? field
+        TProp newValue
     )
     {
         if (tagDataSelector.Body is not MemberExpression memberExpr)
@@ -156,7 +159,7 @@ public class DiscogsAction(
         if (memberExpr.Member is not PropertyInfo propInfo)
             throw new ArgumentException("Expression does not refer to a property.");
         var fieldName = memberExpr.Member.Name.ToLower();
-        if (field is not null && !field.Select(x => x.ToLower()).Contains(fieldName.ToLower()))
+        if (_fieldToWriteList.Count != 0 && !_fieldToWriteList.Contains(fieldName.ToLower()))
             return;
         propInfo.SetValue(target, newValue);
     }

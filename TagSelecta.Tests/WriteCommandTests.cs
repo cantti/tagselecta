@@ -1,3 +1,4 @@
+using Spectre.Console.Testing;
 using TagSelecta.Actions;
 using TagSelecta.BaseCommands;
 
@@ -10,7 +11,9 @@ public class WriteCommandTests
     public void WriteTest()
     {
         // Given
-        var app = CommandAppFactory.CreateTestApp<FileCommand<WriteSettings>>();
+        var app = CommandAppFactory.CreateTestApp<FileCommand<WriteAction, WriteSettings>>();
+        app.Console.Interactive();
+        app.Console.Input.PushTextWithEnter("y");
 
         // When
         var result = app.Run(

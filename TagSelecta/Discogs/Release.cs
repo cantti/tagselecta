@@ -8,6 +8,7 @@ public class Release
     public List<ReleaseArtist> Artists { get; set; } = [];
     public List<ReleaseTrack> TrackList { get; set; } = [];
     public List<string> Genres { get; set; } = [];
+    public List<string> Styles { get; set; } = [];
     public List<ReleaseLabel> Labels { get; set; } = [];
     public List<ReleaseImage> Images { get; set; } = [];
     public uint Year { get; set; }

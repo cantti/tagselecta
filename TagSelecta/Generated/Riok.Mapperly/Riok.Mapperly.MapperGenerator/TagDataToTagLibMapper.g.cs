@@ -42,7 +42,7 @@ namespace TagSelecta.Tagging
             tag.ReplayGainAlbumPeak = Double(tagData.ReplayGainAlbumPeak);
             tag.Publisher = tagData.Publisher;
             tag.ISRC = tagData.Isrc;
-            tag.Pictures = global::System.Linq.Enumerable.ToArray(tagData.Pictures);
+            tag.Pictures = global::System.Linq.Enumerable.ToArray(tagData.Picture);
         }
     }
 }

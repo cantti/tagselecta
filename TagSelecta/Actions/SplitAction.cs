@@ -9,27 +9,28 @@ namespace TagSelecta.Actions;
 
 public class SplitSettings : FileSettings
 {
-    [CommandOption("--delimiters|-d")]
+    [CommandOption("--separator|-s")]
     // last space is reauired otherwise . deleted
     [Description("Default values are: , ; feat. ")]
-    public string[]? Delimiters { get; set; }
+    public string[]? Separator { get; set; }
 }
 
-public class SplitAction(Printer printer) : FileAction<SplitSettings>
+public class SplitAction(Printer printer, ActionContext<SplitSettings> context)
+    : IFileAction<SplitSettings>
 {
-    private string[] delimiters = [",", ";", "feat."];
+    private string[] separators = [",", ";", "feat."];
 
-    public override async Task BeforeExecute(ActionBeforeContext<SplitSettings> context)
+    public async Task BeforeExecute()
     {
-        if (context.Settings.Delimiters is not null)
+        if (context.Settings.Separator is not null)
         {
-            delimiters = context.Settings.Delimiters;
+            separators = context.Settings.Separator;
         }
     }
 
-    public override Task Execute(ActionContext<SplitSettings> context)
+    public Task Execute(string file, int index)
     {
-        var tags = Tagger.ReadTags(context.File);
+        var tags = Tagger.ReadTags(file);
         var artist = tags.Artist.Select(Split).SelectMany(x => x).Distinct().ToList();
         var albumArtist = tags.AlbumArtist.Select(Split).SelectMany(x => x).Distinct().ToList();
         var composers = tags.Composers.Select(Split).SelectMany(x => x).Distinct().ToList();
@@ -42,7 +43,7 @@ public class SplitAction(Printer printer) : FileAction<SplitSettings>
 
         if (context.ConfirmPrompt())
         {
-            Tagger.WriteTags(context.File, tags);
+            Tagger.WriteTags(file, tags);
         }
 
         return Task.CompletedTask;
@@ -52,7 +53,7 @@ public class SplitAction(Printer printer) : FileAction<SplitSettings>
     {
         return
         [
-            .. input.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()),
+            .. input.Split(separators, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()),
         ];
     }
 }

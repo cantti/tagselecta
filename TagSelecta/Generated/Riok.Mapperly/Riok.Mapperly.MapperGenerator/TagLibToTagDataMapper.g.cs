@@ -120,7 +120,7 @@ namespace TagSelecta.Tagging
             }
             if (tag.Pictures != null)
             {
-                target.Pictures = MapToListOfIPicture(tag.Pictures);
+                target.Picture = MapToListOfIPicture(tag.Pictures);
             }
             return target;
         }

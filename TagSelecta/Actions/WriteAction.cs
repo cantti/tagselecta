@@ -77,9 +77,10 @@ public class WriteSettings : FileSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteAction(Printer printer) : FileAction<WriteSettings>
+public class WriteAction(Printer printer, ActionContext<WriteSettings> context)
+    : IFileAction<WriteSettings>
 {
-    public override Task Execute(ActionContext<WriteSettings> context)
+    public Task Execute(string file, int index)
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
@@ -96,7 +97,7 @@ public class WriteAction(Printer printer) : FileAction<WriteSettings>
 
         var mapper = new WriteSettingsMapper();
 
-        var tags = Tagger.ReadTags(context.File);
+        var tags = Tagger.ReadTags(file);
 
         mapper.Map(context.Settings, tags);
 
@@ -104,7 +105,7 @@ public class WriteAction(Printer printer) : FileAction<WriteSettings>
 
         if (context.ConfirmPrompt())
         {
-            Tagger.WriteTags(context.File, tags);
+            Tagger.WriteTags(file, tags);
         }
 
         return Task.CompletedTask;
@@ -140,7 +141,7 @@ public partial class WriteSettingsMapper
     [MapperIgnoreTarget(nameof(TagData.ReplayGainTrackPeak))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumGain))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumPeak))]
-    [MapperIgnoreTarget(nameof(TagData.Pictures))]
+    [MapperIgnoreTarget(nameof(TagData.Picture))]
     [MapperIgnoreTarget(nameof(TagData.AmazonId))]
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     public partial void Map(WriteSettings settings, TagData tagData);
