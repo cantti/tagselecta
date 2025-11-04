@@ -7,17 +7,21 @@ namespace TagSelecta.Actions
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
         public partial void Map(global::TagSelecta.Actions.WriteSettings settings, global::TagSelecta.Tagging.TagData tagData)
         {
-            if (settings.Artist != null)
-            {
-                tagData.Artist = global::System.Linq.Enumerable.ToList(settings.Artist);
-            }
             if (settings.AlbumArtist != null)
             {
                 tagData.AlbumArtist = global::System.Linq.Enumerable.ToList(settings.AlbumArtist);
             }
+            if (settings.Artist != null)
+            {
+                tagData.Artist = global::System.Linq.Enumerable.ToList(settings.Artist);
+            }
             if (settings.Album != null)
             {
                 tagData.Album = settings.Album;
+            }
+            if (settings.Year != null)
+            {
+                tagData.Year = settings.Year.Value;
             }
             if (settings.Title != null)
             {
@@ -26,14 +30,6 @@ namespace TagSelecta.Actions
             if (settings.Subtitle != null)
             {
                 tagData.Subtitle = settings.Subtitle;
-            }
-            if (settings.Genre != null)
-            {
-                tagData.Genre = global::System.Linq.Enumerable.ToList(settings.Genre);
-            }
-            if (settings.Year != null)
-            {
-                tagData.Year = settings.Year.Value;
             }
             if (settings.Track != null)
             {
@@ -50,6 +46,10 @@ namespace TagSelecta.Actions
             if (settings.DiscTotal != null)
             {
                 tagData.DiscTotal = settings.DiscTotal.Value;
+            }
+            if (settings.Genre != null)
+            {
+                tagData.Genre = global::System.Linq.Enumerable.ToList(settings.Genre);
             }
             if (settings.Comment != null)
             {

@@ -8,18 +8,19 @@ namespace TagSelecta.Tagging
         public static partial global::TagSelecta.Tagging.TagData Map(global::TagLib.Tag tag)
         {
             var target = new global::TagSelecta.Tagging.TagData();
-            if (tag.Performers != null)
-            {
-                target.Artist = MapToListOfString(tag.Performers);
-            }
             if (tag.AlbumArtists != null)
             {
                 target.AlbumArtist = MapToListOfString(tag.AlbumArtists);
+            }
+            if (tag.Performers != null)
+            {
+                target.Artist = MapToListOfString(tag.Performers);
             }
             if (tag.Album != null)
             {
                 target.Album = tag.Album;
             }
+            target.Year = tag.Year;
             if (tag.Title != null)
             {
                 target.Title = tag.Title;
@@ -28,15 +29,14 @@ namespace TagSelecta.Tagging
             {
                 target.Subtitle = tag.Subtitle;
             }
-            if (tag.Genres != null)
-            {
-                target.Genre = MapToListOfString(tag.Genres);
-            }
-            target.Year = tag.Year;
             target.Track = tag.Track;
             target.TrackTotal = tag.TrackCount;
             target.Disc = tag.Disc;
             target.DiscTotal = tag.DiscCount;
+            if (tag.Genres != null)
+            {
+                target.Genre = MapToListOfString(tag.Genres);
+            }
             if (tag.Comment != null)
             {
                 target.Comment = tag.Comment;

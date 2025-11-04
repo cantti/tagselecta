@@ -2,19 +2,17 @@ namespace TagSelecta.Tagging;
 
 public class TagData
 {
-    public List<string> Artist { get; set; } = [];
-
     public List<string> AlbumArtist { get; set; } = [];
 
+    public List<string> Artist { get; set; } = [];
+
     public string Album { get; set; } = "";
+
+    public uint Year { get; set; }
 
     public string Title { get; set; } = "";
 
     public string Subtitle { get; set; } = "";
-
-    public List<string> Genre { get; set; } = [];
-
-    public uint Year { get; set; }
 
     public uint Track { get; set; }
 
@@ -23,6 +21,8 @@ public class TagData
     public uint Disc { get; set; }
 
     public uint DiscTotal { get; set; }
+
+    public List<string> Genre { get; set; } = [];
 
     public string Comment { get; set; } = "";
 

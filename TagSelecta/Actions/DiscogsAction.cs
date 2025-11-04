@@ -8,7 +8,6 @@ using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Discogs;
 using TagSelecta.Misc;
-using TagSelecta.Print;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Actions;
@@ -32,7 +31,7 @@ public class DiscogsAction(
     IDiscogsApi discogsApi,
     DiscogsImageDownloader discogsImageDownloader,
     IAnsiConsole console,
-    Printer printer,
+    ActionCommon common,
     ActionContext<DiscogsSettings> context
 ) : IFileAction<DiscogsSettings>
 {
@@ -45,8 +44,8 @@ public class DiscogsAction(
         // set field list to write if any
         if (context.Settings.Field is not null)
         {
-            _fieldToWriteList = ActionHelper.NormalizeFields(context.Settings.Field);
-            if (!ActionHelper.ValidateFieldNameList(_fieldToWriteList, console))
+            _fieldToWriteList = FieldNameValidation.NormalizeFields(context.Settings.Field);
+            if (!common.ValidateFieldNameList(_fieldToWriteList))
             {
                 context.Cancel();
                 return;
@@ -149,13 +148,11 @@ public class DiscogsAction(
         SetField(tags, x => x.DiscogsReleaseId, _release.Id.ToString());
         SetField(tags, x => x.Picture, [new TagLib.Picture(_image)]);
 
-        if (!ActionHelper.TagDataChanged(originalTags, tags, console))
+        if (!common.TagDataChanged(originalTags, tags))
         {
             context.Skip();
             return;
         }
-
-        printer.PrintTagData(tags);
 
         if (context.ConfirmPrompt())
         {

@@ -1,9 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using TagSelecta.Actions;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Discogs;
-using TagSelecta.Print;
 
 namespace TagSelecta.DependencyInjection;
 
@@ -11,7 +9,7 @@ public static class DependencyInjectionConfig
 {
     private static void AddActions(IServiceCollection services)
     {
-        services.AddTransient<Printer>();
+        services.AddTransient<ActionCommon>();
         services.AddTransient(typeof(FileActionFactory<,>));
         services.AddDiscogs();
     }

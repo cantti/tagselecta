@@ -4,7 +4,6 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
-using TagSelecta.Print;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Actions;
@@ -20,7 +19,7 @@ public class CleanSettings : FileSettings
 
 public class CleanAction(
     IAnsiConsole console,
-    Printer printer,
+    ActionCommon common,
     ActionContext<CleanSettings> context
 ) : IFileAction<CleanSettings>
 {
@@ -44,8 +43,8 @@ public class CleanAction(
         {
             console.MarkupLine("No tags to keep provided! It will remove all tags");
         }
-        _fieldToKeepList = ActionHelper.NormalizeFields(_fieldToKeepList);
-        if (!ActionHelper.ValidateFieldNameList(_fieldToKeepList, console))
+        _fieldToKeepList = FieldNameValidation.NormalizeFields(_fieldToKeepList);
+        if (!common.ValidateFieldNameList(_fieldToKeepList))
         {
             context.Cancel();
         }
@@ -66,13 +65,11 @@ public class CleanAction(
             }
         }
 
-        if (!ActionHelper.TagDataChanged(existingTags, tagDataToKeep, console))
+        if (!common.TagDataChanged(existingTags, tagDataToKeep))
         {
             context.Skip();
             return Task.CompletedTask;
         }
-
-        printer.PrintTagData(tagDataToKeep);
 
         if (context.ConfirmPrompt())
         {

@@ -3,7 +3,6 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
-using TagSelecta.Print;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Actions;
@@ -16,11 +15,8 @@ public class SplitSettings : FileSettings
     public string[]? Separator { get; set; }
 }
 
-public class SplitAction(
-    Printer printer,
-    IAnsiConsole console,
-    ActionContext<SplitSettings> context
-) : IFileAction<SplitSettings>
+public class SplitAction(ActionCommon common, ActionContext<SplitSettings> context)
+    : IFileAction<SplitSettings>
 {
     private string[] separators = [",", ";", "feat."];
 
@@ -44,13 +40,11 @@ public class SplitAction(
         tags.AlbumArtist = albumArtist;
         tags.Composers = composers;
 
-        if (!ActionHelper.TagDataChanged(originalTags, tags, console))
+        if (!common.TagDataChanged(originalTags, tags))
         {
             context.Skip();
             return Task.CompletedTask;
         }
-
-        printer.PrintTagData(tags);
 
         if (context.ConfirmPrompt())
         {

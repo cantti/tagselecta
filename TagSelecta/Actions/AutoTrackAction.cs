@@ -15,7 +15,7 @@ public class AutoTrackSettings : FileSettings
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackAction(Printer printer, ActionContext<AutoTrackSettings> context)
+public class AutoTrackAction(ActionContext<AutoTrackSettings> context, IAnsiConsole console)
     : IFileAction<AutoTrackSettings>
 {
     public Task Execute(string file, int index)
@@ -33,7 +33,7 @@ public class AutoTrackAction(Printer printer, ActionContext<AutoTrackSettings> c
             tags.Disc = 0;
             tags.DiscTotal = 0;
         }
-        printer.PrintTagData(tags);
+        Printer.PrintTagData(console, tags);
         if (context.ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);

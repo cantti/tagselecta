@@ -1,3 +1,4 @@
+using Spectre.Console;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Print;
@@ -7,7 +8,7 @@ namespace TagSelecta.Actions;
 
 public class ReadSettings : FileSettings { }
 
-public class ReadAction(Printer printer) : IFileAction<ReadSettings>
+public class ReadAction(IAnsiConsole console) : IFileAction<ReadSettings>
 {
     public void Configure(ActionConfig cfg)
     {
@@ -17,7 +18,7 @@ public class ReadAction(Printer printer) : IFileAction<ReadSettings>
     public Task Execute(string file, int index)
     {
         var tags = Tagger.ReadTags(file);
-        printer.PrintTagData(tags);
+        Printer.PrintTagData(console, tags);
         return Task.CompletedTask;
     }
 }

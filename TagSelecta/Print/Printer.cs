@@ -1,45 +1,72 @@
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using Spectre.Console;
-using Spectre.Console.Json;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Print;
 
-public class Printer(IAnsiConsole console)
+public static class Printer
 {
-    private static readonly JsonSerializerOptions _jsonOpts = new()
+    public static void PrintTagData(IAnsiConsole console, TagData tagData)
     {
-        TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        var table = new Table();
+        table.Border(TableBorder.Rounded);
+        table.AddColumn("");
+        table.AddColumn("");
+        table.HideHeaders();
+        foreach (var prop in typeof(TagData).GetProperties())
         {
-            Modifiers = { JsonSerializationModifiers.ApplySkipNoValue },
-        },
-        // Ensures special characters like '&' are displayed correctly
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-    };
-
-    public void PrintTagData(TagData tagdata)
-    {
-        var tagDataForJson = TagDataForJsonMapper.Map(tagdata);
-        var json = new JsonText(JsonSerializer.Serialize(tagDataForJson, _jsonOpts));
-        console.Write(json);
-        console.WriteLine();
+            var value = prop.GetValue(tagData);
+            var column = ValueToColumn(value);
+            if (column == "")
+                continue;
+            table.AddRow([$"[blue]{prop.Name.EscapeMarkup()}[/]", column.EscapeMarkup()]);
+        }
+        console.Write(table);
     }
 
-    public void PrintCurrentFile(string file, int index, int total)
+    public static void PrintComparison(IAnsiConsole console, TagData tagData1, TagData tagData2)
     {
-        console.MarkupLineInterpolated(
-            $"[dim]>[/] [yellow]({index + 1}/{total})[/] [green]{file}[/]"
-        );
+        var table = new Table();
+        table.Border(TableBorder.Rounded);
+        table.AddColumn("[yellow]Field[/]");
+        table.AddColumn("[yellow]Old Value[/]");
+        table.AddColumn("[yellow]New Value[/]");
+        foreach (var prop in typeof(TagData).GetProperties())
+        {
+            var value1 = prop.GetValue(tagData1);
+            var value2 = prop.GetValue(tagData2);
+            var column1 = ValueToColumn(value1);
+            var column2 = ValueToColumn(value2);
+            var color1 = column1 == column2 ? "[white]" : "[red]";
+            var color2 = column1 == column2 ? "[white]" : "[green]";
+            if (column1 == "" && column2 == "")
+                continue;
+            table.AddRow(
+                [
+                    $"[blue]{prop.Name.EscapeMarkup()}[/]",
+                    $"{color1}{column1.EscapeMarkup()}[/]",
+                    $"{color2}{column2.EscapeMarkup()}[/]",
+                ]
+            );
+        }
+        console.Write(table);
     }
 
-    public void PrintAsJson(object obj)
+    private static string ValueToColumn(object? value)
     {
-        var json = new JsonText(JsonSerializer.Serialize(obj));
-        console.Write(json);
-        console.WriteLine();
+        if (value is List<string> list)
+        {
+            return string.Join("\n", list);
+        }
+        else if (value is List<TagLib.Picture> picture)
+        {
+            return string.Join("\n", picture.Select(x => x.Type));
+        }
+        else
+        {
+            // that will work fine for both uint and double?
+            var column = value?.ToString() ?? "";
+            column = (value is uint uint1 && uint1 == 0) ? "" : column;
+            return column;
+        }
     }
 }

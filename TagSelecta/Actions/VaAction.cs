@@ -1,14 +1,13 @@
 using Spectre.Console;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
-using TagSelecta.Print;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Actions;
 
 public class VaSettings : FileSettings { }
 
-public class VaAction(Printer printer, IAnsiConsole console, ActionContext<VaSettings> context)
+public class VaAction(ActionCommon common, ActionContext<VaSettings> context)
     : IFileAction<VaSettings>
 {
     public Task Execute(string file, int index)
@@ -21,13 +20,11 @@ public class VaAction(Printer printer, IAnsiConsole console, ActionContext<VaSet
         tags.AlbumArtist = [.. tags.AlbumArtist.Select(NormalizeArtistName)];
         tags.Composers = [.. tags.Composers.Select(NormalizeArtistName)];
 
-        if (!ActionHelper.TagDataChanged(originalTags, tags, console))
+        if (!common.TagDataChanged(originalTags, tags))
         {
             context.Skip();
             return Task.CompletedTask;
         }
-
-        printer.PrintTagData(tags);
 
         if (context.ConfirmPrompt())
         {

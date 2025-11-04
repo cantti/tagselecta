@@ -1,10 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Riok.Mapperly.Abstractions;
-using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
-using TagSelecta.Print;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Actions;
@@ -78,11 +76,8 @@ public class WriteSettings : FileSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteAction(
-    Printer printer,
-    IAnsiConsole console,
-    ActionContext<WriteSettings> context
-) : IFileAction<WriteSettings>
+public class WriteAction(ActionCommon common, ActionContext<WriteSettings> context)
+    : IFileAction<WriteSettings>
 {
     public Task Execute(string file, int index)
     {
@@ -107,13 +102,11 @@ public class WriteAction(
 
         mapper.Map(context.Settings, tags);
 
-        if (!ActionHelper.TagDataChanged(originalTags, tags, console))
+        if (!common.TagDataChanged(originalTags, tags))
         {
             context.Skip();
             return Task.CompletedTask;
         }
-
-        printer.PrintTagData(tags);
 
         if (context.ConfirmPrompt())
         {

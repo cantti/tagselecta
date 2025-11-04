@@ -2,13 +2,11 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.Misc;
-using TagSelecta.Print;
 
 namespace TagSelecta.BaseCommands;
 
 public sealed class FileCommand<TAction, TSettings>(
     IAnsiConsole console,
-    Printer printer,
     FileActionFactory<TAction, TSettings> actionFactory
 ) : AsyncCommand<TSettings>
     where TAction : IFileAction<TSettings>
@@ -76,7 +74,7 @@ public sealed class FileCommand<TAction, TSettings>(
             _isLastFile = index == files.Count - 1;
             try
             {
-                printer.PrintCurrentFile(file, index, files.Count);
+                PrintCurrentFile(file, index, files.Count);
                 await action.Execute(file, index);
             }
             catch (Exception ex)
@@ -168,5 +166,18 @@ public sealed class FileCommand<TAction, TSettings>(
         );
 
         return confirmation == "y";
+    }
+
+    private void PrintCurrentFile(string file, int index, int total)
+    {
+        console.MarkupInterpolated($"[dim]>[/] [yellow]({index + 1}/{total})[/] \"");
+        var path = new TextPath(file)
+            .RootColor(Color.White)
+            .SeparatorColor(Color.White)
+            .StemColor(Color.White)
+            .LeafColor(Color.Yellow);
+        console.Write(path);
+        console.Write("\"");
+        console.WriteLine();
     }
 }

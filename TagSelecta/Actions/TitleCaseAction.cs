@@ -2,18 +2,14 @@ using System.Globalization;
 using Spectre.Console;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
-using TagSelecta.Print;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Actions;
 
 public class TitleCaseSettings : FileSettings { }
 
-public class TitleCaseAction(
-    Printer printer,
-    IAnsiConsole console,
-    ActionContext<TitleCaseSettings> context
-) : IFileAction<TitleCaseSettings>
+public class TitleCaseAction(ActionCommon common, ActionContext<TitleCaseSettings> context)
+    : IFileAction<TitleCaseSettings>
 {
     public Task Execute(string file, int index)
     {
@@ -33,13 +29,11 @@ public class TitleCaseAction(
             }
         }
 
-        if (!ActionHelper.TagDataChanged(originalTags, tags, console))
+        if (!common.TagDataChanged(originalTags, tags))
         {
             context.Skip();
             return Task.CompletedTask;
         }
-
-        printer.PrintTagData(tags);
 
         if (context.ConfirmPrompt())
         {
