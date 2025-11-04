@@ -30,4 +30,17 @@ public static class ActionHelper
         }
         return true;
     }
+
+    public static bool TagDataChanged(TagData tagData1, TagData tagData2, IAnsiConsole console)
+    {
+        if (TagDataComparer.AreEqual(tagData1, tagData2))
+        {
+            console.MarkupLine("Nothing to change.");
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }

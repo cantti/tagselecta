@@ -66,6 +66,12 @@ public class CleanAction(
             }
         }
 
+        if (!ActionHelper.TagDataChanged(existingTags, tagDataToKeep, console))
+        {
+            context.Skip();
+            return Task.CompletedTask;
+        }
+
         printer.PrintTagData(tagDataToKeep);
 
         if (context.ConfirmPrompt())

@@ -79,4 +79,9 @@ public class TagData
     public string DiscogsReleaseId { get; set; } = "";
 
     public List<TagLib.IPicture> Picture { get; set; } = [];
+
+    public TagData Clone()
+    {
+        return TagDataCloner.Clone(this);
+    }
 }

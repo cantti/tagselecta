@@ -123,7 +123,8 @@ public class DiscogsAction(
     {
         if (_release is null)
             return;
-        var tags = Tagger.ReadTags(file);
+        var originalTags = Tagger.ReadTags(file);
+        var tags = originalTags.Clone();
         var track = _release.TrackList[index];
         var albumArtist = _release.Artists.Select(x => x.Name).ToList();
         var artist = track.Artists.Select(x => x.Name).ToList();
@@ -141,7 +142,15 @@ public class DiscogsAction(
         SetField(tags, x => x.Year, _release.Year);
         SetField(tags, x => x.DiscogsReleaseId, _release.Id.ToString());
         SetField(tags, x => x.Picture, [new TagLib.Picture(_image)]);
+
+        if (!ActionHelper.TagDataChanged(originalTags, tags, console))
+        {
+            context.Skip();
+            return;
+        }
+
         printer.PrintTagData(tags);
+
         if (context.ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);

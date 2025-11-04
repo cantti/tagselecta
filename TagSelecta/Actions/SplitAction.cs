@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
@@ -15,8 +16,11 @@ public class SplitSettings : FileSettings
     public string[]? Separator { get; set; }
 }
 
-public class SplitAction(Printer printer, ActionContext<SplitSettings> context)
-    : IFileAction<SplitSettings>
+public class SplitAction(
+    Printer printer,
+    IAnsiConsole console,
+    ActionContext<SplitSettings> context
+) : IFileAction<SplitSettings>
 {
     private string[] separators = [",", ";", "feat."];
 
@@ -30,7 +34,8 @@ public class SplitAction(Printer printer, ActionContext<SplitSettings> context)
 
     public Task Execute(string file, int index)
     {
-        var tags = Tagger.ReadTags(file);
+        var originalTags = Tagger.ReadTags(file);
+        var tags = originalTags.Clone();
         var artist = tags.Artist.Select(Split).SelectMany(x => x).Distinct().ToList();
         var albumArtist = tags.AlbumArtist.Select(Split).SelectMany(x => x).Distinct().ToList();
         var composers = tags.Composers.Select(Split).SelectMany(x => x).Distinct().ToList();
@@ -38,6 +43,12 @@ public class SplitAction(Printer printer, ActionContext<SplitSettings> context)
         tags.Artist = artist;
         tags.AlbumArtist = albumArtist;
         tags.Composers = composers;
+
+        if (!ActionHelper.TagDataChanged(originalTags, tags, console))
+        {
+            context.Skip();
+            return Task.CompletedTask;
+        }
 
         printer.PrintTagData(tags);
 

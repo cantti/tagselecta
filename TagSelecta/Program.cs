@@ -54,6 +54,12 @@ class Program
                 .WithExample(["discogs", "path-to-album", "-r", "4202979"])
                 .WithExample(["discogs", "song.mp3", "-r", "4202979", "-f", "picture"])
                 .WithExample(["discogs", "path-to-album", "-q", "King Tubby Dub From The Roots"]);
+            config
+                .AddCommand<FileCommand<TitleCaseAction, TitleCaseSettings>>("titlecase")
+                .WithDescription("Convert all field to title case.");
+            config
+                .AddCommand<FileCommand<VaAction, VaSettings>>("va")
+                .WithDescription("Convert all field to title case.");
         });
 
         return app.Run(args);
