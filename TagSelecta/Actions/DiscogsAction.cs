@@ -16,7 +16,7 @@ namespace TagSelecta.Actions;
 public class DiscogsSettings : FileSettings
 {
     [CommandOption("--release|-r")]
-    public int? Release { get; set; }
+    public string? Release { get; set; }
 
     [CommandOption("--query|-q")]
     public string? Query { get; set; }
@@ -54,7 +54,7 @@ public class DiscogsAction(
         }
         if (context.Settings.Release is not null)
         {
-            _release = await discogsApi.GetRelease(context.Settings.Release.Value);
+            _release = await discogsApi.GetRelease(GetDiscogsReleaseId(context.Settings.Release));
             _release.TrackList = [.. _release.TrackList.Where(x => x.Type == "track")];
             console.MarkupLineInterpolated($"[blue]Release[/]");
             console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{_release.Uri}[/]");
@@ -188,5 +188,14 @@ public class DiscogsAction(
         string result = Regex.Replace(input, @"\s*\(\d+\)\s*$", "");
 
         return result.TrimEnd();
+    }
+
+    private static int GetDiscogsReleaseId(string input)
+    {
+        string pattern = @"/release/(\d+)";
+        Match match = Regex.Match(input, pattern);
+        return match.Success
+            ? int.Parse(match.Groups[1].Value)
+            : throw new ActionException("id not found");
     }
 }
