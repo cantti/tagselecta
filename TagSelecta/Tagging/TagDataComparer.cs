@@ -25,7 +25,7 @@ public static class TagDataComparer
                 if (!list1.SequenceEqual(list2))
                     return false;
             }
-            else if (val1 is List<TagLib.IPicture> pics1 && val2 is List<TagLib.IPicture> pics2)
+            else if (val1 is List<TagLib.Picture> pics1 && val2 is List<TagLib.Picture> pics2)
             {
                 if (pics1.Count != pics2.Count)
                     return false;

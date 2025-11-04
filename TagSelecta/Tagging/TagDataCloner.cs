@@ -17,21 +17,18 @@ public class TagDataCloner
             {
                 prop.SetValue(clone, new List<string>(list));
             }
-            else if (val is List<TagLib.IPicture> pics)
+            else if (val is List<TagLib.Picture> pics)
             {
                 prop.SetValue(
                     clone,
-                    pics.Select(x =>
-                            (TagLib.IPicture)
-                                new TagLib.Picture
-                                {
-                                    Data = x.Data.ToArray(),
-                                    Description = x.Description,
-                                    Filename = x.Filename,
-                                    MimeType = x.MimeType,
-                                    Type = x.Type,
-                                }
-                        )
+                    pics.Select(x => new TagLib.Picture
+                        {
+                            Data = x.Data.ToArray(),
+                            Description = x.Description,
+                            Filename = x.Filename,
+                            MimeType = x.MimeType,
+                            Type = x.Type,
+                        })
                         .ToList()
                 );
             }

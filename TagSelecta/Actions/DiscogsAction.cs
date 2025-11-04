@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Actions.Base;
@@ -123,11 +124,16 @@ public class DiscogsAction(
     {
         if (_release is null)
             return;
+
         var originalTags = Tagger.ReadTags(file);
+
         var tags = originalTags.Clone();
         var track = _release.TrackList[index];
-        var albumArtist = _release.Artists.Select(x => x.Name).ToList();
-        var artist = track.Artists.Select(x => x.Name).ToList();
+        var albumArtist = _release
+            .Artists.Select(x => RemoveTrailingNumberParentheses(x.Name))
+            .ToList();
+        var artist = track.Artists.Select(x => RemoveTrailingNumberParentheses(x.Name)).ToList();
+
         SetField(tags, x => x.AlbumArtist, albumArtist);
         SetField(tags, x => x.Artist, artist.Count != 0 ? artist : albumArtist);
         SetField(tags, x => x.Album, _release.Title);
@@ -171,5 +177,16 @@ public class DiscogsAction(
         if (_fieldToWriteList.Count != 0 && !_fieldToWriteList.Contains(fieldName.ToLower()))
             return;
         propInfo.SetValue(target, newValue);
+    }
+
+    private static string RemoveTrailingNumberParentheses(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        // Remove "(digits)" if it's at the end, possibly with spaces before or after
+        string result = Regex.Replace(input, @"\s*\(\d+\)\s*$", "");
+
+        return result.TrimEnd();
     }
 }

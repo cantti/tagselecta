@@ -11,6 +11,6 @@ public static partial class TagDataForJsonMapper
 
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
-    [MapperIgnoreSource(nameof(TagLib.IPicture.Data))]
-    private static partial PictureDataForJson PictureMap(TagLib.IPicture pic);
+    [MapperIgnoreSource(nameof(TagLib.Picture.Data))]
+    private static partial PictureDataForJson PictureMap(TagLib.Picture pic);
 }

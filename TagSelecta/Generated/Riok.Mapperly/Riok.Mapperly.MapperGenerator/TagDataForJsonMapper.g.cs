@@ -51,7 +51,7 @@ namespace TagSelecta.Print
         }
 
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        private static partial global::TagSelecta.Print.PictureDataForJson PictureMap(global::TagLib.IPicture pic)
+        private static partial global::TagSelecta.Print.PictureDataForJson PictureMap(global::TagLib.Picture pic)
         {
             var target = new global::TagSelecta.Print.PictureDataForJson();
             if (pic.MimeType != null)
@@ -71,7 +71,7 @@ namespace TagSelecta.Print
         }
 
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        private static global::System.Collections.Generic.List<global::TagSelecta.Print.PictureDataForJson> MapToListOfPictureDataForJson(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.IPicture> source)
+        private static global::System.Collections.Generic.List<global::TagSelecta.Print.PictureDataForJson> MapToListOfPictureDataForJson(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.Picture> source)
         {
             var target = new global::System.Collections.Generic.List<global::TagSelecta.Print.PictureDataForJson>(source.Count);
             foreach (var item in source)

@@ -42,7 +42,20 @@ namespace TagSelecta.Tagging
             tag.ReplayGainAlbumPeak = Double(tagData.ReplayGainAlbumPeak);
             tag.Publisher = tagData.Publisher;
             tag.ISRC = tagData.Isrc;
-            tag.Pictures = global::System.Linq.Enumerable.ToArray(tagData.Picture);
+            tag.Pictures = MapToIPictureArray(tagData.Picture);
+        }
+
+        [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
+        private static global::TagLib.IPicture?[] MapToIPictureArray(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.Picture> source)
+        {
+            var target = new global::TagLib.IPicture?[source.Count];
+            var i = 0;
+            foreach (var item in source)
+            {
+                target[i] = (global::TagLib.IPicture)item;
+                i++;
+            }
+            return target;
         }
     }
 }

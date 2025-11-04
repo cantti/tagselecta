@@ -120,7 +120,7 @@ namespace TagSelecta.Tagging
             }
             if (tag.Pictures != null)
             {
-                target.Picture = MapToListOfIPicture(tag.Pictures);
+                target.Picture = MapToListOfPicture(tag.Pictures);
             }
             return target;
         }
@@ -137,12 +137,14 @@ namespace TagSelecta.Tagging
         }
 
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
-        private static global::System.Collections.Generic.List<global::TagLib.IPicture> MapToListOfIPicture(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.IPicture?> source)
+        private static global::System.Collections.Generic.List<global::TagLib.Picture> MapToListOfPicture(global::System.Collections.Generic.IReadOnlyCollection<global::TagLib.IPicture?> source)
         {
-            var target = new global::System.Collections.Generic.List<global::TagLib.IPicture>(source.Count);
+            var target = new global::System.Collections.Generic.List<global::TagLib.Picture>(source.Count);
             foreach (var item in source)
             {
-                target.Add(item ?? throw new global::System.ArgumentNullException(nameof(item)));
+                target.Add(
+                item == null ? throw new global::System.ArgumentNullException(nameof(item)) : new global::TagLib.Picture(item)
+            );
             }
             return target;
         }
