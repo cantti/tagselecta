@@ -2,12 +2,16 @@ namespace TagSelecta.Tagging;
 
 public class TagDataCloner
 {
-    public static TagData Clone(TagData obj1)
+    public static TagData Clone(TagData tagData)
     {
         var clone = new TagData();
-        foreach (var prop in typeof(TagData).GetProperties())
+        foreach (
+            var prop in typeof(TagData)
+                .GetProperties()
+                .Where(x => x.Name != nameof(TagData.Picture))
+        )
         {
-            var val = prop.GetValue(obj1);
+            var val = prop.GetValue(tagData);
             if (val == null)
             {
                 prop.SetValue(clone, null);
@@ -17,26 +21,22 @@ public class TagDataCloner
             {
                 prop.SetValue(clone, new List<string>(list));
             }
-            else if (val is List<TagLib.Picture> pics)
-            {
-                prop.SetValue(
-                    clone,
-                    pics.Select(x => new TagLib.Picture
-                        {
-                            Data = x.Data.ToArray(),
-                            Description = x.Description,
-                            Filename = x.Filename,
-                            MimeType = x.MimeType,
-                            Type = x.Type,
-                        })
-                        .ToList()
-                );
-            }
             else
             {
                 prop.SetValue(clone, val);
             }
         }
+        clone.Picture =
+        [
+            .. tagData.Picture.Select(x => new TagLib.Picture
+            {
+                Data = x.Data.ToArray(),
+                Description = x.Description,
+                Filename = x.Filename,
+                MimeType = x.MimeType,
+                Type = x.Type,
+            }),
+        ];
 
         return clone;
     }

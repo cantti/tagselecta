@@ -2,21 +2,21 @@ namespace TagSelecta.Tagging;
 
 public static class TagDataComparer
 {
-    public static bool AreEqual(TagData? obj1, TagData? obj2)
+    public static bool TagDataEquals(TagData obj1, TagData obj2)
     {
-        if (ReferenceEquals(obj1, obj2))
-            return true;
-
-        if (obj1 == null || obj2 == null)
-            return false;
-
-        foreach (var prop in typeof(TagData).GetProperties())
+        // compare everything except pictures
+        foreach (
+            var prop in typeof(TagData)
+                .GetProperties()
+                .Where(x => x.Name != nameof(TagData.Picture))
+        )
         {
             var val1 = prop.GetValue(obj1);
             var val2 = prop.GetValue(obj2);
 
             if (val1 == null && val2 == null)
                 continue;
+
             if (val1 == null || val2 == null)
                 return false;
 
@@ -25,41 +25,46 @@ public static class TagDataComparer
                 if (!list1.SequenceEqual(list2))
                     return false;
             }
-            else if (val1 is List<TagLib.Picture> pics1 && val2 is List<TagLib.Picture> pics2)
-            {
-                if (pics1.Count != pics2.Count)
-                    return false;
-
-                for (int i = 0; i < pics1.Count; i++)
-                {
-                    var p1 = pics1[i];
-                    var p2 = pics2[i];
-
-                    if (p1.Description != p1.Description)
-                        return false;
-
-                    if (p1.Filename != p1.Filename)
-                        return false;
-
-                    if (p1.MimeType != p1.MimeType)
-                        return false;
-
-                    if (p1.Type != p1.Type)
-                        return false;
-
-                    if (p1?.Data == null && p2?.Data == null)
-                        continue;
-                    if (p1?.Data == null || p2?.Data == null)
-                        return false;
-                    if (!p1.Data.SequenceEqual(p2.Data))
-                        return false;
-                }
-            }
             // uint, double etc
             else if (!val1.Equals(val2))
             {
                 return false;
             }
+        }
+
+        // compare pictures
+        return PicturesEqual(obj1, obj2);
+    }
+
+    public static bool PicturesEqual(TagData obj1, TagData obj2)
+    {
+        var pics1 = obj1.Picture;
+        var pics2 = obj2.Picture;
+
+        if (pics1.Count != pics2.Count)
+            return false;
+
+        for (int i = 0; i < pics1.Count; i++)
+        {
+            var p1 = pics1[i];
+            var p2 = pics2[i];
+
+            if (p1.Description != p2.Description)
+                return false;
+
+            // picture file name should be ignored, because they are not stored in actual metadata
+            // if (p1.Filename != p2.Filename)
+            //     return false;
+
+            if (p1.MimeType != p2.MimeType)
+                return false;
+
+            if (p1.Type != p2.Type)
+                return false;
+
+            // do not care about nulls here
+            if (!(p1.Data ?? []).SequenceEqual(p2.Data ?? []))
+                return false;
         }
 
         return true;

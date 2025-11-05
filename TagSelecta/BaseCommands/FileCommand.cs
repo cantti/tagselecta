@@ -101,7 +101,7 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
 
     protected bool TagDataChanged(TagData tagData1, TagData tagData2)
     {
-        if (TagDataComparer.AreEqual(tagData1, tagData2))
+        if (TagDataComparer.TagDataEquals(tagData1, tagData2))
         {
             Console.MarkupLine("Nothing to change.");
             return false;

@@ -30,14 +30,17 @@ public static class Printer
         table.AddColumn("[yellow]Field[/]");
         table.AddColumn("[yellow]Old Value[/]");
         table.AddColumn("[yellow]New Value[/]");
+        var picturesAreEqual = TagDataComparer.PicturesEqual(tagData1, tagData2);
         foreach (var prop in typeof(TagData).GetProperties())
         {
             var value1 = prop.GetValue(tagData1);
             var value2 = prop.GetValue(tagData2);
             var column1 = ValueToColumn(value1);
             var column2 = ValueToColumn(value2);
-            var color1 = column1 == column2 ? "[white]" : "[red]";
-            var color2 = column1 == column2 ? "[white]" : "[green]";
+            var sameValue =
+                column1 == column2 && ((prop.Name != nameof(TagData.Picture)) || picturesAreEqual);
+            var color1 = sameValue ? "[white]" : "[red]";
+            var color2 = sameValue ? "[white]" : "[green]";
             if (column1 == "" && column2 == "")
                 continue;
             table.AddRow(
@@ -62,16 +65,8 @@ public static class Printer
             return string.Join(
                 "\n\n",
                 picture.Select(x =>
-                    string.Join(
-                        "\n",
-                        new string?[]
-                        {
-                            $"Type: {x.Type}",
-                            !string.IsNullOrEmpty(x.Description) ? $"Desc: {x.Description}" : null,
-                            $"Mime: {x.MimeType}",
-                            !string.IsNullOrEmpty(x.Filename) ? $"Filename: {x.Filename}" : null,
-                        }.Where(x => x != null)
-                    )
+                    $"{x.Type}"
+                    + (!string.IsNullOrWhiteSpace(x.Description) ? $" ({x.Description})" : "")
                 )
             );
         }
