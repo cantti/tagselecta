@@ -30,17 +30,15 @@ public static class Printer
         table.AddColumn("[yellow]Field[/]");
         table.AddColumn("[yellow]Old Value[/]");
         table.AddColumn("[yellow]New Value[/]");
-        var picturesAreEqual = TagDataComparer.PicturesEqual(tagData1, tagData2);
         foreach (var prop in typeof(TagData).GetProperties())
         {
             var value1 = prop.GetValue(tagData1);
             var value2 = prop.GetValue(tagData2);
             var column1 = ValueToColumn(value1);
             var column2 = ValueToColumn(value2);
-            var sameValue =
-                column1 == column2 && ((prop.Name != nameof(TagData.Picture)) || picturesAreEqual);
-            var color1 = sameValue ? "[white]" : "[red]";
-            var color2 = sameValue ? "[white]" : "[green]";
+            var areEqual = TagDataComparer.ValueEquals(value1, value2);
+            var color1 = areEqual ? "[white]" : "[red]";
+            var color2 = areEqual ? "[white]" : "[green]";
             if (column1 == "" && column2 == "")
                 continue;
             table.AddRow(
