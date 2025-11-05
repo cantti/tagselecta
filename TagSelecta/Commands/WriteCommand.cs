@@ -97,22 +97,10 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
                 {
                     prop.SetValue(Settings, Array.Empty<string>());
                 }
-                else
-                {
-                    prop.SetValue(
-                        Settings,
-                        valArray.Select(x => TagTemplateFormatter.Format(x, originalTags)).ToArray()
-                    );
-                }
-            }
-            // normal strings
-            else if (val is string valStr)
-            {
-                prop.SetValue(Settings, TagTemplateFormatter.Format(valStr, originalTags));
             }
         }
 
-        var mapper = new WriteSettingsMapper();
+        var mapper = new WriteSettingsMapper(originalTags);
 
         var tags = originalTags.Clone();
 
@@ -139,7 +127,7 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
     // https://mapperly.riok.app/docs/configuration/mapper/#null-values
     AllowNullPropertyAssignment = false
 )]
-public partial class WriteSettingsMapper
+public partial class WriteSettingsMapper(TagData originalTags)
 {
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
@@ -166,4 +154,6 @@ public partial class WriteSettingsMapper
     [MapperIgnoreTarget(nameof(TagData.AmazonId))]
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     public partial void Map(WriteSettings settings, TagData tagData);
+
+    private string StringReplace(string val) => TagTemplateFormatter.Format(val, originalTags);
 }
