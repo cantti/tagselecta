@@ -1,5 +1,4 @@
-﻿using TagSelecta.Actions;
-using TagSelecta.BaseCommands;
+﻿using TagSelecta.Commands;
 
 namespace TagSelecta.Tests;
 
@@ -10,7 +9,7 @@ public class ReadCommandTests
     public void ReadTest()
     {
         // Given
-        var app = CommandAppFactory.CreateTestApp<FileCommand<ReadAction, ReadSettings>>();
+        var app = CommandAppFactory.CreateTestApp<ReadCommand>();
 
         // When
         var result = app.Run("./TestData/ReadTest/01 Song 1.mp3");

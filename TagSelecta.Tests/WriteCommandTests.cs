@@ -1,6 +1,5 @@
 using Spectre.Console.Testing;
-using TagSelecta.Actions;
-using TagSelecta.BaseCommands;
+using TagSelecta.Commands;
 
 namespace TagSelecta.Tests;
 
@@ -11,7 +10,7 @@ public class WriteCommandTests
     public void WriteTest()
     {
         // Given
-        var app = CommandAppFactory.CreateTestApp<FileCommand<WriteAction, WriteSettings>>();
+        var app = CommandAppFactory.CreateTestApp<WriteCommand>();
         app.Console.Interactive();
         app.Console.Input.PushTextWithEnter("y");
 
@@ -44,15 +43,15 @@ public class WriteCommandTests
 
         // Then
         Assert.Equal(0, result.ExitCode);
-        Assert.Matches(@"Artist\W+New Test Artist", result.Output);
-        Assert.Matches(@"AlbumArtist\W+New Test Album Artist", result.Output);
-        Assert.Matches(@"Title\W+New Song 1", result.Output);
-        Assert.Matches(@"Album\W+New Test Album", result.Output);
-        Assert.Matches(@"Genre\W+Reggae\W+Dub", result.Output);
-        Assert.Matches(@"Year\W+2000", result.Output);
-        Assert.Matches(@"Track\W+10", result.Output);
-        Assert.Matches(@"TrackTotal\W+20", result.Output);
-        Assert.Matches(@"Disc\W+30", result.Output);
-        Assert.Matches(@"DiscTotal\W+40", result.Output);
+        Assert.Matches("Artist.+New Test Artist", result.Output);
+        Assert.Matches("AlbumArtist.+New Test Album Artist", result.Output);
+        Assert.Matches("Title.+New Song 1", result.Output);
+        Assert.Matches("Album.+New Test Album", result.Output);
+        Assert.Matches("Genre.+Reggae.+\n.+Dub", result.Output);
+        Assert.Matches("Year.+2000", result.Output);
+        Assert.Matches("Track.+10", result.Output);
+        Assert.Matches("TrackTotal.+20", result.Output);
+        Assert.Matches("Disc.+30", result.Output);
+        Assert.Matches("DiscTotal.+40", result.Output);
     }
 }

@@ -2,11 +2,10 @@ using System.ComponentModel;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class CleanSettings : FileSettings
 {
@@ -17,19 +16,15 @@ public class CleanSettings : FileSettings
     public string[]? Except { get; set; }
 }
 
-public class CleanAction(
-    IAnsiConsole console,
-    ActionCommon common,
-    ActionContext<CleanSettings> context
-) : IFileAction<CleanSettings>
+public class CleanCommand(IAnsiConsole console) : FileCommand<CleanSettings>(console)
 {
     private List<string> _fieldToKeepList = [];
 
-    public Task BeforeExecute()
+    protected override Task BeforeExecute()
     {
-        if (context.Settings.Except is not null)
+        if (Settings.Except is not null)
         {
-            _fieldToKeepList = [.. context.Settings.Except];
+            _fieldToKeepList = [.. Settings.Except];
         }
         else
         {
@@ -41,17 +36,17 @@ public class CleanAction(
         }
         if (_fieldToKeepList.Count == 0)
         {
-            console.MarkupLine("No tags to keep provided! It will remove all tags");
+            Console.MarkupLine("No tags to keep provided! It will remove all tags");
         }
-        _fieldToKeepList = FieldNameValidation.NormalizeFields(_fieldToKeepList);
-        if (!common.ValidateFieldNameList(_fieldToKeepList))
+        _fieldToKeepList = NormalizeFieldNames(_fieldToKeepList);
+        if (!ValidateFieldNameList(_fieldToKeepList))
         {
-            context.Cancel();
+            Cancel();
         }
         return Task.CompletedTask;
     }
 
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var existingTags = Tagger.ReadTags(file);
 
@@ -65,13 +60,13 @@ public class CleanAction(
             }
         }
 
-        if (!common.TagDataChanged(existingTags, tagDataToKeep))
+        if (!TagDataChanged(existingTags, tagDataToKeep))
         {
-            context.Skip();
+            Skip();
             return Task.CompletedTask;
         }
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             Tagger.RemoveTags(file);
             Tagger.WriteTags(file, tagDataToKeep);

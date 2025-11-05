@@ -1,12 +1,11 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Print;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class AutoTrackSettings : FileSettings
 {
@@ -15,26 +14,22 @@ public class AutoTrackSettings : FileSettings
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackAction(ActionContext<AutoTrackSettings> context, IAnsiConsole console)
-    : IFileAction<AutoTrackSettings>
+public class AutoTrackCommand(IAnsiConsole console) : FileCommand<AutoTrackSettings>(console)
 {
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var dir = Directory.GetParent(file)?.FullName;
-        var filesInDir = context
-            .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
-            .Order()
-            .ToList();
+        var filesInDir = Files.Where(x => Directory.GetParent(x)?.FullName == dir).Order().ToList();
         var tags = Tagger.ReadTags(file);
         tags.Track = (uint)filesInDir.IndexOf(file) + 1;
         tags.TrackTotal = (uint)filesInDir.Count;
-        if (!context.Settings.KeepDisk)
+        if (!Settings.KeepDisk)
         {
             tags.Disc = 0;
             tags.DiscTotal = 0;
         }
-        Printer.PrintTagData(console, tags);
-        if (context.ConfirmPrompt())
+        Printer.PrintTagData(Console, tags);
+        if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }

@@ -1,13 +1,12 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Misc;
 using TagSelecta.Tagging;
 using TagSelecta.TagTemplate;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class RenameFileSettings : FileSettings
 {
@@ -25,18 +24,15 @@ public class RenameFileSettings : FileSettings
     }
 }
 
-public class RenameFileAction(IAnsiConsole console, ActionContext<RenameFileSettings> context)
-    : IFileAction<RenameFileSettings>
+public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSettings>(console)
 {
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var dir = Path.GetDirectoryName(file)!;
 
         var tagData = Tagger.ReadTags(file);
 
-        var newName = TagTemplateFormatter
-            .Format(context.Settings.Template, tagData)
-            .CleanFileName();
+        var newName = TagTemplateFormatter.Format(Settings.Template, tagData).CleanFileName();
 
         newName = $"{newName}{Path.GetExtension(file)}";
 
@@ -44,16 +40,16 @@ public class RenameFileAction(IAnsiConsole console, ActionContext<RenameFileSett
 
         if (newPath == file)
         {
-            console.MarkupLine("File name already matches the desired format.");
-            context.Skip();
+            Console.MarkupLine("File name already matches the desired format.");
+            Skip();
             return Task.CompletedTask;
         }
 
-        console.MarkupLine("File rename details:");
-        console.MarkupLine($"  Old: {file.EscapeMarkup()}");
-        console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
+        Console.MarkupLine("File rename details:");
+        Console.MarkupLine($"  Old: {file.EscapeMarkup()}");
+        Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             File.Move(file, newPath);
         }

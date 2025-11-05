@@ -1,11 +1,10 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class SplitSettings : FileSettings
 {
@@ -15,20 +14,19 @@ public class SplitSettings : FileSettings
     public string[]? Separator { get; set; }
 }
 
-public class SplitAction(ActionCommon common, ActionContext<SplitSettings> context)
-    : IFileAction<SplitSettings>
+public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(console)
 {
     private string[] separators = [",", ";", "feat."];
 
-    public async Task BeforeExecute()
+    protected override async Task BeforeExecute()
     {
-        if (context.Settings.Separator is not null)
+        if (Settings.Separator is not null)
         {
-            separators = context.Settings.Separator;
+            separators = Settings.Separator;
         }
     }
 
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var originalTags = Tagger.ReadTags(file);
         var tags = originalTags.Clone();
@@ -40,13 +38,13 @@ public class SplitAction(ActionCommon common, ActionContext<SplitSettings> conte
         tags.AlbumArtist = albumArtist;
         tags.Composers = composers;
 
-        if (!common.TagDataChanged(originalTags, tags))
+        if (!TagDataChanged(originalTags, tags))
         {
-            context.Skip();
+            Skip();
             return Task.CompletedTask;
         }
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }

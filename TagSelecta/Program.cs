@@ -1,6 +1,5 @@
 ﻿using Spectre.Console.Cli;
-using TagSelecta.Actions;
-using TagSelecta.BaseCommands;
+using TagSelecta.Commands;
 using TagSelecta.DependencyInjection;
 
 namespace TagSelecta;
@@ -16,38 +15,30 @@ class Program
         var app = new CommandApp(DependencyInjectionConfig.Configure());
         app.Configure(config =>
         {
+            config.AddCommand<ReadCommand>("read").WithDescription("Read tags.");
             config
-                .AddCommand<FileCommand<ReadAction, ReadSettings>>("read")
-                .WithDescription("Read tags.");
-            config
-                .AddCommand<FileCommand<WriteAction, WriteSettings>>("write")
+                .AddCommand<WriteCommand>("write")
                 .WithDescription("Write tags.")
                 .WithExample(
                     ["write", "song.mp3", "-t", "Song1", "-a", "Artist1", "-a", "Artist2"]
                 );
             config
-                .AddCommand<FileCommand<CleanAction, CleanSettings>>("clean")
+                .AddCommand<CleanCommand>("clean")
                 .WithDescription("Cleans metadata, except the specified tags.")
                 .WithExample(["clean", "song.mp3", "-e", "artist", "-e", "title"]);
             config
-                .AddCommand<FileCommand<SplitAction, SplitSettings>>("split")
+                .AddCommand<SplitCommand>("split")
                 .WithDescription("Split artists, album artists and composers");
+            config.AddCommand<AutoTrackCommand>("autotrack").WithDescription("Auto track.");
+            config.AddCommand<RenameDirCommand>("renamedir").WithDescription("Rename directories.");
+            config.AddCommand<RenameFileCommand>("renamefile").WithDescription("Rename files.");
             config
-                .AddCommand<FileCommand<AutoTrackAction, AutoTrackSettings>>("autotrack")
-                .WithDescription("Auto track.");
-            config
-                .AddCommand<FileCommand<RenameDirAction, RenameDirSettings>>("renamedir")
-                .WithDescription("Rename directories.");
-            config
-                .AddCommand<FileCommand<RenameFileAction, RenameFileSettings>>("renamefile")
-                .WithDescription("Rename files.");
-            config
-                .AddCommand<FileCommand<FixAlbumAction, FixAlbumSettings>>("fixalbum")
+                .AddCommand<FixAlbumCommand>("fixalbum")
                 .WithDescription(
                     "Set album name, year and album artists to the same value to all files in the same directory."
                 );
             config
-                .AddCommand<FileCommand<DiscogsAction, DiscogsSettings>>("discogs")
+                .AddCommand<DiscogsCommand>("discogs")
                 .WithDescription(
                     "Update album from discogs. You can pass discogs release id (not master) or query to search."
                 )
@@ -55,11 +46,9 @@ class Program
                 .WithExample(["discogs", "song.mp3", "-r", "4202979", "-f", "picture"])
                 .WithExample(["discogs", "path-to-album", "-q", "King Tubby Dub From The Roots"]);
             config
-                .AddCommand<FileCommand<TitleCaseAction, TitleCaseSettings>>("titlecase")
+                .AddCommand<TitleCaseCommand>("titlecase")
                 .WithDescription("Convert all field to title case.");
-            config
-                .AddCommand<FileCommand<VaAction, VaSettings>>("va")
-                .WithDescription("Convert all field to title case.");
+            config.AddCommand<VaCommand>("va").WithDescription("Convert all field to title case.");
         });
 
         return app.Run(args);

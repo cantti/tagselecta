@@ -1,17 +1,15 @@
 using System.Globalization;
 using Spectre.Console;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class TitleCaseSettings : FileSettings { }
 
-public class TitleCaseAction(ActionCommon common, ActionContext<TitleCaseSettings> context)
-    : IFileAction<TitleCaseSettings>
+public class TitleCaseCommand(IAnsiConsole console) : FileCommand<TitleCaseSettings>(console)
 {
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var originalTags = Tagger.ReadTags(file);
 
@@ -29,13 +27,13 @@ public class TitleCaseAction(ActionCommon common, ActionContext<TitleCaseSetting
             }
         }
 
-        if (!common.TagDataChanged(originalTags, tags))
+        if (!TagDataChanged(originalTags, tags))
         {
-            context.Skip();
+            Skip();
             return Task.CompletedTask;
         }
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }

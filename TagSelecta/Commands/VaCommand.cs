@@ -1,16 +1,14 @@
 using Spectre.Console;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class VaSettings : FileSettings { }
 
-public class VaAction(ActionCommon common, ActionContext<VaSettings> context)
-    : IFileAction<VaSettings>
+public class VaCommand(IAnsiConsole console) : FileCommand<VaSettings>(console)
 {
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var originalTags = Tagger.ReadTags(file);
 
@@ -20,13 +18,13 @@ public class VaAction(ActionCommon common, ActionContext<VaSettings> context)
         tags.AlbumArtist = [.. tags.AlbumArtist.Select(NormalizeArtistName)];
         tags.Composers = [.. tags.Composers.Select(NormalizeArtistName)];
 
-        if (!common.TagDataChanged(originalTags, tags))
+        if (!TagDataChanged(originalTags, tags))
         {
-            context.Skip();
+            Skip();
             return Task.CompletedTask;
         }
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }

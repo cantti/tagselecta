@@ -1,15 +1,13 @@
 using Spectre.Console;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Misc;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class FixAlbumSettings : FileSettings { }
 
-public class FixAlbumAction(IAnsiConsole console, ActionContext<FixAlbumSettings> context)
-    : IFileAction<FixAlbumSettings>
+public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSettings>(console)
 {
     private enum FixType
     {
@@ -29,14 +27,14 @@ public class FixAlbumAction(IAnsiConsole console, ActionContext<FixAlbumSettings
 
     private readonly List<Album> _albums = [];
 
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var dir = Directory.GetParent(file)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
-            var filesInDir = context
-                .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
+            var filesInDir = Files
+                .Where(x => Directory.GetParent(x)?.FullName == dir)
                 .Order()
                 .ToList();
             var dirTagData = new List<TagData>();
@@ -117,11 +115,11 @@ public class FixAlbumAction(IAnsiConsole console, ActionContext<FixAlbumSettings
                 $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtist.Print().EscapeMarkup()}[/]",
             _ => "",
         };
-        console.MarkupLine(albumArtistMessage);
-        console.MarkupLine(
+        Console.MarkupLine(albumArtistMessage);
+        Console.MarkupLine(
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
-        console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
+        Console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
         var tagData = Tagger.ReadTags(file);
         if (
             tagData.AlbumArtist.SequenceEqual(album.AlbumArtist)
@@ -129,15 +127,15 @@ public class FixAlbumAction(IAnsiConsole console, ActionContext<FixAlbumSettings
             && tagData.Year == album.Year
         )
         {
-            console.MarkupLine("Skipped");
-            context.Skip();
+            Console.MarkupLine("Skipped");
+            Skip();
         }
         else
         {
             tagData.AlbumArtist = album.AlbumArtist;
             tagData.Album = album.AlbumName;
             tagData.Year = album.Year;
-            if (context.ConfirmPrompt())
+            if (ConfirmPrompt())
             {
                 Tagger.WriteTags(file, tagData);
             }

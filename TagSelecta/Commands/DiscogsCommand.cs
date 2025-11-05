@@ -4,18 +4,18 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Discogs;
 using TagSelecta.Misc;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class DiscogsSettings : FileSettings
 {
-    [CommandOption("--release|-r")]
-    public string? Release { get; set; }
+    [CommandOption("--url|-u")]
+    [Description("Discogs release url. Can be master or release.")]
+    public string? Url { get; set; }
 
     [CommandOption("--query|-q")]
     public string? Query { get; set; }
@@ -27,52 +27,53 @@ public class DiscogsSettings : FileSettings
     public string[]? Field { get; set; }
 }
 
-public class DiscogsAction(
+public class DiscogsCommand(
     IDiscogsApi discogsApi,
     DiscogsImageDownloader discogsImageDownloader,
-    IAnsiConsole console,
-    ActionCommon common,
-    ActionContext<DiscogsSettings> context
-) : IFileAction<DiscogsSettings>
+    IAnsiConsole console
+) : FileCommand<DiscogsSettings>(console)
 {
     private Release? _release;
     private byte[]? _image;
     private List<string> _fieldToWriteList = [];
 
-    public async Task BeforeExecute()
+    protected override async Task BeforeExecute()
     {
         // set field list to write if any
-        if (context.Settings.Field is not null)
+        if (Settings.Field is not null)
         {
-            _fieldToWriteList = FieldNameValidation.NormalizeFields(context.Settings.Field);
-            if (!common.ValidateFieldNameList(_fieldToWriteList))
+            _fieldToWriteList = NormalizeFieldNames(Settings.Field);
+            if (!ValidateFieldNameList(_fieldToWriteList))
             {
-                context.Cancel();
+                Cancel();
                 return;
             }
         }
-        if (context.Settings.Release is not null)
+        if (Settings.Url is not null)
         {
-            _release = await discogsApi.GetRelease(GetDiscogsReleaseId(context.Settings.Release));
+            var (urlType, urlId) = GetDiscogsReleaseInfo(Settings.Url);
+            var releaseId =
+                urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
+            _release = await discogsApi.GetRelease(releaseId);
             _release.TrackList = [.. _release.TrackList.Where(x => x.Type == "track")];
-            console.MarkupLineInterpolated($"[blue]Release[/]");
-            console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{_release.Uri}[/]");
-            console.MarkupLineInterpolated(
+            Console.MarkupLineInterpolated($"[blue]Release[/]");
+            Console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{_release.Uri}[/]");
+            Console.MarkupLineInterpolated(
                 $"  [blue]Release[/]: {_release.Artists.Select(x => x.Name).Print()} - {_release.Title} ({_release.Year})"
             );
-            console.MarkupLineInterpolated(
+            Console.MarkupLineInterpolated(
                 $"  [blue]Tracks[/]: {_release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Print()}"
             );
-            console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {_release.TrackList.Count}");
+            Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {_release.TrackList.Count}");
         }
-        else if (!string.IsNullOrWhiteSpace(context.Settings.Query))
+        else if (!string.IsNullOrWhiteSpace(Settings.Query))
         {
-            var search = await discogsApi.Search("master", context.Settings.Query ?? "");
+            var search = await discogsApi.Search("master", Settings.Query ?? "");
             search.Results = [.. search.Results.Take(5)];
             var releases = new List<Release>();
             var index = -1;
-            console.MarkupLineInterpolated($"[green]Discogs releases:[/]");
-            console.WriteLine();
+            Console.MarkupLineInterpolated($"[green]Discogs releases:[/]");
+            Console.WriteLine();
             foreach (var searchItem in search.Results)
             {
                 index++;
@@ -80,23 +81,23 @@ public class DiscogsAction(
                 var release = await discogsApi.GetRelease(master.MainRelease);
                 release.TrackList = [.. release.TrackList.Where(x => x.Type == "track")];
                 releases.Add(release);
-                console.MarkupLineInterpolated($"[blue]Option[/] [yellow]{index + 1}[/]");
-                console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{release.Uri}[/]");
-                console.MarkupLineInterpolated(
+                Console.MarkupLineInterpolated($"[blue]Option[/] [yellow]{index + 1}[/]");
+                Console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{release.Uri}[/]");
+                Console.MarkupLineInterpolated(
                     $"  [blue]Release[/]: {release.Artists.Select(x => x.Name).Print()} - {release.Title} ({release.Year})"
                 );
-                console.MarkupLineInterpolated(
+                Console.MarkupLineInterpolated(
                     $"  [blue]Tracks[/]: {release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Print()}"
                 );
-                console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {release.TrackList.Count}");
-                console.WriteLine();
+                Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {release.TrackList.Count}");
+                Console.WriteLine();
             }
             var promptResult = AnsiConsole.Prompt(
                 new TextPrompt<int>("Which to choose? (select 0 to exit)")
             );
             if (promptResult == 0)
             {
-                context.Cancel();
+                Cancel();
                 return;
             }
             _release = releases[promptResult - 1];
@@ -113,13 +114,13 @@ public class DiscogsAction(
         }
         else
         {
-            context.Cancel();
+            Cancel();
         }
 
-        console.WriteLine();
+        Console.WriteLine();
     }
 
-    public async Task Execute(string file, int index)
+    protected override async Task Execute(string file, int index)
     {
         if (_release is null)
             return;
@@ -148,13 +149,13 @@ public class DiscogsAction(
         SetField(tags, x => x.DiscogsReleaseId, _release.Id.ToString());
         SetField(tags, x => x.Picture, [new TagLib.Picture(_image)]);
 
-        if (!common.TagDataChanged(originalTags, tags))
+        if (!TagDataChanged(originalTags, tags))
         {
-            context.Skip();
+            Skip();
             return;
         }
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }
@@ -187,12 +188,12 @@ public class DiscogsAction(
         return result.TrimEnd();
     }
 
-    private static int GetDiscogsReleaseId(string input)
+    private static (string Type, int Id) GetDiscogsReleaseInfo(string input)
     {
-        string pattern = @"/release/(\d+)";
+        string pattern = @"/(release|master)/(\d+)";
         Match match = Regex.Match(input, pattern);
         return match.Success
-            ? int.Parse(match.Groups[1].Value)
-            : throw new ActionException("id not found");
+            ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))
+            : throw new ActionException("Error parsing discogs url");
     }
 }

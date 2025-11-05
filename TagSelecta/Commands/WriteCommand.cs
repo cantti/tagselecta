@@ -1,11 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using Riok.Mapperly.Abstractions;
+using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class WriteSettings : FileSettings
 {
@@ -76,20 +76,19 @@ public class WriteSettings : FileSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteAction(ActionCommon common, ActionContext<WriteSettings> context)
-    : IFileAction<WriteSettings>
+public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(console)
 {
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
         {
             if (prop.PropertyType == typeof(string[]))
             {
-                var value = (string[]?)prop.GetValue(context.Settings);
+                var value = (string[]?)prop.GetValue(Settings);
                 if (value != null && value.First() == "")
                 {
-                    prop.SetValue(context.Settings, Array.Empty<string>());
+                    prop.SetValue(Settings, Array.Empty<string>());
                 }
             }
         }
@@ -100,15 +99,15 @@ public class WriteAction(ActionCommon common, ActionContext<WriteSettings> conte
 
         var tags = originalTags.Clone();
 
-        mapper.Map(context.Settings, tags);
+        mapper.Map(Settings, tags);
 
-        if (!common.TagDataChanged(originalTags, tags))
+        if (!TagDataChanged(originalTags, tags))
         {
-            context.Skip();
+            Skip();
             return Task.CompletedTask;
         }
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }

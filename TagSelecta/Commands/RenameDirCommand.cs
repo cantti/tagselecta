@@ -1,13 +1,12 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.BaseCommands;
 using TagSelecta.Misc;
 using TagSelecta.Tagging;
 using TagSelecta.TagTemplate;
 
-namespace TagSelecta.Actions;
+namespace TagSelecta.Commands;
 
 public class RenameDirSettings : FileSettings
 {
@@ -25,32 +24,29 @@ public class RenameDirSettings : FileSettings
     }
 }
 
-public class RenameDirAction(IAnsiConsole console, ActionContext<RenameDirSettings> context)
-    : IFileAction<RenameDirSettings>
+public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSettings>(console)
 {
     private readonly List<string> _renamed = [];
 
-    public Task Execute(string file, int index)
+    protected override Task Execute(string file, int index)
     {
         var dir = Path.GetDirectoryName(file)!;
         if (_renamed.Contains(dir))
         {
-            context.Skip();
+            Skip();
             return Task.CompletedTask;
         }
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
 
-        var newName = TagTemplateFormatter
-            .Format(context.Settings.Template, tagData)
-            .CleanFileName();
+        var newName = TagTemplateFormatter.Format(Settings.Template, tagData).CleanFileName();
 
         var newPath = GetNewPath(dir, newName);
 
         if (newPath == dir)
         {
-            console.MarkupLine("Directory name already matches the desired format.");
-            context.Skip();
+            Console.MarkupLine("Directory name already matches the desired format.");
+            Skip();
             return Task.CompletedTask;
         }
 
@@ -59,11 +55,11 @@ public class RenameDirAction(IAnsiConsole console, ActionContext<RenameDirSettin
             throw new ActionException($"Target directory already exists: {newPath}.");
         }
 
-        console.MarkupLine("Directory rename details:");
-        console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
-        console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
+        Console.MarkupLine("Directory rename details:");
+        Console.MarkupLine($"  Old: {dir.EscapeMarkup()}");
+        Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
-        if (context.ConfirmPrompt())
+        if (ConfirmPrompt())
         {
             Directory.Move(dir, newPath);
         }

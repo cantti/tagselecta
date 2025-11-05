@@ -1,56 +1,50 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Actions.Base;
 using TagSelecta.Misc;
+using TagSelecta.Print;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.BaseCommands;
 
-public sealed class FileCommand<TAction, TSettings>(
-    IAnsiConsole console,
-    FileActionFactory<TAction, TSettings> actionFactory
-) : AsyncCommand<TSettings>
-    where TAction : IFileAction<TSettings>
+public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncCommand<TSettings>
     where TSettings : FileSettings
 {
+    protected IAnsiConsole Console => console;
+
+    private TSettings? _settings;
     private bool _isLastFile;
     private bool _allConfirmed;
     private bool _cancelRequested;
     private bool _skipped;
-    private readonly ActionConfig _config = new();
+
+    protected bool ShowContinue { get; set; }
+
+    protected TSettings Settings =>
+        _settings ?? throw new InvalidOperationException("Settings not set");
+    protected List<string> Files { get; private set; } = [];
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {
-        console.MarkupLine("Searching for files...");
+        _settings = settings;
 
-        console.WriteLine();
+        Console.MarkupLine("Searching for files...");
 
-        var files = FileHelper.GetAllAudioFiles(settings.Path, true);
+        Console.WriteLine();
 
-        var actionContext = new ActionContext<TSettings>()
-        {
-            ConfirmPrompt = ConfirmPrompt,
-            Cancel = Cancel,
-            Skip = Skip,
-            Files = files,
-            Settings = settings,
-        };
+        Files = FileHelper.GetAllAudioFiles(settings.Path, true);
 
-        var action = actionFactory.Create(actionContext);
-
-        action.Configure(_config);
-
-        console.MarkupLineInterpolated(
-            $"[yellow]{files.Count}[/] {(files.Count == 1 ? "file" : "files")} found."
+        Console.MarkupLineInterpolated(
+            $"[yellow]{Files.Count}[/] {(Files.Count == 1 ? "file" : "files")} found."
         );
 
-        console.WriteLine();
+        Console.WriteLine();
 
-        await action.BeforeExecute();
+        await BeforeExecute();
 
         if (!_cancelRequested)
         {
-            var (successCount, skipCount, failCount) = await ExecuteForFiles(files, action);
-            console.MarkupLineInterpolated(
+            var (successCount, skipCount, failCount) = await ExecuteForFiles(Files);
+            Console.MarkupLineInterpolated(
                 $"[green]Finished![/] Processed [yellow]{successCount}[/] files, [cyan]{skipCount}[/] skipped, [red]{failCount}[/] failed."
             );
         }
@@ -58,73 +52,22 @@ public sealed class FileCommand<TAction, TSettings>(
         return 0;
     }
 
-    private async Task<(int SuccessCount, int SkipCount, int FailCount)> ExecuteForFiles(
-        List<string> files,
-        IFileAction<TSettings> action
-    )
-    {
-        int successCount = 0;
-        int failCount = 0;
-        int skipCount = 0;
-        int index = -1;
-        foreach (var file in files)
-        {
-            index++;
-            _skipped = false;
-            _isLastFile = index == files.Count - 1;
-            try
-            {
-                PrintCurrentFile(file, index, files.Count);
-                await action.Execute(file, index);
-            }
-            catch (Exception ex)
-            {
-                failCount++;
-                console.MarkupLineInterpolated($"Status: [red]error![/]");
-                console.WriteException(ex);
-                continue;
-            }
-            if (_cancelRequested)
-            {
-                skipCount = files.Count - index;
-                break;
-            }
-            else if (_skipped)
-            {
-                skipCount++;
-                console.MarkupLine("Status: skipped!");
-            }
-            else
-            {
-                successCount++;
-                console.MarkupLine("Status: success!");
-                if (_config.ShowContinue && !ContinuePrompt())
-                {
-                    skipCount = files.Count - index - 1;
-                    break;
-                }
-            }
-            console.WriteLine();
-        }
-        return (successCount, skipCount, failCount);
-    }
-
-    public void Skip()
+    protected void Skip()
     {
         _skipped = true;
     }
 
-    public void Cancel()
+    protected void Cancel()
     {
         _cancelRequested = true;
     }
 
-    bool ConfirmPrompt()
+    protected bool ConfirmPrompt()
     {
         if (_allConfirmed)
             return true;
 
-        var confirmation = console.Prompt(
+        var confirmation = Console.Prompt(
             new TextPrompt<string>("Confirm changes?")
                 .AddChoices(["y", "n", "a", "c"])
                 .DefaultValue("y")
@@ -156,28 +99,125 @@ public sealed class FileCommand<TAction, TSettings>(
         return confirmed;
     }
 
-    private bool ContinuePrompt()
+    protected bool TagDataChanged(TagData tagData1, TagData tagData2)
+    {
+        if (TagDataComparer.AreEqual(tagData1, tagData2))
+        {
+            Console.MarkupLine("Nothing to change.");
+            return false;
+        }
+        else
+        {
+            Printer.PrintComparison(Console, tagData1, tagData2);
+            return true;
+        }
+    }
+
+    protected bool ValidateFieldNameList(IEnumerable<string> fields)
+    {
+        foreach (var tagToKeep in fields)
+        {
+            if (!ValidateFieldName(tagToKeep))
+            {
+                Console.MarkupLineInterpolated($"[red]Unknown tag: {tagToKeep}[/]");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected bool ContinuePrompt()
     {
         if (_allConfirmed || _isLastFile)
             return false;
 
-        var confirmation = console.Prompt(
+        var confirmation = Console.Prompt(
             new TextPrompt<string>("Continue?").AddChoices(["y", "n"]).DefaultValue("y")
         );
 
         return confirmation == "y";
     }
 
+    protected bool ValidateFieldName(string field)
+    {
+        var tagDataProps = typeof(TagData).GetProperties();
+        return tagDataProps.Any(x =>
+            x.Name.Equals(field, StringComparison.CurrentCultureIgnoreCase)
+        );
+    }
+
+    protected List<string> NormalizeFieldNames(IEnumerable<string> list)
+    {
+        return [.. list.Select(x => x.ToLower().Trim())];
+    }
+
+    protected virtual Task BeforeExecute()
+    {
+        return Task.CompletedTask;
+    }
+
+    protected abstract Task Execute(string file, int index);
+
+    private async Task<(int SuccessCount, int SkipCount, int FailCount)> ExecuteForFiles(
+        List<string> files
+    )
+    {
+        int successCount = 0;
+        int failCount = 0;
+        int skipCount = 0;
+        int index = -1;
+        foreach (var file in files)
+        {
+            index++;
+            _skipped = false;
+            _isLastFile = index == files.Count - 1;
+            try
+            {
+                PrintCurrentFile(file, index, files.Count);
+                await Execute(file, index);
+            }
+            catch (Exception ex)
+            {
+                failCount++;
+                Console.MarkupLineInterpolated($"Status: [red]error![/]");
+                Console.WriteException(ex);
+                continue;
+            }
+            if (_cancelRequested)
+            {
+                skipCount = files.Count - index;
+                break;
+            }
+            else if (_skipped)
+            {
+                skipCount++;
+                Console.MarkupLine("Status: skipped!");
+            }
+            else
+            {
+                successCount++;
+                Console.MarkupLine("Status: success!");
+                if (ShowContinue && !ContinuePrompt())
+                {
+                    skipCount = files.Count - index - 1;
+                    break;
+                }
+            }
+            Console.WriteLine();
+        }
+        return (successCount, skipCount, failCount);
+    }
+
     private void PrintCurrentFile(string file, int index, int total)
     {
-        console.MarkupInterpolated($"[dim]>[/] [yellow]({index + 1}/{total})[/] \"");
+        Console.MarkupInterpolated($"[dim]>[/] [yellow]({index + 1}/{total})[/] \"");
         var path = new TextPath(file)
             .RootColor(Color.White)
             .SeparatorColor(Color.White)
             .StemColor(Color.White)
             .LeafColor(Color.Yellow);
-        console.Write(path);
-        console.Write("\"");
-        console.WriteLine();
+        Console.Write(path);
+        Console.Write("\"");
+        Console.WriteLine();
     }
 }
