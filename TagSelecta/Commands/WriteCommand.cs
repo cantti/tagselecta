@@ -4,6 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
+using TagSelecta.TagTemplate;
 
 namespace TagSelecta.Commands;
 
@@ -80,22 +81,38 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
 {
     protected override Task Execute(string file, int index)
     {
-        // convert arrays with empty first element to empty arrays
+        var originalTags = Tagger.ReadTags(file);
+
         foreach (var prop in typeof(WriteSettings).GetProperties())
         {
-            if (prop.PropertyType == typeof(string[]))
+            if (prop.Name == nameof(WriteSettings.Path))
+                continue;
+            var val = prop.GetValue(Settings);
+            if (val is null)
+                continue;
+            if (val is string[] valArray)
             {
-                var value = (string[]?)prop.GetValue(Settings);
-                if (value != null && value.First() == "")
+                // convert arrays with empty first element to empty arrays
+                if (valArray.First() == "")
                 {
                     prop.SetValue(Settings, Array.Empty<string>());
                 }
+                else
+                {
+                    prop.SetValue(
+                        Settings,
+                        valArray.Select(x => TagTemplateFormatter.Format(x, originalTags)).ToArray()
+                    );
+                }
+            }
+            // normal strings
+            else if (val is string valStr)
+            {
+                prop.SetValue(Settings, TagTemplateFormatter.Format(valStr, originalTags));
             }
         }
 
         var mapper = new WriteSettingsMapper();
-
-        var originalTags = Tagger.ReadTags(file);
 
         var tags = originalTags.Clone();
 

@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10"/>
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0"/>
     <PackageReference Include="Riok.Mapperly" Version="4.3.0"/>
-    <PackageReference Include="SmartFormat.NET" Version="3.6.1"/>
+    <PackageReference Include="Scriban" Version="6.5.0"/>
     <PackageReference Include="Spectre.Console" Version="0.53.0"/>
     <PackageReference Include="Spectre.Console.Cli" Version="0.52.0"/>
     <PackageReference Include="Spectre.Console.Json" Version="0.53.0"/>

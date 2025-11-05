@@ -48,7 +48,7 @@ class Program
             config
                 .AddCommand<TitleCaseCommand>("titlecase")
                 .WithDescription("Convert all field to title case.");
-            config.AddCommand<VaCommand>("va").WithDescription("Convert all field to title case.");
+            config.AddCommand<VaCommand>("va").WithDescription("Normalize Various Artists values");
         });
 
         return app.Run(args);

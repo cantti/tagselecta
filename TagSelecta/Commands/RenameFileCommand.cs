@@ -11,7 +11,7 @@ namespace TagSelecta.Commands;
 public class RenameFileSettings : FileSettings
 {
     [CommandOption("--template|-t")]
-    [Description("Template. For example: {year} - {album}")]
+    [Description("Template. For example: {{ year }} - {{ album }}")]
     public string Template { get; set; } = "";
 
     public override ValidationResult Validate()
