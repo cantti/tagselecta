@@ -35,6 +35,18 @@ public static class TagDataComparer
                     var p1 = pics1[i];
                     var p2 = pics2[i];
 
+                    if (p1.Description != p1.Description)
+                        return false;
+
+                    if (p1.Filename != p1.Filename)
+                        return false;
+
+                    if (p1.MimeType != p1.MimeType)
+                        return false;
+
+                    if (p1.Type != p1.Type)
+                        return false;
+
                     if (p1?.Data == null && p2?.Data == null)
                         continue;
                     if (p1?.Data == null || p2?.Data == null)

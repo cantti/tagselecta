@@ -59,7 +59,21 @@ public static class Printer
         }
         else if (value is List<TagLib.Picture> picture)
         {
-            return string.Join("\n", picture.Select(x => x.Type));
+            return string.Join(
+                "\n\n",
+                picture.Select(x =>
+                    string.Join(
+                        "\n",
+                        new string?[]
+                        {
+                            $"Type: {x.Type}",
+                            !string.IsNullOrEmpty(x.Description) ? $"Desc: {x.Description}" : null,
+                            $"Mime: {x.MimeType}",
+                            !string.IsNullOrEmpty(x.Filename) ? $"Filename: {x.Filename}" : null,
+                        }.Where(x => x != null)
+                    )
+                )
+            );
         }
         else
         {
