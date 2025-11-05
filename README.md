@@ -35,8 +35,11 @@ USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
 EXAMPLES:
-    tagselecta write -t Song1 -a Artist1 -a Artist2
-    tagselecta clean -e artist -e title
+    tagselecta write song.mp3 -t Song1 -a Artist1 -a Artist2
+    tagselecta clean song.mp3 -e artist -e title
+    tagselecta discogs path-to-album -r 4202979
+    tagselecta discogs song.mp3 -r 4202979 -f picture
+    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 OPTIONS:
     -h, --help    Prints help information
@@ -51,7 +54,10 @@ COMMANDS:
     renamefile <path>    Rename files                                           
     fixalbum <path>      Set album name, year and album artists to the same     
                          value to all files in the same directory               
-    discogs <path>       Update album from discogs release id
+    discogs <path>       Update album from discogs. You can pass discogs release
+                         id (not master) or query to search                     
+    titlecase <path>     Convert all field to title case                        
+    va <path>            Convert all field to title case
 ```
 
 ### Read command
@@ -80,7 +86,7 @@ USAGE:
     tagselecta write <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta write -t Song1 -a Artist1 -a Artist2
+    tagselecta write song.mp3 -t Song1 -a Artist1 -a Artist2
 
 ARGUMENTS:
     <path>     
@@ -124,8 +130,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help          Prints help information       
-    -d, --delimiters    Default values are: , ; feat.
+    -h, --help         Prints help information       
+    -s, --separator    Default values are: , ; feat.
 ```
 
 ### Clean command
@@ -138,7 +144,7 @@ USAGE:
     tagselecta clean <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta clean -e artist -e title
+    tagselecta clean song.mp3 -e artist -e title
 
 ARGUMENTS:
     <path>     
@@ -222,18 +228,26 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Update album from discogs release id
+Update album from discogs. You can pass discogs release id (not master) or query
+to search
 
 USAGE:
     tagselecta discogs <path> [OPTIONS]
+
+EXAMPLES:
+    tagselecta discogs path-to-album -r 4202979
+    tagselecta discogs song.mp3 -r 4202979 -f picture
+    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help       Prints help information
-    -r, --release                           
-    -q, --query
+    -h, --help     Prints help information                                      
+    -u, --url      Discogs release url. Can be master or release                
+    -q, --query                                                                 
+    -f, --field    Fields to update from Discogs release. If not specified, all 
+                   values will be updated
 ```
 
 
