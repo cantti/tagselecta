@@ -53,5 +53,6 @@ public static partial class TagDataToTagLibMapper
     public static partial void Map(TagData tagData, Tag tag);
 
     // taglib stores no value as nan for double
-    public static double Double(double? source) => source is null ? double.NaN : source.Value;
+    [SuppressMessage("Mapper", "IDE0051")] // why???
+    private static double MapDouble(double? source) => source is null ? double.NaN : source.Value;
 }

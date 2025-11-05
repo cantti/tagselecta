@@ -4,7 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
-using TagSelecta.TagTemplate;
+using TagSelecta.TagDataTemplate;
 
 namespace TagSelecta.Commands;
 
@@ -79,10 +79,9 @@ public class WriteSettings : FileSettings
 
 public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(console)
 {
-    protected override Task Execute(string file, int index)
+    protected override Task BeforeExecute()
     {
-        var originalTags = Tagger.ReadTags(file);
-
+        // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
         {
             if (prop.Name == nameof(WriteSettings.Path))
@@ -92,15 +91,20 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
                 continue;
             if (val is string[] valArray)
             {
-                // convert arrays with empty first element to empty arrays
                 if (valArray.First() == "")
                 {
                     prop.SetValue(Settings, Array.Empty<string>());
                 }
             }
         }
+        return Task.CompletedTask;
+    }
 
-        var mapper = new WriteSettingsMapper(originalTags);
+    protected override Task Execute(string file, int index)
+    {
+        var originalTags = Tagger.ReadTags(file);
+
+        var mapper = new WriteSettingsMapper(originalTags, file);
 
         var tags = originalTags.Clone();
 
@@ -127,7 +131,7 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
     // https://mapperly.riok.app/docs/configuration/mapper/#null-values
     AllowNullPropertyAssignment = false
 )]
-public partial class WriteSettingsMapper(TagData originalTags)
+public partial class WriteSettingsMapper(TagData originalTags, string path)
 {
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
@@ -155,5 +159,5 @@ public partial class WriteSettingsMapper(TagData originalTags)
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     public partial void Map(WriteSettings settings, TagData tagData);
 
-    private string StringReplace(string val) => TagTemplateFormatter.Format(val, originalTags);
+    private string StringFormat(string val) => TagDataTemplateEngine.Format(val, originalTags, path);
 }

@@ -3,8 +3,8 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Misc;
+using TagSelecta.TagDataTemplate;
 using TagSelecta.Tagging;
-using TagSelecta.TagTemplate;
 
 namespace TagSelecta.Commands;
 
@@ -39,7 +39,9 @@ public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSetti
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
 
-        var newName = TagTemplateFormatter.Format(Settings.Template, tagData).CleanFileName();
+        var newName = TagDataTemplateEngine
+            .Format(Settings.Template, tagData, file)
+            .CleanFileName();
 
         var newPath = GetNewPath(dir, newName);
 

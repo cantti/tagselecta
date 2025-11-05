@@ -17,7 +17,7 @@ namespace TagSelecta.Commands
             }
             if (settings.Album != null)
             {
-                tagData.Album = StringReplace(settings.Album);
+                tagData.Album = StringFormat(settings.Album);
             }
             if (settings.Year != null)
             {
@@ -25,11 +25,11 @@ namespace TagSelecta.Commands
             }
             if (settings.Title != null)
             {
-                tagData.Title = StringReplace(settings.Title);
+                tagData.Title = StringFormat(settings.Title);
             }
             if (settings.Subtitle != null)
             {
-                tagData.Subtitle = StringReplace(settings.Subtitle);
+                tagData.Subtitle = StringFormat(settings.Subtitle);
             }
             if (settings.Track != null)
             {
@@ -53,19 +53,19 @@ namespace TagSelecta.Commands
             }
             if (settings.Comment != null)
             {
-                tagData.Comment = StringReplace(settings.Comment);
+                tagData.Comment = StringFormat(settings.Comment);
             }
             if (settings.Description != null)
             {
-                tagData.Description = StringReplace(settings.Description);
+                tagData.Description = StringFormat(settings.Description);
             }
             if (settings.Label != null)
             {
-                tagData.Label = StringReplace(settings.Label);
+                tagData.Label = StringFormat(settings.Label);
             }
             if (settings.CatalogNumber != null)
             {
-                tagData.CatalogNumber = StringReplace(settings.CatalogNumber);
+                tagData.CatalogNumber = StringFormat(settings.CatalogNumber);
             }
             if (settings.Bpm != null)
             {
@@ -77,23 +77,23 @@ namespace TagSelecta.Commands
             }
             if (settings.Conductor != null)
             {
-                tagData.Conductor = StringReplace(settings.Conductor);
+                tagData.Conductor = StringFormat(settings.Conductor);
             }
             if (settings.Isrc != null)
             {
-                tagData.Isrc = StringReplace(settings.Isrc);
+                tagData.Isrc = StringFormat(settings.Isrc);
             }
             if (settings.Lyrics != null)
             {
-                tagData.Lyrics = StringReplace(settings.Lyrics);
+                tagData.Lyrics = StringFormat(settings.Lyrics);
             }
             if (settings.Publisher != null)
             {
-                tagData.Publisher = StringReplace(settings.Publisher);
+                tagData.Publisher = StringFormat(settings.Publisher);
             }
             if (settings.Copyright != null)
             {
-                tagData.Copyright = StringReplace(settings.Copyright);
+                tagData.Copyright = StringFormat(settings.Copyright);
             }
         }
 
@@ -103,7 +103,7 @@ namespace TagSelecta.Commands
             var target = new global::System.Collections.Generic.List<string>(source.Count);
             foreach (var item in source)
             {
-                target.Add(StringReplace(item));
+                target.Add(StringFormat(item));
             }
             return target;
         }

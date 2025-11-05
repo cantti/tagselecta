@@ -110,10 +110,10 @@ namespace TagSelecta.Tagging
             {
                 target.MusicIpId = tag.MusicIpId;
             }
-            target.ReplayGainTrackGain = Double(tag.ReplayGainTrackGain);
-            target.ReplayGainTrackPeak = Double(tag.ReplayGainTrackPeak);
-            target.ReplayGainAlbumGain = Double(tag.ReplayGainAlbumGain);
-            target.ReplayGainAlbumPeak = Double(tag.ReplayGainAlbumPeak);
+            target.ReplayGainTrackGain = MapDouble(tag.ReplayGainTrackGain);
+            target.ReplayGainTrackPeak = MapDouble(tag.ReplayGainTrackPeak);
+            target.ReplayGainAlbumGain = MapDouble(tag.ReplayGainAlbumGain);
+            target.ReplayGainAlbumPeak = MapDouble(tag.ReplayGainAlbumPeak);
             if (tag.Copyright != null)
             {
                 target.Copyright = tag.Copyright;

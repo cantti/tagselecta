@@ -3,8 +3,8 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Misc;
+using TagSelecta.TagDataTemplate;
 using TagSelecta.Tagging;
-using TagSelecta.TagTemplate;
 
 namespace TagSelecta.Commands;
 
@@ -32,7 +32,9 @@ public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSet
 
         var tagData = Tagger.ReadTags(file);
 
-        var newName = TagTemplateFormatter.Format(Settings.Template, tagData).CleanFileName();
+        var newName = TagDataTemplateEngine
+            .Format(Settings.Template, tagData, file)
+            .CleanFileName();
 
         newName = $"{newName}{Path.GetExtension(file)}";
 

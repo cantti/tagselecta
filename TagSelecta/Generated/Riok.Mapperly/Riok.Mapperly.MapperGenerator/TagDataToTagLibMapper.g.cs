@@ -36,10 +36,10 @@ namespace TagSelecta.Tagging
             tag.MusicBrainzReleaseStatus = tagData.MusicBrainzReleaseStatus;
             tag.MusicBrainzReleaseType = tagData.MusicBrainzReleaseType;
             tag.MusicBrainzReleaseCountry = tagData.MusicBrainzReleaseCountry;
-            tag.ReplayGainTrackGain = Double(tagData.ReplayGainTrackGain);
-            tag.ReplayGainTrackPeak = Double(tagData.ReplayGainTrackPeak);
-            tag.ReplayGainAlbumGain = Double(tagData.ReplayGainAlbumGain);
-            tag.ReplayGainAlbumPeak = Double(tagData.ReplayGainAlbumPeak);
+            tag.ReplayGainTrackGain = MapDouble(tagData.ReplayGainTrackGain);
+            tag.ReplayGainTrackPeak = MapDouble(tagData.ReplayGainTrackPeak);
+            tag.ReplayGainAlbumGain = MapDouble(tagData.ReplayGainAlbumGain);
+            tag.ReplayGainAlbumPeak = MapDouble(tagData.ReplayGainAlbumPeak);
             tag.Publisher = tagData.Publisher;
             tag.ISRC = tagData.Isrc;
             tag.Pictures = MapToIPictureArray(tagData.Picture);

@@ -1,7 +1,11 @@
-namespace TagSelecta.TagTemplate;
+namespace TagSelecta.TagDataTemplate;
 
-public class TagTemplateContext
+public class TagDataTemplateModel
 {
+    public string Path { get; set; } = "";
+
+    public string Filename { get; set; } = "";
+
     public string Artist { get; set; } = "";
 
     public List<string> ArtistList { get; set; } = [];
