@@ -1,10 +1,20 @@
+using TagSelecta.Misc;
+
 namespace TagSelecta.Tagging;
 
 public class TagData
 {
-    public List<string> AlbumArtist { get; set; } = [];
+    public string Path { get; set; } = "";
 
-    public List<string> Artist { get; set; } = [];
+    public string FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
+
+    public List<string> AlbumArtists { get; set; } = [];
+
+    public string AlbumArtist => AlbumArtists.Joined();
+
+    public List<string> Artists { get; set; } = [];
+
+    public string Artist => Artists.Joined();
 
     public string Album { get; set; } = "";
 
@@ -22,7 +32,9 @@ public class TagData
 
     public uint DiscTotal { get; set; }
 
-    public List<string> Genre { get; set; } = [];
+    public List<string> Genres { get; set; } = [];
+
+    public string Genre => Genres.Joined();
 
     public string Comment { get; set; } = "";
 
@@ -35,6 +47,8 @@ public class TagData
     public uint Bpm { get; set; }
 
     public List<string> Composers { get; set; } = [];
+
+    public string Composer => Composers.Joined();
 
     public string Conductor { get; set; } = "";
 
@@ -78,7 +92,7 @@ public class TagData
 
     public string DiscogsReleaseId { get; set; } = "";
 
-    public List<TagLib.Picture> Picture { get; set; } = [];
+    public List<TagLib.Picture> Pictures { get; set; } = [];
 
     public TagData Clone()
     {

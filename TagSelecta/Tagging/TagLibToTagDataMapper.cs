@@ -13,13 +13,11 @@ public static partial class TagLibToTagDataMapper
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
     // custom mapping
-    [MapProperty(nameof(Tag.AlbumArtists), nameof(TagData.AlbumArtist))]
-    [MapProperty(nameof(Tag.Performers), nameof(TagData.Artist))]
+    [MapProperty(nameof(Tag.Performers), nameof(TagData.Artists))]
     [MapProperty(nameof(Tag.TrackCount), nameof(TagData.TrackTotal))]
     [MapProperty(nameof(Tag.DiscCount), nameof(TagData.DiscTotal))]
-    [MapProperty(nameof(Tag.Genres), nameof(TagData.Genre))]
     [MapProperty(nameof(Tag.BeatsPerMinute), nameof(TagData.Bpm))]
-    [MapProperty(nameof(Tag.Pictures), nameof(TagData.Picture))]
+    [MapProperty(nameof(Tag.Pictures), nameof(TagData.Pictures))]
     // ignore source
     [MapperIgnoreSource(nameof(Tag.IsEmpty))]
     [MapperIgnoreSource(nameof(Tag.Length))]
@@ -50,6 +48,8 @@ public static partial class TagLibToTagDataMapper
     [MapperIgnoreTarget(nameof(TagData.Label))]
     [MapperIgnoreTarget(nameof(TagData.CatalogNumber))]
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
+    [MapperIgnoreTarget(nameof(TagData.Path))]
+    [MapperIgnoreTarget(nameof(TagData.FileName))]
     public static partial TagData Map(Tag tag);
 
     // taglib stores no value as nan for double

@@ -10,12 +10,12 @@ namespace TagSelecta.Tagging
             tag.Title = tagData.Title;
             tag.Subtitle = tagData.Subtitle;
             tag.Description = tagData.Description;
-            tag.Performers = global::System.Linq.Enumerable.ToArray(tagData.Artist);
-            tag.AlbumArtists = global::System.Linq.Enumerable.ToArray(tagData.AlbumArtist);
+            tag.Performers = global::System.Linq.Enumerable.ToArray(tagData.Artists);
+            tag.AlbumArtists = global::System.Linq.Enumerable.ToArray(tagData.AlbumArtists);
             tag.Composers = global::System.Linq.Enumerable.ToArray(tagData.Composers);
             tag.Album = tagData.Album;
             tag.Comment = tagData.Comment;
-            tag.Genres = global::System.Linq.Enumerable.ToArray(tagData.Genre);
+            tag.Genres = global::System.Linq.Enumerable.ToArray(tagData.Genres);
             tag.Year = tagData.Year;
             tag.Track = tagData.Track;
             tag.TrackCount = tagData.TrackTotal;
@@ -42,7 +42,7 @@ namespace TagSelecta.Tagging
             tag.ReplayGainAlbumPeak = MapDouble(tagData.ReplayGainAlbumPeak);
             tag.Publisher = tagData.Publisher;
             tag.ISRC = tagData.Isrc;
-            tag.Pictures = MapToIPictureArray(tagData.Picture);
+            tag.Pictures = MapToIPictureArray(tagData.Pictures);
         }
 
         [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]

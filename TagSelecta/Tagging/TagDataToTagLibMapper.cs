@@ -13,13 +13,11 @@ public static partial class TagDataToTagLibMapper
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
     // custom mapping
-    [MapProperty(nameof(TagData.AlbumArtist), nameof(Tag.AlbumArtists))]
-    [MapProperty(nameof(TagData.Artist), nameof(Tag.Performers))]
+    [MapProperty(nameof(TagData.Artists), nameof(Tag.Performers))]
     [MapProperty(nameof(TagData.TrackTotal), nameof(Tag.TrackCount))]
     [MapProperty(nameof(TagData.DiscTotal), nameof(Tag.DiscCount))]
-    [MapProperty(nameof(TagData.Genre), nameof(Tag.Genres))]
     [MapProperty(nameof(TagData.Bpm), nameof(Tag.BeatsPerMinute))]
-    [MapProperty(nameof(TagData.Picture), nameof(Tag.Pictures))]
+    [MapProperty(nameof(TagData.Pictures), nameof(Tag.Pictures))]
     // ignore source
     [MapperIgnoreTarget(nameof(Tag.IsEmpty))]
     [MapperIgnoreTarget(nameof(Tag.Length))]
@@ -46,10 +44,16 @@ public static partial class TagDataToTagLibMapper
     [MapperIgnoreTarget(nameof(Tag.JoinedPerformers))]
     [MapperIgnoreTarget(nameof(Tag.JoinedPerformersSort))]
     [MapperIgnoreTarget(nameof(Tag.RemixedBy))]
-    // ignore target
+    // ignore source
     [MapperIgnoreSource(nameof(TagData.Label))]
     [MapperIgnoreSource(nameof(TagData.CatalogNumber))]
     [MapperIgnoreSource(nameof(TagData.DiscogsReleaseId))]
+    [MapperIgnoreSource(nameof(TagData.Path))]
+    [MapperIgnoreSource(nameof(TagData.FileName))]
+    [MapperIgnoreSource(nameof(TagData.Artist))]
+    [MapperIgnoreSource(nameof(TagData.AlbumArtist))]
+    [MapperIgnoreSource(nameof(TagData.Genre))]
+    [MapperIgnoreSource(nameof(TagData.Composer))]
     public static partial void Map(TagData tagData, Tag tag);
 
     // taglib stores no value as nan for double

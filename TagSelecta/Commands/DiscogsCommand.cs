@@ -59,10 +59,10 @@ public class DiscogsCommand(
             Console.MarkupLineInterpolated($"[blue]Release[/]");
             Console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{_release.Uri}[/]");
             Console.MarkupLineInterpolated(
-                $"  [blue]Release[/]: {_release.Artists.Select(x => x.Name).Print()} - {_release.Title} ({_release.Year})"
+                $"  [blue]Release[/]: {_release.Artists.Select(x => x.Name).Joined()} - {_release.Title} ({_release.Year})"
             );
             Console.MarkupLineInterpolated(
-                $"  [blue]Tracks[/]: {_release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Print()}"
+                $"  [blue]Tracks[/]: {_release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Joined()}"
             );
             Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {_release.TrackList.Count}");
         }
@@ -84,10 +84,10 @@ public class DiscogsCommand(
                 Console.MarkupLineInterpolated($"[blue]Option[/] [yellow]{index + 1}[/]");
                 Console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{release.Uri}[/]");
                 Console.MarkupLineInterpolated(
-                    $"  [blue]Release[/]: {release.Artists.Select(x => x.Name).Print()} - {release.Title} ({release.Year})"
+                    $"  [blue]Release[/]: {release.Artists.Select(x => x.Name).Joined()} - {release.Title} ({release.Year})"
                 );
                 Console.MarkupLineInterpolated(
-                    $"  [blue]Tracks[/]: {release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Print()}"
+                    $"  [blue]Tracks[/]: {release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Joined()}"
                 );
                 Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {release.TrackList.Count}");
                 Console.WriteLine();
@@ -129,25 +129,25 @@ public class DiscogsCommand(
 
         var tags = originalTags.Clone();
         var track = _release.TrackList[index];
-        var albumArtist = _release
+        var albumArtists = _release
             .Artists.Select(x => RemoveTrailingNumberParentheses(x.Name))
             .ToList();
-        var artist = track.Artists.Select(x => RemoveTrailingNumberParentheses(x.Name)).ToList();
+        var artists = track.Artists.Select(x => RemoveTrailingNumberParentheses(x.Name)).ToList();
 
-        SetField(tags, x => x.AlbumArtist, albumArtist);
-        SetField(tags, x => x.Artist, artist.Count != 0 ? artist : albumArtist);
+        SetField(tags, x => x.AlbumArtists, albumArtists);
+        SetField(tags, x => x.Artists, artists.Count != 0 ? artists : albumArtists);
         SetField(tags, x => x.Album, _release.Title);
         SetField(tags, x => x.Title, track.Title);
         SetField(tags, x => x.Track, (uint)index + 1);
         SetField(tags, x => x.TrackTotal, (uint)_release.TrackList.Count);
         SetField(tags, x => x.Disc, (uint)0);
         SetField(tags, x => x.DiscTotal, (uint)0);
-        SetField(tags, x => x.Genre, _release.Styles);
+        SetField(tags, x => x.Genres, _release.Styles);
         SetField(tags, x => x.Label, _release.Labels.FirstOrDefault()?.Name ?? "");
         SetField(tags, x => x.CatalogNumber, _release.Labels.FirstOrDefault()?.CatNo ?? "");
         SetField(tags, x => x.Year, _release.Year);
         SetField(tags, x => x.DiscogsReleaseId, _release.Id.ToString());
-        SetField(tags, x => x.Picture, [new TagLib.Picture(_image)]);
+        SetField(tags, x => x.Pictures, [new TagLib.Picture(_image)]);
 
         if (!TagDataChanged(originalTags, tags))
         {

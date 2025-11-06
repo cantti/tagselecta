@@ -10,11 +10,11 @@ namespace TagSelecta.Tagging
             var target = new global::TagSelecta.Tagging.TagData();
             if (tag.AlbumArtists != null)
             {
-                target.AlbumArtist = MapToListOfString(tag.AlbumArtists);
+                target.AlbumArtists = MapToListOfString(tag.AlbumArtists);
             }
             if (tag.Performers != null)
             {
-                target.Artist = MapToListOfString(tag.Performers);
+                target.Artists = MapToListOfString(tag.Performers);
             }
             if (tag.Album != null)
             {
@@ -35,7 +35,7 @@ namespace TagSelecta.Tagging
             target.DiscTotal = tag.DiscCount;
             if (tag.Genres != null)
             {
-                target.Genre = MapToListOfString(tag.Genres);
+                target.Genres = MapToListOfString(tag.Genres);
             }
             if (tag.Comment != null)
             {
@@ -120,7 +120,7 @@ namespace TagSelecta.Tagging
             }
             if (tag.Pictures != null)
             {
-                target.Picture = MapToListOfPicture(tag.Pictures);
+                target.Pictures = MapToListOfPicture(tag.Pictures);
             }
             return target;
         }

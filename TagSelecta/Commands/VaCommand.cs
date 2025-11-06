@@ -14,8 +14,8 @@ public class VaCommand(IAnsiConsole console) : FileCommand<VaSettings>(console)
 
         var tags = originalTags.Clone();
 
-        tags.Artist = [.. tags.Artist.Select(NormalizeArtistName)];
-        tags.AlbumArtist = [.. tags.AlbumArtist.Select(NormalizeArtistName)];
+        tags.Artists = [.. tags.Artists.Select(NormalizeArtistName)];
+        tags.AlbumArtists = [.. tags.AlbumArtists.Select(NormalizeArtistName)];
         tags.Composers = [.. tags.Composers.Select(NormalizeArtistName)];
 
         if (!TagDataChanged(originalTags, tags))

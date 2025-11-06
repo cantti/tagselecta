@@ -7,7 +7,7 @@ public static class TagDataComparer
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(x => x.Name != nameof(TagData.Picture))
+                .Where(x => x.Name != nameof(TagData.Pictures))
         )
         {
             var val1 = prop.GetValue(obj1);

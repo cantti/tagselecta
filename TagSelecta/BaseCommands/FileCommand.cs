@@ -180,8 +180,8 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
             {
                 failCount++;
                 Console.MarkupLineInterpolated($"Status: [red]error![/]");
-                Console.MarkupLineInterpolated($"[red]{ex.Message}[/]");
-                // Console.WriteException(ex);
+                // Console.MarkupLineInterpolated($"[red]{ex.Message}[/]");
+                Console.WriteException(ex);
                 continue;
             }
             if (_cancelRequested)

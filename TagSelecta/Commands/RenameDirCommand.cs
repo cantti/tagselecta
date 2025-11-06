@@ -39,7 +39,7 @@ public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSetti
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
 
-        var newName = Formatter.Format(Settings.Template, tagData, file);
+        var newName = Formatter.Format(Settings.Template, tagData);
 
         newName = FileHelper.CleanFileName(newName);
 

@@ -20,7 +20,7 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
     {
         public required string Dir { get; set; }
         public required FixType FixType { get; set; }
-        public required List<string> AlbumArtist { get; set; } = [];
+        public required List<string> AlbumArtists { get; set; } = [];
         public required string AlbumName { get; set; }
         public required uint Year { get; set; }
     }
@@ -65,7 +65,7 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
 
             // get all artists on album
             var artistList = dirTagData
-                .SelectMany(x => x.Artist)
+                .SelectMany(x => x.Artists)
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct()
                 .Order()
@@ -100,7 +100,7 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
                 FixType = fixType,
                 Dir = dir,
                 AlbumName = albumName,
-                AlbumArtist = albumArtist,
+                AlbumArtists = albumArtist,
                 Year = albumYear,
             };
             _albums.Add(album);
@@ -108,11 +108,11 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
         string albumArtistMessage = album.FixType switch
         {
             FixType.PrimaryArtists =>
-                $"Primary artist(s) identified: [yellow]{album.AlbumArtist.Print().EscapeMarkup()}[/]",
+                $"Primary artist(s) identified: [yellow]{album.AlbumArtists.Joined().EscapeMarkup()}[/]",
             FixType.AllArtists =>
-                $"No primary artist(s) detected. Using all contributing artists: [yellow]{album.AlbumArtist.Print().EscapeMarkup()}[/]",
+                $"No primary artist(s) detected. Using all contributing artists: [yellow]{album.AlbumArtists.Joined().EscapeMarkup()}[/]",
             FixType.VariousArtists =>
-                $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtist.Print().EscapeMarkup()}[/]",
+                $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtists.Joined().EscapeMarkup()}[/]",
             _ => "",
         };
         Console.MarkupLine(albumArtistMessage);
@@ -122,7 +122,7 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
         Console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
         var tagData = Tagger.ReadTags(file);
         if (
-            tagData.AlbumArtist.SequenceEqual(album.AlbumArtist)
+            tagData.AlbumArtists.SequenceEqual(album.AlbumArtists)
             && tagData.Album == album.AlbumName
             && tagData.Year == album.Year
         )
@@ -132,7 +132,7 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
         }
         else
         {
-            tagData.AlbumArtist = album.AlbumArtist;
+            tagData.AlbumArtists = album.AlbumArtists;
             tagData.Album = album.AlbumName;
             tagData.Year = album.Year;
             if (ConfirmPrompt())

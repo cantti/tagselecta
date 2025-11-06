@@ -3,8 +3,8 @@ using Riok.Mapperly.Abstractions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
-using TagSelecta.Tagging;
 using TagSelecta.Formatting;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
@@ -104,7 +104,7 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
     {
         var originalTags = Tagger.ReadTags(file);
 
-        var mapper = new WriteSettingsMapper(originalTags, file);
+        var mapper = new WriteSettingsMapper(originalTags);
 
         var tags = originalTags.Clone();
 
@@ -131,10 +131,13 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
     // https://mapperly.riok.app/docs/configuration/mapper/#null-values
     AllowNullPropertyAssignment = false
 )]
-public partial class WriteSettingsMapper(TagData originalTags, string path)
+public partial class WriteSettingsMapper(TagData originalTags)
 {
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
+    [MapProperty(nameof(WriteSettings.Artist), nameof(TagData.Artists))]
+    [MapProperty(nameof(WriteSettings.Genre), nameof(TagData.Genres))]
+    [MapProperty(nameof(WriteSettings.AlbumArtist), nameof(TagData.AlbumArtists))]
     [MapperIgnoreSource(nameof(WriteSettings.Path))]
     [MapperIgnoreTarget(nameof(TagData.MusicBrainzArtistId))]
     [MapperIgnoreTarget(nameof(TagData.MusicBrainzArtistId))]
@@ -154,10 +157,24 @@ public partial class WriteSettingsMapper(TagData originalTags, string path)
     [MapperIgnoreTarget(nameof(TagData.ReplayGainTrackPeak))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumGain))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumPeak))]
-    [MapperIgnoreTarget(nameof(TagData.Picture))]
+    [MapperIgnoreTarget(nameof(TagData.Pictures))]
     [MapperIgnoreTarget(nameof(TagData.AmazonId))]
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
+    [MapperIgnoreTarget(nameof(TagData.Path))]
     public partial void Map(WriteSettings settings, TagData tagData);
 
-    private string StringFormat(string val) => Formatter.Format(val, originalTags, path);
+    [SuppressMessage("Mapper", "IDE0051")]
+    private string MapString(string val) => Formatter.Format(val, originalTags);
+
+    [SuppressMessage("Mapper", "IDE0051")]
+    private List<string> MapList(string[] array)
+    {
+        var result = new List<string>();
+        foreach (var val in array)
+        {
+            var newVal = Formatter.Format(val, originalTags);
+            result.AddRange(newVal.Split(';').Select(x => x.Trim()));
+        }
+        return result;
+    }
 }

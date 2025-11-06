@@ -13,6 +13,7 @@ public static class Tagger
         }
         var tag = tfile.Tag;
         var tagData = TagLibToTagDataMapper.Map(tag);
+        tagData.Path = file;
         tagData.Label = GetExtValue(tfile, "label");
         tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");
         tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");

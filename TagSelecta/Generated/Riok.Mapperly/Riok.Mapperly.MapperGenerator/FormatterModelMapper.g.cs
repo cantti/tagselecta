@@ -8,15 +8,15 @@ namespace TagSelecta.Formatting
         public static partial global::TagSelecta.Formatting.FormatterModel Map(global::TagSelecta.Tagging.TagData tag)
         {
             var target = new global::TagSelecta.Formatting.FormatterModel();
-            target.Artist = MapListToString(tag.Artist);
-            target.ArtistList = tag.Artist;
+            target.Artist = tag.Artist;
+            target.ArtistJoined = tag.ArtistJoined;
             target.AlbumArtist = MapListToString(tag.AlbumArtist);
             target.AlbumArtistList = tag.AlbumArtist;
             target.Album = tag.Album;
             target.Title = tag.Title;
             target.Subtitle = tag.Subtitle;
-            target.Genre = MapListToString(tag.Genre);
-            target.GenreList = tag.Genre;
+            target.Genre = tag.Genre;
+            target.Genre_ = tag.Genre_;
             target.Year = tag.Year;
             target.Track = tag.Track;
             target.TrackTotal = tag.TrackTotal;

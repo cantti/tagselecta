@@ -8,7 +8,7 @@ public class TagDataCloner
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(x => x.Name != nameof(TagData.Picture))
+                .Where(x => x.Name != nameof(TagData.Pictures) && x.CanWrite)
         )
         {
             var val = prop.GetValue(tagData);
@@ -26,9 +26,9 @@ public class TagDataCloner
                 prop.SetValue(clone, val);
             }
         }
-        clone.Picture =
+        clone.Pictures =
         [
-            .. tagData.Picture.Select(x => new TagLib.Picture
+            .. tagData.Pictures.Select(x => new TagLib.Picture
             {
                 Data = x.Data.ToArray(),
                 Description = x.Description,

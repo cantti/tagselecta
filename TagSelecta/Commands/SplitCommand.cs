@@ -30,12 +30,12 @@ public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(con
     {
         var originalTags = Tagger.ReadTags(file);
         var tags = originalTags.Clone();
-        var artist = tags.Artist.Select(Split).SelectMany(x => x).Distinct().ToList();
-        var albumArtist = tags.AlbumArtist.Select(Split).SelectMany(x => x).Distinct().ToList();
+        var artists = tags.Artists.SelectMany(Split).Distinct().ToList();
+        var albumArtists = tags.AlbumArtists.SelectMany(Split).Distinct().ToList();
         var composers = tags.Composers.Select(Split).SelectMany(x => x).Distinct().ToList();
 
-        tags.Artist = artist;
-        tags.AlbumArtist = albumArtist;
+        tags.Artists = artists;
+        tags.AlbumArtists = albumArtists;
         tags.Composers = composers;
 
         if (!TagDataChanged(originalTags, tags))

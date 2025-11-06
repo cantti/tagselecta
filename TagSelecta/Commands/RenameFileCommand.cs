@@ -32,7 +32,7 @@ public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSet
 
         var tagData = Tagger.ReadTags(file);
 
-        var newName = Formatter.Format(Settings.Template, tagData, file);
+        var newName = Formatter.Format(Settings.Template, tagData);
 
         newName = FileHelper.CleanFileName(newName);
 
