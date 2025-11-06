@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace TagSelecta.Misc;
 
 public static class FileHelper
@@ -46,5 +48,17 @@ public static class FileHelper
             }
         }
         return files;
+    }
+
+    public static string CleanFileName(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        input = input
+            .Replace(Path.DirectorySeparatorChar.ToString(), "")
+            .Replace(Path.AltDirectorySeparatorChar.ToString(), "");
+        input = Regex.Replace(input, @"\s+", " ");
+        return input;
     }
 }

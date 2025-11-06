@@ -1,6 +1,6 @@
-namespace TagSelecta.TagDataTemplate;
+namespace TagSelecta.Formatting;
 
-public class TagDataTemplateModel
+public class FormatterModel
 {
     public string Path { get; set; } = "";
 

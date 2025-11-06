@@ -4,7 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
-using TagSelecta.TagDataTemplate;
+using TagSelecta.Formatting;
 
 namespace TagSelecta.Commands;
 
@@ -159,5 +159,5 @@ public partial class WriteSettingsMapper(TagData originalTags, string path)
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     public partial void Map(WriteSettings settings, TagData tagData);
 
-    private string StringFormat(string val) => TagDataTemplateEngine.Format(val, originalTags, path);
+    private string StringFormat(string val) => Formatter.Format(val, originalTags, path);
 }
