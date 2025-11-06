@@ -9,15 +9,15 @@ namespace TagSelecta.Commands
         {
             if (settings.AlbumArtist != null)
             {
-                tagData.AlbumArtist = global::System.Linq.Enumerable.ToList(settings.AlbumArtist);
+                tagData.AlbumArtist = MapToListOfString(settings.AlbumArtist);
             }
             if (settings.Artist != null)
             {
-                tagData.Artist = global::System.Linq.Enumerable.ToList(settings.Artist);
+                tagData.Artist = MapToListOfString(settings.Artist);
             }
             if (settings.Album != null)
             {
-                tagData.Album = settings.Album;
+                tagData.Album = StringFormat(settings.Album);
             }
             if (settings.Year != null)
             {
@@ -25,11 +25,11 @@ namespace TagSelecta.Commands
             }
             if (settings.Title != null)
             {
-                tagData.Title = settings.Title;
+                tagData.Title = StringFormat(settings.Title);
             }
             if (settings.Subtitle != null)
             {
-                tagData.Subtitle = settings.Subtitle;
+                tagData.Subtitle = StringFormat(settings.Subtitle);
             }
             if (settings.Track != null)
             {
@@ -49,23 +49,23 @@ namespace TagSelecta.Commands
             }
             if (settings.Genre != null)
             {
-                tagData.Genre = global::System.Linq.Enumerable.ToList(settings.Genre);
+                tagData.Genre = MapToListOfString(settings.Genre);
             }
             if (settings.Comment != null)
             {
-                tagData.Comment = settings.Comment;
+                tagData.Comment = StringFormat(settings.Comment);
             }
             if (settings.Description != null)
             {
-                tagData.Description = settings.Description;
+                tagData.Description = StringFormat(settings.Description);
             }
             if (settings.Label != null)
             {
-                tagData.Label = settings.Label;
+                tagData.Label = StringFormat(settings.Label);
             }
             if (settings.CatalogNumber != null)
             {
-                tagData.CatalogNumber = settings.CatalogNumber;
+                tagData.CatalogNumber = StringFormat(settings.CatalogNumber);
             }
             if (settings.Bpm != null)
             {
@@ -73,28 +73,39 @@ namespace TagSelecta.Commands
             }
             if (settings.Composers != null)
             {
-                tagData.Composers = global::System.Linq.Enumerable.ToList(settings.Composers);
+                tagData.Composers = MapToListOfString(settings.Composers);
             }
             if (settings.Conductor != null)
             {
-                tagData.Conductor = settings.Conductor;
+                tagData.Conductor = StringFormat(settings.Conductor);
             }
             if (settings.Isrc != null)
             {
-                tagData.Isrc = settings.Isrc;
+                tagData.Isrc = StringFormat(settings.Isrc);
             }
             if (settings.Lyrics != null)
             {
-                tagData.Lyrics = settings.Lyrics;
+                tagData.Lyrics = StringFormat(settings.Lyrics);
             }
             if (settings.Publisher != null)
             {
-                tagData.Publisher = settings.Publisher;
+                tagData.Publisher = StringFormat(settings.Publisher);
             }
             if (settings.Copyright != null)
             {
-                tagData.Copyright = settings.Copyright;
+                tagData.Copyright = StringFormat(settings.Copyright);
             }
+        }
+
+        [global::System.CodeDom.Compiler.GeneratedCode("Riok.Mapperly", "4.3.0.0")]
+        private global::System.Collections.Generic.List<string> MapToListOfString(global::System.Collections.Generic.IReadOnlyCollection<string> source)
+        {
+            var target = new global::System.Collections.Generic.List<string>(source.Count);
+            foreach (var item in source)
+            {
+                target.Add(StringFormat(item));
+            }
+            return target;
         }
     }
 }

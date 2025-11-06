@@ -2,16 +2,16 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
+using TagSelecta.Formatting;
 using TagSelecta.Misc;
 using TagSelecta.Tagging;
-using TagSelecta.TagTemplate;
 
 namespace TagSelecta.Commands;
 
 public class RenameDirSettings : FileSettings
 {
     [CommandOption("--template|-t")]
-    [Description("Template. For example: {year} - {album}")]
+    [Description("Template. For example: {{ year } - {{ album }}")]
     public string Template { get; set; } = "";
 
     public override ValidationResult Validate()
@@ -39,7 +39,9 @@ public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSetti
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
 
-        var newName = TagTemplateFormatter.Format(Settings.Template, tagData).CleanFileName();
+        var newName = Formatter.Format(Settings.Template, tagData, file);
+
+        newName = FileHelper.CleanFileName(newName);
 
         var newPath = GetNewPath(dir, newName);
 

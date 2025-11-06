@@ -4,6 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
+using TagSelecta.Formatting;
 
 namespace TagSelecta.Commands;
 
@@ -78,24 +79,32 @@ public class WriteSettings : FileSettings
 
 public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(console)
 {
-    protected override Task Execute(string file, int index)
+    protected override Task BeforeExecute()
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
         {
-            if (prop.PropertyType == typeof(string[]))
+            if (prop.Name == nameof(WriteSettings.Path))
+                continue;
+            var val = prop.GetValue(Settings);
+            if (val is null)
+                continue;
+            if (val is string[] valArray)
             {
-                var value = (string[]?)prop.GetValue(Settings);
-                if (value != null && value.First() == "")
+                if (valArray.First() == "")
                 {
                     prop.SetValue(Settings, Array.Empty<string>());
                 }
             }
         }
+        return Task.CompletedTask;
+    }
 
-        var mapper = new WriteSettingsMapper();
-
+    protected override Task Execute(string file, int index)
+    {
         var originalTags = Tagger.ReadTags(file);
+
+        var mapper = new WriteSettingsMapper(originalTags, file);
 
         var tags = originalTags.Clone();
 
@@ -122,7 +131,7 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
     // https://mapperly.riok.app/docs/configuration/mapper/#null-values
     AllowNullPropertyAssignment = false
 )]
-public partial class WriteSettingsMapper
+public partial class WriteSettingsMapper(TagData originalTags, string path)
 {
     [SuppressMessage("Mapper", "RMG089")]
     [SuppressMessage("Mapper", "RMG090")]
@@ -149,4 +158,6 @@ public partial class WriteSettingsMapper
     [MapperIgnoreTarget(nameof(TagData.AmazonId))]
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     public partial void Map(WriteSettings settings, TagData tagData);
+
+    private string StringFormat(string val) => Formatter.Format(val, originalTags, path);
 }
