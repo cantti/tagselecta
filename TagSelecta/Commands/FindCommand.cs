@@ -24,7 +24,14 @@ public class FindCommand(IAnsiConsole console) : Command<FindSettings>
             files,
             file =>
             {
-                var tagData = Tagger.ReadTags(file);
+                TagData? tagData = null;
+                try
+                {
+                    tagData = Tagger.ReadTags(file);
+                }
+                catch { }
+                if (tagData is null)
+                    return;
                 var result = Formatter.Format("{{ " + settings.Query + " }}", tagData);
                 if (result == "true")
                 {
