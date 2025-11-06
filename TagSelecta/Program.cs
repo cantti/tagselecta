@@ -49,6 +49,7 @@ class Program
                 .AddCommand<TitleCaseCommand>("titlecase")
                 .WithDescription("Convert all field to title case.");
             config.AddCommand<VaCommand>("va").WithDescription("Normalize Various Artists values");
+            config.AddCommand<SearchCommand>("search").WithDescription("Search files by metadata");
         });
 
         return app.Run(args);
