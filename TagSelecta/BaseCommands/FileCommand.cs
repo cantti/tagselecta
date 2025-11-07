@@ -39,7 +39,7 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
 
         Console.WriteLine();
 
-        await BeforeExecute();
+        await BeforeExecuteAsync();
 
         if (!_cancelRequested)
         {
@@ -151,12 +151,23 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
         return [.. list.Select(x => x.ToLower().Trim())];
     }
 
-    protected virtual Task BeforeExecute()
+    protected virtual void BeforeExecute() { }
+
+    protected virtual Task BeforeExecuteAsync()
     {
+        BeforeExecute();
         return Task.CompletedTask;
     }
 
-    protected abstract Task Execute(string file, int index);
+    protected virtual void Execute(string file, int index) { }
+
+    protected virtual Task ExecuteAsync(string file, int index)
+    {
+        Execute(file, index);
+        return Task.CompletedTask;
+    }
+
+    // protected virtual Task Execute(string file, int index);
 
     private async Task<(int SuccessCount, int SkipCount, int FailCount)> ExecuteForFiles(
         List<string> files
@@ -174,7 +185,7 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
             try
             {
                 PrintCurrentFile(file, index, files.Count);
-                await Execute(file, index);
+                await ExecuteAsync(file, index);
             }
             catch (Exception ex)
             {

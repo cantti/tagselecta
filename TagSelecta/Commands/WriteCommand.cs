@@ -79,7 +79,7 @@ public class WriteSettings : FileSettings
 
 public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(console)
 {
-    protected override Task BeforeExecute()
+    protected override void BeforeExecute()
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
@@ -97,10 +97,9 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
                 }
             }
         }
-        return Task.CompletedTask;
     }
 
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var originalTags = Tagger.ReadTags(file);
 
@@ -113,15 +112,13 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
         if (!TagDataChanged(originalTags, tags))
         {
             Skip();
-            return Task.CompletedTask;
+            return;
         }
 
         if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }
-
-        return Task.CompletedTask;
     }
 }
 

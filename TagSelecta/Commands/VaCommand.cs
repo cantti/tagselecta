@@ -8,7 +8,7 @@ public class VaSettings : FileSettings { }
 
 public class VaCommand(IAnsiConsole console) : FileCommand<VaSettings>(console)
 {
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var originalTags = Tagger.ReadTags(file);
 
@@ -21,15 +21,13 @@ public class VaCommand(IAnsiConsole console) : FileCommand<VaSettings>(console)
         if (!TagDataChanged(originalTags, tags))
         {
             Skip();
-            return Task.CompletedTask;
+            return;
         }
 
         if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }
-
-        return Task.CompletedTask;
     }
 
     private static string NormalizeArtistName(string input)

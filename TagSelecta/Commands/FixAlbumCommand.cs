@@ -27,7 +27,7 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
 
     private readonly List<Album> _albums = [];
 
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var dir = Directory.GetParent(file)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
@@ -140,6 +140,5 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
                 Tagger.WriteTags(file, tagData);
             }
         }
-        return Task.CompletedTask;
     }
 }

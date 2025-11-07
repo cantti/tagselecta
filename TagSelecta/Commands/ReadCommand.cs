@@ -9,16 +9,14 @@ public class ReadSettings : FileSettings { }
 
 public class ReadCommand(IAnsiConsole console) : FileCommand<ReadSettings>(console)
 {
-    protected override Task BeforeExecute()
+    protected override void BeforeExecute()
     {
         ShowContinue = true;
-        return Task.CompletedTask;
     }
 
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var tags = Tagger.ReadTags(file);
         Printer.PrintTagData(Console, tags);
-        return Task.CompletedTask;
     }
 }

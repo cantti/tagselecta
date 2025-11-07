@@ -37,7 +37,7 @@ public class DiscogsCommand(
     private byte[]? _image;
     private List<string> _fieldToWriteList = [];
 
-    protected override async Task BeforeExecute()
+    protected override async Task BeforeExecuteAsync()
     {
         // set field list to write if any
         if (Settings.Field is not null)
@@ -120,10 +120,10 @@ public class DiscogsCommand(
         Console.WriteLine();
     }
 
-    protected override async Task Execute(string file, int index)
+    protected override Task ExecuteAsync(string file, int index)
     {
         if (_release is null)
-            return;
+            return Task.CompletedTask;
 
         var originalTags = Tagger.ReadTags(file);
 
@@ -152,13 +152,15 @@ public class DiscogsCommand(
         if (!TagDataChanged(originalTags, tags))
         {
             Skip();
-            return;
+            return Task.CompletedTask;
         }
 
         if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }
+
+        return Task.CompletedTask;
     }
 
     private void SetField<TProp>(

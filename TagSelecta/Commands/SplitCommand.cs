@@ -18,7 +18,7 @@ public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(con
 {
     private string[] separators = [",", ";", "feat."];
 
-    protected override async Task BeforeExecute()
+    protected override void BeforeExecute()
     {
         if (Settings.Separator is not null)
         {
@@ -26,7 +26,7 @@ public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(con
         }
     }
 
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var originalTags = Tagger.ReadTags(file);
         var tags = originalTags.Clone();
@@ -41,15 +41,13 @@ public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(con
         if (!TagDataChanged(originalTags, tags))
         {
             Skip();
-            return Task.CompletedTask;
+            return;
         }
 
         if (ConfirmPrompt())
         {
             Tagger.WriteTags(file, tags);
         }
-
-        return Task.CompletedTask;
     }
 
     private List<string> Split(string input)

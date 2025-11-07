@@ -26,7 +26,7 @@ public class RenameFileSettings : FileSettings
 
 public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSettings>(console)
 {
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var dir = Path.GetDirectoryName(file)!;
 
@@ -44,7 +44,7 @@ public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSet
         {
             Console.MarkupLine("File name already matches the desired format.");
             Skip();
-            return Task.CompletedTask;
+            return;
         }
 
         Console.MarkupLine("File rename details:");
@@ -55,6 +55,5 @@ public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSet
         {
             File.Move(file, newPath);
         }
-        return Task.CompletedTask;
     }
 }

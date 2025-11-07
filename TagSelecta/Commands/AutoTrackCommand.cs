@@ -16,7 +16,7 @@ public class AutoTrackSettings : FileSettings
 
 public class AutoTrackCommand(IAnsiConsole console) : FileCommand<AutoTrackSettings>(console)
 {
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var dir = Directory.GetParent(file)?.FullName;
         var filesInDir = Files.Where(x => Directory.GetParent(x)?.FullName == dir).Order().ToList();
@@ -33,6 +33,5 @@ public class AutoTrackCommand(IAnsiConsole console) : FileCommand<AutoTrackSetti
         {
             Tagger.WriteTags(file, tags);
         }
-        return Task.CompletedTask;
     }
 }

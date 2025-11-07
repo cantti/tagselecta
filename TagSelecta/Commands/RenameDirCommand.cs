@@ -28,13 +28,13 @@ public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSetti
 {
     private readonly List<string> _renamed = [];
 
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var dir = Path.GetDirectoryName(file)!;
         if (_renamed.Contains(dir))
         {
             Skip();
-            return Task.CompletedTask;
+            return;
         }
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(file);
@@ -49,7 +49,7 @@ public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSetti
         {
             Console.MarkupLine("Directory name already matches the desired format.");
             Skip();
-            return Task.CompletedTask;
+            return;
         }
 
         if (Directory.Exists(newPath))
@@ -65,7 +65,6 @@ public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSetti
         {
             Directory.Move(dir, newPath);
         }
-        return Task.CompletedTask;
     }
 
     private static string GetNewPath(string dirPath, string newName)

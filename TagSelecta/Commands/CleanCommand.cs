@@ -20,7 +20,7 @@ public class CleanCommand(IAnsiConsole console) : FileCommand<CleanSettings>(con
 {
     private List<string> _fieldToKeepList = [];
 
-    protected override Task BeforeExecute()
+    protected override void BeforeExecute()
     {
         if (Settings.Except is not null)
         {
@@ -43,10 +43,9 @@ public class CleanCommand(IAnsiConsole console) : FileCommand<CleanSettings>(con
         {
             Cancel();
         }
-        return Task.CompletedTask;
     }
 
-    protected override Task Execute(string file, int index)
+    protected override void Execute(string file, int index)
     {
         var existingTags = Tagger.ReadTags(file);
 
@@ -63,7 +62,7 @@ public class CleanCommand(IAnsiConsole console) : FileCommand<CleanSettings>(con
         if (!TagDataChanged(existingTags, tagDataToKeep))
         {
             Skip();
-            return Task.CompletedTask;
+            return;
         }
 
         if (ConfirmPrompt())
@@ -71,7 +70,5 @@ public class CleanCommand(IAnsiConsole console) : FileCommand<CleanSettings>(con
             Tagger.RemoveTags(file);
             Tagger.WriteTags(file, tagDataToKeep);
         }
-
-        return Task.CompletedTask;
     }
 }
