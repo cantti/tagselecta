@@ -37,9 +37,10 @@ USAGE:
 EXAMPLES:
     tagselecta write song.mp3 -t Song1 -a Artist1 -a Artist2
     tagselecta clean song.mp3 -e artist -e title
-    tagselecta discogs path-to-album -r 4202979
-    tagselecta discogs song.mp3 -r 4202979 -f picture
+    tagselecta discogs path-to-album -u 
+https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
+    tagselecta find . -q title | string.downcase |  string.contains 'dub'
 
 OPTIONS:
     -h, --help    Prints help information
@@ -236,19 +237,19 @@ USAGE:
     tagselecta discogs <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta discogs path-to-album -r 4202979
-    tagselecta discogs song.mp3 -r 4202979 -f picture
+    tagselecta discogs path-to-album -u 
+https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help      Prints help information                                     
-    -u, --url       Discogs release url. Can be master or release               
-    -s, --search                                                                
-    -f, --field     Fields to update from Discogs release. If not specified, all
-                    values will be updated
+    -h, --help     Prints help information                                      
+    -u, --url      Discogs release url. Can be master or release                
+    -q, --query                                                                 
+    -f, --field    Fields to update from Discogs release. If not specified, all 
+                   values will be updated
 ```
 
 ### Various Artists command
