@@ -23,6 +23,7 @@ var commands = new (string DisplayName, string CommandLine)[]
     ("Fix Album", "run --project ./TagSelecta -- fixalbum --help"),
     ("Discogs", "run --project ./TagSelecta -- discogs --help"),
     ("Various Artists", "run --project ./TagSelecta -- va --help"),
+    ("Find", "run --project ./TagSelecta -- find --help"),
 };
 
 // Generate new content for README
