@@ -57,7 +57,8 @@ COMMANDS:
     discogs <path>       Update album from discogs. You can pass discogs release
                          id (not master) or query to search                     
     titlecase <path>     Convert all field to title case                        
-    va <path>            Convert all field to title case
+    va <path>            Normalize Various Artists values                       
+    find <path>          Find files by metadata
 ```
 
 ### Read command
@@ -186,8 +187,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help        Prints help information                
-    -t, --template    Template. For example: {year} - {album}
+    -h, --help        Prints help information                       
+    -t, --template    Template. For example: {{ year } - {{ album }}
 ```
 
 ### Rename File command
@@ -203,8 +204,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help        Prints help information                
-    -t, --template    Template. For example: {year} - {album}
+    -h, --help        Prints help information                        
+    -t, --template    Template. For example: {{ year }} - {{ album }}
 ```
 
 ### Fix Album command
@@ -248,6 +249,22 @@ OPTIONS:
     -q, --query                                                                 
     -f, --field    Fields to update from Discogs release. If not specified, all 
                    values will be updated
+```
+
+### Various Artists command
+
+```
+DESCRIPTION:
+Normalize Various Artists values
+
+USAGE:
+    tagselecta va <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help    Prints help information
 ```
 
 
