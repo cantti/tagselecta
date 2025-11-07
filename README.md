@@ -45,19 +45,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    read <path>          Read tags                                              
-    write <path>         Write tags                                             
-    clean <path>         Cleans metadata, except the specified tags             
-    split <path>         Split artists, album artists and composers             
-    autotrack <path>     Auto track                                             
-    renamedir <path>     Rename directories                                     
-    renamefile <path>    Rename files                                           
-    fixalbum <path>      Set album name, year and album artists to the same     
-                         value to all files in the same directory               
-    discogs <path>       Update album from discogs. You can pass discogs release
-                         id (not master) or query to search                     
-    titlecase <path>     Convert all field to title case                        
-    va <path>            Normalize Various Artists values                       
+    read <path>          Read tags                                                                                  
+    write <path>         Write tags                                                                                 
+    clean <path>         Cleans metadata, except the specified tags                                                 
+    split <path>         Split artists, album artists and composers                                                 
+    autotrack <path>     Auto track                                                                                 
+    renamedir <path>     Rename directories                                                                         
+    renamefile <path>    Rename files                                                                               
+    fixalbum <path>      Set album name, year and album artists to the same value to all files in the same directory
+    discogs <path>       Update album from discogs. You can pass discogs release id (not master) or query to search 
+    titlecase <path>     Convert all field to title case                                                            
+    va <path>            Normalize Various Artists values                                                           
     find <path>          Find files by metadata
 ```
 
@@ -151,10 +149,9 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help      Prints help information                                     
-    -e, --except    Tag to keep (can be used multiple times).                   
-                    Can also be set globally using TAGSELECTA_CLEAN_EXCEPT      
-                    variable (split by any non-word character)
+    -h, --help      Prints help information                                                                          
+    -e, --except    Tag to keep (can be used multiple times).                                                        
+                    Can also be set globally using TAGSELECTA_CLEAN_EXCEPT variable (split by any non-word character)
 ```
 
 ### Auto Track command
@@ -212,8 +209,7 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Set album name, year and album artists to the same value to all files in the 
-same directory
+Set album name, year and album artists to the same value to all files in the same directory
 
 USAGE:
     tagselecta fixalbum <path> [OPTIONS]
@@ -229,8 +225,7 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Update album from discogs. You can pass discogs release id (not master) or query
-to search
+Update album from discogs. You can pass discogs release id (not master) or query to search
 
 USAGE:
     tagselecta discogs <path> [OPTIONS]
@@ -244,11 +239,10 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help     Prints help information                                      
-    -u, --url      Discogs release url. Can be master or release                
-    -q, --query                                                                 
-    -f, --field    Fields to update from Discogs release. If not specified, all 
-                   values will be updated
+    -h, --help     Prints help information                                                            
+    -u, --url      Discogs release url. Can be master or release                                      
+    -q, --query                                                                                       
+    -f, --field    Fields to update from Discogs release. If not specified, all values will be updated
 ```
 
 ### Various Artists command
@@ -265,6 +259,26 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+```
+
+### Find command
+
+```
+DESCRIPTION:
+Find files by metadata
+
+USAGE:
+    tagselecta find <path> [OPTIONS]
+
+EXAMPLES:
+    tagselecta find . -q title | string.downcase |  string.contains 'dub'
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help     Prints help information
+    -q, --query    Find query
 ```
 
 
