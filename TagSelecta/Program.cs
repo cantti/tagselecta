@@ -59,7 +59,7 @@ class Program
                 .AddCommand<FindCommand>("find")
                 .WithDescription("Find files by metadata")
                 .WithExample(
-                    ["find", ".", "-q", "title | string.downcase |  string.contains 'dub'"]
+                    ["find", ".", "-q", "\"title | string.downcase |  string.contains 'dub'\""]
                 );
         });
 
