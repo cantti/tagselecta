@@ -17,8 +17,8 @@ public class DiscogsSettings : FileSettings
     [Description("Discogs release url. Can be master or release.")]
     public string? Url { get; set; }
 
-    [CommandOption("--search|-s")]
-    public string? Search { get; set; }
+    [CommandOption("--query|-q")]
+    public string? Query { get; set; }
 
     [CommandOption("--field|-f")]
     [Description(
@@ -66,9 +66,9 @@ public class DiscogsCommand(
             );
             Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {_release.TrackList.Count}");
         }
-        else if (!string.IsNullOrWhiteSpace(Settings.Search))
+        else if (!string.IsNullOrWhiteSpace(Settings.Query))
         {
-            var search = await discogsApi.Search("master", Settings.Search ?? "");
+            var search = await discogsApi.Search("master", Settings.Query ?? "");
             search.Results = [.. search.Results.Take(5)];
             var releases = new List<Release>();
             var index = -1;

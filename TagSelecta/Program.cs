@@ -42,8 +42,14 @@ class Program
                 .WithDescription(
                     "Update album from discogs. You can pass discogs release id (not master) or query to search."
                 )
-                .WithExample(["discogs", "path-to-album", "-r", "4202979"])
-                .WithExample(["discogs", "song.mp3", "-r", "4202979", "-f", "picture"])
+                .WithExample(
+                    [
+                        "discogs",
+                        "path-to-album",
+                        "-u",
+                        "https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots",
+                    ]
+                )
                 .WithExample(["discogs", "path-to-album", "-q", "King Tubby Dub From The Roots"]);
             config
                 .AddCommand<TitleCaseCommand>("titlecase")
