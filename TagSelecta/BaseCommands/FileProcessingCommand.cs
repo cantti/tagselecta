@@ -2,8 +2,8 @@ using Spectre.Console;
 
 namespace TagSelecta.BaseCommands;
 
-// command to work with file by file
-public abstract class FileCommand<TSettings>(IAnsiConsole console) : BaseCommand<TSettings>(console)
+public abstract class FileProcessingCommand<TSettings>(IAnsiConsole console)
+    : BaseCommand<TSettings>(console)
     where TSettings : BaseSettings
 {
     private bool _allConfirmed;

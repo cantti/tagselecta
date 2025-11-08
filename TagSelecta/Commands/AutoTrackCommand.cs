@@ -13,7 +13,7 @@ public class AutoTrackSettings : BaseSettings
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackCommand(IAnsiConsole console) : TagDataCommand<AutoTrackSettings>(console)
+public class AutoTrackCommand(IAnsiConsole console) : TagDataProcessingCommand<AutoTrackSettings>(console)
 {
     protected override void ProcessTagData()
     {

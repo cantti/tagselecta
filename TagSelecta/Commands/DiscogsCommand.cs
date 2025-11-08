@@ -35,7 +35,7 @@ public class DiscogsCommand(
     IDiscogsApi discogsApi,
     DiscogsImageDownloader discogsImageDownloader,
     IAnsiConsole console
-) : TagDataCommand<DiscogsSettings>(console)
+) : TagDataProcessingCommand<DiscogsSettings>(console)
 {
     private Release? _release;
     private byte[]? _image;

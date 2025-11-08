@@ -22,7 +22,7 @@ public class RenameDirSettings : BaseSettings
     }
 }
 
-public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSettings>(console)
+public class RenameDirCommand(IAnsiConsole console) : FileProcessingCommand<RenameDirSettings>(console)
 {
     private readonly List<string> _renamed = [];
 

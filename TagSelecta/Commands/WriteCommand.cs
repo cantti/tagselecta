@@ -76,7 +76,7 @@ public class WriteSettings : BaseSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteCommand(IAnsiConsole console) : TagDataCommand<WriteSettings>(console)
+public class WriteCommand(IAnsiConsole console) : TagDataProcessingCommand<WriteSettings>(console)
 {
     protected override void BeforeProcess()
     {

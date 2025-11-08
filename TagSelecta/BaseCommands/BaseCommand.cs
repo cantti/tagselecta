@@ -15,7 +15,7 @@ public abstract class BaseCommand<TSettings>(IAnsiConsole console) : AsyncComman
 
     protected List<string> Files { get; private set; } = [];
 
-    public override async Task<int> ExecuteAsync(
+    public sealed override async Task<int> ExecuteAsync(
         CommandContext context,
         TSettings settings,
         CancellationToken ct

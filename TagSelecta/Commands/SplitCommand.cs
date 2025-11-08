@@ -14,7 +14,7 @@ public class SplitSettings : BaseSettings
     public string[]? Separator { get; set; }
 }
 
-public class SplitCommand(IAnsiConsole console) : TagDataCommand<SplitSettings>(console)
+public class SplitCommand(IAnsiConsole console) : TagDataProcessingCommand<SplitSettings>(console)
 {
     private string[] separators = [",", ";", "feat."];
 

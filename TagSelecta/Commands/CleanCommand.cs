@@ -16,7 +16,7 @@ public class CleanSettings : BaseSettings
     public string[]? Except { get; set; }
 }
 
-public class CleanCommand : TagDataCommand<CleanSettings>
+public class CleanCommand : TagDataProcessingCommand<CleanSettings>
 {
     private List<string> _fieldToKeepList = [];
     private readonly IConfig config;

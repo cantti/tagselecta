@@ -6,7 +6,7 @@ namespace TagSelecta.Commands;
 
 public class VaSettings : BaseSettings { }
 
-public class VaCommand(IAnsiConsole console) : TagDataCommand<VaSettings>(console)
+public class VaCommand(IAnsiConsole console) : TagDataProcessingCommand<VaSettings>(console)
 {
     protected override void ProcessTagData()
     {

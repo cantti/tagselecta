@@ -6,7 +6,7 @@ namespace TagSelecta.Commands;
 
 public class FixAlbumSettings : BaseSettings { }
 
-public class FixAlbumCommand(IAnsiConsole console) : TagDataCommand<FixAlbumSettings>(console)
+public class FixAlbumCommand(IAnsiConsole console) : TagDataProcessingCommand<FixAlbumSettings>(console)
 {
     private enum FixType
     {

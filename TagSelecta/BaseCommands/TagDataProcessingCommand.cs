@@ -4,9 +4,8 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.BaseCommands;
 
-// command to work with tagdata for each file
-public abstract class TagDataCommand<TSettings>(IAnsiConsole console)
-    : FileCommand<TSettings>(console)
+public abstract class TagDataProcessingCommand<TSettings>(IAnsiConsole console)
+    : FileProcessingCommand<TSettings>(console)
     where TSettings : BaseSettings
 {
     private TagData? _tagData;
@@ -17,7 +16,7 @@ public abstract class TagDataCommand<TSettings>(IAnsiConsole console)
     private TagData OriginalTagData =>
         _originalTagData ?? throw new InvalidOperationException("_originalTagData not set");
 
-    protected bool CompareBeforeWriteTagData { get; set; } = true;
+    protected bool CompareBeforeWriteTagData { get; init; } = true;
 
     protected sealed override void ProcessFile() { }
 

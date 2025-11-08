@@ -8,7 +8,7 @@ namespace TagSelecta.Commands;
 
 public class TitleCaseSettings : BaseSettings { }
 
-public class TitleCaseCommand(IAnsiConsole console) : TagDataCommand<TitleCaseSettings>(console)
+public class TitleCaseCommand(IAnsiConsole console) : TagDataProcessingCommand<TitleCaseSettings>(console)
 {
     protected override void ProcessTagData()
     {

@@ -22,7 +22,7 @@ public class RenameFileSettings : BaseSettings
     }
 }
 
-public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSettings>(console)
+public class RenameFileCommand(IAnsiConsole console) : FileProcessingCommand<RenameFileSettings>(console)
 {
     protected override void ProcessFile()
     {
