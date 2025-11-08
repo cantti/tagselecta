@@ -13,13 +13,22 @@ namespace TagSelecta.Commands;
 public class DiscogsSettings : BaseSettings
 {
     [CommandOption("--release|-r")]
-    public string? Release { get; set; }
+    public required string Release { get; set; }
 
     [CommandOption("--field|-f")]
     [Description(
         "Fields to update from Discogs release. If not specified, all values will be updated"
     )]
     public string[]? Field { get; set; }
+
+    public override ValidationResult Validate()
+    {
+        if (string.IsNullOrWhiteSpace(Release))
+        {
+            return ValidationResult.Error("Release is required");
+        }
+        return base.Validate();
+    }
 }
 
 public class DiscogsCommand(
@@ -44,11 +53,6 @@ public class DiscogsCommand(
                 return;
             }
         }
-        if (Settings.Release is null)
-        {
-            Cancel();
-            return;
-        }
         if (Settings.Release.StartsWith("http"))
         {
             var (urlType, urlId) = GetDiscogsReleaseInfo(Settings.Release);
@@ -66,9 +70,9 @@ public class DiscogsCommand(
             );
             Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {_release.TrackList.Count}");
         }
-        else if (!string.IsNullOrWhiteSpace(Settings.Release))
+        else
         {
-            var search = await discogsApi.Search("master", Settings.Release ?? "");
+            var search = await discogsApi.Search("master", Settings.Release);
             search.Results = [.. search.Results.Take(5)];
             var releases = new List<Release>();
             var index = -1;
@@ -92,7 +96,7 @@ public class DiscogsCommand(
                 Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {release.TrackList.Count}");
                 Console.WriteLine();
             }
-            var promptResult = AnsiConsole.Prompt(
+            var promptResult = Console.Prompt(
                 new TextPrompt<int>("Which to choose? (select 0 to exit)")
             );
             if (promptResult == 0)

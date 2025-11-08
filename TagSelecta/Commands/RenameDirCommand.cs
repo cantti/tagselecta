@@ -10,7 +10,7 @@ public class RenameDirSettings : BaseSettings
 {
     [CommandOption("--template|-t")]
     [Description("Template. For example: {{ year } - {{ album }}")]
-    public string Template { get; set; } = "";
+    public required string Template { get; set; }
 
     public override ValidationResult Validate()
     {

@@ -15,7 +15,7 @@ public class FindSettings : BaseSettings
 
 public class FindCommand(IAnsiConsole console) : Command<FindSettings>
 {
-    public override int Execute(CommandContext context, FindSettings settings)
+    public override int Execute(CommandContext context, FindSettings settings, CancellationToken ct)
     {
         var files = FileHelper.GetAllAudioFiles(settings.Path, true);
         Parallel.ForEach(

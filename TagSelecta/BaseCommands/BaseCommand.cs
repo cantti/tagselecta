@@ -7,7 +7,7 @@ namespace TagSelecta.BaseCommands;
 public abstract class BaseCommand<TSettings>(IAnsiConsole console) : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
-    public IAnsiConsole Console { get; } = console;
+    protected IAnsiConsole Console { get; } = console;
 
     private TSettings? _settings;
     protected TSettings Settings =>
@@ -15,7 +15,11 @@ public abstract class BaseCommand<TSettings>(IAnsiConsole console) : AsyncComman
 
     protected List<string> Files { get; private set; } = [];
 
-    public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        TSettings settings,
+        CancellationToken ct
+    )
     {
         _settings = settings;
 
