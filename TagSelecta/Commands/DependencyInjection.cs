@@ -10,7 +10,7 @@ public static class DependencyInjection
     {
         var assembly = Assembly.GetExecutingAssembly();
 
-        var fileCommandType = typeof(FileCommand<>);
+        var fileCommandType = typeof(TagDataCommand<>);
 
         var implementations = assembly
             .GetTypes()

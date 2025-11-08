@@ -1,7 +1,6 @@
 using Scriban;
-using TagSelecta.Tagging;
 
-namespace TagSelecta.Formatting;
+namespace TagSelecta.Tagging;
 
 public static class Formatter
 {

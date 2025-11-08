@@ -4,17 +4,15 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class VaSettings : FileSettings { }
+public class VaSettings : BaseSettings { }
 
-public class VaCommand(IAnsiConsole console) : FileCommand<VaSettings>(console)
+public class VaCommand(IAnsiConsole console) : TagDataCommand<VaSettings>(console)
 {
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         TagData.Artists = [.. TagData.Artists.Select(NormalizeArtistName)];
         TagData.AlbumArtists = [.. TagData.AlbumArtists.Select(NormalizeArtistName)];
         TagData.Composers = [.. TagData.Composers.Select(NormalizeArtistName)];
-
-        WriteTags();
     }
 
     private static string NormalizeArtistName(string input)

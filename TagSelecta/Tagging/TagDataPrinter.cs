@@ -1,10 +1,9 @@
 using System.Reflection;
 using Spectre.Console;
-using TagSelecta.Tagging;
 
-namespace TagSelecta.Print;
+namespace TagSelecta.Tagging;
 
-public static class Printer
+public static class TagDataPrinter
 {
     public static void PrintTagData(IAnsiConsole console, TagData tagData)
     {

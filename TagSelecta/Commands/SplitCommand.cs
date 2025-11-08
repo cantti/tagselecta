@@ -6,7 +6,7 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class SplitSettings : FileSettings
+public class SplitSettings : BaseSettings
 {
     [CommandOption("--separator|-s")]
     // last space is reauired otherwise . deleted
@@ -14,11 +14,11 @@ public class SplitSettings : FileSettings
     public string[]? Separator { get; set; }
 }
 
-public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(console)
+public class SplitCommand(IAnsiConsole console) : TagDataCommand<SplitSettings>(console)
 {
     private string[] separators = [",", ";", "feat."];
 
-    protected override void BeforeExecute()
+    protected override void BeforeProcess()
     {
         if (Settings.Separator is not null)
         {
@@ -26,7 +26,7 @@ public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(con
         }
     }
 
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         var artists = TagData.Artists.SelectMany(Split).Distinct().ToList();
         var albumArtists = TagData.AlbumArtists.SelectMany(Split).Distinct().ToList();
@@ -35,8 +35,6 @@ public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(con
         TagData.Artists = artists;
         TagData.AlbumArtists = albumArtists;
         TagData.Composers = composers;
-
-        WriteTags();
     }
 
     private List<string> Split(string input)

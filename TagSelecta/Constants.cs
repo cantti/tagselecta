@@ -1,4 +1,4 @@
-namespace TagSelecta.Misc;
+namespace TagSelecta;
 
 public class Constants
 {

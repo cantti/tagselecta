@@ -1,20 +1,49 @@
 using Spectre.Console;
 using TagSelecta.BaseCommands;
-using TagSelecta.Print;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class ReadSettings : FileSettings { }
+public class ReadSettings : BaseSettings { }
 
-public class ReadCommand(IAnsiConsole console) : FileCommand<ReadSettings>(console)
+public class ReadCommand(IAnsiConsole console) : BaseCommand<ReadSettings>(console)
 {
-    protected override void BeforeExecute()
+    protected override void Process()
     {
-        ShowContinue = true;
-    }
+        var allConfirmed = false;
+        for (int i = 0; i < Files.Count; i++)
+        {
+            var file = Files[i];
+            PrintCurrentFile(file, i, Files.Count);
+            TagData tagData;
+            try
+            {
+                tagData = Tagger.ReadTags(file);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                continue;
+            }
+            TagDataPrinter.PrintTagData(Console, tagData);
 
-    protected override void Execute()
-    {
-        Printer.PrintTagData(Console, TagData);
+            if (allConfirmed)
+            {
+                continue;
+            }
+
+            var confirmation = Console.Prompt(
+                new TextPrompt<string>("Continue?").AddChoices(["y", "n", "a"]).DefaultValue("y")
+            );
+
+            if (confirmation == "n")
+            {
+                break;
+            }
+            else if (confirmation == "a")
+            {
+                allConfirmed = true;
+            }
+        }
     }
 }

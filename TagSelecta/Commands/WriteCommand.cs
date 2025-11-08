@@ -3,12 +3,11 @@ using Riok.Mapperly.Abstractions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
-using TagSelecta.Formatting;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class WriteSettings : FileSettings
+public class WriteSettings : BaseSettings
 {
     [CommandOption("--genre|-g")]
     public string[]? Genre { get; set; }
@@ -77,9 +76,9 @@ public class WriteSettings : FileSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(console)
+public class WriteCommand(IAnsiConsole console) : TagDataCommand<WriteSettings>(console)
 {
-    protected override void BeforeExecute()
+    protected override void BeforeProcess()
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
@@ -99,11 +98,10 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
         }
     }
 
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         var mapper = new WriteSettingsMapper(TagData.Clone());
         mapper.Map(Settings, TagData);
-        WriteTags();
     }
 }
 

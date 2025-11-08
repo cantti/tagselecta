@@ -6,12 +6,11 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Discogs;
-using TagSelecta.Misc;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class DiscogsSettings : FileSettings
+public class DiscogsSettings : BaseSettings
 {
     [CommandOption("--release|-r")]
     public string? Release { get; set; }
@@ -27,13 +26,13 @@ public class DiscogsCommand(
     IDiscogsApi discogsApi,
     DiscogsImageDownloader discogsImageDownloader,
     IAnsiConsole console
-) : FileCommand<DiscogsSettings>(console)
+) : TagDataCommand<DiscogsSettings>(console)
 {
     private Release? _release;
     private byte[]? _image;
     private List<string> _fieldToWriteList = [];
 
-    protected override async Task BeforeExecuteAsync()
+    protected override async Task BeforeProcessAsync()
     {
         // set field list to write if any
         if (Settings.Field is not null)
@@ -121,12 +120,12 @@ public class DiscogsCommand(
         Console.WriteLine();
     }
 
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         if (_release is null)
             return;
 
-        var track = _release.TrackList[CurrentileIndex];
+        var track = _release.TrackList[CurrentFileIndex];
         var albumArtists = _release
             .Artists.Select(x => RemoveTrailingNumberParentheses(x.Name))
             .ToList();
@@ -136,7 +135,7 @@ public class DiscogsCommand(
         SetField(TagData, x => x.Artists, artists.Count != 0 ? artists : albumArtists);
         SetField(TagData, x => x.Album, _release.Title);
         SetField(TagData, x => x.Title, track.Title);
-        SetField(TagData, x => x.Track, (uint)CurrentileIndex + 1);
+        SetField(TagData, x => x.Track, (uint)CurrentFileIndex + 1);
         SetField(TagData, x => x.TrackTotal, (uint)_release.TrackList.Count);
         SetField(TagData, x => x.Disc, (uint)0);
         SetField(TagData, x => x.DiscTotal, (uint)0);
@@ -146,8 +145,6 @@ public class DiscogsCommand(
         SetField(TagData, x => x.Year, _release.Year);
         SetField(TagData, x => x.DiscogsReleaseId, _release.Id.ToString());
         SetField(TagData, x => x.Pictures, [new TagLib.Picture(_image)]);
-
-        WriteTags();
     }
 
     private void SetField<TProp>(

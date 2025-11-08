@@ -7,7 +7,7 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class CleanSettings : FileSettings
+public class CleanSettings : BaseSettings
 {
     [CommandOption("--except|-e")]
     [Description(
@@ -16,12 +16,19 @@ public class CleanSettings : FileSettings
     public string[]? Except { get; set; }
 }
 
-public class CleanCommand(IAnsiConsole console, IConfig config)
-    : FileCommand<CleanSettings>(console)
+public class CleanCommand : TagDataCommand<CleanSettings>
 {
     private List<string> _fieldToKeepList = [];
+    private readonly IConfig config;
 
-    protected override void BeforeExecute()
+    public CleanCommand(IAnsiConsole console, IConfig config)
+        : base(console)
+    {
+        this.config = config;
+        CompareBeforeWriteTagData = false;
+    }
+
+    protected override void BeforeProcess()
     {
         _fieldToKeepList = Settings.Except?.ToList() ?? config.CleanExcept;
         if (_fieldToKeepList.Count == 0)
@@ -35,7 +42,7 @@ public class CleanCommand(IAnsiConsole console, IConfig config)
         }
     }
 
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         foreach (
             var prop in typeof(TagData)
@@ -67,6 +74,14 @@ public class CleanCommand(IAnsiConsole console, IConfig config)
                 prop.SetValue(TagData, (uint)0);
             }
         }
-        WriteTags(true);
+
+        Console.MarkupLine(
+            "The comparison does not display unsupported tags, which will also be removed!"
+        );
+    }
+
+    protected override void BeforeWriteTagData()
+    {
+        Tagger.RemoveTags(CurrentFile);
     }
 }

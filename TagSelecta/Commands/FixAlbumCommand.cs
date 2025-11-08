@@ -1,13 +1,12 @@
 using Spectre.Console;
 using TagSelecta.BaseCommands;
-using TagSelecta.Misc;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class FixAlbumSettings : FileSettings { }
+public class FixAlbumSettings : BaseSettings { }
 
-public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSettings>(console)
+public class FixAlbumCommand(IAnsiConsole console) : TagDataCommand<FixAlbumSettings>(console)
 {
     private enum FixType
     {
@@ -27,7 +26,7 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
 
     private readonly List<Album> _albums = [];
 
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         var dir = Directory.GetParent(CurrentFile)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
@@ -123,6 +122,5 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
         TagData.AlbumArtists = album.AlbumArtists;
         TagData.Album = album.AlbumName;
         TagData.Year = album.Year;
-        WriteTags();
     }
 }

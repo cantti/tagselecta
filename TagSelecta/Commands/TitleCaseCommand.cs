@@ -6,11 +6,11 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class TitleCaseSettings : FileSettings { }
+public class TitleCaseSettings : BaseSettings { }
 
-public class TitleCaseCommand(IAnsiConsole console) : FileCommand<TitleCaseSettings>(console)
+public class TitleCaseCommand(IAnsiConsole console) : TagDataCommand<TitleCaseSettings>(console)
 {
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         foreach (
             var prop in typeof(TagData)
@@ -27,8 +27,6 @@ public class TitleCaseCommand(IAnsiConsole console) : FileCommand<TitleCaseSetti
                 prop.SetValue(TagData, valueList.Select(ToTitleCase).ToList());
             }
         }
-
-        WriteTags();
     }
 
     private static string ToTitleCase(string input)

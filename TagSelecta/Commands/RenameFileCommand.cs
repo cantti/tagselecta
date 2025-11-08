@@ -2,13 +2,11 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
-using TagSelecta.Formatting;
-using TagSelecta.Misc;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class RenameFileSettings : FileSettings
+public class RenameFileSettings : BaseSettings
 {
     [CommandOption("--template|-t")]
     [Description("Template. For example: {{ year }} - {{ album }}")]
@@ -26,7 +24,7 @@ public class RenameFileSettings : FileSettings
 
 public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSettings>(console)
 {
-    protected override void Execute()
+    protected override void ProcessFile()
     {
         var dir = Path.GetDirectoryName(CurrentFile)!;
 

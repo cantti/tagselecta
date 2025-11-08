@@ -2,13 +2,11 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
-using TagSelecta.Formatting;
-using TagSelecta.Misc;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class FindSettings : FileSettings
+public class FindSettings : BaseSettings
 {
     [CommandOption("--query|-q")]
     [Description("Find query")]

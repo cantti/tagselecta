@@ -6,16 +6,16 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class AutoTrackSettings : FileSettings
+public class AutoTrackSettings : BaseSettings
 {
     [CommandOption("--keepdisk")]
     [Description("Remove Disc and DiscTotal")]
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackCommand(IAnsiConsole console) : FileCommand<AutoTrackSettings>(console)
+public class AutoTrackCommand(IAnsiConsole console) : TagDataCommand<AutoTrackSettings>(console)
 {
-    protected override void Execute()
+    protected override void ProcessTagData()
     {
         var dir = Directory.GetParent(CurrentFile)?.FullName;
         var filesInDir = Files.Where(x => Directory.GetParent(x)?.FullName == dir).Order().ToList();
@@ -26,6 +26,5 @@ public class AutoTrackCommand(IAnsiConsole console) : FileCommand<AutoTrackSetti
             TagData.Disc = 0;
             TagData.DiscTotal = 0;
         }
-        WriteTags();
     }
 }
