@@ -8,26 +8,13 @@ public class VaSettings : FileSettings { }
 
 public class VaCommand(IAnsiConsole console) : FileCommand<VaSettings>(console)
 {
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var originalTags = Tagger.ReadTags(file);
+        TagData.Artists = [.. TagData.Artists.Select(NormalizeArtistName)];
+        TagData.AlbumArtists = [.. TagData.AlbumArtists.Select(NormalizeArtistName)];
+        TagData.Composers = [.. TagData.Composers.Select(NormalizeArtistName)];
 
-        var tags = originalTags.Clone();
-
-        tags.Artists = [.. tags.Artists.Select(NormalizeArtistName)];
-        tags.AlbumArtists = [.. tags.AlbumArtists.Select(NormalizeArtistName)];
-        tags.Composers = [.. tags.Composers.Select(NormalizeArtistName)];
-
-        if (!TagDataChanged(originalTags, tags))
-        {
-            Skip();
-            return;
-        }
-
-        if (ConfirmPrompt())
-        {
-            Tagger.WriteTags(file, tags);
-        }
+        WriteTags();
     }
 
     private static string NormalizeArtistName(string input)

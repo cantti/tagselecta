@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using System.Text.RegularExpressions;
+using System.Reflection;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
@@ -16,24 +16,14 @@ public class CleanSettings : FileSettings
     public string[]? Except { get; set; }
 }
 
-public class CleanCommand(IAnsiConsole console) : FileCommand<CleanSettings>(console)
+public class CleanCommand(IAnsiConsole console, IConfig config)
+    : FileCommand<CleanSettings>(console)
 {
     private List<string> _fieldToKeepList = [];
 
     protected override void BeforeExecute()
     {
-        if (Settings.Except is not null)
-        {
-            _fieldToKeepList = [.. Settings.Except];
-        }
-        else
-        {
-            var tagsToKeepVar = Environment.GetEnvironmentVariable("TAGSELECTA_CLEAN_EXCEPT");
-            if (!string.IsNullOrEmpty(tagsToKeepVar))
-            {
-                _fieldToKeepList = [.. Regex.Split(tagsToKeepVar, @"\W+")];
-            }
-        }
+        _fieldToKeepList = Settings.Except?.ToList() ?? config.CleanExcept;
         if (_fieldToKeepList.Count == 0)
         {
             Console.MarkupLine("No tags to keep provided! It will remove all tags");
@@ -45,30 +35,38 @@ public class CleanCommand(IAnsiConsole console) : FileCommand<CleanSettings>(con
         }
     }
 
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var existingTags = Tagger.ReadTags(file);
-
-        var tagDataToKeep = new TagData();
-
-        foreach (var prop in typeof(TagData).GetProperties())
+        foreach (
+            var prop in typeof(TagData)
+                .GetProperties()
+                .Where(x =>
+                    x.GetCustomAttribute<EditableAttribute>() is not null
+                    && !_fieldToKeepList.Contains(x.Name.ToLower())
+                )
+        )
         {
-            if (_fieldToKeepList.Contains(prop.Name.ToLower()))
+            if (prop.PropertyType == typeof(string))
             {
-                prop.SetValue(tagDataToKeep, prop.GetValue(existingTags));
+                prop.SetValue(TagData, "");
+            }
+            else if (prop.PropertyType == typeof(List<string>))
+            {
+                prop.SetValue(TagData, new List<string>());
+            }
+            else if (prop.PropertyType == typeof(List<TagLib.Picture>))
+            {
+                prop.SetValue(TagData, new List<TagLib.Picture>());
+            }
+            else if (prop.PropertyType == typeof(double?))
+            {
+                prop.SetValue(TagData, null);
+            }
+            else if (prop.PropertyType == typeof(uint))
+            {
+                prop.SetValue(TagData, (uint)0);
             }
         }
-
-        if (!TagDataChanged(existingTags, tagDataToKeep))
-        {
-            Skip();
-            return;
-        }
-
-        if (ConfirmPrompt())
-        {
-            Tagger.RemoveTags(file);
-            Tagger.WriteTags(file, tagDataToKeep);
-        }
+        WriteTags(true);
     }
 }

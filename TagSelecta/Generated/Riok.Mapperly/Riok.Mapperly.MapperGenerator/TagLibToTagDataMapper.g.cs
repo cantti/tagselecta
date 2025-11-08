@@ -66,10 +66,6 @@ namespace TagSelecta.Tagging
             {
                 target.Publisher = tag.Publisher;
             }
-            if (tag.AmazonId != null)
-            {
-                target.AmazonId = tag.AmazonId;
-            }
             if (tag.MusicBrainzArtistId != null)
             {
                 target.MusicBrainzArtistId = tag.MusicBrainzArtistId;
@@ -105,10 +101,6 @@ namespace TagSelecta.Tagging
             if (tag.MusicBrainzReleaseCountry != null)
             {
                 target.MusicBrainzReleaseCountry = tag.MusicBrainzReleaseCountry;
-            }
-            if (tag.MusicIpId != null)
-            {
-                target.MusicIpId = tag.MusicIpId;
             }
             target.ReplayGainTrackGain = MapDouble(tag.ReplayGainTrackGain);
             target.ReplayGainTrackPeak = MapDouble(tag.ReplayGainTrackPeak);

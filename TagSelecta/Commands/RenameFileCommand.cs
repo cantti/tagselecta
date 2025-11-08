@@ -26,21 +26,21 @@ public class RenameFileSettings : FileSettings
 
 public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSettings>(console)
 {
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var dir = Path.GetDirectoryName(file)!;
+        var dir = Path.GetDirectoryName(CurrentFile)!;
 
-        var tagData = Tagger.ReadTags(file);
+        var tagData = Tagger.ReadTags(CurrentFile);
 
         var newName = Formatter.Format(Settings.Template, tagData);
 
         newName = FileHelper.CleanFileName(newName);
 
-        newName = $"{newName}{Path.GetExtension(file)}";
+        newName = $"{newName}{Path.GetExtension(CurrentFile)}";
 
         var newPath = Path.Combine(dir, newName);
 
-        if (newPath == file)
+        if (newPath == CurrentFile)
         {
             Console.MarkupLine("File name already matches the desired format.");
             Skip();
@@ -48,12 +48,12 @@ public class RenameFileCommand(IAnsiConsole console) : FileCommand<RenameFileSet
         }
 
         Console.MarkupLine("File rename details:");
-        Console.MarkupLine($"  Old: {file.EscapeMarkup()}");
+        Console.MarkupLine($"  Old: {CurrentFile.EscapeMarkup()}");
         Console.MarkupLine($"  New: {newPath.EscapeMarkup()}");
 
         if (ConfirmPrompt())
         {
-            File.Move(file, newPath);
+            File.Move(CurrentFile, newPath);
         }
     }
 }

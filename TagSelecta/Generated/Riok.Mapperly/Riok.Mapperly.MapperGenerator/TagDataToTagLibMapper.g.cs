@@ -31,8 +31,6 @@ namespace TagSelecta.Tagging
             tag.MusicBrainzReleaseArtistId = tagData.MusicBrainzReleaseArtistId;
             tag.MusicBrainzTrackId = tagData.MusicBrainzTrackId;
             tag.MusicBrainzDiscId = tagData.MusicBrainzDiscId;
-            tag.MusicIpId = tagData.MusicIpId;
-            tag.AmazonId = tagData.AmazonId;
             tag.MusicBrainzReleaseStatus = tagData.MusicBrainzReleaseStatus;
             tag.MusicBrainzReleaseType = tagData.MusicBrainzReleaseType;
             tag.MusicBrainzReleaseCountry = tagData.MusicBrainzReleaseCountry;

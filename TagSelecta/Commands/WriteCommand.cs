@@ -99,26 +99,11 @@ public class WriteCommand(IAnsiConsole console) : FileCommand<WriteSettings>(con
         }
     }
 
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var originalTags = Tagger.ReadTags(file);
-
-        var mapper = new WriteSettingsMapper(originalTags);
-
-        var tags = originalTags.Clone();
-
-        mapper.Map(Settings, tags);
-
-        if (!TagDataChanged(originalTags, tags))
-        {
-            Skip();
-            return;
-        }
-
-        if (ConfirmPrompt())
-        {
-            Tagger.WriteTags(file, tags);
-        }
+        var mapper = new WriteSettingsMapper(TagData.Clone());
+        mapper.Map(Settings, TagData);
+        WriteTags();
     }
 }
 
@@ -149,13 +134,11 @@ public partial class WriteSettingsMapper(TagData originalTags)
     [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseStatus))]
     [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseType))]
     [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseCountry))]
-    [MapperIgnoreTarget(nameof(TagData.MusicIpId))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainTrackGain))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainTrackPeak))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumGain))]
     [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumPeak))]
     [MapperIgnoreTarget(nameof(TagData.Pictures))]
-    [MapperIgnoreTarget(nameof(TagData.AmazonId))]
     [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
     [MapperIgnoreTarget(nameof(TagData.Path))]
     public partial void Map(WriteSettings settings, TagData tagData);

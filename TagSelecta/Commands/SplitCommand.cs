@@ -26,28 +26,17 @@ public class SplitCommand(IAnsiConsole console) : FileCommand<SplitSettings>(con
         }
     }
 
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var originalTags = Tagger.ReadTags(file);
-        var tags = originalTags.Clone();
-        var artists = tags.Artists.SelectMany(Split).Distinct().ToList();
-        var albumArtists = tags.AlbumArtists.SelectMany(Split).Distinct().ToList();
-        var composers = tags.Composers.Select(Split).SelectMany(x => x).Distinct().ToList();
+        var artists = TagData.Artists.SelectMany(Split).Distinct().ToList();
+        var albumArtists = TagData.AlbumArtists.SelectMany(Split).Distinct().ToList();
+        var composers = TagData.Composers.Select(Split).SelectMany(x => x).Distinct().ToList();
 
-        tags.Artists = artists;
-        tags.AlbumArtists = albumArtists;
-        tags.Composers = composers;
+        TagData.Artists = artists;
+        TagData.AlbumArtists = albumArtists;
+        TagData.Composers = composers;
 
-        if (!TagDataChanged(originalTags, tags))
-        {
-            Skip();
-            return;
-        }
-
-        if (ConfirmPrompt())
-        {
-            Tagger.WriteTags(file, tags);
-        }
+        WriteTags();
     }
 
     private List<string> Split(string input)

@@ -1,6 +1,4 @@
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using TagSelecta.BaseCommands;
 using TagSelecta.Discogs;
 
 namespace TagSelecta.DependencyInjection;
@@ -11,6 +9,7 @@ public static class DependencyInjectionConfig
     {
         var services = new ServiceCollection();
         services.AddDiscogs();
+        services.AddTransient<IConfig, Config>();
         return new TypeRegistrar(services);
     }
 }

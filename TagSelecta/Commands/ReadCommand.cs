@@ -1,7 +1,6 @@
 using Spectre.Console;
 using TagSelecta.BaseCommands;
 using TagSelecta.Print;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
@@ -14,9 +13,8 @@ public class ReadCommand(IAnsiConsole console) : FileCommand<ReadSettings>(conso
         ShowContinue = true;
     }
 
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var tags = Tagger.ReadTags(file);
-        Printer.PrintTagData(Console, tags);
+        Printer.PrintTagData(Console, TagData);
     }
 }

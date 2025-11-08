@@ -1,3 +1,4 @@
+using System.Reflection;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Misc;
@@ -11,7 +12,6 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
 {
     protected IAnsiConsole Console => console;
 
-    private TSettings? _settings;
     private bool _isLastFile;
     private bool _allConfirmed;
     private bool _cancelRequested;
@@ -19,9 +19,23 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
 
     protected bool ShowContinue { get; set; }
 
+    private TSettings? _settings;
     protected TSettings Settings =>
-        _settings ?? throw new InvalidOperationException("Settings not set");
+        _settings ?? throw new InvalidOperationException("_settings not set");
+
+    private TagData? _tagData;
+    protected TagData TagData =>
+        _tagData ?? throw new InvalidOperationException("_tagData not set");
+
+    private TagData? _originalTagData;
+    private TagData OriginalTagData =>
+        _originalTagData ?? throw new InvalidOperationException("_originalTagData not set");
+
     protected List<string> Files { get; private set; } = [];
+
+    protected string CurrentFile { get; set; } = "";
+
+    protected int CurrentileIndex { get; set; } = -1;
 
     public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
     {
@@ -43,7 +57,7 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
 
         if (!_cancelRequested)
         {
-            var (successCount, skipCount, failCount) = await ExecuteForFiles(Files);
+            var (successCount, skipCount, failCount) = await ExecuteForFiles();
             Console.MarkupLineInterpolated(
                 $"[green]Finished![/] Processed [yellow]{successCount}[/] files, [cyan]{skipCount}[/] skipped, [red]{failCount}[/] failed."
             );
@@ -99,27 +113,42 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
         return confirmed;
     }
 
-    protected bool TagDataChanged(TagData tagData1, TagData tagData2)
+    protected void WriteTags(bool removeExisting = false)
     {
-        if (TagDataComparer.TagDataEquals(tagData1, tagData2))
+        var changed = false;
+        if (TagDataComparer.TagDataEquals(OriginalTagData, TagData))
         {
             Console.MarkupLine("Nothing to change.");
-            return false;
         }
         else
         {
-            Printer.PrintComparison(Console, tagData1, tagData2);
-            return true;
+            Printer.PrintComparison(Console, OriginalTagData, TagData);
+            changed = true;
+        }
+        if (changed && ConfirmPrompt())
+        {
+            if (removeExisting)
+            {
+                Tagger.RemoveTags(CurrentFile);
+            }
+            Tagger.WriteTags(CurrentFile, TagData);
         }
     }
 
     protected bool ValidateFieldNameList(IEnumerable<string> fields)
     {
-        foreach (var tagToKeep in fields)
+        var tagDataProps = typeof(TagData)
+            .GetProperties()
+            .Where(x => x.GetCustomAttribute<EditableAttribute>() != null);
+        foreach (var field in fields)
         {
-            if (!ValidateFieldName(tagToKeep))
+            if (
+                !tagDataProps.Any(x =>
+                    x.Name.Equals(field, StringComparison.CurrentCultureIgnoreCase)
+                )
+            )
             {
-                Console.MarkupLineInterpolated($"[red]Unknown tag: {tagToKeep}[/]");
+                Console.MarkupLineInterpolated($"[red]Unknown field: {field}[/]");
                 return false;
             }
         }
@@ -138,14 +167,6 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
         return confirmation == "y";
     }
 
-    protected bool ValidateFieldName(string field)
-    {
-        var tagDataProps = typeof(TagData).GetProperties();
-        return tagDataProps.Any(x =>
-            x.Name.Equals(field, StringComparison.CurrentCultureIgnoreCase)
-        );
-    }
-
     protected List<string> NormalizeFieldNames(IEnumerable<string> list)
     {
         return [.. list.Select(x => x.ToLower().Trim())];
@@ -159,33 +180,33 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
         return Task.CompletedTask;
     }
 
-    protected virtual void Execute(string file, int index) { }
+    protected virtual void Execute() { }
 
-    protected virtual Task ExecuteAsync(string file, int index)
+    protected virtual Task ExecuteAsync()
     {
-        Execute(file, index);
+        Execute();
         return Task.CompletedTask;
     }
 
     // protected virtual Task Execute(string file, int index);
 
-    private async Task<(int SuccessCount, int SkipCount, int FailCount)> ExecuteForFiles(
-        List<string> files
-    )
+    private async Task<(int SuccessCount, int SkipCount, int FailCount)> ExecuteForFiles()
     {
         int successCount = 0;
         int failCount = 0;
         int skipCount = 0;
-        int index = -1;
-        foreach (var file in files)
+        foreach (var file in Files)
         {
-            index++;
+            CurrentileIndex++;
             _skipped = false;
-            _isLastFile = index == files.Count - 1;
+            _isLastFile = CurrentileIndex == Files.Count - 1;
+            _tagData = Tagger.ReadTags(file);
+            _originalTagData = _tagData.Clone();
+            CurrentFile = file;
             try
             {
-                PrintCurrentFile(file, index, files.Count);
-                await ExecuteAsync(file, index);
+                PrintCurrentFile(file, CurrentileIndex, Files.Count);
+                await ExecuteAsync();
             }
             catch (Exception ex)
             {
@@ -197,7 +218,7 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
             }
             if (_cancelRequested)
             {
-                skipCount = files.Count - index;
+                skipCount = Files.Count - CurrentileIndex;
                 break;
             }
             else if (_skipped)
@@ -211,7 +232,7 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : AsyncComman
                 Console.MarkupLine("Status: success!");
                 if (ShowContinue && !ContinuePrompt())
                 {
-                    skipCount = files.Count - index - 1;
+                    skipCount = Files.Count - CurrentileIndex - 1;
                     break;
                 }
             }

@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace TagSelecta.Tagging;
 
 public static class TagDataComparer
@@ -7,7 +9,7 @@ public static class TagDataComparer
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(x => x.Name != nameof(TagData.Pictures))
+                .Where(p => p.GetCustomAttribute<EditableAttribute>() != null)
         )
         {
             var val1 = prop.GetValue(obj1);

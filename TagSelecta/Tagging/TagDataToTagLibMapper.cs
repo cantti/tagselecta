@@ -44,6 +44,8 @@ public static partial class TagDataToTagLibMapper
     [MapperIgnoreTarget(nameof(Tag.JoinedPerformers))]
     [MapperIgnoreTarget(nameof(Tag.JoinedPerformersSort))]
     [MapperIgnoreTarget(nameof(Tag.RemixedBy))]
+    [MapperIgnoreTarget(nameof(Tag.AmazonId))]
+    [MapperIgnoreTarget(nameof(Tag.MusicIpId))]
     // ignore source
     [MapperIgnoreSource(nameof(TagData.Label))]
     [MapperIgnoreSource(nameof(TagData.CatalogNumber))]

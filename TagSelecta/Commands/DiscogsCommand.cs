@@ -13,12 +13,8 @@ namespace TagSelecta.Commands;
 
 public class DiscogsSettings : FileSettings
 {
-    [CommandOption("--url|-u")]
-    [Description("Discogs release url. Can be master or release.")]
-    public string? Url { get; set; }
-
-    [CommandOption("--query|-q")]
-    public string? Query { get; set; }
+    [CommandOption("--release|-r")]
+    public string? Release { get; set; }
 
     [CommandOption("--field|-f")]
     [Description(
@@ -49,9 +45,14 @@ public class DiscogsCommand(
                 return;
             }
         }
-        if (!string.IsNullOrWhiteSpace(Settings.Url))
+        if (Settings.Release is null)
         {
-            var (urlType, urlId) = GetDiscogsReleaseInfo(Settings.Url);
+            Cancel();
+            return;
+        }
+        if (Settings.Release.StartsWith("http"))
+        {
+            var (urlType, urlId) = GetDiscogsReleaseInfo(Settings.Release);
             var releaseId =
                 urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
             _release = await discogsApi.GetRelease(releaseId);
@@ -66,9 +67,9 @@ public class DiscogsCommand(
             );
             Console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {_release.TrackList.Count}");
         }
-        else if (!string.IsNullOrWhiteSpace(Settings.Query))
+        else if (!string.IsNullOrWhiteSpace(Settings.Release))
         {
-            var search = await discogsApi.Search("master", Settings.Query ?? "");
+            var search = await discogsApi.Search("master", Settings.Release ?? "");
             search.Results = [.. search.Results.Take(5)];
             var releases = new List<Release>();
             var index = -1;
@@ -120,47 +121,33 @@ public class DiscogsCommand(
         Console.WriteLine();
     }
 
-    protected override Task ExecuteAsync(string file, int index)
+    protected override void Execute()
     {
         if (_release is null)
-            return Task.CompletedTask;
+            return;
 
-        var originalTags = Tagger.ReadTags(file);
-
-        var tags = originalTags.Clone();
-        var track = _release.TrackList[index];
+        var track = _release.TrackList[CurrentileIndex];
         var albumArtists = _release
             .Artists.Select(x => RemoveTrailingNumberParentheses(x.Name))
             .ToList();
         var artists = track.Artists.Select(x => RemoveTrailingNumberParentheses(x.Name)).ToList();
 
-        SetField(tags, x => x.AlbumArtists, albumArtists);
-        SetField(tags, x => x.Artists, artists.Count != 0 ? artists : albumArtists);
-        SetField(tags, x => x.Album, _release.Title);
-        SetField(tags, x => x.Title, track.Title);
-        SetField(tags, x => x.Track, (uint)index + 1);
-        SetField(tags, x => x.TrackTotal, (uint)_release.TrackList.Count);
-        SetField(tags, x => x.Disc, (uint)0);
-        SetField(tags, x => x.DiscTotal, (uint)0);
-        SetField(tags, x => x.Genres, _release.Styles);
-        SetField(tags, x => x.Label, _release.Labels.FirstOrDefault()?.Name ?? "");
-        SetField(tags, x => x.CatalogNumber, _release.Labels.FirstOrDefault()?.CatNo ?? "");
-        SetField(tags, x => x.Year, _release.Year);
-        SetField(tags, x => x.DiscogsReleaseId, _release.Id.ToString());
-        SetField(tags, x => x.Pictures, [new TagLib.Picture(_image)]);
+        SetField(TagData, x => x.AlbumArtists, albumArtists);
+        SetField(TagData, x => x.Artists, artists.Count != 0 ? artists : albumArtists);
+        SetField(TagData, x => x.Album, _release.Title);
+        SetField(TagData, x => x.Title, track.Title);
+        SetField(TagData, x => x.Track, (uint)CurrentileIndex + 1);
+        SetField(TagData, x => x.TrackTotal, (uint)_release.TrackList.Count);
+        SetField(TagData, x => x.Disc, (uint)0);
+        SetField(TagData, x => x.DiscTotal, (uint)0);
+        SetField(TagData, x => x.Genres, _release.Styles);
+        SetField(TagData, x => x.Label, _release.Labels.FirstOrDefault()?.Name ?? "");
+        SetField(TagData, x => x.CatalogNumber, _release.Labels.FirstOrDefault()?.CatNo ?? "");
+        SetField(TagData, x => x.Year, _release.Year);
+        SetField(TagData, x => x.DiscogsReleaseId, _release.Id.ToString());
+        SetField(TagData, x => x.Pictures, [new TagLib.Picture(_image)]);
 
-        if (!TagDataChanged(originalTags, tags))
-        {
-            Skip();
-            return Task.CompletedTask;
-        }
-
-        if (ConfirmPrompt())
-        {
-            Tagger.WriteTags(file, tags);
-        }
-
-        return Task.CompletedTask;
+        WriteTags();
     }
 
     private void SetField<TProp>(

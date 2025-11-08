@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using Spectre.Console;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
@@ -9,34 +10,25 @@ public class TitleCaseSettings : FileSettings { }
 
 public class TitleCaseCommand(IAnsiConsole console) : FileCommand<TitleCaseSettings>(console)
 {
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var originalTags = Tagger.ReadTags(file);
-
-        var tags = originalTags.Clone();
-
-        foreach (var prop in typeof(TagData).GetProperties())
+        foreach (
+            var prop in typeof(TagData)
+                .GetProperties()
+                .Where(x => x.GetCustomAttribute<EditableAttribute>() is not null)
+        )
         {
-            if (prop.GetValue(tags) is string value)
+            if (prop.GetValue(TagData) is string value)
             {
-                prop.SetValue(tags, ToTitleCase(value));
+                prop.SetValue(TagData, ToTitleCase(value));
             }
-            if (prop.GetValue(tags) is List<string> valueList)
+            if (prop.GetValue(TagData) is List<string> valueList)
             {
-                prop.SetValue(tags, valueList.Select(ToTitleCase).ToList());
+                prop.SetValue(TagData, valueList.Select(ToTitleCase).ToList());
             }
         }
 
-        if (!TagDataChanged(originalTags, tags))
-        {
-            Skip();
-            return;
-        }
-
-        if (ConfirmPrompt())
-        {
-            Tagger.WriteTags(file, tags);
-        }
+        WriteTags();
     }
 
     private static string ToTitleCase(string input)

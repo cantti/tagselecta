@@ -28,16 +28,16 @@ public class RenameDirCommand(IAnsiConsole console) : FileCommand<RenameDirSetti
 {
     private readonly List<string> _renamed = [];
 
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var dir = Path.GetDirectoryName(file)!;
+        var dir = Path.GetDirectoryName(CurrentFile)!;
         if (_renamed.Contains(dir))
         {
             Skip();
             return;
         }
         _renamed.Add(dir);
-        var tagData = Tagger.ReadTags(file);
+        var tagData = Tagger.ReadTags(CurrentFile);
 
         var newName = Formatter.Format(Settings.Template, tagData);
 

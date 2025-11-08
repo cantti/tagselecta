@@ -2,7 +2,6 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
-using TagSelecta.Print;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
@@ -16,22 +15,17 @@ public class AutoTrackSettings : FileSettings
 
 public class AutoTrackCommand(IAnsiConsole console) : FileCommand<AutoTrackSettings>(console)
 {
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var dir = Directory.GetParent(file)?.FullName;
+        var dir = Directory.GetParent(CurrentFile)?.FullName;
         var filesInDir = Files.Where(x => Directory.GetParent(x)?.FullName == dir).Order().ToList();
-        var tags = Tagger.ReadTags(file);
-        tags.Track = (uint)filesInDir.IndexOf(file) + 1;
-        tags.TrackTotal = (uint)filesInDir.Count;
+        TagData.Track = (uint)filesInDir.IndexOf(CurrentFile) + 1;
+        TagData.TrackTotal = (uint)filesInDir.Count;
         if (!Settings.KeepDisk)
         {
-            tags.Disc = 0;
-            tags.DiscTotal = 0;
+            TagData.Disc = 0;
+            TagData.DiscTotal = 0;
         }
-        Printer.PrintTagData(Console, tags);
-        if (ConfirmPrompt())
-        {
-            Tagger.WriteTags(file, tags);
-        }
+        WriteTags();
     }
 }

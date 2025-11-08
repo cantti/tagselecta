@@ -27,9 +27,9 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
 
     private readonly List<Album> _albums = [];
 
-    protected override void Execute(string file, int index)
+    protected override void Execute()
     {
-        var dir = Directory.GetParent(file)!.FullName;
+        var dir = Directory.GetParent(CurrentFile)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
@@ -120,25 +120,9 @@ public class FixAlbumCommand(IAnsiConsole console) : FileCommand<FixAlbumSetting
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
         Console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
-        var tagData = Tagger.ReadTags(file);
-        if (
-            tagData.AlbumArtists.SequenceEqual(album.AlbumArtists)
-            && tagData.Album == album.AlbumName
-            && tagData.Year == album.Year
-        )
-        {
-            Console.MarkupLine("Skipped");
-            Skip();
-        }
-        else
-        {
-            tagData.AlbumArtists = album.AlbumArtists;
-            tagData.Album = album.AlbumName;
-            tagData.Year = album.Year;
-            if (ConfirmPrompt())
-            {
-                Tagger.WriteTags(file, tagData);
-            }
-        }
+        TagData.AlbumArtists = album.AlbumArtists;
+        TagData.Album = album.AlbumName;
+        TagData.Year = album.Year;
+        WriteTags();
     }
 }
