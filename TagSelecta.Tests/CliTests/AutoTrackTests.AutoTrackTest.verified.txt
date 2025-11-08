@@ -1,0 +1,65 @@
+﻿Searching for files...
+
+3 files found.
+
+> (1/3) "{CurrentDirectory}TestData/AutoTrackTest/01 Song 1.mp3"
+╭──────────────┬───────────────────┬───────────────────╮
+│ Field        │ Old Value         │ New Value         │
+├──────────────┼───────────────────┼───────────────────┤
+│ Album Artist │ Test Album Artist │ Test Album Artist │
+│ Artist       │ Test Artist       │ Test Artist       │
+│ Album        │ Test Album        │ Test Album        │
+│ Year         │ 1990              │ 1990              │
+│ Title        │ Song 1            │ Song 1            │
+│ Track        │                   │ 1                 │
+│ Track Total  │                   │ 3                 │
+│ Disc         │ 1                 │                   │
+│ Disc Total   │ 1                 │                   │
+│ Genre        │ Rock              │ Rock              │
+│              │ Pop               │ Pop               │
+│ Comment      │ Test              │ Test              │
+╰──────────────┴───────────────────┴───────────────────╯
+Confirm changes? (yes, no, yes to all, cancel) [y/n/a/c] (y): y
+Status: success!
+
+> (2/3) "{CurrentDirectory}TestData/AutoTrackTest/02 Song 2.mp3"
+╭──────────────┬───────────────────┬───────────────────╮
+│ Field        │ Old Value         │ New Value         │
+├──────────────┼───────────────────┼───────────────────┤
+│ Album Artist │ Test Album Artist │ Test Album Artist │
+│ Artist       │ Test Artist       │ Test Artist       │
+│ Album        │ Test Album        │ Test Album        │
+│ Year         │ 1990              │ 1990              │
+│ Title        │ Song 2            │ Song 2            │
+│ Track        │                   │ 2                 │
+│ Track Total  │                   │ 3                 │
+│ Disc         │ 1                 │                   │
+│ Disc Total   │ 1                 │                   │
+│ Genre        │ Rock              │ Rock              │
+│              │ Pop               │ Pop               │
+│ Comment      │ Test              │ Test              │
+╰──────────────┴───────────────────┴───────────────────╯
+Confirm changes? (yes, no, yes to all, cancel) [y/n/a/c] (y): y
+Status: success!
+
+> (3/3) "{CurrentDirectory}TestData/AutoTrackTest/03 Song 3.mp3"
+╭──────────────┬───────────────────┬───────────────────╮
+│ Field        │ Old Value         │ New Value         │
+├──────────────┼───────────────────┼───────────────────┤
+│ Album Artist │ Test Album Artist │ Test Album Artist │
+│ Artist       │ Test Artist       │ Test Artist       │
+│ Album        │ Test Album        │ Test Album        │
+│ Year         │ 1990              │ 1990              │
+│ Title        │ Song 3            │ Song 3            │
+│ Track        │                   │ 3                 │
+│ Track Total  │                   │ 3                 │
+│ Disc         │ 1                 │                   │
+│ Disc Total   │ 1                 │                   │
+│ Genre        │ Rock              │ Rock              │
+│              │ Pop               │ Pop               │
+│ Comment      │ Test              │ Test              │
+╰──────────────┴───────────────────┴───────────────────╯
+Confirm changes? (yes, no, yes to all, cancel) [y/n/a/c] (y): y
+Status: success!
+
+Finished! Processed 3 files, 0 skipped, 0 failed.

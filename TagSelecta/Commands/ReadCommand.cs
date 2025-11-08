@@ -27,22 +27,21 @@ public class ReadCommand(IAnsiConsole console) : BaseCommand<ReadSettings>(conso
             }
             TagDataPrinter.PrintTagData(Console, tagData);
 
-            if (allConfirmed)
+            if (!allConfirmed && i < Files.Count - 1)
             {
-                continue;
-            }
-
-            var confirmation = Console.Prompt(
-                new TextPrompt<string>("Continue?").AddChoices(["y", "n", "a"]).DefaultValue("y")
-            );
-
-            if (confirmation == "n")
-            {
-                break;
-            }
-            else if (confirmation == "a")
-            {
-                allConfirmed = true;
+                var confirmation = Console.Prompt(
+                    new TextPrompt<string>("Continue? (yes, no, yes to all)")
+                        .AddChoices(["y", "n", "a"])
+                        .DefaultValue("y")
+                );
+                if (confirmation == "n")
+                {
+                    break;
+                }
+                else if (confirmation == "a")
+                {
+                    allConfirmed = true;
+                }
             }
         }
     }

@@ -1,0 +1,25 @@
+﻿Searching for files...
+
+1 file found.
+
+> (1/1) "{CurrentDirectory}TestData/TitleCaseTest/01 Song 1.mp3"
+╭──────────────┬───────────────────┬───────────────────╮
+│ Field        │ Old Value         │ New Value         │
+├──────────────┼───────────────────┼───────────────────┤
+│ Album Artist │ test album artist │ Test Album Artist │
+│ Artist       │ test artist       │ Test Artist       │
+│ Album        │ test album        │ Test Album        │
+│ Year         │ 1990              │ 1990              │
+│ Title        │ Song 1            │ Song 1            │
+│ Track        │ 1                 │ 1                 │
+│ Track Total  │ 3                 │ 3                 │
+│ Disc         │ 1                 │ 1                 │
+│ Disc Total   │ 1                 │ 1                 │
+│ Genre        │ Rock              │ Rock              │
+│              │ Pop               │ Pop               │
+│ Comment      │ Test              │ Test              │
+╰──────────────┴───────────────────┴───────────────────╯
+Confirm changes? (yes, no, yes to all, cancel) [y/n/a/c] (y): y
+Status: success!
+
+Finished! Processed 1 files, 0 skipped, 0 failed.

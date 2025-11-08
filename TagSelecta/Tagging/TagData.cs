@@ -37,7 +37,7 @@ public class TagData
     [Editable]
     public uint Disc { get; set; }
 
-    [Editable]
+    [Editable("Disc Total")]
     public uint DiscTotal { get; set; }
 
     [Editable("Genre")]

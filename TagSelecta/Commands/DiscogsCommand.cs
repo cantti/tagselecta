@@ -13,7 +13,7 @@ namespace TagSelecta.Commands;
 public class DiscogsSettings : BaseSettings
 {
     [CommandOption("--release|-r")]
-    public required string Release { get; set; }
+    public string Release { get; set; } = "";
 
     [CommandOption("--field|-f")]
     [Description(

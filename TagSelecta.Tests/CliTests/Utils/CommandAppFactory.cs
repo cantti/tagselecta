@@ -11,6 +11,7 @@ public static class CommandAppFactory
     {
         var registrar = DependencyInjectionConfig.Configure();
         var app = new CommandAppTester(registrar);
+        app.Console.Interactive();
         app.SetDefaultCommand<TCommand>();
         return app;
     }

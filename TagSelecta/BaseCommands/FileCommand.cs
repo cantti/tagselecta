@@ -76,7 +76,7 @@ public abstract class FileCommand<TSettings>(IAnsiConsole console) : BaseCommand
             return true;
 
         var confirmation = Console.Prompt(
-            new TextPrompt<string>("Confirm changes?")
+            new TextPrompt<string>("Confirm changes? (yes, no, yes to all, cancel)")
                 .AddChoices(["y", "n", "a", "c"])
                 .DefaultValue("y")
         );
