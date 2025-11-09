@@ -54,7 +54,7 @@ class Program
                     [
                         "discogs",
                         "path-to-album",
-                        "-u",
+                        "-r",
                         "https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots",
                     ]
                 )
