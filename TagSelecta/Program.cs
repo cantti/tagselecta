@@ -1,6 +1,8 @@
 ﻿using Spectre.Console.Cli;
+using TagSelecta.BaseCommands;
 using TagSelecta.Commands;
 using TagSelecta.DependencyInjection;
+using TagSelecta.TagDataActions;
 
 namespace TagSelecta;
 
@@ -17,28 +19,30 @@ class Program
         {
             config.AddCommand<ReadCommand>("read").WithDescription("Read tags.");
             config
-                .AddCommand<WriteCommand>("write")
+                .AddCommand<TagDataCommand<WriteAction, WriteSettings>>("write")
                 .WithDescription("Write tags.")
                 .WithExample(
                     ["write", "song.mp3", "-t", "Song1", "-a", "Artist1", "-a", "Artist2"]
                 );
             config
-                .AddCommand<CleanCommand>("clean")
+                .AddCommand<TagDataCommand<CleanAction, CleanSettings>>("clean")
                 .WithDescription("Cleans metadata, except the specified tags.")
                 .WithExample(["clean", "song.mp3", "-e", "artist", "-e", "title"]);
             config
-                .AddCommand<SplitCommand>("split")
+                .AddCommand<TagDataCommand<SplitAction, SplitSettings>>("split")
                 .WithDescription("Split artists, album artists and composers");
-            config.AddCommand<AutoTrackCommand>("autotrack").WithDescription("Auto track.");
+            config
+                .AddCommand<TagDataCommand<AutoTrackAction, AutoTrackSettings>>("autotrack")
+                .WithDescription("Auto track.");
             config.AddCommand<RenameDirCommand>("renamedir").WithDescription("Rename directories.");
             config.AddCommand<RenameFileCommand>("renamefile").WithDescription("Rename files.");
             config
-                .AddCommand<FixAlbumCommand>("fixalbum")
+                .AddCommand<TagDataCommand<FixAlbumAction, FixAlbumSettings>>("fixalbum")
                 .WithDescription(
                     "Set album name, year and album artists to the same value to all files in the same directory."
                 );
             config
-                .AddCommand<DiscogsCommand>("discogs")
+                .AddCommand<TagDataCommand<DiscogsAction, DiscogsSettings>>("discogs")
                 .WithDescription(
                     "Update album from discogs. You can pass discogs release id (not master) or query to search."
                 )
@@ -52,9 +56,11 @@ class Program
                 )
                 .WithExample(["discogs", "path-to-album", "-q", "King Tubby Dub From The Roots"]);
             config
-                .AddCommand<TitleCaseCommand>("titlecase")
+                .AddCommand<TagDataCommand<TitleCaseAction, TitleCaseSettings>>("titlecase")
                 .WithDescription("Convert all field to title case.");
-            config.AddCommand<VaCommand>("va").WithDescription("Normalize Various Artists values");
+            config
+                .AddCommand<TagDataCommand<VaAction, VaSettings>>("va")
+                .WithDescription("Normalize Various Artists values");
             config
                 .AddCommand<FindCommand>("find")
                 .WithDescription("Find files by metadata")

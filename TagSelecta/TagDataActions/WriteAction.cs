@@ -5,7 +5,7 @@ using Spectre.Console.Cli;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Commands;
+namespace TagSelecta.TagDataActions;
 
 public class WriteSettings : BaseSettings
 {
@@ -76,32 +76,34 @@ public class WriteSettings : BaseSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteCommand(IAnsiConsole console) : TagDataProcessingCommand<WriteSettings>(console)
+public class WriteAction : ITagDataAction<WriteSettings>
 {
-    protected override void BeforeProcess()
+    public Task<bool> BeforeProcessTagData(TagDataActionContext<WriteSettings> context)
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
         {
             if (prop.Name == nameof(WriteSettings.Path))
                 continue;
-            var val = prop.GetValue(Settings);
+            var val = prop.GetValue(context.Settings);
             if (val is null)
                 continue;
             if (val is string[] valArray)
             {
                 if (valArray.First() == "")
                 {
-                    prop.SetValue(Settings, Array.Empty<string>());
+                    prop.SetValue(context.Settings, Array.Empty<string>());
                 }
             }
         }
+        return Task.FromResult(true);
     }
 
-    protected override void ProcessTagData()
+    public Task<ActionStatus> ProcessTagData(TagDataActionContext<WriteSettings> context)
     {
-        var mapper = new WriteSettingsMapper(TagData.Clone());
-        mapper.Map(Settings, TagData);
+        var mapper = new WriteSettingsMapper(context.TagData.Clone());
+        mapper.Map(context.Settings, context.TagData);
+        return Task.FromResult(ActionStatus.Success);
     }
 }
 

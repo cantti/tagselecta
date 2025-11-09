@@ -2,38 +2,38 @@ using Spectre.Console;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Commands;
+namespace TagSelecta.TagDataActions;
+
+public enum FixType
+{
+    PrimaryArtists,
+    AllArtists,
+    VariousArtists,
+}
+
+public class Album
+{
+    public required string Dir { get; set; }
+    public required FixType FixType { get; set; }
+    public required List<string> AlbumArtists { get; set; } = [];
+    public required string AlbumName { get; set; }
+    public required uint Year { get; set; }
+}
 
 public class FixAlbumSettings : BaseSettings { }
 
-public class FixAlbumCommand(IAnsiConsole console) : TagDataProcessingCommand<FixAlbumSettings>(console)
+public class FixAlbumAction(IAnsiConsole console) : ITagDataAction<FixAlbumSettings>
 {
-    private enum FixType
-    {
-        PrimaryArtists,
-        AllArtists,
-        VariousArtists,
-    }
-
-    private class Album
-    {
-        public required string Dir { get; set; }
-        public required FixType FixType { get; set; }
-        public required List<string> AlbumArtists { get; set; } = [];
-        public required string AlbumName { get; set; }
-        public required uint Year { get; set; }
-    }
-
     private readonly List<Album> _albums = [];
 
-    protected override void ProcessTagData()
+    public Task<ActionStatus> ProcessTagData(TagDataActionContext<FixAlbumSettings> context)
     {
-        var dir = Directory.GetParent(CurrentFile)!.FullName;
+        var dir = Directory.GetParent(context.CurrentFile)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
-            var filesInDir = Files
-                .Where(x => Directory.GetParent(x)?.FullName == dir)
+            var filesInDir = context
+                .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
                 .Order()
                 .ToList();
             var dirTagData = new List<TagData>();
@@ -114,13 +114,14 @@ public class FixAlbumCommand(IAnsiConsole console) : TagDataProcessingCommand<Fi
                 $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtists.Joined().EscapeMarkup()}[/]",
             _ => "",
         };
-        Console.MarkupLine(albumArtistMessage);
-        Console.MarkupLine(
+        console.MarkupLine(albumArtistMessage);
+        console.MarkupLine(
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
-        Console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
-        TagData.AlbumArtists = album.AlbumArtists;
-        TagData.Album = album.AlbumName;
-        TagData.Year = album.Year;
+        console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
+        context.TagData.AlbumArtists = album.AlbumArtists;
+        context.TagData.Album = album.AlbumName;
+        context.TagData.Year = album.Year;
+        return Task.FromResult(ActionStatus.Success);
     }
 }

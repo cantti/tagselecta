@@ -4,13 +4,13 @@ using Spectre.Console;
 using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Commands;
+namespace TagSelecta.TagDataActions;
 
 public class TitleCaseSettings : BaseSettings { }
 
-public class TitleCaseCommand(IAnsiConsole console) : TagDataProcessingCommand<TitleCaseSettings>(console)
+public class TitleCaseAction : ITagDataAction<TitleCaseSettings>
 {
-    protected override void ProcessTagData()
+    public Task<ActionStatus> ProcessTagData(TagDataActionContext<TitleCaseSettings> context)
     {
         foreach (
             var prop in typeof(TagData)
@@ -18,15 +18,16 @@ public class TitleCaseCommand(IAnsiConsole console) : TagDataProcessingCommand<T
                 .Where(x => x.GetCustomAttribute<EditableAttribute>() is not null)
         )
         {
-            if (prop.GetValue(TagData) is string value)
+            if (prop.GetValue(context.TagData) is string value)
             {
-                prop.SetValue(TagData, ToTitleCase(value));
+                prop.SetValue(context.TagData, ToTitleCase(value));
             }
-            if (prop.GetValue(TagData) is List<string> valueList)
+            if (prop.GetValue(context.TagData) is List<string> valueList)
             {
-                prop.SetValue(TagData, valueList.Select(ToTitleCase).ToList());
+                prop.SetValue(context.TagData, valueList.Select(ToTitleCase).ToList());
             }
         }
+        return Task.FromResult(ActionStatus.Success);
     }
 
     private static string ToTitleCase(string input)
