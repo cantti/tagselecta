@@ -9,7 +9,7 @@ public class TitleCaseSettings : BaseSettings { }
 
 public class TitleCaseAction : ITagDataAction<TitleCaseSettings>
 {
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<TitleCaseSettings> context)
+    public Task ProcessTagData(TagDataActionContext<TitleCaseSettings> context)
     {
         foreach (
             var prop in typeof(TagData)
@@ -26,7 +26,7 @@ public class TitleCaseAction : ITagDataAction<TitleCaseSettings>
                 prop.SetValue(context.TagData, valueList.Select(ToTitleCase).ToList());
             }
         }
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 
     private static string ToTitleCase(string input)

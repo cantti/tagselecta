@@ -7,7 +7,9 @@ public class ReadSettings : BaseSettings { }
 
 public class ReadAction(IAnsiConsole console) : IFileAction<ReadSettings>
 {
-    public Task<bool> ProcessTagData(FileActionContext<ReadSettings> context)
+    private bool _allConfirmed;
+
+    public Task ProcessFile(FileActionContext<ReadSettings> context)
     {
         TagData tagData;
         try
@@ -17,14 +19,26 @@ public class ReadAction(IAnsiConsole console) : IFileAction<ReadSettings>
         catch (Exception ex)
         {
             console.WriteLine(ex.Message);
-            return Task.FromResult(false);
+            return Task.CompletedTask;
         }
         TagDataPrinter.PrintTagData(console, tagData);
 
         if (context.CurrentFileIndex < context.Files.Count - 1)
         {
-            context.ContinuePrompt();
+            if (!_allConfirmed)
+            {
+                var confirmation = console.Prompt(
+                    new TextPrompt<string>("Show next? ([y]es/[a]ll)".EscapeMarkup())
+                        .AddChoices(["y", "a"])
+                        .DefaultValue("y")
+                );
+
+                if (confirmation == "a")
+                {
+                    _allConfirmed = true;
+                }
+            }
         }
-        return Task.FromResult(true);
+        return Task.CompletedTask;
     }
 }

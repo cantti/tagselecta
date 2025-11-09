@@ -98,11 +98,11 @@ public class WriteAction : ITagDataAction<WriteSettings>
         return Task.FromResult(true);
     }
 
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<WriteSettings> context)
+    public Task ProcessTagData(TagDataActionContext<WriteSettings> context)
     {
         var mapper = new WriteSettingsMapper(context.TagData.Clone());
         mapper.Map(context.Settings, context.TagData);
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 }
 

@@ -122,7 +122,7 @@ public class DiscogsAction(
         return true;
     }
 
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<DiscogsSettings> context)
+    public Task ProcessTagData(TagDataActionContext<DiscogsSettings> context)
     {
         if (_release is null)
             throw new ActionException("Release not set");
@@ -151,7 +151,7 @@ public class DiscogsAction(
         SetField(context.TagData, x => x.Year, _release.Year);
         SetField(context.TagData, x => x.DiscogsReleaseId, _release.Id.ToString());
         SetField(context.TagData, x => x.Pictures, [new TagLib.Picture(_image)]);
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 
     private void SetField<TProp>(

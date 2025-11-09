@@ -23,7 +23,7 @@ public class RenameFileSettings : BaseSettings
 
 public class RenameFileAction(IAnsiConsole console) : IFileAction<RenameFileSettings>
 {
-    public Task<bool> ProcessTagData(FileActionContext<RenameFileSettings> context)
+    public Task ProcessFile(FileActionContext<RenameFileSettings> context)
     {
         var dir = Path.GetDirectoryName(context.CurrentFile)!;
 
@@ -40,7 +40,7 @@ public class RenameFileAction(IAnsiConsole console) : IFileAction<RenameFileSett
         if (newPath == context.CurrentFile)
         {
             console.MarkupLine("File name already matches the desired format.");
-            return Task.FromResult(false);
+            return Task.CompletedTask;
         }
 
         console.MarkupLine("File rename details:");
@@ -50,8 +50,11 @@ public class RenameFileAction(IAnsiConsole console) : IFileAction<RenameFileSett
         if (context.ConfirmPrompt())
         {
             File.Move(context.CurrentFile, newPath);
+            return Task.CompletedTask;
         }
-
-        return Task.FromResult(true);
+        else
+        {
+            return Task.CompletedTask;
+        }
     }
 }

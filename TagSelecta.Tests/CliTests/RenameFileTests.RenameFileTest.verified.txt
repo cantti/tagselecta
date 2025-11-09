@@ -6,7 +6,7 @@
 File rename details:
   Old: {CurrentDirectory}TestData/RenameFileTest/01 Song 1.mp3
   New: {CurrentDirectory}TestData/RenameFileTest/1990 - Song 1 - Test Album.mp3
-Confirm changes? [y/n/a] (y): y
-Status: success!
+Confirm? ([y]es/[n]o/[a]ll) [y/n/a] (y): y
+Status: success
 
-Finished! Processed 1 files, 0 failed.
+Finished!

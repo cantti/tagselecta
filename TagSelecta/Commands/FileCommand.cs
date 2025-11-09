@@ -15,72 +15,35 @@ public class FileCommand<TAction, TSettings>(TAction action, IAnsiConsole consol
         CancellationToken ct
     )
     {
-        console.MarkupLine("Searching for files...");
+        var files = CommandHelper.GetFiles(console, settings.Path);
 
-        console.WriteLine();
+        var actionContext = new FileActionContext<TSettings>(console)
+        {
+            Files = files,
+            Settings = settings,
+        };
 
-        var files = FileHelper.GetAllAudioFiles(settings.Path, true);
-
-        console.MarkupLineInterpolated(
-            $"[yellow]{files.Count}[/] {(files.Count == 1 ? "file" : "files")} found."
-        );
-
-        console.WriteLine();
-
-        var ctx = new FileActionContext<TSettings>(console) { Files = files, Settings = settings };
-
-        int successCount = 0;
-        int failCount = 0;
         for (var currentFileIndex = 0; currentFileIndex < files.Count; currentFileIndex++)
         {
             var currentFile = files[currentFileIndex];
 
-            PrintCurrentFile(currentFile, currentFileIndex, files.Count);
+            CommandHelper.PrintCurrentFile(console, currentFile, currentFileIndex, files.Count);
             try
             {
-                ctx.SetCurrentFile(currentFile, currentFileIndex);
-                var success = await action.ProcessTagData(ctx);
-                if (success)
-                {
-                    successCount++;
-                    console.MarkupLine("Status: success!");
-                }
-                else
-                {
-                    console.MarkupLine("Status: skipped!");
-                    continue;
-                }
-                if (ctx.AbortRequested)
-                {
-                    break;
-                }
+                actionContext.SetCurrentFile(currentFile, currentFileIndex);
+                await action.ProcessFile(actionContext);
+                CommandHelper.PrintStatusSuccess(console);
             }
             catch (Exception ex)
             {
-                failCount++;
-                console.MarkupLineInterpolated($"Status: [red]error![/]");
+                CommandHelper.PrintStatusError(console);
                 console.MarkupLineInterpolated($"[red]{ex.Message}[/]");
                 continue;
             }
             console.WriteLine();
         }
-        console.MarkupLineInterpolated(
-            $"[green]Finished![/] Processed [yellow]{successCount}[/] files, [red]{failCount}[/] failed."
-        );
+        console.MarkupLineInterpolated($"[green]Finished![/]");
 
         return 0;
-    }
-
-    private void PrintCurrentFile(string file, int index, int total)
-    {
-        console.MarkupInterpolated($"[dim]>[/] [yellow]({index + 1}/{total})[/] \"");
-        var path = new TextPath(file)
-            .RootColor(Color.White)
-            .SeparatorColor(Color.White)
-            .StemColor(Color.White)
-            .LeafColor(Color.Yellow);
-        console.Write(path);
-        console.Write("\"");
-        console.WriteLine();
     }
 }

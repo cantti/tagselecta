@@ -25,7 +25,7 @@ public class FixAlbumAction(IAnsiConsole console) : ITagDataAction<FixAlbumSetti
 {
     private readonly List<Album> _albums = [];
 
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<FixAlbumSettings> context)
+    public Task ProcessTagData(TagDataActionContext<FixAlbumSettings> context)
     {
         var dir = Directory.GetParent(context.CurrentFile)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
@@ -121,6 +121,6 @@ public class FixAlbumAction(IAnsiConsole console) : ITagDataAction<FixAlbumSetti
         context.TagData.AlbumArtists = album.AlbumArtists;
         context.TagData.Album = album.AlbumName;
         context.TagData.Year = album.Year;
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 }

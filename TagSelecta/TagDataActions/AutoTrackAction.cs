@@ -12,7 +12,7 @@ public class AutoTrackSettings : BaseSettings
 
 public class AutoTrackAction : ITagDataAction<AutoTrackSettings>
 {
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<AutoTrackSettings> context)
+    public Task ProcessTagData(TagDataActionContext<AutoTrackSettings> context)
     {
         var dir = Directory.GetParent(context.CurrentFile)?.FullName;
         var filesInDir = context
@@ -26,6 +26,6 @@ public class AutoTrackAction : ITagDataAction<AutoTrackSettings>
             context.TagData.Disc = 0;
             context.TagData.DiscTotal = 0;
         }
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 }

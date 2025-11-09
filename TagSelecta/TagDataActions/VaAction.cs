@@ -6,7 +6,7 @@ public class VaSettings : BaseSettings { }
 
 public class VaAction : ITagDataAction<VaSettings>
 {
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<VaSettings> context)
+    public Task ProcessTagData(TagDataActionContext<VaSettings> context)
     {
         context.TagData.Artists = [.. context.TagData.Artists.Select(NormalizeArtistName)];
         context.TagData.AlbumArtists =
@@ -14,7 +14,7 @@ public class VaAction : ITagDataAction<VaSettings>
             .. context.TagData.AlbumArtists.Select(NormalizeArtistName),
         ];
         context.TagData.Composers = [.. context.TagData.Composers.Select(NormalizeArtistName)];
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 
     private static string NormalizeArtistName(string input)

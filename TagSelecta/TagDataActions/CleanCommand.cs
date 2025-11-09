@@ -42,7 +42,7 @@ public class CleanAction(IConfig config, IAnsiConsole console) : ITagDataAction<
         return Task.CompletedTask;
     }
 
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<CleanSettings> context)
+    public Task ProcessTagData(TagDataActionContext<CleanSettings> context)
     {
         foreach (
             var prop in typeof(TagData)
@@ -79,6 +79,6 @@ public class CleanAction(IConfig config, IAnsiConsole console) : ITagDataAction<
             "The comparison does not display unsupported tags, which will also be removed!"
         );
 
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 }

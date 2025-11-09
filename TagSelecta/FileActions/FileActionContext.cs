@@ -6,8 +6,6 @@ public class FileActionContext<TSettings>(IAnsiConsole console)
 {
     private bool _allConfirmed = false;
 
-    public bool AbortRequested { get; private set; }
-
     public required List<string> Files { get; set; }
 
     public required TSettings Settings { get; set; }
@@ -30,33 +28,7 @@ public class FileActionContext<TSettings>(IAnsiConsole console)
             return true;
 
         var confirmation = console.Prompt(
-            new TextPrompt<string>("Confirm changes?").AddChoices(["y", "n", "a"]).DefaultValue("y")
-        );
-
-        switch (confirmation)
-        {
-            case "y":
-                return true;
-
-            case "n":
-                return false;
-
-            case "a":
-                _allConfirmed = true;
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    public void ContinuePrompt()
-    {
-        if (_allConfirmed)
-            return;
-
-        var confirmation = console.Prompt(
-            new TextPrompt<string>("Continue? (yes, no, yes to all)")
+            new TextPrompt<string>("Confirm? ([y]es/[n]o/[a]ll)".EscapeMarkup())
                 .AddChoices(["y", "n", "a"])
                 .DefaultValue("y")
         );
@@ -64,18 +36,17 @@ public class FileActionContext<TSettings>(IAnsiConsole console)
         switch (confirmation)
         {
             case "y":
-                return;
+                return true;
+
+            case "n":
+                return false;
 
             case "a":
                 _allConfirmed = true;
-                return;
-
-            case "n":
-                AbortRequested = true;
-                return;
+                return true;
 
             default:
-                return;
+                return false;
         }
     }
 }

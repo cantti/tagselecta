@@ -25,7 +25,7 @@ public class SplitAction : ITagDataAction<SplitSettings>
         return Task.FromResult(true);
     }
 
-    public Task<ActionStatus> ProcessTagData(TagDataActionContext<SplitSettings> context)
+    public Task ProcessTagData(TagDataActionContext<SplitSettings> context)
     {
         var artists = context.TagData.Artists.SelectMany(Split).Distinct().ToList();
         var albumArtists = context.TagData.AlbumArtists.SelectMany(Split).Distinct().ToList();
@@ -38,7 +38,7 @@ public class SplitAction : ITagDataAction<SplitSettings>
         context.TagData.Artists = artists;
         context.TagData.AlbumArtists = albumArtists;
         context.TagData.Composers = composers;
-        return Task.FromResult(ActionStatus.Success);
+        return Task.CompletedTask;
     }
 
     private List<string> Split(string input)

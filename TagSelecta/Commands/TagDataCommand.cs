@@ -18,105 +18,65 @@ public class TagDataCommand<TAction, TSettings>(TAction action, IAnsiConsole con
         CancellationToken ct
     )
     {
-        console.MarkupLine("Searching for files...");
+        var files = CommandHelper.GetFiles(console, settings.Path);
 
-        console.WriteLine();
-
-        var files = FileHelper.GetAllAudioFiles(settings.Path, true);
-
-        console.MarkupLineInterpolated(
-            $"[yellow]{files.Count}[/] {(files.Count == 1 ? "file" : "files")} found."
-        );
-
-        console.WriteLine();
-
-        var ctx = new TagDataActionContext<TSettings>(console)
+        var actionContext = new TagDataActionContext<TSettings>(console)
         {
             Files = files,
             Settings = settings,
         };
 
-        var shouldContinue = await action.BeforeProcessTagData(ctx);
-
-        if (!shouldContinue)
+        if (!await action.BeforeProcessTagData(actionContext))
         {
             return 0;
         }
 
-        int successCount = 0;
-        int failCount = 0;
-        int skipCount = 0;
         for (var currentFileIndex = 0; currentFileIndex < files.Count; currentFileIndex++)
         {
             var currentFile = files[currentFileIndex];
 
-            PrintCurrentFile(currentFile, currentFileIndex, files.Count);
+            CommandHelper.PrintCurrentFile(console, currentFile, currentFileIndex, files.Count);
             try
             {
                 var tagData = Tagger.ReadTags(currentFile);
-                ctx.SetCurrentFile(currentFile, currentFileIndex, tagData);
+                actionContext.SetCurrentFile(currentFile, currentFileIndex, tagData);
                 var originalTagData = tagData.Clone();
-                var status = await action.ProcessTagData(ctx);
-                if (status == ActionStatus.Skipped)
+                await action.ProcessTagData(actionContext);
+                if (
+                    action.CompareBeforeWriteTagData
+                    && TagDataComparer.TagDataEquals(originalTagData, tagData)
+                )
                 {
-                    skipCount++;
-                    console.MarkupLine("Status: skipped!");
+                    console.MarkupLine("Nothing to change.");
                     continue;
                 }
                 else
                 {
-                    if (
-                        action.CompareBeforeWriteTagData
-                        && TagDataComparer.TagDataEquals(originalTagData, tagData)
-                    )
+                    TagDataPrinter.PrintComparison(console, originalTagData, tagData);
+                    if (ConfirmPrompt())
                     {
-                        skipCount++;
-                        console.MarkupLine("Nothing to change.");
-                        continue;
+                        await action.BeforeWriteTagData(actionContext);
+                        Tagger.WriteTags(currentFile, tagData);
+                        CommandHelper.PrintStatusSuccess(console);
                     }
                     else
                     {
-                        TagDataPrinter.PrintComparison(console, originalTagData, tagData);
-                        if (!ConfirmPrompt())
-                        {
-                            skipCount++;
-                            console.MarkupLine("Status: skipped!");
-                            continue;
-                        }
-                        await action.BeforeWriteTagData(ctx);
-                        Tagger.WriteTags(currentFile, tagData);
-                        successCount++;
-                        console.MarkupLine("Status: success!");
+                        CommandHelper.PrintStatusSkipped(console);
+                        continue;
                     }
                 }
             }
             catch (Exception ex)
             {
-                failCount++;
-                console.MarkupLineInterpolated($"Status: [red]error![/]");
+                CommandHelper.PrintStatusError(console);
                 console.MarkupLineInterpolated($"[red]{ex.Message}[/]");
                 continue;
             }
             console.WriteLine();
         }
-        console.MarkupLineInterpolated(
-            $"[green]Finished![/] Processed [yellow]{successCount}[/] files, [cyan]{skipCount}[/] skipped, [red]{failCount}[/] failed."
-        );
+        console.MarkupLineInterpolated($"[green]Finished![/]");
 
         return 0;
-    }
-
-    private void PrintCurrentFile(string file, int index, int total)
-    {
-        console.MarkupInterpolated($"[dim]>[/] [yellow]({index + 1}/{total})[/] \"");
-        var path = new TextPath(file)
-            .RootColor(Color.White)
-            .SeparatorColor(Color.White)
-            .StemColor(Color.White)
-            .LeafColor(Color.Yellow);
-        console.Write(path);
-        console.Write("\"");
-        console.WriteLine();
     }
 
     private bool ConfirmPrompt()
@@ -125,7 +85,9 @@ public class TagDataCommand<TAction, TSettings>(TAction action, IAnsiConsole con
             return true;
 
         var confirmation = console.Prompt(
-            new TextPrompt<string>("Confirm changes?").AddChoices(["y", "n", "a"]).DefaultValue("y")
+            new TextPrompt<string>("Confirm? ([y]es/[n]o/[a]ll)".EscapeMarkup())
+                .AddChoices(["y", "n", "a", "c"])
+                .DefaultValue("y")
         );
 
         switch (confirmation)

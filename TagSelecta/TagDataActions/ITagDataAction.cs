@@ -10,7 +10,7 @@ public interface ITagDataAction<TSettings>
         return Task.FromResult(true);
     }
 
-    Task<ActionStatus> ProcessTagData(TagDataActionContext<TSettings> context);
+    Task ProcessTagData(TagDataActionContext<TSettings> context);
 
     Task BeforeWriteTagData(TagDataActionContext<TSettings> context)
     {
