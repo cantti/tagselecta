@@ -9,9 +9,7 @@ public class RenameFileTests
     [Fact]
     public Task RenameFileTest()
     {
-        var app = CommandAppFactory.CreateTestApp<
-            FileCommand<RenameFileAction, RenameFileSettings>
-        >();
+        var app = CommandAppFactory.CreateTestApp<FileCommand<RenameFileSettings>>();
         app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run(

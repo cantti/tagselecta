@@ -9,9 +9,7 @@ public class TitleCaseTests
     [Fact]
     public Task TitleCaseTest()
     {
-        var app = CommandAppFactory.CreateTestApp<
-            TagDataCommand<TitleCaseAction, TitleCaseSettings>
-        >();
+        var app = CommandAppFactory.CreateTestApp<TagDataCommand<TitleCaseSettings>>();
         app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run("./TestData/TitleCaseTest/01 Song 1.mp3");

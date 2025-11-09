@@ -4,10 +4,9 @@ using TagSelecta.FileActions;
 
 namespace TagSelecta.Commands;
 
-public class FileCommand<TAction, TSettings>(TAction action, IAnsiConsole console)
+public class FileCommand<TSettings>(IFileAction<TSettings> action, IAnsiConsole console)
     : AsyncCommand<TSettings>
     where TSettings : BaseSettings
-    where TAction : IFileAction<TSettings>
 {
     public override async Task<int> ExecuteAsync(
         CommandContext context,

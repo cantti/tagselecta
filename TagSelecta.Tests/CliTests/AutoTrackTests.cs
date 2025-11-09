@@ -9,9 +9,7 @@ public class AutoTrackTests
     [Fact]
     public Task AutoTrackTest()
     {
-        var app = CommandAppFactory.CreateTestApp<
-            TagDataCommand<AutoTrackAction, AutoTrackSettings>
-        >();
+        var app = CommandAppFactory.CreateTestApp<TagDataCommand<AutoTrackSettings>>();
         app.Console.Input.PushTextWithEnter("y");
         app.Console.Input.PushTextWithEnter("y");
         app.Console.Input.PushTextWithEnter("y");

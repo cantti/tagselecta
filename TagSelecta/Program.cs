@@ -17,38 +17,36 @@ class Program
         var app = new CommandApp(DependencyInjectionConfig.Configure());
         app.Configure(config =>
         {
+            config.AddCommand<FileCommand<ReadSettings>>("read").WithDescription("Read tags.");
             config
-                .AddCommand<FileCommand<ReadAction, ReadSettings>>("read")
-                .WithDescription("Read tags.");
-            config
-                .AddCommand<TagDataCommand<WriteAction, WriteSettings>>("write")
+                .AddCommand<TagDataCommand<WriteSettings>>("write")
                 .WithDescription("Write tags.")
                 .WithExample(
                     ["write", "song.mp3", "-t", "Song1", "-a", "Artist1", "-a", "Artist2"]
                 );
             config
-                .AddCommand<TagDataCommand<CleanAction, CleanSettings>>("clean")
+                .AddCommand<TagDataCommand<CleanSettings>>("clean")
                 .WithDescription("Cleans metadata, except the specified tags.")
                 .WithExample(["clean", "song.mp3", "-e", "artist", "-e", "title"]);
             config
-                .AddCommand<TagDataCommand<SplitAction, SplitSettings>>("split")
+                .AddCommand<TagDataCommand<SplitSettings>>("split")
                 .WithDescription("Split artists, album artists and composers");
             config
-                .AddCommand<TagDataCommand<AutoTrackAction, AutoTrackSettings>>("autotrack")
+                .AddCommand<TagDataCommand<AutoTrackSettings>>("autotrack")
                 .WithDescription("Auto track.");
             config
-                .AddCommand<FileCommand<RenameDirAction, RenameDirSettings>>("renamedir")
+                .AddCommand<FileCommand<RenameDirSettings>>("renamedir")
                 .WithDescription("Rename directories.");
             config
-                .AddCommand<FileCommand<RenameFileAction, RenameFileSettings>>("renamefile")
+                .AddCommand<FileCommand<RenameFileSettings>>("renamefile")
                 .WithDescription("Rename files.");
             config
-                .AddCommand<TagDataCommand<FixAlbumAction, FixAlbumSettings>>("fixalbum")
+                .AddCommand<TagDataCommand<FixAlbumSettings>>("fixalbum")
                 .WithDescription(
                     "Set album name, year and album artists to the same value to all files in the same directory."
                 );
             config
-                .AddCommand<TagDataCommand<DiscogsAction, DiscogsSettings>>("discogs")
+                .AddCommand<TagDataCommand<DiscogsSettings>>("discogs")
                 .WithDescription(
                     "Update album from discogs. You can pass discogs release id (not master) or query to search."
                 )
@@ -62,10 +60,10 @@ class Program
                 )
                 .WithExample(["discogs", "path-to-album", "-q", "King Tubby Dub From The Roots"]);
             config
-                .AddCommand<TagDataCommand<TitleCaseAction, TitleCaseSettings>>("titlecase")
+                .AddCommand<TagDataCommand<TitleCaseSettings>>("titlecase")
                 .WithDescription("Convert all field to title case.");
             config
-                .AddCommand<TagDataCommand<VaAction, VaSettings>>("va")
+                .AddCommand<TagDataCommand<VaSettings>>("va")
                 .WithDescription("Normalize Various Artists values");
             config
                 .AddCommand<FindCommand>("find")

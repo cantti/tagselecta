@@ -9,7 +9,7 @@ public class SplitTests
     [Fact]
     public Task SplitTest()
     {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<SplitAction, SplitSettings>>();
+        var app = CommandAppFactory.CreateTestApp<TagDataCommand<SplitSettings>>();
         app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run("./TestData/SplitTest/01 Song 1.mp3");

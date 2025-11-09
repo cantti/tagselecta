@@ -9,7 +9,7 @@ public class WriteTests
     [Fact]
     public Task WriteTest()
     {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<WriteAction, WriteSettings>>();
+        var app = CommandAppFactory.CreateTestApp<TagDataCommand<WriteSettings>>();
         app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run(

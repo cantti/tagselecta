@@ -5,10 +5,9 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class TagDataCommand<TAction, TSettings>(TAction action, IAnsiConsole console)
+public class TagDataCommand<TSettings>(ITagDataAction<TSettings> action, IAnsiConsole console)
     : AsyncCommand<TSettings>
     where TSettings : BaseSettings
-    where TAction : ITagDataAction<TSettings>
 {
     private bool _allConfirmed = false;
 
