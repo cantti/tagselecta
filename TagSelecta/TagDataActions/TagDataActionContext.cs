@@ -19,7 +19,7 @@ public class TagDataActionContext<TSettings>(IAnsiConsole console)
     private TagData? _tagData;
     public TagData TagData => _tagData ?? throw new InvalidOperationException();
 
-    public void SetCurrentFile(string currentFile, int currentFileIndex, TagData tagData)
+    public void SetCurrentFile(string currentFile, int currentFileIndex, TagData? tagData)
     {
         _tagData = tagData;
         _currentFile = currentFile;

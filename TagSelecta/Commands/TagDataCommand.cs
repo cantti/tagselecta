@@ -3,7 +3,7 @@ using Spectre.Console.Cli;
 using TagSelecta.TagDataActions;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.BaseCommands;
+namespace TagSelecta.Commands;
 
 public class TagDataCommand<TAction, TSettings>(TAction action, IAnsiConsole console)
     : AsyncCommand<TSettings>
@@ -119,7 +119,7 @@ public class TagDataCommand<TAction, TSettings>(TAction action, IAnsiConsole con
         console.WriteLine();
     }
 
-    protected bool ConfirmPrompt()
+    private bool ConfirmPrompt()
     {
         if (_allConfirmed)
             return true;

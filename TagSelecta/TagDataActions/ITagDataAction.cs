@@ -1,5 +1,3 @@
-using TagSelecta.BaseCommands;
-
 namespace TagSelecta.TagDataActions;
 
 public interface ITagDataAction<TSettings>

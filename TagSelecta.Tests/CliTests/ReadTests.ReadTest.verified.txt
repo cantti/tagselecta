@@ -17,3 +17,6 @@
 │              │ Pop               │
 │ Comment      │ Test              │
 ╰──────────────┴───────────────────╯
+Status: success!
+
+Finished! Processed 1 files, 0 failed.

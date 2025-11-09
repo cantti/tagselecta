@@ -1,7 +1,7 @@
 ﻿using Spectre.Console.Cli;
-using TagSelecta.BaseCommands;
 using TagSelecta.Commands;
 using TagSelecta.DependencyInjection;
+using TagSelecta.FileActions;
 using TagSelecta.TagDataActions;
 
 namespace TagSelecta;
@@ -17,7 +17,9 @@ class Program
         var app = new CommandApp(DependencyInjectionConfig.Configure());
         app.Configure(config =>
         {
-            config.AddCommand<ReadCommand>("read").WithDescription("Read tags.");
+            config
+                .AddCommand<FileCommand<ReadAction, ReadSettings>>("read")
+                .WithDescription("Read tags.");
             config
                 .AddCommand<TagDataCommand<WriteAction, WriteSettings>>("write")
                 .WithDescription("Write tags.")
@@ -34,8 +36,12 @@ class Program
             config
                 .AddCommand<TagDataCommand<AutoTrackAction, AutoTrackSettings>>("autotrack")
                 .WithDescription("Auto track.");
-            config.AddCommand<RenameDirCommand>("renamedir").WithDescription("Rename directories.");
-            config.AddCommand<RenameFileCommand>("renamefile").WithDescription("Rename files.");
+            config
+                .AddCommand<FileCommand<RenameDirAction, RenameDirSettings>>("renamedir")
+                .WithDescription("Rename directories.");
+            config
+                .AddCommand<FileCommand<RenameFileAction, RenameFileSettings>>("renamefile")
+                .WithDescription("Rename files.");
             config
                 .AddCommand<TagDataCommand<FixAlbumAction, FixAlbumSettings>>("fixalbum")
                 .WithDescription(

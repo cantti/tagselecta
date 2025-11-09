@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.BaseCommands;
 using TagSelecta.Discogs;
 using TagSelecta.Tagging;
 

@@ -1,4 +1,5 @@
 using TagSelecta.Commands;
+using TagSelecta.TagDataActions;
 
 namespace TagSelecta.Tests.CliTests;
 
@@ -8,7 +9,7 @@ public class SplitTests
     [Fact]
     public Task SplitTest()
     {
-        var app = CommandAppFactory.CreateTestApp<SplitCommand>();
+        var app = CommandAppFactory.CreateTestApp<TagDataCommand<SplitAction, SplitSettings>>();
         app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run("./TestData/SplitTest/01 Song 1.mp3");

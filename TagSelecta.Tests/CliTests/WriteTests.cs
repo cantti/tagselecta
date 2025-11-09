@@ -1,4 +1,5 @@
 using TagSelecta.Commands;
+using TagSelecta.TagDataActions;
 
 namespace TagSelecta.Tests.CliTests;
 
@@ -8,7 +9,7 @@ public class WriteTests
     [Fact]
     public Task WriteTest()
     {
-        var app = CommandAppFactory.CreateTestApp<WriteCommand>();
+        var app = CommandAppFactory.CreateTestApp<TagDataCommand<WriteAction, WriteSettings>>();
         app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run(

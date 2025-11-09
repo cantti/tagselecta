@@ -19,7 +19,7 @@
 │              │ Pop               │ Pop               │
 │ Comment      │ Test              │ Test              │
 ╰──────────────┴───────────────────┴───────────────────╯
-Confirm changes? (yes, no, yes to all, cancel) [y/n/a/c] (y): y
+Confirm changes? [y/n/a] (y): y
 Status: success!
 
 Finished! Processed 1 files, 0 skipped, 0 failed.

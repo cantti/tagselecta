@@ -1,6 +1,7 @@
 namespace TagSelecta.Tests.CliTests;
 
 using TagSelecta.Commands;
+using TagSelecta.TagDataActions;
 
 [Collection("Console")]
 public class AutoTrackTests
@@ -8,7 +9,9 @@ public class AutoTrackTests
     [Fact]
     public Task AutoTrackTest()
     {
-        var app = CommandAppFactory.CreateTestApp<AutoTrackCommand>();
+        var app = CommandAppFactory.CreateTestApp<
+            TagDataCommand<AutoTrackAction, AutoTrackSettings>
+        >();
         app.Console.Input.PushTextWithEnter("y");
         app.Console.Input.PushTextWithEnter("y");
         app.Console.Input.PushTextWithEnter("y");

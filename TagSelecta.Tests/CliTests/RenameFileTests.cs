@@ -1,4 +1,5 @@
 using TagSelecta.Commands;
+using TagSelecta.FileActions;
 
 namespace TagSelecta.Tests.CliTests;
 
@@ -8,7 +9,9 @@ public class RenameFileTests
     [Fact]
     public Task RenameFileTest()
     {
-        var app = CommandAppFactory.CreateTestApp<RenameFileCommand>();
+        var app = CommandAppFactory.CreateTestApp<
+            FileCommand<RenameFileAction, RenameFileSettings>
+        >();
         app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run(

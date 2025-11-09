@@ -1,5 +1,4 @@
 using Spectre.Console;
-using TagSelecta.BaseCommands;
 
 namespace TagSelecta.TagDataActions;
 

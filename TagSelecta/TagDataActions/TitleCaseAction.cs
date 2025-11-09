@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Reflection;
 using Spectre.Console;
-using TagSelecta.BaseCommands;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.TagDataActions;
