@@ -22,7 +22,7 @@ public class CleanAction(IConfig config, IAnsiConsole console) : ITagDataAction<
 
     public bool CompareBeforeWriteTagData => false;
 
-    public Task<bool> BeforeProcess(TagDataActionContext<CleanSettings> context)
+    public Task<bool> BeforeProcessTagData(TagDataActionContext<CleanSettings> context)
     {
         _fieldToKeepList = context.Settings.Except?.ToList() ?? config.CleanExcept;
         if (_fieldToKeepList.Count == 0)
