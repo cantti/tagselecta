@@ -1,6 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.FileActions;
+using TagSelecta.Actions.FileActions;
 
 namespace TagSelecta.Commands;
 

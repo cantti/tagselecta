@@ -1,5 +1,5 @@
+using TagSelecta.Actions.FileActions;
 using TagSelecta.Commands;
-using TagSelecta.FileActions;
 
 namespace TagSelecta.Tests.CliTests;
 

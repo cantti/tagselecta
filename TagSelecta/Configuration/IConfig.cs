@@ -1,4 +1,4 @@
-namespace TagSelecta;
+namespace TagSelecta.Configuration;
 
 public interface IConfig
 {

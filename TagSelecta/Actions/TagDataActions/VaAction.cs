@@ -1,6 +1,6 @@
 using Spectre.Console;
 
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public class VaSettings : BaseSettings { }
 

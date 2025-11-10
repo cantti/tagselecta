@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace TagSelecta;
+namespace TagSelecta.IO;
 
 public static class FileHelper
 {

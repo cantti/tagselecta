@@ -2,9 +2,10 @@ using System.ComponentModel;
 using System.Reflection;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.Configuration;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public class CleanSettings : BaseSettings
 {
@@ -28,8 +29,8 @@ public class CleanAction(IConfig config, IAnsiConsole console) : ITagDataAction<
         {
             console.MarkupLine("No tags to keep provided! It will remove all tags");
         }
-        _fieldToKeepList = context.NormalizeFieldNames(_fieldToKeepList);
-        if (!context.ValidateFieldNameList(_fieldToKeepList))
+        _fieldToKeepList = TagDataActionHelper.NormalizeFieldNames(_fieldToKeepList);
+        if (!TagDataActionHelper.ValidateFieldNameList(console, _fieldToKeepList))
         {
             return Task.FromResult(false);
         }

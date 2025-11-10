@@ -1,7 +1,8 @@
 using Spectre.Console;
+using TagSelecta.Configuration;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public enum FixType
 {

@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using TagSelecta.Actions.FileActions;
+using TagSelecta.Actions.TagDataActions;
+using TagSelecta.Configuration;
 using TagSelecta.Discogs;
-using TagSelecta.FileActions;
-using TagSelecta.TagDataActions;
 
 namespace TagSelecta.DependencyInjection;
 

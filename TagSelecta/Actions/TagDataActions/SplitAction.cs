@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public class SplitSettings : BaseSettings
 {

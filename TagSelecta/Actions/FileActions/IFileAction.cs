@@ -1,4 +1,4 @@
-namespace TagSelecta.FileActions;
+namespace TagSelecta.Actions.FileActions;
 
 public interface IFileAction<TSettings>
     where TSettings : BaseSettings

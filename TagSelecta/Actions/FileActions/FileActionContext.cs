@@ -1,6 +1,6 @@
 using Spectre.Console;
 
-namespace TagSelecta.FileActions;
+namespace TagSelecta.Actions.FileActions;
 
 public class FileActionContext<TSettings>(IAnsiConsole console)
 {

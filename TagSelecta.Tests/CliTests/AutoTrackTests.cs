@@ -1,7 +1,7 @@
 namespace TagSelecta.Tests.CliTests;
 
+using TagSelecta.Actions.TagDataActions;
 using TagSelecta.Commands;
-using TagSelecta.TagDataActions;
 
 [Collection("Console")]
 public class AutoTrackTests

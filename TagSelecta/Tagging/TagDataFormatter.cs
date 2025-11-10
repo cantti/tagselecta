@@ -2,7 +2,7 @@ using Scriban;
 
 namespace TagSelecta.Tagging;
 
-public static class Formatter
+public static class TagDataFormatter
 {
     public static string Format(string template, TagData tagData)
     {

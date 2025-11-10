@@ -1,9 +1,10 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.IO;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.FileActions;
+namespace TagSelecta.Actions.FileActions;
 
 public class RenameFileSettings : BaseSettings
 {
@@ -29,7 +30,7 @@ public class RenameFileAction(IAnsiConsole console) : IFileAction<RenameFileSett
 
         var tagData = Tagger.ReadTags(context.CurrentFile);
 
-        var newName = Formatter.Format(context.Settings.Template, tagData);
+        var newName = TagDataFormatter.Format(context.Settings.Template, tagData);
 
         newName = FileHelper.CleanFileName(newName);
 

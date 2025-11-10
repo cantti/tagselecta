@@ -3,7 +3,7 @@ using System.Reflection;
 using Spectre.Console;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public class TitleCaseSettings : BaseSettings { }
 

@@ -1,8 +1,8 @@
 ﻿using Spectre.Console.Cli;
+using TagSelecta.Actions.FileActions;
+using TagSelecta.Actions.TagDataActions;
 using TagSelecta.Commands;
 using TagSelecta.DependencyInjection;
-using TagSelecta.FileActions;
-using TagSelecta.TagDataActions;
 
 namespace TagSelecta;
 

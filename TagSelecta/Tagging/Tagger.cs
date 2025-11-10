@@ -1,3 +1,5 @@
+using TagSelecta.Exceptions;
+
 namespace TagSelecta.Tagging;
 
 public static class Tagger
@@ -9,7 +11,7 @@ public static class Tagger
         using var tfile = TagLib.File.Create(file);
         if (!allowedMime.Contains(tfile.MimeType))
         {
-            throw new ActionException("Invalid file type");
+            throw new TagSelectaException("Invalid file type");
         }
         var tag = tfile.Tag;
         var tagData = TagLibToTagDataMapper.Map(tag);

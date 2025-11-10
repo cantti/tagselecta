@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace TagSelecta;
+namespace TagSelecta.Configuration;
 
 public class Config : IConfig
 {

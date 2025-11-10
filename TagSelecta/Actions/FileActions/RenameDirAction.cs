@@ -1,9 +1,11 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.Exceptions;
+using TagSelecta.IO;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.FileActions;
+namespace TagSelecta.Actions.FileActions;
 
 public class RenameDirSettings : BaseSettings
 {
@@ -35,7 +37,7 @@ public class RenameDirAction(IAnsiConsole console) : IFileAction<RenameDirSettin
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(context.CurrentFile);
 
-        var newName = Formatter.Format(context.Settings.Template, tagData);
+        var newName = TagDataFormatter.Format(context.Settings.Template, tagData);
 
         newName = FileHelper.CleanFileName(newName);
 
@@ -49,7 +51,7 @@ public class RenameDirAction(IAnsiConsole console) : IFileAction<RenameDirSettin
 
         if (Directory.Exists(newPath))
         {
-            throw new ActionException($"Target directory already exists: {newPath}.");
+            throw new TagSelectaException($"Target directory already exists: {newPath}.");
         }
 
         console.MarkupLine("Directory rename details:");

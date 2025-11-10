@@ -4,7 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public class WriteSettings : BaseSettings
 {
@@ -143,7 +143,7 @@ public partial class WriteSettingsMapper(TagData originalTags)
     public partial void Map(WriteSettings settings, TagData tagData);
 
     [SuppressMessage("Mapper", "IDE0051")]
-    private string MapString(string val) => Formatter.Format(val, originalTags);
+    private string MapString(string val) => TagDataFormatter.Format(val, originalTags);
 
     [SuppressMessage("Mapper", "IDE0051")]
     private List<string> MapList(string[] array)
@@ -151,7 +151,7 @@ public partial class WriteSettingsMapper(TagData originalTags)
         var result = new List<string>();
         foreach (var val in array)
         {
-            var newVal = Formatter.Format(val, originalTags);
+            var newVal = TagDataFormatter.Format(val, originalTags);
             result.AddRange(newVal.Split(';').Select(x => x.Trim()));
         }
         return result;

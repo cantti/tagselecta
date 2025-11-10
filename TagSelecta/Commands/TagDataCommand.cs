@@ -1,6 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.TagDataActions;
+using TagSelecta.Actions.TagDataActions;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
@@ -19,7 +19,7 @@ public class TagDataCommand<TSettings>(ITagDataAction<TSettings> action, IAnsiCo
     {
         var files = CommandHelper.GetFiles(console, settings.Path);
 
-        var actionContext = new TagDataActionContext<TSettings>(console)
+        var actionContext = new TagDataActionContext<TSettings>
         {
             Files = files,
             Settings = settings,

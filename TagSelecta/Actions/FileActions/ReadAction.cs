@@ -1,7 +1,7 @@
 using Spectre.Console;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.FileActions;
+namespace TagSelecta.Actions.FileActions;
 
 public class ReadSettings : BaseSettings { }
 

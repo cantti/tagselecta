@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.IO;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
@@ -32,7 +33,7 @@ public class FindCommand(IAnsiConsole console) : Command<FindSettings>
 
                 var shouldPrint =
                     string.IsNullOrWhiteSpace(settings.Query)
-                    || (Formatter.Format("{{ " + settings.Query + " }}", tagData) == "true");
+                    || (TagDataFormatter.Format("{{ " + settings.Query + " }}", tagData) == "true");
 
                 if (shouldPrint)
                 {

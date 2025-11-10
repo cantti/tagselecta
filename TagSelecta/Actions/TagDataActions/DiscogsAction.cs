@@ -5,9 +5,10 @@ using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Discogs;
+using TagSelecta.Exceptions;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public class DiscogsSettings : BaseSettings
 {
@@ -44,8 +45,8 @@ public class DiscogsAction(
     {
         if (context.Settings.Field is not null)
         {
-            _fieldToWriteList = context.NormalizeFieldNames(context.Settings.Field);
-            if (!context.ValidateFieldNameList(_fieldToWriteList))
+            _fieldToWriteList = TagDataActionHelper.NormalizeFieldNames(context.Settings.Field);
+            if (!TagDataActionHelper.ValidateFieldNameList(console, _fieldToWriteList))
             {
                 return false;
             }
@@ -124,8 +125,7 @@ public class DiscogsAction(
 
     public Task ProcessTagData(TagDataActionContext<DiscogsSettings> context)
     {
-        if (_release is null)
-            throw new ActionException("Release not set");
+        _release = _release ?? throw new InvalidOperationException("Release not set");
 
         var track = _release.TrackList[context.CurrentFileIndex];
         var albumArtists = _release
@@ -176,7 +176,7 @@ public class DiscogsAction(
         var match = Regex.Match(input, pattern);
         return match.Success
             ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))
-            : throw new ActionException("Error parsing discogs url");
+            : throw new TagSelectaException("Error parsing discogs url");
     }
 
     private static string RemoveTrailingNumberParentheses(string input)

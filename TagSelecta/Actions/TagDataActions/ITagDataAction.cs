@@ -1,4 +1,4 @@
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Actions.TagDataActions;
 
 public interface ITagDataAction<TSettings>
     where TSettings : BaseSettings
