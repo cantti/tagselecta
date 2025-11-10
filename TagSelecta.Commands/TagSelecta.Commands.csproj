@@ -1,0 +1,16 @@
+﻿<?xml version="1.0"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console.Cli" Version="0.53.0"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10"/>
+    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj"/>
+  </ItemGroup>
+</Project>
