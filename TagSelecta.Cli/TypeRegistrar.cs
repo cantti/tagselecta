@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Cli.DependencyInjection;
+namespace TagSelecta.Cli;
 
 public sealed class TypeRegistrar(IServiceCollection builder) : ITypeRegistrar
 {

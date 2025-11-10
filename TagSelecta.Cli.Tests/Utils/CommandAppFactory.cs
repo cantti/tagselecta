@@ -1,6 +1,5 @@
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;
-using TagSelecta.Cli.DependencyInjection;
 
 namespace TagSelecta.Cli.Tests.Utils;
 

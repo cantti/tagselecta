@@ -1,5 +1,4 @@
 ﻿using Spectre.Console.Cli;
-using TagSelecta.Cli.DependencyInjection;
 using TagSelecta.Commands;
 using TagSelecta.Commands.FileCommands;
 using TagSelecta.Commands.TagDataCommands;
@@ -14,7 +13,7 @@ class Program
 
         Spectre.Console.AnsiConsole.Profile.Capabilities.Ansi = !noAnsi;
 
-        var app = new CommandApp(new TypeRegistrar(Commands.DependencyInjection.Configure()));
+        var app = new CommandApp(new TypeRegistrar(DependencyInjection.Configure()));
         app.Configure(config =>
         {
             config.AddCommand<FileCommand<ReadSettings>>("read").WithDescription("Read tags.");
