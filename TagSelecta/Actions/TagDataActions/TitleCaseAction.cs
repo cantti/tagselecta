@@ -7,9 +7,9 @@ namespace TagSelecta.Actions.TagDataActions;
 
 public class TitleCaseSettings : BaseSettings { }
 
-public class TitleCaseAction : ITagDataAction<TitleCaseSettings>
+public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
-    public Task ProcessTagData(TagDataActionContext<TitleCaseSettings> context)
+    protected override void ProcessTagData(TagDataActionContext<TitleCaseSettings> context)
     {
         foreach (
             var prop in typeof(TagData)
@@ -26,7 +26,6 @@ public class TitleCaseAction : ITagDataAction<TitleCaseSettings>
                 prop.SetValue(context.TagData, valueList.Select(ToTitleCase).ToList());
             }
         }
-        return Task.CompletedTask;
     }
 
     private static string ToTitleCase(string input)

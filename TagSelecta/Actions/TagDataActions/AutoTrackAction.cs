@@ -10,9 +10,9 @@ public class AutoTrackSettings : BaseSettings
     public bool KeepDisk { get; set; }
 }
 
-public class AutoTrackAction : ITagDataAction<AutoTrackSettings>
+public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
-    public Task ProcessTagData(TagDataActionContext<AutoTrackSettings> context)
+    protected override void ProcessTagData(TagDataActionContext<AutoTrackSettings> context)
     {
         var dir = Directory.GetParent(context.CurrentFile)?.FullName;
         var filesInDir = context
@@ -26,6 +26,5 @@ public class AutoTrackAction : ITagDataAction<AutoTrackSettings>
             context.TagData.Disc = 0;
             context.TagData.DiscTotal = 0;
         }
-        return Task.CompletedTask;
     }
 }

@@ -13,17 +13,17 @@ public static class DependencyInjectionConfig
         var services = new ServiceCollection();
         services.AddDiscogs();
         services.AddTransient<IConfig, Config>();
-        services.AddTransient<ITagDataAction<DiscogsSettings>, DiscogsAction>();
-        services.AddTransient<ITagDataAction<AutoTrackSettings>, AutoTrackAction>();
-        services.AddTransient<ITagDataAction<SplitSettings>, SplitAction>();
-        services.AddTransient<ITagDataAction<FixAlbumSettings>, FixAlbumAction>();
-        services.AddTransient<ITagDataAction<TitleCaseSettings>, TitleCaseAction>();
-        services.AddTransient<ITagDataAction<CleanSettings>, CleanAction>();
-        services.AddTransient<ITagDataAction<VaSettings>, VaAction>();
-        services.AddTransient<ITagDataAction<WriteSettings>, WriteAction>();
-        services.AddTransient<IFileAction<RenameDirSettings>, RenameDirAction>();
-        services.AddTransient<IFileAction<RenameFileSettings>, RenameFileAction>();
-        services.AddTransient<IFileAction<ReadSettings>, ReadAction>();
+        services.AddTransient<TagDataAction<DiscogsSettings>, DiscogsAction>();
+        services.AddTransient<TagDataAction<AutoTrackSettings>, AutoTrackAction>();
+        services.AddTransient<TagDataAction<SplitSettings>, SplitAction>();
+        services.AddTransient<TagDataAction<FixAlbumSettings>, FixAlbumAction>();
+        services.AddTransient<TagDataAction<TitleCaseSettings>, TitleCaseAction>();
+        services.AddTransient<TagDataAction<CleanSettings>, CleanAction>();
+        services.AddTransient<TagDataAction<VaSettings>, VaAction>();
+        services.AddTransient<TagDataAction<WriteSettings>, WriteAction>();
+        services.AddTransient<FileAction<RenameDirSettings>, RenameDirAction>();
+        services.AddTransient<FileAction<RenameFileSettings>, RenameFileAction>();
+        services.AddTransient<FileAction<ReadSettings>, ReadAction>();
         return new TypeRegistrar(services);
     }
 }

@@ -4,9 +4,9 @@ namespace TagSelecta.Actions.TagDataActions;
 
 public class VaSettings : BaseSettings { }
 
-public class VaAction : ITagDataAction<VaSettings>
+public class VaAction : TagDataAction<VaSettings>
 {
-    public Task ProcessTagData(TagDataActionContext<VaSettings> context)
+    protected override void ProcessTagData(TagDataActionContext<VaSettings> context)
     {
         context.TagData.Artists = [.. context.TagData.Artists.Select(NormalizeArtistName)];
         context.TagData.AlbumArtists =
@@ -14,7 +14,6 @@ public class VaAction : ITagDataAction<VaSettings>
             .. context.TagData.AlbumArtists.Select(NormalizeArtistName),
         ];
         context.TagData.Composers = [.. context.TagData.Composers.Select(NormalizeArtistName)];
-        return Task.CompletedTask;
     }
 
     private static string NormalizeArtistName(string input)

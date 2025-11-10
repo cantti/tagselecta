@@ -5,7 +5,7 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Commands;
 
-public class TagDataCommand<TSettings>(ITagDataAction<TSettings> action, IAnsiConsole console)
+public class TagDataCommand<TSettings>(TagDataAction<TSettings> action, IAnsiConsole console)
     : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
@@ -25,7 +25,7 @@ public class TagDataCommand<TSettings>(ITagDataAction<TSettings> action, IAnsiCo
             Settings = settings,
         };
 
-        if (!await action.BeforeProcessTagData(actionContext))
+        if (!await action.BeforeProcessTagDataAsync(actionContext))
         {
             return 0;
         }
@@ -40,7 +40,7 @@ public class TagDataCommand<TSettings>(ITagDataAction<TSettings> action, IAnsiCo
                 var tagData = Tagger.ReadTags(currentFile);
                 actionContext.SetCurrentFile(currentFile, currentFileIndex, tagData);
                 var originalTagData = tagData.Clone();
-                await action.ProcessTagData(actionContext);
+                await action.ProcessTagDataAsync(actionContext);
                 if (
                     action.CompareBeforeWriteTagData
                     && TagDataComparer.TagDataEquals(originalTagData, tagData)
@@ -54,7 +54,7 @@ public class TagDataCommand<TSettings>(ITagDataAction<TSettings> action, IAnsiCo
                     TagDataPrinter.PrintComparison(console, originalTagData, tagData);
                     if (ConfirmPrompt())
                     {
-                        await action.BeforeWriteTagData(actionContext);
+                        await action.BeforeWriteTagDataAsync(actionContext);
                         Tagger.WriteTags(currentFile, tagData);
                         CommandHelper.PrintStatusSuccess(console);
                     }

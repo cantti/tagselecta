@@ -5,11 +5,11 @@ namespace TagSelecta.Actions.FileActions;
 
 public class ReadSettings : BaseSettings { }
 
-public class ReadAction(IAnsiConsole console) : IFileAction<ReadSettings>
+public class ReadAction(IAnsiConsole console) : FileAction<ReadSettings>
 {
     private bool _allConfirmed;
 
-    public Task ProcessFile(FileActionContext<ReadSettings> context)
+    protected override void ProcessFile(FileActionContext<ReadSettings> context)
     {
         TagData tagData;
         try
@@ -19,7 +19,7 @@ public class ReadAction(IAnsiConsole console) : IFileAction<ReadSettings>
         catch (Exception ex)
         {
             console.WriteLine(ex.Message);
-            return Task.CompletedTask;
+            return;
         }
         TagDataPrinter.PrintTagData(console, tagData);
 
@@ -39,6 +39,6 @@ public class ReadAction(IAnsiConsole console) : IFileAction<ReadSettings>
                 }
             }
         }
-        return Task.CompletedTask;
+        return;
     }
 }

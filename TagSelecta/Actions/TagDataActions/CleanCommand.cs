@@ -16,13 +16,13 @@ public class CleanSettings : BaseSettings
     public string[]? Except { get; set; }
 }
 
-public class CleanAction(IConfig config, IAnsiConsole console) : ITagDataAction<CleanSettings>
+public class CleanAction(IConfig config, IAnsiConsole console) : TagDataAction<CleanSettings>
 {
     private List<string> _fieldToKeepList = [];
 
-    public bool CompareBeforeWriteTagData => false;
+    public override bool CompareBeforeWriteTagData => false;
 
-    public Task<bool> BeforeProcessTagData(TagDataActionContext<CleanSettings> context)
+    protected override bool BeforeProcessTagData(TagDataActionContext<CleanSettings> context)
     {
         _fieldToKeepList = context.Settings.Except?.ToList() ?? config.CleanExcept;
         if (_fieldToKeepList.Count == 0)
@@ -32,18 +32,17 @@ public class CleanAction(IConfig config, IAnsiConsole console) : ITagDataAction<
         _fieldToKeepList = TagDataActionHelper.NormalizeFieldNames(_fieldToKeepList);
         if (!TagDataActionHelper.ValidateFieldNameList(console, _fieldToKeepList))
         {
-            return Task.FromResult(false);
+            return false;
         }
-        return Task.FromResult(true);
+        return true;
     }
 
-    public Task BeforeWriteTagData(TagDataActionContext<CleanSettings> context)
+    protected override void BeforeWriteTagData(TagDataActionContext<CleanSettings> context)
     {
         Tagger.RemoveTags(context.CurrentFile);
-        return Task.CompletedTask;
     }
 
-    public Task ProcessTagData(TagDataActionContext<CleanSettings> context)
+    protected override void ProcessTagData(TagDataActionContext<CleanSettings> context)
     {
         foreach (
             var prop in typeof(TagData)
@@ -79,7 +78,5 @@ public class CleanAction(IConfig config, IAnsiConsole console) : ITagDataAction<
         console.MarkupLine(
             "The comparison does not display unsupported tags, which will also be removed!"
         );
-
-        return Task.CompletedTask;
     }
 }

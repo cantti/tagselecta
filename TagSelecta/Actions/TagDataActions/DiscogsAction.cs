@@ -35,13 +35,15 @@ public class DiscogsAction(
     IDiscogsApi discogsApi,
     IAnsiConsole console,
     DiscogsImageDownloader discogsImageDownloader
-) : ITagDataAction<DiscogsSettings>
+) : TagDataAction<DiscogsSettings>
 {
     private Release? _release;
     private byte[]? _image;
     private List<string> _fieldToWriteList = [];
 
-    public async Task<bool> BeforeProcessTagData(TagDataActionContext<DiscogsSettings> context)
+    public override async Task<bool> BeforeProcessTagDataAsync(
+        TagDataActionContext<DiscogsSettings> context
+    )
     {
         if (context.Settings.Field is not null)
         {
@@ -123,7 +125,7 @@ public class DiscogsAction(
         return true;
     }
 
-    public Task ProcessTagData(TagDataActionContext<DiscogsSettings> context)
+    protected override void ProcessTagData(TagDataActionContext<DiscogsSettings> context)
     {
         _release = _release ?? throw new InvalidOperationException("Release not set");
 
@@ -151,7 +153,6 @@ public class DiscogsAction(
         SetField(context.TagData, x => x.Year, _release.Year);
         SetField(context.TagData, x => x.DiscogsReleaseId, _release.Id.ToString());
         SetField(context.TagData, x => x.Pictures, [new TagLib.Picture(_image)]);
-        return Task.CompletedTask;
     }
 
     private void SetField<TProp>(

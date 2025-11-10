@@ -4,7 +4,7 @@ using TagSelecta.Actions.FileActions;
 
 namespace TagSelecta.Commands;
 
-public class FileCommand<TSettings>(IFileAction<TSettings> action, IAnsiConsole console)
+public class FileCommand<TSettings>(FileAction<TSettings> action, IAnsiConsole console)
     : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
@@ -30,7 +30,7 @@ public class FileCommand<TSettings>(IFileAction<TSettings> action, IAnsiConsole 
             try
             {
                 actionContext.SetCurrentFile(currentFile, currentFileIndex);
-                await action.ProcessFile(actionContext);
+                await action.ProcessFileAsync(actionContext);
                 CommandHelper.PrintStatusSuccess(console);
             }
             catch (Exception ex)

@@ -75,9 +75,9 @@ public class WriteSettings : BaseSettings
     public string? Copyright { get; set; }
 }
 
-public class WriteAction : ITagDataAction<WriteSettings>
+public class WriteAction : TagDataAction<WriteSettings>
 {
-    public Task<bool> BeforeProcessTagData(TagDataActionContext<WriteSettings> context)
+    protected override bool BeforeProcessTagData(TagDataActionContext<WriteSettings> context)
     {
         // convert arrays with empty first element to empty arrays
         foreach (var prop in typeof(WriteSettings).GetProperties())
@@ -95,14 +95,13 @@ public class WriteAction : ITagDataAction<WriteSettings>
                 }
             }
         }
-        return Task.FromResult(true);
+        return true;
     }
 
-    public Task ProcessTagData(TagDataActionContext<WriteSettings> context)
+    protected override void ProcessTagData(TagDataActionContext<WriteSettings> context)
     {
         var mapper = new WriteSettingsMapper(context.TagData.Clone());
         mapper.Map(context.Settings, context.TagData);
-        return Task.CompletedTask;
     }
 }
 

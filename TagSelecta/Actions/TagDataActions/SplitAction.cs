@@ -12,20 +12,20 @@ public class SplitSettings : BaseSettings
     public string[]? Separator { get; set; }
 }
 
-public class SplitAction : ITagDataAction<SplitSettings>
+public class SplitAction : TagDataAction<SplitSettings>
 {
     private string[] separators = [",", ";", "feat."];
 
-    public Task<bool> BeforeProcessTagData(TagDataActionContext<SplitSettings> context)
+    protected override bool BeforeProcessTagData(TagDataActionContext<SplitSettings> context)
     {
         if (context.Settings.Separator is not null)
         {
             separators = context.Settings.Separator;
         }
-        return Task.FromResult(true);
+        return true;
     }
 
-    public Task ProcessTagData(TagDataActionContext<SplitSettings> context)
+    protected override void ProcessTagData(TagDataActionContext<SplitSettings> context)
     {
         var artists = context.TagData.Artists.SelectMany(Split).Distinct().ToList();
         var albumArtists = context.TagData.AlbumArtists.SelectMany(Split).Distinct().ToList();
@@ -38,7 +38,6 @@ public class SplitAction : ITagDataAction<SplitSettings>
         context.TagData.Artists = artists;
         context.TagData.AlbumArtists = albumArtists;
         context.TagData.Composers = composers;
-        return Task.CompletedTask;
     }
 
     private List<string> Split(string input)
