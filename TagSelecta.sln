@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Tagging", "TagSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Shared", "TagSelecta.Shared\TagSelecta.Shared.csproj", "{75A747AB-0E3D-469B-8BFA-F10F12EDBA24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Commands", "TagSelecta.Commands\TagSelecta.Commands.csproj", "{FB905E60-55BA-49F0-80E8-212DBDFE4E9D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

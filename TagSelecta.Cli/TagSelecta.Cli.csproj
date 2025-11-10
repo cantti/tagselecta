@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10"/>
+    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0"/>
     <PackageReference Include="Spectre.Console.Cli" Version="0.53.0"/>
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -21,6 +22,5 @@
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj"/>
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj"/>
-    <ProjectReference Include="..\TagSelecta.Commands\TagSelecta.Commands.csproj"/>
   </ItemGroup>
 </Project>

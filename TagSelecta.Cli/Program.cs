@@ -1,7 +1,7 @@
 ﻿using Spectre.Console.Cli;
-using TagSelecta.Commands;
-using TagSelecta.Commands.FileCommands;
-using TagSelecta.Commands.TagDataCommands;
+using TagSelecta.Cli.Commands;
+using TagSelecta.Cli.Commands.FileCommands;
+using TagSelecta.Cli.Commands.TagDataCommands;
 
 namespace TagSelecta.Cli;
 

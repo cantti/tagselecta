@@ -17,6 +17,5 @@
 │              │ Pop               │
 │ Comment      │ Test              │
 ╰──────────────┴───────────────────╯
-Status: success
 
 Finished!
