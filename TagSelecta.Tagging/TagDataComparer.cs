@@ -7,10 +7,11 @@ public static class TagDataComparer
     public static bool TagDataEquals(TagData obj1, TagData obj2)
     {
         // compare normal tags
+        // todo rewrite without reflection and attribute
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(p => p.GetCustomAttribute<EditableAttribute>() != null)
+                .Where(p => p.GetCustomAttribute<PrintableAttribute>() != null)
         )
         {
             var val1 = prop.GetValue(obj1);
@@ -21,13 +22,10 @@ public static class TagDataComparer
             }
         }
         // compare custom
-        Console.WriteLine(obj1.Custom.Count);
-        Console.WriteLine(obj2.Custom.Count);
         if (
             obj1.Custom.Count != obj2.Custom.Count
             || !obj1.Custom.All(kv =>
-                obj2.Custom.TryGetValue(kv.Key, out var val)
-                && string.Equals(kv.Value, val, StringComparison.OrdinalIgnoreCase)
+                obj2.Custom.FirstOrDefault(x => x.Key == kv.Key)?.Value == kv.Value
             )
         )
         {

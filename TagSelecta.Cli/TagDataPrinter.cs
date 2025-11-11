@@ -15,7 +15,7 @@ public static class TagDataPrinter
         table.HideHeaders();
         foreach (var prop in typeof(TagData).GetProperties())
         {
-            var attr = prop.GetCustomAttribute<EditableAttribute>();
+            var attr = prop.GetCustomAttribute<PrintableAttribute>();
             if (attr is null)
                 continue;
             var label = attr.Label ?? prop.Name;
@@ -43,7 +43,7 @@ public static class TagDataPrinter
         table.AddColumn("[yellow]New Value[/]");
         foreach (var prop in typeof(TagData).GetProperties())
         {
-            var attr = prop.GetCustomAttribute<EditableAttribute>();
+            var attr = prop.GetCustomAttribute<PrintableAttribute>();
             if (attr is null)
                 continue;
             var label = attr.Label ?? prop.Name;
@@ -66,10 +66,12 @@ public static class TagDataPrinter
         }
         table.AddEmptyRow();
         table.AddRow("[i]Custom tags:[/]");
-        foreach (var key in tagData1.Custom.Keys.Union(tagData2.Custom.Keys).Distinct())
+        foreach (
+            var key in tagData1.Custom.Select(x => x.Key).Union(tagData2.Custom.Select(x => x.Key))
+        )
         {
-            tagData1.Custom.TryGetValue(key, out var value1);
-            tagData2.Custom.TryGetValue(key, out var value2);
+            var value1 = tagData1.Custom.SingleOrDefault(x => x.Key == key)?.Value;
+            var value2 = tagData2.Custom.SingleOrDefault(x => x.Key == key)?.Value;
             var areEqual = value1 == value2;
             var color1 = areEqual ? "[white]" : "[red]";
             var color2 = areEqual ? "[white]" : "[green]";

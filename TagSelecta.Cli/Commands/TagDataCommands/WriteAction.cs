@@ -1,5 +1,5 @@
-using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -143,7 +143,16 @@ public class WriteAction : TagDataAction<WriteSettings>
                 var key = parts[0].Trim().ToLower();
                 var value = parts.Length > 1 ? parts[1].Trim() : "";
 
-                tagData.Custom[key] = value;
+                var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
+
+                if (customTagData is not null)
+                {
+                    customTagData.Value = value;
+                }
+                else
+                {
+                    tagData.Custom.Add(new CustomTag(key, value));
+                }
             }
         }
         Console.WriteLine("After");

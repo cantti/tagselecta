@@ -49,7 +49,7 @@ public class CleanAction(IConfig config, IAnsiConsole console) : TagDataAction<C
             var prop in typeof(TagData)
                 .GetProperties()
                 .Where(x =>
-                    x.GetCustomAttribute<EditableAttribute>() is not null
+                    x.GetCustomAttribute<PrintableAttribute>() is not null
                     && !_fieldToKeepList.Contains(x.Name.ToLower())
                 )
         )

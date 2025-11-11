@@ -29,7 +29,7 @@ public class TagDataCloner
                     Type = x.Type,
                 }),
             ],
-            Custom = new Dictionary<string, string>(tagData.Custom),
+            Custom = [.. tagData.Custom.Select(x => new CustomTag(x.Key, x.Value))],
             Path = tagData.Path,
         };
         return clone;

@@ -8,65 +8,65 @@ public class TagData
 
     public string FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
 
-    [Editable("Album Artist")]
+    [Printable("Album Artist")]
     [XiphKey("albumartist", "album artist", "ensemble")]
     public List<string> AlbumArtists { get; set; } = [];
 
     public string AlbumArtist => AlbumArtists.Joined();
 
-    [Editable("Artist")]
+    [Printable("Artist")]
     [XiphKey("artist")]
     public List<string> Artists { get; set; } = [];
 
     public string Artist => Artists.Joined();
 
-    [Editable]
+    [Printable]
     [XiphKey("album")]
     public string Album { get; set; } = "";
 
-    [Editable]
+    [Printable]
     [XiphKey("date")]
     public uint Year { get; set; }
 
-    [Editable]
+    [Printable]
     [XiphKey("title")]
     public string Title { get; set; } = "";
 
-    [Editable]
+    [Printable]
     [XiphKey("tracknumber")]
     public uint Track { get; set; }
 
-    [Editable("Track Total")]
+    [Printable("Track Total")]
     [XiphKey("tracktotal")]
     public uint TrackTotal { get; set; }
 
-    [Editable]
+    [Printable]
     [XiphKey("disc")]
     public uint Disc { get; set; }
 
-    [Editable("Disc Total")]
+    [Printable("Disc Total")]
     [XiphKey("disctotal")]
     public uint DiscTotal { get; set; }
 
-    [Editable("Genre")]
+    [Printable("Genre")]
     [XiphKey("genre")]
     public List<string> Genres { get; set; } = [];
 
     public string Genre => Genres.Joined();
 
-    [Editable]
+    [Printable]
     [XiphKey("comment")]
     public string Comment { get; set; } = "";
 
-    [Editable]
+    [Printable]
     [XiphKey("composer")]
     public List<string> Composers { get; set; } = [];
 
     public string Composer => Composers.Joined();
 
-    public Dictionary<string, string> Custom { get; set; } = [];
+    public List<CustomTag> Custom { get; set; } = [];
 
-    [Editable]
+    [Printable]
     public List<TagLib.Picture> Pictures { get; set; } = [];
 
     public TagData Clone()

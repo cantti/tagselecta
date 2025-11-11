@@ -31,7 +31,7 @@ public static class Tagger
             Year = tag.Year,
             Path = file,
             Pictures = [.. tag.Pictures.Select(x => new TagLib.Picture(x))],
-            Custom = GetAllExtValues(tfile).OrderBy(x => x.Key).ToDictionary(),
+            Custom = [.. GetAllExtValues(tfile).OrderBy(x => x.Key)],
         };
         return tagData;
     }
@@ -65,7 +65,7 @@ public static class Tagger
         tfile.Save();
     }
 
-    private static Dictionary<string, string> GetAllExtValues(TagLib.File tfile)
+    private static List<CustomTag> GetAllExtValues(TagLib.File tfile)
     {
         string mime = tfile.MimeType.ToLowerInvariant();
         if (mime == "taglib/mp3")
@@ -99,10 +99,10 @@ public static class Tagger
         }
     }
 
-    private static Dictionary<string, string> GetAllMp3ExtValues(TagLib.File tfile)
+    private static List<CustomTag> GetAllMp3ExtValues(TagLib.File tfile)
     {
         var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagLib.TagTypes.Id3v2, false);
-        var result = new Dictionary<string, string>();
+        var result = new List<CustomTag>();
 
         if (id3v2 == null)
             return result;
@@ -112,21 +112,18 @@ public static class Tagger
         foreach (var frame in frames)
         {
             // todo: review implementation, considering mp3 tags case sensitive
-            var key = frame.Description.ToLower();
+            var key = frame.Description;
             var value = frame.Text?.FirstOrDefault() ?? "";
-            if (!result.ContainsKey(key))
-            {
-                result[key] = value;
-            }
+            result.Add(new CustomTag(key, value));
         }
 
         return result;
     }
 
-    private static Dictionary<string, string> GetAllFlacExtValues(TagLib.File tfile)
+    private static List<CustomTag> GetAllFlacExtValues(TagLib.File tfile)
     {
         var xiph = (TagLib.Ogg.XiphComment)tfile.GetTag(TagLib.TagTypes.Xiph, false);
-        var result = new Dictionary<string, string>();
+        var result = new List<CustomTag>();
 
         if (xiph == null)
             return result;
@@ -141,13 +138,11 @@ public static class Tagger
 
         foreach (var key in xiph)
         {
-            var normKey = key.ToLower();
-
-            if (excluded.Contains(normKey, StringComparer.OrdinalIgnoreCase))
+            if (excluded.Contains(key, StringComparer.OrdinalIgnoreCase))
                 continue;
 
-            var value = xiph.GetField(normKey)?.FirstOrDefault() ?? "";
-            result[normKey.ToLower()] = value;
+            var value = xiph.GetField(key)?.FirstOrDefault() ?? "";
+            result.Add(new CustomTag(key, value));
         }
 
         return result;

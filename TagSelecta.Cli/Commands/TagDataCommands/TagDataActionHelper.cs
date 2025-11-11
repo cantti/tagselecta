@@ -10,7 +10,7 @@ public static class TagDataActionHelper
     {
         var tagDataProps = typeof(TagData)
             .GetProperties()
-            .Where(x => x.GetCustomAttribute<EditableAttribute>() != null);
+            .Where(x => x.GetCustomAttribute<PrintableAttribute>() != null);
         foreach (var field in fields)
         {
             if (

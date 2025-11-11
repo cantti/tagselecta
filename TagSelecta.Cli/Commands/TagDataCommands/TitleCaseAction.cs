@@ -15,7 +15,7 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(x => x.GetCustomAttribute<EditableAttribute>() is not null)
+                .Where(x => x.GetCustomAttribute<PrintableAttribute>() is not null)
         )
         {
             if (prop.GetValue(context.TagData) is string value)
