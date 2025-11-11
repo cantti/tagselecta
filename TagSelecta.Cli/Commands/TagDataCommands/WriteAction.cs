@@ -1,10 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-using Riok.Mapperly.Abstractions;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands;
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -21,9 +16,6 @@ public class WriteSettings : BaseSettings
 
     [CommandOption("--title|-t")]
     public string? Title { get; set; }
-
-    [CommandOption("--subtitle")]
-    public string? Subtitle { get; set; }
 
     [CommandOption("--album|-l")]
     public string? Album { get; set; }
@@ -46,35 +38,11 @@ public class WriteSettings : BaseSettings
     [CommandOption("--disctotal|-D")]
     public uint? DiscTotal { get; set; }
 
-    [CommandOption("--label|-L")]
-    public string? Label { get; set; }
-
-    [CommandOption("--catalogno|-C")]
-    public string? CatalogNumber { get; set; }
-
-    [CommandOption("--bpm")]
-    public uint? Bpm { get; set; }
-
-    [CommandOption("--description")]
-    public string? Description { get; set; }
-
     [CommandOption("--composers")]
     public string[]? Composers { get; set; }
 
-    [CommandOption("--conductor")]
-    public string? Conductor { get; set; }
-
-    [CommandOption("--isrc")]
-    public string? Isrc { get; set; }
-
-    [CommandOption("--lyrics")]
-    public string? Lyrics { get; set; }
-
-    [CommandOption("--publisher")]
-    public string? Publisher { get; set; }
-
-    [CommandOption("--copyright")]
-    public string? Copyright { get; set; }
+    [CommandOption("--custom")]
+    public string[]? Custom { get; set; }
 }
 
 public class WriteAction : TagDataAction<WriteSettings>
@@ -102,59 +70,83 @@ public class WriteAction : TagDataAction<WriteSettings>
 
     protected override void ProcessTagData(TagDataActionContext<WriteSettings> context)
     {
-        var mapper = new WriteSettingsMapper(context.TagData.Clone());
-        mapper.Map(context.Settings, context.TagData);
-    }
-}
+        var settings = context.Settings;
+        var tagData = context.TagData;
 
-[Mapper(
-    PropertyNameMappingStrategy = PropertyNameMappingStrategy.CaseInsensitive,
-    // it should work fine even without it
-    // https://mapperly.riok.app/docs/configuration/mapper/#null-values
-    AllowNullPropertyAssignment = false
-)]
-public partial class WriteSettingsMapper(TagData originalTags)
-{
-    [SuppressMessage("Mapper", "RMG089")]
-    [SuppressMessage("Mapper", "RMG090")]
-    [MapProperty(nameof(WriteSettings.Artist), nameof(TagData.Artists))]
-    [MapProperty(nameof(WriteSettings.Genre), nameof(TagData.Genres))]
-    [MapProperty(nameof(WriteSettings.AlbumArtist), nameof(TagData.AlbumArtists))]
-    [MapperIgnoreSource(nameof(WriteSettings.Path))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzArtistId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzArtistId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseArtistId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseArtistId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzArtistId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzDiscId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseGroupId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseArtistId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzTrackId))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseStatus))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseType))]
-    [MapperIgnoreTarget(nameof(TagData.MusicBrainzReleaseCountry))]
-    [MapperIgnoreTarget(nameof(TagData.ReplayGainTrackGain))]
-    [MapperIgnoreTarget(nameof(TagData.ReplayGainTrackPeak))]
-    [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumGain))]
-    [MapperIgnoreTarget(nameof(TagData.ReplayGainAlbumPeak))]
-    [MapperIgnoreTarget(nameof(TagData.Pictures))]
-    [MapperIgnoreTarget(nameof(TagData.DiscogsReleaseId))]
-    [MapperIgnoreTarget(nameof(TagData.Path))]
-    public partial void Map(WriteSettings settings, TagData tagData);
-
-    [SuppressMessage("Mapper", "IDE0051")]
-    private string MapString(string val) => TagDataFormatter.Format(val, originalTags);
-
-    [SuppressMessage("Mapper", "IDE0051")]
-    private List<string> MapList(string[] array)
-    {
-        var result = new List<string>();
-        foreach (var val in array)
+        if (settings.Album is not null)
         {
-            var newVal = TagDataFormatter.Format(val, originalTags);
-            result.AddRange(newVal.Split(';').Select(x => x.Trim()));
+            tagData.Album = settings.Album;
         }
-        return result;
+
+        if (settings.AlbumArtist is not null)
+        {
+            tagData.AlbumArtists = [.. settings.AlbumArtist];
+        }
+
+        if (settings.Artist is not null)
+        {
+            tagData.Artists = [.. settings.Artist];
+        }
+
+        if (settings.Comment is not null)
+        {
+            tagData.Comment = settings.Comment;
+        }
+
+        if (settings.Composers is not null)
+        {
+            tagData.Composers = [.. settings.Composers];
+        }
+
+        if (settings.Disc is not null)
+        {
+            tagData.Disc = settings.Disc.Value;
+        }
+
+        if (settings.DiscTotal is not null)
+        {
+            tagData.DiscTotal = settings.DiscTotal.Value;
+        }
+
+        if (settings.Genre is not null)
+        {
+            tagData.Genres = [.. settings.Genre];
+        }
+
+        if (settings.Title is not null)
+        {
+            tagData.Title = settings.Title;
+        }
+
+        if (settings.Track is not null)
+        {
+            tagData.Track = settings.Track.Value;
+        }
+
+        if (settings.TrackTotal is not null)
+        {
+            tagData.TrackTotal = settings.TrackTotal.Value;
+        }
+
+        if (settings.Year is not null)
+        {
+            tagData.Year = settings.Year.Value;
+        }
+
+        Console.WriteLine("Before");
+        Console.WriteLine(tagData.Custom.Count);
+        if (settings.Custom is not null)
+        {
+            foreach (var entry in settings.Custom)
+            {
+                var parts = entry.Split('=', 2);
+                var key = parts[0].Trim().ToLower();
+                var value = parts.Length > 1 ? parts[1].Trim() : "";
+
+                tagData.Custom[key] = value;
+            }
+        }
+        Console.WriteLine("After");
+        Console.WriteLine(tagData.Custom.Count);
     }
 }

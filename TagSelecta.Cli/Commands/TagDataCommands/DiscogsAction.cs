@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Exceptions;
@@ -146,14 +145,14 @@ public class DiscogsAction(
         SetField(context.TagData, x => x.Disc, (uint)0);
         SetField(context.TagData, x => x.DiscTotal, (uint)0);
         SetField(context.TagData, x => x.Genres, _release.Styles);
-        SetField(context.TagData, x => x.Label, _release.Labels.FirstOrDefault()?.Name ?? "");
-        SetField(
-            context.TagData,
-            x => x.CatalogNumber,
-            _release.Labels.FirstOrDefault()?.CatNo ?? ""
-        );
+        // SetField(context.TagData, x => x.Label, _release.Labels.FirstOrDefault()?.Name ?? "");
+        // SetField(
+        //     context.TagData,
+        //     x => x.CatalogNumber,
+        //     _release.Labels.FirstOrDefault()?.CatNo ?? ""
+        // );
         SetField(context.TagData, x => x.Year, _release.Year);
-        SetField(context.TagData, x => x.DiscogsReleaseId, _release.Id.ToString());
+        // SetField(context.TagData, x => x.DiscogsReleaseId, _release.Id.ToString());
         SetField(context.TagData, x => x.Pictures, [new TagLib.Picture(_image)]);
     }
 

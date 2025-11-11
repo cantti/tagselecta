@@ -2,7 +2,7 @@ using System.Reflection;
 using Spectre.Console;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Commands;
+namespace TagSelecta.Cli;
 
 public static class TagDataPrinter
 {
@@ -24,6 +24,12 @@ public static class TagDataPrinter
             if (column == "")
                 continue;
             table.AddRow([$"[blue]{label.EscapeMarkup()}[/]", column.EscapeMarkup()]);
+        }
+        table.AddEmptyRow();
+        table.AddRow("[i]Custom tags:[/]");
+        foreach (var custom in tagData.Custom)
+        {
+            table.AddRow([$"[blue]{custom.Key.EscapeMarkup()}[/]", custom.Value.EscapeMarkup()]);
         }
         console.Write(table);
     }
@@ -58,6 +64,24 @@ public static class TagDataPrinter
                 ]
             );
         }
+        table.AddEmptyRow();
+        table.AddRow("[i]Custom tags:[/]");
+        foreach (var key in tagData1.Custom.Keys.Union(tagData2.Custom.Keys).Distinct())
+        {
+            tagData1.Custom.TryGetValue(key, out var value1);
+            tagData2.Custom.TryGetValue(key, out var value2);
+            var areEqual = value1 == value2;
+            var color1 = areEqual ? "[white]" : "[red]";
+            var color2 = areEqual ? "[white]" : "[green]";
+            table.AddRow(
+                [
+                    $"[blue]{key.EscapeMarkup()}[/]",
+                    $"{color1}{value1.EscapeMarkup()}[/]",
+                    $"{color2}{value2.EscapeMarkup()}[/]",
+                ]
+            );
+        }
+
         console.Write(table);
     }
 

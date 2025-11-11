@@ -8,8 +8,6 @@ namespace TagSelecta.Tagging
         public static partial void Map(global::TagSelecta.Tagging.TagData tagData, global::TagLib.Tag tag)
         {
             tag.Title = tagData.Title;
-            tag.Subtitle = tagData.Subtitle;
-            tag.Description = tagData.Description;
             tag.Performers = global::System.Linq.Enumerable.ToArray(tagData.Artists);
             tag.AlbumArtists = global::System.Linq.Enumerable.ToArray(tagData.AlbumArtists);
             tag.Composers = global::System.Linq.Enumerable.ToArray(tagData.Composers);
@@ -21,25 +19,6 @@ namespace TagSelecta.Tagging
             tag.TrackCount = tagData.TrackTotal;
             tag.Disc = tagData.Disc;
             tag.DiscCount = tagData.DiscTotal;
-            tag.Lyrics = tagData.Lyrics;
-            tag.BeatsPerMinute = tagData.Bpm;
-            tag.Conductor = tagData.Conductor;
-            tag.Copyright = tagData.Copyright;
-            tag.MusicBrainzArtistId = tagData.MusicBrainzArtistId;
-            tag.MusicBrainzReleaseGroupId = tagData.MusicBrainzReleaseGroupId;
-            tag.MusicBrainzReleaseId = tagData.MusicBrainzReleaseId;
-            tag.MusicBrainzReleaseArtistId = tagData.MusicBrainzReleaseArtistId;
-            tag.MusicBrainzTrackId = tagData.MusicBrainzTrackId;
-            tag.MusicBrainzDiscId = tagData.MusicBrainzDiscId;
-            tag.MusicBrainzReleaseStatus = tagData.MusicBrainzReleaseStatus;
-            tag.MusicBrainzReleaseType = tagData.MusicBrainzReleaseType;
-            tag.MusicBrainzReleaseCountry = tagData.MusicBrainzReleaseCountry;
-            tag.ReplayGainTrackGain = MapDouble(tagData.ReplayGainTrackGain);
-            tag.ReplayGainTrackPeak = MapDouble(tagData.ReplayGainTrackPeak);
-            tag.ReplayGainAlbumGain = MapDouble(tagData.ReplayGainAlbumGain);
-            tag.ReplayGainAlbumPeak = MapDouble(tagData.ReplayGainAlbumPeak);
-            tag.Publisher = tagData.Publisher;
-            tag.ISRC = tagData.Isrc;
             tag.Pictures = MapToIPictureArray(tagData.Pictures);
         }
 

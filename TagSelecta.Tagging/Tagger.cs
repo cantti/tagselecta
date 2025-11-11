@@ -1,3 +1,4 @@
+using System.Reflection;
 using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Tagging;
@@ -14,12 +15,24 @@ public static class Tagger
             throw new TagSelectaException("Invalid file type");
         }
         var tag = tfile.Tag;
-        var tagData = TagLibToTagDataMapper.Map(tag);
-        tagData.Path = file;
-        tagData.Label = GetExtValue(tfile, "label");
-        tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");
-        tagData.CatalogNumber = GetExtValue(tfile, "catalognumber");
-        tagData.DiscogsReleaseId = GetExtValue(tfile, "discogs_release_id");
+        var tagData = new TagData
+        {
+            Album = tag.Album,
+            AlbumArtists = [.. tag.AlbumArtists],
+            Artists = [.. tag.Performers],
+            Comment = tag.Comment,
+            Composers = [.. tag.Composers],
+            Track = tag.Track,
+            TrackTotal = tag.TrackCount,
+            Disc = tag.Disc,
+            DiscTotal = tag.DiscCount,
+            Genres = [.. tag.Genres],
+            Title = tag.Title,
+            Year = tag.Year,
+            Path = file,
+            Pictures = [.. tag.Pictures.Select(x => new TagLib.Picture(x))],
+            Custom = GetAllExtValues(tfile).OrderBy(x => x.Key).ToDictionary(),
+        };
         return tagData;
     }
 
@@ -31,13 +44,42 @@ public static class Tagger
             throw new Exception("Invalid file type");
         }
 
-        // todo use mapperly
         var tag = tfile.Tag;
-        TagDataToTagLibMapper.Map(tagData, tag);
-        SetExtValue(tfile, "label", tagData.Label);
-        SetExtValue(tfile, "catalognumber", tagData.CatalogNumber);
-        SetExtValue(tfile, "discogs_release_id", tagData.DiscogsReleaseId);
+        tag.Album = tagData.Album;
+        tag.AlbumArtists = [.. tagData.AlbumArtists];
+        tag.Performers = [.. tagData.Artists];
+        tag.Comment = tagData.Comment;
+        tag.Composers = [.. tagData.Composers];
+        tag.Track = tagData.Track;
+        tag.TrackCount = tagData.TrackTotal;
+        tag.Disc = tagData.Disc;
+        tag.DiscCount = tagData.DiscTotal;
+        tag.Genres = [.. tagData.Genres];
+        tag.Title = tagData.Title;
+        tag.Year = tagData.Year;
+        tag.Pictures = [.. tag.Pictures];
+        foreach (var extraField in tagData.Custom)
+        {
+            SetExtValue(tfile, extraField.Key, extraField.Value);
+        }
         tfile.Save();
+    }
+
+    private static Dictionary<string, string> GetAllExtValues(TagLib.File tfile)
+    {
+        string mime = tfile.MimeType.ToLowerInvariant();
+        if (mime == "taglib/mp3")
+        {
+            return GetAllMp3ExtValues(tfile);
+        }
+        else if (mime == "taglib/flac" || mime == "taglib/ogg")
+        {
+            return GetAllFlacExtValues(tfile);
+        }
+        else
+        {
+            throw new TagSelectaException("Invalid type");
+        }
     }
 
     private static string GetExtValue(TagLib.File tfile, string key)
@@ -55,6 +97,60 @@ public static class Tagger
         {
             return "";
         }
+    }
+
+    private static Dictionary<string, string> GetAllMp3ExtValues(TagLib.File tfile)
+    {
+        var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagLib.TagTypes.Id3v2, false);
+        var result = new Dictionary<string, string>();
+
+        if (id3v2 == null)
+            return result;
+
+        var frames = id3v2.GetFrames<TagLib.Id3v2.UserTextInformationFrame>();
+
+        foreach (var frame in frames)
+        {
+            // todo: review implementation, considering mp3 tags case sensitive
+            var key = frame.Description.ToLower();
+            var value = frame.Text?.FirstOrDefault() ?? "";
+            if (!result.ContainsKey(key))
+            {
+                result[key] = value;
+            }
+        }
+
+        return result;
+    }
+
+    private static Dictionary<string, string> GetAllFlacExtValues(TagLib.File tfile)
+    {
+        var xiph = (TagLib.Ogg.XiphComment)tfile.GetTag(TagLib.TagTypes.Xiph, false);
+        var result = new Dictionary<string, string>();
+
+        if (xiph == null)
+            return result;
+
+        var excluded = typeof(TagData)
+            .GetProperties()
+            .Select(p => p.GetCustomAttribute<XiphKeyAttribute>())
+            .Where(a => a != null)
+            .SelectMany(a => a!.Keys)
+            .Select(x => x.ToLower())
+            .ToArray();
+
+        foreach (var key in xiph)
+        {
+            var normKey = key.ToLower();
+
+            if (excluded.Contains(normKey, StringComparer.OrdinalIgnoreCase))
+                continue;
+
+            var value = xiph.GetField(normKey)?.FirstOrDefault() ?? "";
+            result[normKey.ToLower()] = value;
+        }
+
+        return result;
     }
 
     private static string GetMp3ExtValue(TagLib.File tfile, string key)
@@ -93,7 +189,13 @@ public static class Tagger
     private static void SetMp3ExtValue(TagLib.File tfile, string key, string value)
     {
         var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagLib.TagTypes.Id3v2, true);
-        var frame = TagLib.Id3v2.UserTextInformationFrame.Get(id3v2, key, true);
+        var frame = TagLib.Id3v2.UserTextInformationFrame.Get(
+            id3v2,
+            key,
+            TagLib.Id3v2.Tag.DefaultEncoding,
+            false,
+            false //taglib uses case sensitive by default
+        );
         frame.Text = [value];
         // TagLib does not automatically removes empty user text frames
         if (value == "")

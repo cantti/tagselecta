@@ -6,6 +6,7 @@ public static class TagDataComparer
 {
     public static bool TagDataEquals(TagData obj1, TagData obj2)
     {
+        // compare normal tags
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -18,6 +19,19 @@ public static class TagDataComparer
             {
                 return false;
             }
+        }
+        // compare custom
+        Console.WriteLine(obj1.Custom.Count);
+        Console.WriteLine(obj2.Custom.Count);
+        if (
+            obj1.Custom.Count != obj2.Custom.Count
+            || !obj1.Custom.All(kv =>
+                obj2.Custom.TryGetValue(kv.Key, out var val)
+                && string.Equals(kv.Value, val, StringComparison.OrdinalIgnoreCase)
+            )
+        )
+        {
+            return false;
         }
         return true;
     }
@@ -34,6 +48,20 @@ public static class TagDataComparer
         if (val1 is List<string> list1 && val2 is List<string> list2)
         {
             if (!list1.SequenceEqual(list2))
+                return false;
+        }
+        else if (
+            val1 is Dictionary<string, string> dict1
+            && val2 is Dictionary<string, string> dict2
+        )
+        {
+            if (
+                dict1.Count != dict2.Count
+                || !dict1.All(kv =>
+                    dict2.TryGetValue(kv.Key, out var val)
+                    && string.Equals(kv.Value, val, StringComparison.OrdinalIgnoreCase)
+                )
+            )
                 return false;
         }
         // pictures

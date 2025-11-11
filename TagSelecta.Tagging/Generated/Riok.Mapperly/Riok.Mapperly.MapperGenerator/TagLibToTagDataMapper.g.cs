@@ -25,10 +25,6 @@ namespace TagSelecta.Tagging
             {
                 target.Title = tag.Title;
             }
-            if (tag.Subtitle != null)
-            {
-                target.Subtitle = tag.Subtitle;
-            }
             target.Track = tag.Track;
             target.TrackTotal = tag.TrackCount;
             target.Disc = tag.Disc;
@@ -41,74 +37,9 @@ namespace TagSelecta.Tagging
             {
                 target.Comment = tag.Comment;
             }
-            if (tag.Description != null)
-            {
-                target.Description = tag.Description;
-            }
-            target.Bpm = tag.BeatsPerMinute;
             if (tag.Composers != null)
             {
                 target.Composers = MapToListOfString(tag.Composers);
-            }
-            if (tag.Conductor != null)
-            {
-                target.Conductor = tag.Conductor;
-            }
-            if (tag.ISRC != null)
-            {
-                target.Isrc = tag.ISRC;
-            }
-            if (tag.Lyrics != null)
-            {
-                target.Lyrics = tag.Lyrics;
-            }
-            if (tag.Publisher != null)
-            {
-                target.Publisher = tag.Publisher;
-            }
-            if (tag.MusicBrainzArtistId != null)
-            {
-                target.MusicBrainzArtistId = tag.MusicBrainzArtistId;
-            }
-            if (tag.MusicBrainzDiscId != null)
-            {
-                target.MusicBrainzDiscId = tag.MusicBrainzDiscId;
-            }
-            if (tag.MusicBrainzReleaseGroupId != null)
-            {
-                target.MusicBrainzReleaseGroupId = tag.MusicBrainzReleaseGroupId;
-            }
-            if (tag.MusicBrainzReleaseId != null)
-            {
-                target.MusicBrainzReleaseId = tag.MusicBrainzReleaseId;
-            }
-            if (tag.MusicBrainzReleaseArtistId != null)
-            {
-                target.MusicBrainzReleaseArtistId = tag.MusicBrainzReleaseArtistId;
-            }
-            if (tag.MusicBrainzTrackId != null)
-            {
-                target.MusicBrainzTrackId = tag.MusicBrainzTrackId;
-            }
-            if (tag.MusicBrainzReleaseStatus != null)
-            {
-                target.MusicBrainzReleaseStatus = tag.MusicBrainzReleaseStatus;
-            }
-            if (tag.MusicBrainzReleaseType != null)
-            {
-                target.MusicBrainzReleaseType = tag.MusicBrainzReleaseType;
-            }
-            if (tag.MusicBrainzReleaseCountry != null)
-            {
-                target.MusicBrainzReleaseCountry = tag.MusicBrainzReleaseCountry;
-            }
-            target.ReplayGainTrackGain = MapDouble(tag.ReplayGainTrackGain);
-            target.ReplayGainTrackPeak = MapDouble(tag.ReplayGainTrackPeak);
-            target.ReplayGainAlbumGain = MapDouble(tag.ReplayGainAlbumGain);
-            target.ReplayGainAlbumPeak = MapDouble(tag.ReplayGainAlbumPeak);
-            if (tag.Copyright != null)
-            {
-                target.Copyright = tag.Copyright;
             }
             if (tag.Pictures != null)
             {

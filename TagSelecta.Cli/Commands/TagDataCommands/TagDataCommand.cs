@@ -1,7 +1,5 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands;
-using TagSelecta.Commands;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
