@@ -9,65 +9,62 @@ public class TagData
     public string FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
 
     [Printable("Album Artist")]
-    [XiphKey("albumartist", "album artist", "ensemble")]
     public List<string> AlbumArtists { get; set; } = [];
 
     public string AlbumArtist => AlbumArtists.Joined();
 
     [Printable("Artist")]
-    [XiphKey("artist")]
     public List<string> Artists { get; set; } = [];
 
     public string Artist => Artists.Joined();
 
     [Printable]
-    [XiphKey("album")]
     public string Album { get; set; } = "";
 
     [Printable]
-    [XiphKey("date")]
-    public uint Year { get; set; }
+    public int Year { get; set; }
 
     [Printable]
-    [XiphKey("title")]
     public string Title { get; set; } = "";
 
     [Printable]
-    [XiphKey("tracknumber")]
-    public uint Track { get; set; }
+    public int Track { get; set; }
 
     [Printable("Track Total")]
-    [XiphKey("tracktotal")]
-    public uint TrackTotal { get; set; }
+    public int TrackTotal { get; set; }
 
     [Printable]
-    [XiphKey("disc")]
-    public uint Disc { get; set; }
+    public int Disc { get; set; }
 
     [Printable("Disc Total")]
-    [XiphKey("disctotal")]
-    public uint DiscTotal { get; set; }
+    public int DiscTotal { get; set; }
 
     [Printable("Genre")]
-    [XiphKey("genre")]
     public List<string> Genres { get; set; } = [];
 
     public string Genre => Genres.Joined();
 
     [Printable]
-    [XiphKey("comment")]
     public string Comment { get; set; } = "";
 
     [Printable]
-    [XiphKey("composer")]
     public List<string> Composers { get; set; } = [];
 
     public string Composer => Composers.Joined();
 
-    public List<CustomTag> Custom { get; set; } = [];
+    public List<CustomField> Custom { get; set; } = [];
 
     [Printable]
     public List<TagLib.Picture> Pictures { get; set; } = [];
+
+    [Printable]
+    public string Label { get; set; } = "";
+
+    [Printable("Catalog Number")]
+    public string CatalogNumber { get; set; } = "";
+
+    [Printable("Discogs Release Id")]
+    public string DiscogsReleaseId { get; set; } = "";
 
     public TagData Clone()
     {

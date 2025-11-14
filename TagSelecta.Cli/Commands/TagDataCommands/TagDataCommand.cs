@@ -84,7 +84,7 @@ public class TagDataCommand<TSettings>(TagDataAction<TSettings> action, IAnsiCon
 
         var confirmation = console.Prompt(
             new TextPrompt<string>("Confirm? ([y]es/[n]o/[a]ll)".EscapeMarkup())
-                .AddChoices(["y", "n", "a", "c"])
+                .AddChoices(["y", "n", "a"])
                 .DefaultValue("y")
         );
 

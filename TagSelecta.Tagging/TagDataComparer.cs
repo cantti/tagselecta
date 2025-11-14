@@ -16,7 +16,7 @@ public static class TagDataComparer
         {
             var val1 = prop.GetValue(obj1);
             var val2 = prop.GetValue(obj2);
-            if (!ValueEquals(val1, val2))
+            if (!BuiltinFieldEquals(val1, val2))
             {
                 return false;
             }
@@ -34,7 +34,7 @@ public static class TagDataComparer
         return true;
     }
 
-    public static bool ValueEquals(object? val1, object? val2)
+    public static bool BuiltinFieldEquals(object? val1, object? val2)
     {
         if (val1 == null && val2 == null)
             return true;
@@ -46,20 +46,6 @@ public static class TagDataComparer
         if (val1 is List<string> list1 && val2 is List<string> list2)
         {
             if (!list1.SequenceEqual(list2))
-                return false;
-        }
-        else if (
-            val1 is Dictionary<string, string> dict1
-            && val2 is Dictionary<string, string> dict2
-        )
-        {
-            if (
-                dict1.Count != dict2.Count
-                || !dict1.All(kv =>
-                    dict2.TryGetValue(kv.Key, out var val)
-                    && string.Equals(kv.Value, val, StringComparison.OrdinalIgnoreCase)
-                )
-            )
                 return false;
         }
         // pictures

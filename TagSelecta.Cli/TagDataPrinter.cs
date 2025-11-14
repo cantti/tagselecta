@@ -25,11 +25,16 @@ public static class TagDataPrinter
                 continue;
             table.AddRow([$"[blue]{label.EscapeMarkup()}[/]", column.EscapeMarkup()]);
         }
-        table.AddEmptyRow();
-        table.AddRow("[i]Custom tags:[/]");
-        foreach (var custom in tagData.Custom)
+        if (tagData.Custom.Count > 0)
         {
-            table.AddRow([$"[blue]{custom.Key.EscapeMarkup()}[/]", custom.Value.EscapeMarkup()]);
+            table.AddEmptyRow();
+            table.AddRow("[i]Custom tags:[/]");
+            foreach (var custom in tagData.Custom)
+            {
+                table.AddRow(
+                    [$"[blue]{custom.Key.EscapeMarkup()}[/]", custom.Value.EscapeMarkup()]
+                );
+            }
         }
         console.Write(table);
     }
@@ -51,7 +56,7 @@ public static class TagDataPrinter
             var value2 = prop.GetValue(tagData2);
             var column1 = ValueToColumn(value1);
             var column2 = ValueToColumn(value2);
-            var areEqual = TagDataComparer.ValueEquals(value1, value2);
+            var areEqual = TagDataComparer.BuiltinFieldEquals(value1, value2);
             var color1 = areEqual ? "[white]" : "[red]";
             var color2 = areEqual ? "[white]" : "[green]";
             if (column1 == "" && column2 == "")
@@ -64,24 +69,33 @@ public static class TagDataPrinter
                 ]
             );
         }
-        table.AddEmptyRow();
-        table.AddRow("[i]Custom tags:[/]");
-        foreach (
-            var key in tagData1.Custom.Select(x => x.Key).Union(tagData2.Custom.Select(x => x.Key))
-        )
+        var customKeys = tagData1
+            .Custom.Select(x => x.Key)
+            .Union(tagData2.Custom.Select(x => x.Key))
+            .ToList();
+        if (customKeys.Count > 0)
         {
-            var value1 = tagData1.Custom.SingleOrDefault(x => x.Key == key)?.Value;
-            var value2 = tagData2.Custom.SingleOrDefault(x => x.Key == key)?.Value;
-            var areEqual = value1 == value2;
-            var color1 = areEqual ? "[white]" : "[red]";
-            var color2 = areEqual ? "[white]" : "[green]";
-            table.AddRow(
-                [
-                    $"[blue]{key.EscapeMarkup()}[/]",
-                    $"{color1}{value1.EscapeMarkup()}[/]",
-                    $"{color2}{value2.EscapeMarkup()}[/]",
-                ]
-            );
+            table.AddEmptyRow();
+            table.AddRow("[i]Custom tags:[/]");
+            foreach (
+                var key in tagData1
+                    .Custom.Select(x => x.Key)
+                    .Union(tagData2.Custom.Select(x => x.Key))
+            )
+            {
+                var value1 = tagData1.Custom.SingleOrDefault(x => x.Key == key)?.Value;
+                var value2 = tagData2.Custom.SingleOrDefault(x => x.Key == key)?.Value;
+                var areEqual = value1 == value2;
+                var color1 = areEqual ? "[white]" : "[red]";
+                var color2 = areEqual ? "[white]" : "[green]";
+                table.AddRow(
+                    [
+                        $"[blue]{key.EscapeMarkup()}[/]",
+                        $"{color1}{value1.EscapeMarkup()}[/]",
+                        $"{color2}{value2.EscapeMarkup()}[/]",
+                    ]
+                );
+            }
         }
 
         console.Write(table);

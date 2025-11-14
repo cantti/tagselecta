@@ -18,6 +18,9 @@ public class TagDataCloner
             Track = tagData.Track,
             TrackTotal = tagData.TrackTotal,
             Year = tagData.Year,
+            Label = tagData.Label,
+            CatalogNumber = tagData.CatalogNumber,
+            DiscogsReleaseId = tagData.DiscogsReleaseId,
             Pictures =
             [
                 .. tagData.Pictures.Select(x => new TagLib.Picture
@@ -29,7 +32,7 @@ public class TagDataCloner
                     Type = x.Type,
                 }),
             ],
-            Custom = [.. tagData.Custom.Select(x => new CustomTag(x.Key, x.Value))],
+            Custom = [.. tagData.Custom.Select(x => new CustomField(x.Key, x.Value))],
             Path = tagData.Path,
         };
         return clone;

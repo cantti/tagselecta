@@ -1,13 +1,10 @@
 using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Exceptions;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -136,40 +133,77 @@ public class DiscogsAction(
             .ToList();
         var artists = track.Artists.Select(x => RemoveTrailingNumberParentheses(x.Name)).ToList();
 
-        SetField(context.TagData, x => x.AlbumArtists, albumArtists);
-        SetField(context.TagData, x => x.Artists, artists.Count != 0 ? artists : albumArtists);
-        SetField(context.TagData, x => x.Album, _release.Title);
-        SetField(context.TagData, x => x.Title, track.Title);
-        SetField(context.TagData, x => x.Track, (uint)context.CurrentFileIndex + 1);
-        SetField(context.TagData, x => x.TrackTotal, (uint)_release.TrackList.Count);
-        SetField(context.TagData, x => x.Disc, (uint)0);
-        SetField(context.TagData, x => x.DiscTotal, (uint)0);
-        SetField(context.TagData, x => x.Genres, _release.Styles);
-        // SetField(context.TagData, x => x.Label, _release.Labels.FirstOrDefault()?.Name ?? "");
-        // SetField(
-        //     context.TagData,
-        //     x => x.CatalogNumber,
-        //     _release.Labels.FirstOrDefault()?.CatNo ?? ""
-        // );
-        SetField(context.TagData, x => x.Year, _release.Year);
-        // SetField(context.TagData, x => x.DiscogsReleaseId, _release.Id.ToString());
-        SetField(context.TagData, x => x.Pictures, [new TagLib.Picture(_image)]);
+        if (WriteRequired(TagFieldNames.AlbumArtist))
+        {
+            context.TagData.AlbumArtists = albumArtists;
+        }
+
+        if (WriteRequired(TagFieldNames.Artist))
+        {
+            context.TagData.Artists = artists.Count != 0 ? artists : albumArtists;
+        }
+
+        if (WriteRequired(TagFieldNames.Album))
+        {
+            context.TagData.Album = _release.Title;
+        }
+
+        if (WriteRequired(TagFieldNames.Title))
+        {
+            context.TagData.Title = track.Title;
+        }
+
+        if (WriteRequired(TagFieldNames.Track))
+        {
+            context.TagData.Track = context.CurrentFileIndex + 1;
+        }
+
+        if (WriteRequired(TagFieldNames.TrackTotal))
+        {
+            context.TagData.TrackTotal = _release.TrackList.Count;
+        }
+
+        if (WriteRequired(TagFieldNames.Disc))
+        {
+            context.TagData.Disc = 0;
+        }
+
+        if (WriteRequired(TagFieldNames.DiscTotal))
+        {
+            context.TagData.DiscTotal = 0;
+        }
+
+        if (WriteRequired(TagFieldNames.Genre))
+        {
+            context.TagData.Genres = _release.Styles;
+        }
+
+        if (WriteRequired(TagFieldNames.Label))
+        {
+            context.TagData.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
+        }
+
+        if (WriteRequired(TagFieldNames.Year))
+        {
+            context.TagData.Year = _release.Year;
+        }
+
+        if (WriteRequired(TagFieldNames.Pictures))
+        {
+            context.TagData.Pictures = [new TagLib.Picture(_image)];
+        }
+
+        if (WriteRequired(TagFieldNames.CatalogNumber))
+        {
+            context.TagData.Pictures = [new TagLib.Picture(_image)];
+        }
+
+        context.TagData.DiscogsReleaseId = _release.Id.ToString();
     }
 
-    private void SetField<TProp>(
-        TagData target,
-        Expression<Func<TagData, TProp>> tagDataSelector,
-        TProp newValue
-    )
+    private bool WriteRequired(string fieldName)
     {
-        if (tagDataSelector.Body is not MemberExpression memberExpr)
-            throw new ArgumentException("Invalid expression form.");
-        if (memberExpr.Member is not PropertyInfo propInfo)
-            throw new ArgumentException("Expression does not refer to a property.");
-        var fieldName = memberExpr.Member.Name.ToLower();
-        if (_fieldToWriteList.Count != 0 && !_fieldToWriteList.Contains(fieldName.ToLower()))
-            return;
-        propInfo.SetValue(target, newValue);
+        return _fieldToWriteList.Count == 0 || _fieldToWriteList.Contains(fieldName.ToLower());
     }
 
     private static (string Type, int Id) GetDiscogsReleaseInfo(string input)

@@ -11,5 +11,5 @@ public class Release
     public List<string> Styles { get; set; } = [];
     public List<ReleaseLabel> Labels { get; set; } = [];
     public List<ReleaseImage> Images { get; set; } = [];
-    public uint Year { get; set; }
+    public int Year { get; set; }
 }

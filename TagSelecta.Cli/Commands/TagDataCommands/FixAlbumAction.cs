@@ -1,5 +1,4 @@
 using Spectre.Console;
-using TagSelecta.Cli.Commands;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Tagging;
@@ -19,7 +18,7 @@ public class Album
     public required FixType FixType { get; set; }
     public required List<string> AlbumArtists { get; set; } = [];
     public required string AlbumName { get; set; }
-    public required uint Year { get; set; }
+    public required int Year { get; set; }
 }
 
 public class FixAlbumSettings : BaseSettings { }

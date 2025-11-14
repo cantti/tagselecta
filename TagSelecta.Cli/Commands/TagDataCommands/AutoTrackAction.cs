@@ -20,8 +20,8 @@ public class AutoTrackAction : TagDataAction<AutoTrackSettings>
             .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
             .Order()
             .ToList();
-        context.TagData.Track = (uint)filesInDir.IndexOf(context.CurrentFile) + 1;
-        context.TagData.TrackTotal = (uint)filesInDir.Count;
+        context.TagData.Track = filesInDir.IndexOf(context.CurrentFile) + 1;
+        context.TagData.TrackTotal = filesInDir.Count;
         if (!context.Settings.KeepDisk)
         {
             context.TagData.Disc = 0;

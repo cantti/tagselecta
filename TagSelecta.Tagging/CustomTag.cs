@@ -1,8 +1,8 @@
 namespace TagSelecta.Tagging;
 
-public class CustomTag
+public class CustomField
 {
-    public CustomTag(string key, string value)
+    public CustomField(string key, string value)
     {
         Key = key;
         Value = value;

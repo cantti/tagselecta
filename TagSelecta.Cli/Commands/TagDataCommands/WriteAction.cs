@@ -21,25 +21,31 @@ public class WriteSettings : BaseSettings
     public string? Album { get; set; }
 
     [CommandOption("--year|-y")]
-    public uint? Year { get; set; }
+    public int? Year { get; set; }
 
     [CommandOption("--track|-n")]
-    public uint? Track { get; set; }
+    public int? Track { get; set; }
 
     [CommandOption("--tracktotal|-N")]
-    public uint? TrackTotal { get; set; }
+    public int? TrackTotal { get; set; }
 
     [CommandOption("--comment|-c")]
     public string? Comment { get; set; }
 
     [CommandOption("--disc|-d")]
-    public uint? Disc { get; set; }
+    public int? Disc { get; set; }
 
     [CommandOption("--disctotal|-D")]
-    public uint? DiscTotal { get; set; }
+    public int? DiscTotal { get; set; }
 
     [CommandOption("--composers")]
-    public string[]? Composers { get; set; }
+    public string[]? Composer { get; set; }
+
+    [CommandOption("--label")]
+    public string? Label { get; set; }
+
+    [CommandOption("--catalognumber")]
+    public string? CatallogNumber { get; set; }
 
     [CommandOption("--custom")]
     public string[]? Custom { get; set; }
@@ -72,30 +78,37 @@ public class WriteAction : TagDataAction<WriteSettings>
     {
         var settings = context.Settings;
         var tagData = context.TagData;
+        var originalTags = tagData.Clone();
 
         if (settings.Album is not null)
         {
-            tagData.Album = settings.Album;
+            tagData.Album = TagDataFormatter.Format(settings.Album, originalTags);
         }
 
         if (settings.AlbumArtist is not null)
         {
-            tagData.AlbumArtists = [.. settings.AlbumArtist];
+            tagData.AlbumArtists =
+            [
+                .. settings.AlbumArtist.Select(x => TagDataFormatter.Format(x, originalTags)),
+            ];
         }
 
         if (settings.Artist is not null)
         {
-            tagData.Artists = [.. settings.Artist];
+            tagData.Artists =
+            [
+                .. settings.Artist.Select(x => TagDataFormatter.Format(x, originalTags)),
+            ];
         }
 
         if (settings.Comment is not null)
         {
-            tagData.Comment = settings.Comment;
+            tagData.Comment = TagDataFormatter.Format(settings.Comment, originalTags);
         }
 
-        if (settings.Composers is not null)
+        if (settings.Composer is not null)
         {
-            tagData.Composers = [.. settings.Composers];
+            tagData.Composers = [.. settings.Composer];
         }
 
         if (settings.Disc is not null)
@@ -110,12 +123,15 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Genre is not null)
         {
-            tagData.Genres = [.. settings.Genre];
+            tagData.Genres =
+            [
+                .. settings.Genre.Select(x => TagDataFormatter.Format(x, originalTags)),
+            ];
         }
 
         if (settings.Title is not null)
         {
-            tagData.Title = settings.Title;
+            tagData.Title = TagDataFormatter.Format(settings.Title, originalTags);
         }
 
         if (settings.Track is not null)
@@ -133,8 +149,16 @@ public class WriteAction : TagDataAction<WriteSettings>
             tagData.Year = settings.Year.Value;
         }
 
-        Console.WriteLine("Before");
-        Console.WriteLine(tagData.Custom.Count);
+        if (settings.Label is not null)
+        {
+            tagData.Label = TagDataFormatter.Format(settings.Label, originalTags);
+        }
+
+        if (settings.CatallogNumber is not null)
+        {
+            tagData.CatalogNumber = TagDataFormatter.Format(settings.CatallogNumber, originalTags);
+        }
+
         if (settings.Custom is not null)
         {
             foreach (var entry in settings.Custom)
@@ -151,11 +175,9 @@ public class WriteAction : TagDataAction<WriteSettings>
                 }
                 else
                 {
-                    tagData.Custom.Add(new CustomTag(key, value));
+                    tagData.Custom.Add(new CustomField(key, value));
                 }
             }
         }
-        Console.WriteLine("After");
-        Console.WriteLine(tagData.Custom.Count);
     }
 }

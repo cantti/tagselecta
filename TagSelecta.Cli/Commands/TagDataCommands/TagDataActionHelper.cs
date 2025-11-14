@@ -1,23 +1,36 @@
 using System.Reflection;
 using Spectre.Console;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
 public static class TagDataActionHelper
 {
+    private static readonly HashSet<string> _validFields = new(StringComparer.OrdinalIgnoreCase)
+    {
+        TagFieldNames.AlbumArtist,
+        TagFieldNames.Artist,
+        TagFieldNames.Album,
+        TagFieldNames.Year,
+        TagFieldNames.Title,
+        TagFieldNames.Track,
+        TagFieldNames.TrackTotal,
+        TagFieldNames.Disc,
+        TagFieldNames.DiscTotal,
+        TagFieldNames.Genre,
+        TagFieldNames.Comment,
+        TagFieldNames.Composer,
+        TagFieldNames.Label,
+        TagFieldNames.Pictures,
+    };
+
+    public static bool IsValid(string fieldName) =>
+        !string.IsNullOrWhiteSpace(fieldName) && _validFields.Contains(fieldName);
+
     public static bool ValidateFieldNameList(IAnsiConsole console, IEnumerable<string> fields)
     {
-        var tagDataProps = typeof(TagData)
-            .GetProperties()
-            .Where(x => x.GetCustomAttribute<PrintableAttribute>() != null);
         foreach (var field in fields)
         {
-            if (
-                !tagDataProps.Any(x =>
-                    x.Name.Equals(field, StringComparison.CurrentCultureIgnoreCase)
-                )
-            )
+            if (!_validFields.Contains(field))
             {
                 console.MarkupLineInterpolated($"[red]Unknown field: {field}[/]");
                 return false;
