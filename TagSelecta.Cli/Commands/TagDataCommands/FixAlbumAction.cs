@@ -75,7 +75,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
 
             // found artists that exist on all songs
             var primaryArtist = artistList
-                .Where(x => dirTagData.All(x2 => x2.Artist.Contains(x)))
+                .Where(x => dirTagData.All(x2 => x2.Artists.Contains(x)))
                 .ToList();
 
             FixType fixType;

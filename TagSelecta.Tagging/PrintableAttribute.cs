@@ -1,7 +1,7 @@
 namespace TagSelecta.Tagging;
 
 [AttributeUsage(AttributeTargets.Property)]
-public class PrintableAttribute(string? label = null) : Attribute
+public class TagDataFieldAttribute(string label) : Attribute
 {
-    public string? Label { get; } = label;
+    public string Label { get; } = label;
 }

@@ -2,12 +2,15 @@ using Scriban;
 
 namespace TagSelecta.Tagging;
 
-public static class TagDataFormatter
+public class TagDataFormatter(TagData tagData, string path)
 {
-    public static string Format(string template, TagData tagData)
+    public string Format(string template)
     {
         var parsedTemplate = Template.Parse(template);
-        var result = parsedTemplate.Render(tagData, member => member.Name.ToLower());
+        var result = parsedTemplate.Render(
+            new TagDataForTemplate(tagData, path),
+            member => member.Name.ToLower()
+        );
         return result;
     }
 }

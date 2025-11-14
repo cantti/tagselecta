@@ -15,15 +15,14 @@ public static class TagDataPrinter
         table.HideHeaders();
         foreach (var prop in typeof(TagData).GetProperties())
         {
-            var attr = prop.GetCustomAttribute<PrintableAttribute>();
+            var attr = prop.GetCustomAttribute<TagDataFieldAttribute>();
             if (attr is null)
                 continue;
-            var label = attr.Label ?? prop.Name;
             var value = prop.GetValue(tagData);
             var column = ValueToColumn(value);
             if (column == "")
                 continue;
-            table.AddRow([$"[blue]{label.EscapeMarkup()}[/]", column.EscapeMarkup()]);
+            table.AddRow([$"[blue]{attr.Label.EscapeMarkup()}[/]", column.EscapeMarkup()]);
         }
         if (tagData.Custom.Count > 0)
         {
@@ -48,10 +47,9 @@ public static class TagDataPrinter
         table.AddColumn("[yellow]New Value[/]");
         foreach (var prop in typeof(TagData).GetProperties())
         {
-            var attr = prop.GetCustomAttribute<PrintableAttribute>();
+            var attr = prop.GetCustomAttribute<TagDataFieldAttribute>();
             if (attr is null)
                 continue;
-            var label = attr.Label ?? prop.Name;
             var value1 = prop.GetValue(tagData1);
             var value2 = prop.GetValue(tagData2);
             var column1 = ValueToColumn(value1);
@@ -63,7 +61,7 @@ public static class TagDataPrinter
                 continue;
             table.AddRow(
                 [
-                    $"[blue]{label.EscapeMarkup()}[/]",
+                    $"[blue]{attr.Label.EscapeMarkup()}[/]",
                     $"{color1}{column1.EscapeMarkup()}[/]",
                     $"{color2}{column2.EscapeMarkup()}[/]",
                 ]

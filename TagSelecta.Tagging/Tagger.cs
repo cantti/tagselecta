@@ -10,7 +10,6 @@ public static class Tagger
         using var tfile = TagLib.File.Create(file);
         var processor = CreateProcessor(tfile);
         var tagData = processor.Read();
-        tagData.Path = file;
         return tagData;
     }
 

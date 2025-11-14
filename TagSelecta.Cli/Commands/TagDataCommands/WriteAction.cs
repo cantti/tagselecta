@@ -78,37 +78,31 @@ public class WriteAction : TagDataAction<WriteSettings>
     {
         var settings = context.Settings;
         var tagData = context.TagData;
-        var originalTags = tagData.Clone();
+        var formatter = new TagDataFormatter(tagData.Clone(), context.CurrentFile);
 
         if (settings.Album is not null)
         {
-            tagData.Album = TagDataFormatter.Format(settings.Album, originalTags);
+            tagData.Album = formatter.Format(settings.Album);
         }
 
         if (settings.AlbumArtist is not null)
         {
-            tagData.AlbumArtists =
-            [
-                .. settings.AlbumArtist.Select(x => TagDataFormatter.Format(x, originalTags)),
-            ];
+            tagData.AlbumArtists = settings.AlbumArtist.Select(formatter.Format).ToList();
         }
 
         if (settings.Artist is not null)
         {
-            tagData.Artists =
-            [
-                .. settings.Artist.Select(x => TagDataFormatter.Format(x, originalTags)),
-            ];
+            tagData.Artists = settings.Artist.Select(formatter.Format).ToList();
         }
 
         if (settings.Comment is not null)
         {
-            tagData.Comment = TagDataFormatter.Format(settings.Comment, originalTags);
+            tagData.Comment = formatter.Format(settings.Comment);
         }
 
         if (settings.Composer is not null)
         {
-            tagData.Composers = settings.Composer.ToList();
+            tagData.Composers = settings.Composer.Select(formatter.Format).ToList();
         }
 
         if (settings.Disc is not null)
@@ -123,15 +117,12 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Genre is not null)
         {
-            tagData.Genres =
-            [
-                .. settings.Genre.Select(x => TagDataFormatter.Format(x, originalTags)),
-            ];
+            tagData.Genres = settings.Genre.Select(formatter.Format).ToList();
         }
 
         if (settings.Title is not null)
         {
-            tagData.Title = TagDataFormatter.Format(settings.Title, originalTags);
+            tagData.Title = formatter.Format(settings.Title);
         }
 
         if (settings.Track is not null)
@@ -151,12 +142,12 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Label is not null)
         {
-            tagData.Label = TagDataFormatter.Format(settings.Label, originalTags);
+            tagData.Label = formatter.Format(settings.Label);
         }
 
         if (settings.CatallogNumber is not null)
         {
-            tagData.CatalogNumber = TagDataFormatter.Format(settings.CatallogNumber, originalTags);
+            tagData.CatalogNumber = formatter.Format(settings.CatallogNumber);
         }
 
         if (settings.Custom is not null)

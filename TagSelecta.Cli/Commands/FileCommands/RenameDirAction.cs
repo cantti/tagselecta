@@ -38,7 +38,9 @@ public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSetting
         _renamed.Add(dir);
         var tagData = Tagger.ReadTags(context.CurrentFile);
 
-        var newName = TagDataFormatter.Format(context.Settings.Template, tagData);
+        var formatter = new TagDataFormatter(tagData, context.CurrentFile);
+
+        var newName = formatter.Format(context.Settings.Template);
 
         newName = FileHelper.CleanFileName(newName);
 

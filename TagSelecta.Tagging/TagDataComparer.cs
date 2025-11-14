@@ -7,11 +7,10 @@ public static class TagDataComparer
     public static bool TagDataEquals(TagData obj1, TagData obj2)
     {
         // compare normal tags
-        // todo rewrite without reflection and attribute
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(p => p.GetCustomAttribute<PrintableAttribute>() != null)
+                .Where(p => p.GetCustomAttribute<TagDataFieldAttribute>() != null)
         )
         {
             var val1 = prop.GetValue(obj1);

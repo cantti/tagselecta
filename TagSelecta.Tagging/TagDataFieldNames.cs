@@ -4,21 +4,21 @@ namespace TagSelecta.Tagging;
 
 public static class TagDataFieldNames
 {
-    public const string AlbumArtist = nameof(TagData.AlbumArtist);
-    public const string Artist = nameof(TagData.Artist);
-    public const string Album = nameof(TagData.Album);
-    public const string Year = nameof(TagData.Year);
-    public const string Title = nameof(TagData.Title);
-    public const string Track = nameof(TagData.Track);
-    public const string TrackTotal = nameof(TagData.TrackTotal);
-    public const string Disc = nameof(TagData.Disc);
-    public const string DiscTotal = nameof(TagData.DiscTotal);
-    public const string Genre = nameof(TagData.Genre);
-    public const string Comment = nameof(TagData.Comment);
-    public const string Composer = nameof(TagData.Composer);
-    public const string Label = nameof(TagData.Label);
-    public const string CatalogNumber = nameof(TagData.CatalogNumber);
-    public const string Pictures = nameof(TagData.Pictures);
+    public const string AlbumArtist = "albumartist";
+    public const string Artist = "artist";
+    public const string Album = "album";
+    public const string Year = "year";
+    public const string Title = "title";
+    public const string Track = "track";
+    public const string TrackTotal = "tracktotal";
+    public const string Disc = "disc";
+    public const string DiscTotal = "disctotal";
+    public const string Genre = "genre";
+    public const string Comment = "comment";
+    public const string Composer = "composer";
+    public const string Label = "label";
+    public const string CatalogNumber = "catalognumber";
+    public const string Pictures = "pictures";
 
     public static IReadOnlyList<string> All { get; } =
         typeof(TagDataFieldNames)

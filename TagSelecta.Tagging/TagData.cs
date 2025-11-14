@@ -1,70 +1,56 @@
-using TagSelecta.Shared;
-
 namespace TagSelecta.Tagging;
 
 public class TagData
 {
-    public string Path { get; set; } = "";
-
-    public string FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
-
-    [Printable("Album Artist")]
+    [TagDataField("Album Artist")]
     public List<string> AlbumArtists { get; set; } = [];
 
-    public string AlbumArtist => AlbumArtists.Joined();
-
-    [Printable("Artist")]
+    [TagDataField("Artist")]
     public List<string> Artists { get; set; } = [];
 
-    public string Artist => Artists.Joined();
-
-    [Printable]
+    [TagDataField("Album")]
     public string Album { get; set; } = "";
 
-    [Printable]
+    [TagDataField("Year")]
     public int Year { get; set; }
 
-    [Printable]
+    [TagDataField("Title")]
     public string Title { get; set; } = "";
 
-    [Printable]
+    [TagDataField("Track")]
     public int Track { get; set; }
 
-    [Printable("Track Total")]
+    [TagDataField("Track Total")]
     public int TrackTotal { get; set; }
 
-    [Printable]
+    [TagDataField("Disc")]
     public int Disc { get; set; }
 
-    [Printable("Disc Total")]
+    [TagDataField("Disc Total")]
     public int DiscTotal { get; set; }
 
-    [Printable("Genre")]
+    [TagDataField("Genre")]
     public List<string> Genres { get; set; } = [];
 
-    public string Genre => Genres.Joined();
-
-    [Printable]
+    [TagDataField("Comment")]
     public string Comment { get; set; } = "";
 
-    [Printable]
+    [TagDataField("Composers")]
     public List<string> Composers { get; set; } = [];
 
-    public string Composer => Composers.Joined();
-
-    public List<CustomField> Custom { get; set; } = [];
-
-    [Printable]
+    [TagDataField("Pictures")]
     public List<TagLib.Picture> Pictures { get; set; } = [];
 
-    [Printable]
+    [TagDataField("Label")]
     public string Label { get; set; } = "";
 
-    [Printable("Catalog Number")]
+    [TagDataField("Catalog Number")]
     public string CatalogNumber { get; set; } = "";
 
-    [Printable("Discogs Release Id")]
+    [TagDataField("Discogs Release Id")]
     public string DiscogsReleaseId { get; set; } = "";
+
+    public List<CustomField> Custom { get; set; } = [];
 
     public TagData Clone()
     {

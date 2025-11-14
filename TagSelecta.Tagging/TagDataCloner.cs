@@ -32,7 +32,6 @@ public class TagDataCloner
                 })
                 .ToList(),
             Custom = tagData.Custom.Select(x => new CustomField(x.Key, x.Value)).ToList(),
-            Path = tagData.Path,
         };
         return clone;
     }

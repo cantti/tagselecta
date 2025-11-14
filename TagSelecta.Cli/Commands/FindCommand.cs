@@ -31,9 +31,11 @@ public class FindCommand(IAnsiConsole console) : Command<FindSettings>
                 if (tagData is null)
                     return;
 
+                var formatter = new TagDataFormatter(tagData, file);
+
                 var shouldPrint =
                     string.IsNullOrWhiteSpace(settings.Query)
-                    || (TagDataFormatter.Format("{{ " + settings.Query + " }}", tagData) == "true");
+                    || (formatter.Format("{{ " + settings.Query + " }}") == "true");
 
                 if (shouldPrint)
                 {
