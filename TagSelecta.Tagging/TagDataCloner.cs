@@ -7,13 +7,13 @@ public class TagDataCloner
         var clone = new TagData
         {
             Album = tagData.Album,
-            AlbumArtists = [.. tagData.AlbumArtists],
-            Artists = [.. tagData.Artists],
+            AlbumArtists = tagData.AlbumArtists.ToList(),
+            Artists = tagData.Artists.ToList(),
             Comment = tagData.Comment,
-            Composers = [.. tagData.Composers],
+            Composers = tagData.Composers.ToList(),
             Disc = tagData.Disc,
             DiscTotal = tagData.DiscTotal,
-            Genres = [.. tagData.Genres],
+            Genres = tagData.Genres.ToList(),
             Title = tagData.Title,
             Track = tagData.Track,
             TrackTotal = tagData.TrackTotal,
@@ -21,18 +21,17 @@ public class TagDataCloner
             Label = tagData.Label,
             CatalogNumber = tagData.CatalogNumber,
             DiscogsReleaseId = tagData.DiscogsReleaseId,
-            Pictures =
-            [
-                .. tagData.Pictures.Select(x => new TagLib.Picture
+            Pictures = tagData
+                .Pictures.Select(x => new TagLib.Picture
                 {
                     Data = x.Data.ToArray(),
                     Description = x.Description,
                     Filename = x.Filename,
                     MimeType = x.MimeType,
                     Type = x.Type,
-                }),
-            ],
-            Custom = [.. tagData.Custom.Select(x => new CustomField(x.Key, x.Value))],
+                })
+                .ToList(),
+            Custom = tagData.Custom.Select(x => new CustomField(x.Key, x.Value)).ToList(),
             Path = tagData.Path,
         };
         return clone;

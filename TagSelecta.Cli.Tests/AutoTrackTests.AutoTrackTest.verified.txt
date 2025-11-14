@@ -19,7 +19,7 @@
 │              │ Pop               │ Pop               │
 │ Comment      │ Test              │ Test              │
 ╰──────────────┴───────────────────┴───────────────────╯
-Confirm? ([y]es/[n]o/[a]ll) [y/n/a/c] (y): y
+Confirm? ([y]es/[n]o/[a]ll) [y/n/a] (y): y
 Status: success
 
 > (2/3) "{CurrentDirectory}TestData/AutoTrackTest/02 Song 2.mp3"
@@ -39,7 +39,7 @@ Status: success
 │              │ Pop               │ Pop               │
 │ Comment      │ Test              │ Test              │
 ╰──────────────┴───────────────────┴───────────────────╯
-Confirm? ([y]es/[n]o/[a]ll) [y/n/a/c] (y): y
+Confirm? ([y]es/[n]o/[a]ll) [y/n/a] (y): y
 Status: success
 
 > (3/3) "{CurrentDirectory}TestData/AutoTrackTest/03 Song 3.mp3"
@@ -59,7 +59,7 @@ Status: success
 │              │ Pop               │ Pop               │
 │ Comment      │ Test              │ Test              │
 ╰──────────────┴───────────────────┴───────────────────╯
-Confirm? ([y]es/[n]o/[a]ll) [y/n/a/c] (y): y
+Confirm? ([y]es/[n]o/[a]ll) [y/n/a] (y): y
 Status: success
 
 Finished!

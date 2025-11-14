@@ -5,6 +5,7 @@ using Spectre.Console.Cli;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Exceptions;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -57,7 +58,7 @@ public class DiscogsAction(
             var releaseId =
                 urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
             _release = await discogsApi.GetRelease(releaseId);
-            _release.TrackList = [.. _release.TrackList.Where(x => x.Type == "track")];
+            _release.TrackList = _release.TrackList.Where(x => x.Type == "track").ToList();
             console.MarkupLineInterpolated($"[blue]Release[/]");
             console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{_release.Uri}[/]");
             console.MarkupLineInterpolated(
@@ -71,7 +72,7 @@ public class DiscogsAction(
         else
         {
             var search = await discogsApi.Search("master", context.Settings.Release);
-            search.Results = [.. search.Results.Take(5)];
+            search.Results = search.Results.Take(5).ToList();
             var releases = new List<Release>();
             var index = -1;
             console.MarkupLineInterpolated($"[green]Discogs releases:[/]");
@@ -81,7 +82,7 @@ public class DiscogsAction(
                 index++;
                 var master = await discogsApi.GetMaster(searchItem.Id);
                 var release = await discogsApi.GetRelease(master.MainRelease);
-                release.TrackList = [.. release.TrackList.Where(x => x.Type == "track")];
+                release.TrackList = release.TrackList.Where(x => x.Type == "track").ToList();
                 releases.Add(release);
                 console.MarkupLineInterpolated($"[blue]Option[/] [yellow]{index + 1}[/]");
                 console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{release.Uri}[/]");
@@ -133,67 +134,67 @@ public class DiscogsAction(
             .ToList();
         var artists = track.Artists.Select(x => RemoveTrailingNumberParentheses(x.Name)).ToList();
 
-        if (WriteRequired(TagFieldNames.AlbumArtist))
+        if (WriteRequired(TagDataFieldNames.AlbumArtist))
         {
             context.TagData.AlbumArtists = albumArtists;
         }
 
-        if (WriteRequired(TagFieldNames.Artist))
+        if (WriteRequired(TagDataFieldNames.Artist))
         {
             context.TagData.Artists = artists.Count != 0 ? artists : albumArtists;
         }
 
-        if (WriteRequired(TagFieldNames.Album))
+        if (WriteRequired(TagDataFieldNames.Album))
         {
             context.TagData.Album = _release.Title;
         }
 
-        if (WriteRequired(TagFieldNames.Title))
+        if (WriteRequired(TagDataFieldNames.Title))
         {
             context.TagData.Title = track.Title;
         }
 
-        if (WriteRequired(TagFieldNames.Track))
+        if (WriteRequired(TagDataFieldNames.Track))
         {
             context.TagData.Track = context.CurrentFileIndex + 1;
         }
 
-        if (WriteRequired(TagFieldNames.TrackTotal))
+        if (WriteRequired(TagDataFieldNames.TrackTotal))
         {
             context.TagData.TrackTotal = _release.TrackList.Count;
         }
 
-        if (WriteRequired(TagFieldNames.Disc))
+        if (WriteRequired(TagDataFieldNames.Disc))
         {
             context.TagData.Disc = 0;
         }
 
-        if (WriteRequired(TagFieldNames.DiscTotal))
+        if (WriteRequired(TagDataFieldNames.DiscTotal))
         {
             context.TagData.DiscTotal = 0;
         }
 
-        if (WriteRequired(TagFieldNames.Genre))
+        if (WriteRequired(TagDataFieldNames.Genre))
         {
             context.TagData.Genres = _release.Styles;
         }
 
-        if (WriteRequired(TagFieldNames.Label))
+        if (WriteRequired(TagDataFieldNames.Label))
         {
             context.TagData.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
         }
 
-        if (WriteRequired(TagFieldNames.Year))
+        if (WriteRequired(TagDataFieldNames.Year))
         {
             context.TagData.Year = _release.Year;
         }
 
-        if (WriteRequired(TagFieldNames.Pictures))
+        if (WriteRequired(TagDataFieldNames.Pictures))
         {
             context.TagData.Pictures = [new TagLib.Picture(_image)];
         }
 
-        if (WriteRequired(TagFieldNames.CatalogNumber))
+        if (WriteRequired(TagDataFieldNames.CatalogNumber))
         {
             context.TagData.Pictures = [new TagLib.Picture(_image)];
         }

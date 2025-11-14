@@ -19,23 +19,23 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
     {
         return new TagData
         {
-            Album = id3v2.Album,
-            AlbumArtists = [.. id3v2.AlbumArtists],
-            Artists = [.. id3v2.Performers],
-            Comment = id3v2.Comment,
-            Composers = [.. id3v2.Composers],
+            Album = id3v2.Album ?? "",
+            AlbumArtists = id3v2.AlbumArtists?.ToList() ?? [],
+            Artists = id3v2.Performers?.ToList() ?? [],
+            Comment = id3v2.Comment ?? "",
+            Composers = id3v2.Composers?.ToList() ?? [],
             Track = (int)id3v2.Track,
             TrackTotal = (int)id3v2.TrackCount,
             Disc = (int)id3v2.Disc,
             DiscTotal = (int)id3v2.DiscCount,
-            Genres = [.. id3v2.Genres],
-            Title = id3v2.Title,
+            Genres = id3v2.Genres?.ToList() ?? [],
+            Title = id3v2.Title ?? "",
             Year = (int)id3v2.Year,
             Custom = ReadCustomFields(),
             Label = GetUserTextAsString("label"),
             CatalogNumber = GetUserTextAsString("catalognumber"),
             DiscogsReleaseId = GetUserTextAsString("discogs_release_id"),
-            Pictures = [.. id3v2.Pictures.Select(x => new TagLib.Picture(x))],
+            Pictures = id3v2.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
         };
     }
 
@@ -44,10 +44,10 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.Album = data.Album;
         id3v2.Comment = data.Comment;
         id3v2.Title = data.Title;
-        id3v2.AlbumArtists = [.. data.AlbumArtists];
-        id3v2.Performers = [.. data.Artists];
-        id3v2.Composers = [.. data.Composers];
-        id3v2.Genres = [.. data.Genres];
+        id3v2.AlbumArtists = data.AlbumArtists.ToArray();
+        id3v2.Performers = data.Artists.ToArray();
+        id3v2.Composers = data.Composers.ToArray();
+        id3v2.Genres = data.Genres.ToArray();
         id3v2.Track = (uint)data.Track;
         id3v2.TrackCount = (uint)data.TrackTotal;
         id3v2.Disc = (uint)data.Disc;
@@ -60,7 +60,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         {
             WriteUserText(field.Key, field.Value);
         }
-        id3v2.Pictures = [.. data.Pictures.Select(p => new TagLib.Picture(p))];
+        id3v2.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
     }
 
     private List<CustomField> ReadCustomFields()
@@ -69,12 +69,11 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
 
         foreach (var frame in id3v2.GetFrames())
         {
-            if (frame is UserTextInformationFrame txxx)
+            if (
+                frame is UserTextInformationFrame txxx
+                && !_usedUserTextFields.Contains(txxx.Description)
+            )
             {
-                if (_usedUserTextFields.Contains(txxx.Description))
-                {
-                    continue;
-                }
                 list.Add(new CustomField(txxx.Description, string.Join("; ", txxx.Text)));
             }
         }
@@ -96,7 +95,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             id3v2,
             key,
             Tag.DefaultEncoding,
-            false,
+            true,
             false //taglib uses case sensitive by default
         );
         frame.Text = [value];

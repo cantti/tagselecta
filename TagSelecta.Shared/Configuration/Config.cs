@@ -12,7 +12,7 @@ public class Config : IConfig
 
             if (!string.IsNullOrEmpty(env))
             {
-                return [.. Regex.Split(env, @"\W+")];
+                return Regex.Split(env, @"\W+").ToList();
             }
             else
             {

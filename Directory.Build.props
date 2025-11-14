@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<Project>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);IDE0305;CA2254;SYSLIB1045</NoWarn>
+  </PropertyGroup>
+</Project>

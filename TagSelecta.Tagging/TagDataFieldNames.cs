@@ -1,8 +1,8 @@
-using TagSelecta.Tagging;
+using System.Reflection;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
+namespace TagSelecta.Tagging;
 
-public static class TagFieldNames
+public static class TagDataFieldNames
 {
     public const string AlbumArtist = nameof(TagData.AlbumArtist);
     public const string Artist = nameof(TagData.Artist);
@@ -19,4 +19,11 @@ public static class TagFieldNames
     public const string Label = nameof(TagData.Label);
     public const string CatalogNumber = nameof(TagData.CatalogNumber);
     public const string Pictures = nameof(TagData.Pictures);
+
+    public static IReadOnlyList<string> All { get; } =
+        typeof(TagDataFieldNames)
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string))
+            .Select(f => (string)f.GetRawConstantValue()!)
+            .ToArray();
 }

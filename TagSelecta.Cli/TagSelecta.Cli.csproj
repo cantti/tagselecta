@@ -5,8 +5,6 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <NoWarn>$(NoWarn);CA2254;SYSLIB1045</NoWarn>
-    <!-- <TreatWarningsAsErrors>true</TreatWarningsAsErrors> -->
     <PublishSingleFile>true</PublishSingleFile>
     <AssemblyName>tagselecta</AssemblyName>
   </PropertyGroup>

@@ -19,7 +19,7 @@
 │              │ Pop               │ Dub                   │
 │ Comment      │ Test              │ Test                  │
 ╰──────────────┴───────────────────┴───────────────────────╯
-Confirm? ([y]es/[n]o/[a]ll) [y/n/a/c] (y): y
+Confirm? ([y]es/[n]o/[a]ll) [y/n/a] (y): y
 Status: success
 
 Finished!

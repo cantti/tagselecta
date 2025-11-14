@@ -108,7 +108,7 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Composer is not null)
         {
-            tagData.Composers = [.. settings.Composer];
+            tagData.Composers = settings.Composer.ToList();
         }
 
         if (settings.Disc is not null)

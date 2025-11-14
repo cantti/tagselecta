@@ -33,23 +33,23 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
     {
         return new TagData
         {
-            Album = xiph.Album,
-            AlbumArtists = [.. xiph.AlbumArtists],
-            Artists = [.. xiph.Performers],
-            Comment = xiph.Comment,
-            Composers = [.. xiph.Composers],
+            Album = xiph.Album ?? "",
+            AlbumArtists = xiph.AlbumArtists?.ToList() ?? [],
+            Artists = xiph.Performers?.ToList() ?? [],
+            Comment = xiph.Comment ?? "",
+            Composers = xiph.Composers?.ToList() ?? [],
             Track = (int)xiph.Track,
             TrackTotal = (int)xiph.TrackCount,
             Disc = (int)xiph.Disc,
             DiscTotal = (int)xiph.DiscCount,
-            Genres = [.. xiph.Genres],
-            Title = xiph.Title,
+            Genres = xiph.Genres?.ToList() ?? [],
+            Title = xiph.Title ?? "",
             Year = (int)xiph.Year,
             Label = ReadField("label"),
             CatalogNumber = ReadField("catalognumber"),
             DiscogsReleaseId = ReadField("discogs_release_id"),
             Custom = ReadCustomFields(),
-            Pictures = [.. flac.Pictures.Select(x => new TagLib.Picture(x))],
+            Pictures = flac.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
         };
     }
 
@@ -58,10 +58,10 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         xiph.Album = data.Album;
         xiph.Comment = data.Comment;
         xiph.Title = data.Title;
-        xiph.AlbumArtists = [.. data.AlbumArtists];
-        xiph.Performers = [.. data.Artists];
-        xiph.Composers = [.. data.Composers];
-        xiph.Genres = [.. data.Genres];
+        xiph.AlbumArtists = data.AlbumArtists.ToArray();
+        xiph.Performers = data.Artists.ToArray();
+        xiph.Composers = data.Composers.ToArray();
+        xiph.Genres = data.Genres.ToArray();
         xiph.Track = (uint)data.Track;
         xiph.TrackCount = (uint)data.TrackTotal;
         xiph.Disc = (uint)data.Disc;
@@ -74,7 +74,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         {
             WriteField(field.Key, field.Value);
         }
-        flac.Pictures = [.. data.Pictures.Select(p => new TagLib.Picture(p))];
+        flac.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
     }
 
     private string ReadField(string key)

@@ -121,7 +121,7 @@ public static class TagDataPrinter
         {
             // that will work fine for both uint and double?
             var column = value?.ToString() ?? "";
-            column = (value is uint uint1 && uint1 == 0) ? "" : column;
+            column = (value is int int1 && int1 == 0) ? "" : column;
             return column;
         }
     }

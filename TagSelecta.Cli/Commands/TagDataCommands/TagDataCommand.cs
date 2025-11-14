@@ -67,7 +67,8 @@ public class TagDataCommand<TSettings>(TagDataAction<TSettings> action, IAnsiCon
             catch (Exception ex)
             {
                 CommandHelper.PrintStatusError(console);
-                console.MarkupLineInterpolated($"[red]{ex.Message}[/]");
+                // console.MarkupLineInterpolated($"[red]{ex.Message}[/]");
+                console.WriteException(ex);
                 continue;
             }
             console.WriteLine();
