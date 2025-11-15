@@ -12,8 +12,6 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
     {
         "album",
         "albumartist",
-        "album artist",
-        "ensemble",
         "artist",
         "comment",
         "composer",
@@ -34,7 +32,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         return new TagData
         {
             Album = xiph.Album ?? "",
-            AlbumArtists = xiph.AlbumArtists.ToList(),
+            AlbumArtists = xiph.GetField("albumartist").ToList(),
             Artists = xiph.Performers.ToList(),
             Comment = xiph.Comment ?? "",
             Composers = xiph.Composers.ToList(),
@@ -70,6 +68,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         WriteField("label", data.Label);
         WriteField("catalognumber", data.CatalogNumber);
         WriteField("discogs_release_id", data.DiscogsReleaseId);
+        ClearUnusedFields();
         foreach (var field in data.Custom)
         {
             WriteField(field.Key, field.Value);
@@ -80,6 +79,17 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
     private string ReadField(string key)
     {
         return xiph.GetField(key)?.FirstOrDefault() ?? "";
+    }
+
+    private void ClearUnusedFields()
+    {
+        foreach (var key in xiph)
+        {
+            if (!_usedXiphFields.Contains(key))
+            {
+                xiph.RemoveField(key);
+            }
+        }
     }
 
     private void WriteField(string key, string? value)

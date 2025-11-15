@@ -18,8 +18,6 @@ public static class DependencyInjection
         services.AddTransient<TagDataAction<SplitSettings>, SplitAction>();
         services.AddTransient<TagDataAction<FixAlbumSettings>, FixAlbumAction>();
         services.AddTransient<TagDataAction<TitleCaseSettings>, TitleCaseAction>();
-        services.AddTransient<TagDataAction<CleanSettings>, CleanAction>();
-        services.AddTransient<TagDataAction<VaSettings>, VaAction>();
         services.AddTransient<TagDataAction<WriteSettings>, WriteAction>();
         services.AddTransient<FileAction<RenameDirSettings>, RenameDirAction>();
         services.AddTransient<FileAction<RenameFileSettings>, RenameFileAction>();

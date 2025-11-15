@@ -70,6 +70,10 @@ public class WriteSettings : BaseSettings
         "Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g., key1=val1;key2=val2)."
     )]
     public string? Custom { get; set; }
+
+    [CommandOption("--clear-custom")]
+    [Description("Clear all other custom tags, not specified using --custom or -c")]
+    public bool ClearCustom { get; set; }
 }
 
 public class WriteAction : TagDataAction<WriteSettings>
@@ -82,7 +86,7 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Album is not null)
         {
-            tagData.Album = formatter.Format(settings.Album).Trim();
+            tagData.Album = formatter.Format(settings.Album);
         }
 
         if (settings.AlbumArtist is not null)
@@ -97,7 +101,7 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Comment is not null)
         {
-            tagData.Comment = formatter.Format(settings.Comment).Trim();
+            tagData.Comment = formatter.Format(settings.Comment);
         }
 
         if (settings.Composer is not null)
@@ -122,7 +126,7 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Title is not null)
         {
-            tagData.Title = formatter.Format(settings.Title).Trim();
+            tagData.Title = formatter.Format(settings.Title);
         }
 
         if (settings.Track is not null)
@@ -142,12 +146,17 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Label is not null)
         {
-            tagData.Label = formatter.Format(settings.Label).Trim();
+            tagData.Label = formatter.Format(settings.Label);
         }
 
         if (settings.CatallogNumber is not null)
         {
-            tagData.CatalogNumber = formatter.Format(settings.CatallogNumber).Trim();
+            tagData.CatalogNumber = formatter.Format(settings.CatallogNumber);
+        }
+
+        if (settings.ClearCustom)
+        {
+            tagData.Custom = [];
         }
 
         if (settings.Custom is not null)
@@ -158,6 +167,8 @@ public class WriteAction : TagDataAction<WriteSettings>
                 var parts = entry.Split('=', 2);
                 var key = parts[0].Trim().ToLower();
                 var value = parts.Length > 1 ? parts[1].Trim() : "";
+
+                value = formatter.Format(value);
 
                 var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
 

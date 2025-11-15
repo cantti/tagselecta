@@ -21,88 +21,45 @@ class Program
                 .AddCommand<TagDataCommand<WriteSettings>>("write")
                 .WithDescription("Write tags.")
                 // Basic examples
-                .WithExample(
-                    ["write", "song.mp3", "-t", "\"Song 1\"", "-a", "\"Artist1;Artist 2\""]
-                )
-                .WithExample(["write", "song.mp3", "-c", "\"url=https://github.com\""])
+                .WithExample(["write", "song.mp3", "-t", "'Song 1'", "-a", "'Artist1;Artist 2'"])
+                .WithExample(["write", "song.mp3", "-c", "'url=https://github.com'"])
                 // Title, album, year
                 .WithExample(
-                    [
-                        "write",
-                        "song.mp3",
-                        "-t",
-                        "\"My Track\"",
-                        "-l",
-                        "\"Best Album\"",
-                        "-y",
-                        "2024",
-                    ]
+                    ["write", "song.mp3", "-t", "'My Track'", "-l", "'Best Album'", "-y", "2024"]
                 )
                 // Genre with multiple values
-                .WithExample(["write", "song.mp3", "-g", "\"Rock;Heavy Metal;Punk\""])
+                .WithExample(["write", "song.mp3", "-g", "'Rock;Heavy Metal;Punk'"])
                 // Artist, album artist, label
                 .WithExample(
                     [
                         "write",
                         "song.mp3",
                         "-a",
-                        "\"John Doe\"",
+                        "'John Doe'",
                         "-A",
-                        "\"Various Artists\"",
+                        "'Various Artists'",
                         "--label",
-                        "\"Example Records\"",
+                        "'Example Records'",
                     ]
                 )
                 // Track and disc info
                 .WithExample(["write", "song.mp3", "-n", "5", "-N", "12", "-d", "1", "-D", "2"])
                 // Multiple composers
                 .WithExample(
-                    ["write", "song.mp3", "--composers", "\"Composer 1;Composer 2;Composer 3\""]
+                    ["write", "song.mp3", "--composers", "'Composer 1;Composer 2;Composer 3'"]
                 )
                 // Custom tags with multiple key=value pairs
                 .WithExample(
-                    [
-                        "write",
-                        "song.mp3",
-                        "-c",
-                        "\"key1=value1;key2=Some Value;key3=Another Value\"",
-                    ]
+                    ["write", "song.mp3", "-c", "'key1=value1;key2=Some Value;key3=Another Value'"]
                 )
-                // Realistic full metadata example
                 .WithExample(
                     [
                         "write",
                         "song.mp3",
-                        "-t",
-                        "\"Ocean Waves\"",
                         "-a",
-                        "\"Artist One;Artist Two\"",
-                        "-A",
-                        "\"Album Artist\"",
-                        "-l",
-                        "\"Nature Sounds Collection\"",
-                        "-y",
-                        "2023",
-                        "-g",
-                        "\"Ambient;Deep Relaxation\"",
-                        "--composers",
-                        "\"John Doe;Jane Smith\"",
-                        "-n",
-                        "3",
-                        "-N",
-                        "10",
-                        "-d",
-                        "1",
-                        "-D",
-                        "1",
-                        "-c",
-                        "\"mood=calm;source=field recording;location=Pacific Ocean\"",
+                        "'{{ artist | regex.replace \"^VA$\" \"Various Artists\" \"-i\" }}'",
                     ]
                 );
-            config
-                .AddCommand<TagDataCommand<CleanSettings>>("clean")
-                .WithDescription("Cleans metadata, except the specified tags.")
-                .WithExample(["clean", "song.mp3", "-e", "artist", "-e", "title"]);
             config
                 .AddCommand<TagDataCommand<SplitSettings>>("split")
                 .WithDescription("Split artists, album artists and composers");
@@ -137,9 +94,6 @@ class Program
             config
                 .AddCommand<TagDataCommand<TitleCaseSettings>>("titlecase")
                 .WithDescription("Convert all fields to title case.");
-            config
-                .AddCommand<TagDataCommand<VaSettings>>("va")
-                .WithDescription("Normalize Various Artists values");
             config
                 .AddCommand<FindCommand>("find")
                 .WithDescription("Find files by metadata")

@@ -56,6 +56,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         WriteUserText("label", data.Label);
         WriteUserText("catalognumber", data.CatalogNumber);
         WriteUserText("discogs_release_id", data.DiscogsReleaseId);
+        ClearUnusedUserTextFrames();
         foreach (var field in data.Custom)
         {
             WriteUserText(field.Key, field.Value);
@@ -87,6 +88,20 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         //only the text from the frame.
         var result = frame == null ? null : string.Join(";", frame.Text);
         return string.IsNullOrEmpty(result) ? "" : result;
+    }
+
+    private void ClearUnusedUserTextFrames()
+    {
+        foreach (var frame in id3v2.GetFrames().ToList())
+        {
+            if (
+                frame is UserTextInformationFrame txxx
+                && !_usedUserTextFields.Contains(txxx.Description)
+            )
+            {
+                id3v2.RemoveFrame(txxx);
+            }
+        }
     }
 
     private void WriteUserText(string key, string value)

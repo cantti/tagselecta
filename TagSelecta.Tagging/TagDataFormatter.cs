@@ -11,6 +11,6 @@ public class TagDataFormatter(TagData tagData, string path)
             new TagDataForTemplate(tagData, path),
             member => member.Name.ToLower()
         );
-        return result;
+        return result.Trim();
     }
 }

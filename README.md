@@ -290,14 +290,40 @@ OPTIONS:
 
 <!-- end:cli-help -->
 
+## More examples
+
+
+Tagselecta uses the Scriban template engine when writing fields, allowing you to define powerful and flexible actions.
+You can explore Scriban’s built-in functions here: [https://github.com/scriban/scriban/blob/master/doc/builtins.md](https://github.com/scriban/scriban/blob/master/doc/builtins.md)
+
+It also integrates smoothly with shell functionality, enabling even more advanced workflows.
+
+
+### Replace va with Various Artists
+
+```sh
+tagselecta write ./song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}' -A '{{ albumartist | regex.replace "^VA$" "Various Artists" "-i" }}'
+
+```
+
+### Clean tags
+
+Common action to remove fields you do not need. The command below will remove label and catalognumber and all custom tags except url.
+
+```sh
+tagselecta write ./song.mp3 --label '' -catalognumber '' --clear-custom --custom 'url={{ custom.url }}'
+```
+
+Or just remove all custom tags:
+
+```sh
+tagselecta write ./song.mp3 --clear-custom
+```
+
+
 ## Settings
 
-Some global settings can be set via environment variables:
-
-```
-# fields to keep in clean command when no --except (-e) flag provided
-TAGSELECTA_CLEAN_EXCEPT="artist;albumartist;title;album;year;track;tracktotal;disc;disctotal;label;catalognumber"
-```
+Some global settings will be possible set via environment variables soon.
 
 ## Notes
 
