@@ -14,20 +14,11 @@ public class DiscogsSettings : BaseSettings
     [CommandOption("--release|-r")]
     public string Release { get; set; } = "";
 
-    [CommandOption("--field|-f")]
+    [CommandOption("--fields|-f")]
     [Description(
         "Fields to update from Discogs release. If not specified, all values will be updated"
     )]
-    public string[]? Field { get; set; }
-
-    public override ValidationResult Validate()
-    {
-        if (string.IsNullOrWhiteSpace(Release))
-        {
-            return ValidationResult.Error("Release is required");
-        }
-        return base.Validate();
-    }
+    public string? Fields { get; set; }
 }
 
 public class DiscogsAction(
@@ -44,9 +35,11 @@ public class DiscogsAction(
         TagDataActionContext<DiscogsSettings> context
     )
     {
-        if (context.Settings.Field is not null)
+        if (context.Settings.Fields is not null)
         {
-            _fieldToWriteList = TagDataActionHelper.NormalizeFieldNames(context.Settings.Field);
+            _fieldToWriteList = TagDataActionHelper.NormalizeFieldNames(
+                context.Settings.Fields.ToMulti()
+            );
             if (!TagDataActionHelper.ValidateFieldNameList(console, _fieldToWriteList))
             {
                 return false;
@@ -196,7 +189,7 @@ public class DiscogsAction(
 
         if (WriteRequired(TagDataFieldNames.CatalogNumber))
         {
-            context.TagData.Pictures = [new TagLib.Picture(_image)];
+            context.TagData.CatalogNumber = _release.Labels.FirstOrDefault()?.CatNo ?? "";
         }
 
         context.TagData.DiscogsReleaseId = _release.Id.ToString();
