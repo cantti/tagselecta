@@ -12,18 +12,18 @@ Console.WriteLine("Updating README.md CLI help section...\n");
 // Define all CLI commands to document
 var commands = new (string DisplayName, string CommandLine)[]
 {
-    ("Help", "run --project ./TagSelecta -- --help"),
-    ("Read", "run --project ./TagSelecta -- read --help"),
-    ("Write", "run --project ./TagSelecta -- write --help"),
-    ("Split", "run --project ./TagSelecta -- split --help"),
-    ("Clean", "run --project ./TagSelecta -- clean --help"),
-    ("Auto Track", "run --project ./TagSelecta -- autotrack --help"),
-    ("Rename Directory", "run --project ./TagSelecta -- renamedir --help"),
-    ("Rename File", "run --project ./TagSelecta -- renamefile --help"),
-    ("Fix Album", "run --project ./TagSelecta -- fixalbum --help"),
-    ("Discogs", "run --project ./TagSelecta -- discogs --help"),
-    ("Various Artists", "run --project ./TagSelecta -- va --help"),
-    ("Find", "run --project ./TagSelecta -- find --help"),
+    ("Help", "run --project ./TagSelecta.Cli -- --help"),
+    ("Read", "run --project ./TagSelecta.Cli -- read --help"),
+    ("Write", "run --project ./TagSelecta.Cli -- write --help"),
+    ("Split", "run --project ./TagSelecta.Cli -- split --help"),
+    ("Clean", "run --project ./TagSelecta.Cli -- clean --help"),
+    ("Auto Track", "run --project ./TagSelecta.Cli -- autotrack --help"),
+    ("Rename Directory", "run --project ./TagSelecta.Cli -- renamedir --help"),
+    ("Rename File", "run --project ./TagSelecta.Cli -- renamefile --help"),
+    ("Fix Album", "run --project ./TagSelecta.Cli -- fixalbum --help"),
+    ("Discogs", "run --project ./TagSelecta.Cli -- discogs --help"),
+    ("Various Artists", "run --project ./TagSelecta.Cli -- va --help"),
+    ("Find", "run --project ./TagSelecta.Cli -- find --help"),
 };
 
 // Generate new content for README

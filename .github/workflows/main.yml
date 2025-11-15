@@ -43,7 +43,7 @@ jobs:
             -p:PublishSingleFile=true \
             -p:IncludeNativeLibrariesForSelfExtract=true \
             -o artifacts/${{ matrix.rid }} \
-            TagSelecta
+            TagSelecta.Cli
 
       - name: Zip output
         run: |
