@@ -2,7 +2,6 @@ using System.ComponentModel;
 using System.Reflection;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Tagging;
 

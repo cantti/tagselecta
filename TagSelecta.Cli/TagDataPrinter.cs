@@ -54,7 +54,7 @@ public static class TagDataPrinter
             var value2 = prop.GetValue(tagData2);
             var column1 = ValueToColumn(value1);
             var column2 = ValueToColumn(value2);
-            var areEqual = TagDataComparer.BuiltinFieldEquals(value1, value2);
+            var areEqual = TagDataComparer.FieldsEqual(value1, value2);
             var color1 = areEqual ? "[white]" : "[red]";
             var color2 = areEqual ? "[white]" : "[green]";
             if (column1 == "" && column2 == "")

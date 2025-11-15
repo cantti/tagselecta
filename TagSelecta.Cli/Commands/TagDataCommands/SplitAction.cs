@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -43,9 +42,9 @@ public class SplitAction : TagDataAction<SplitSettings>
 
     private List<string> Split(string input)
     {
-        return
-        [
-            .. input.Split(separators, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()),
-        ];
+        return input
+            .Split(separators, StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .ToList();
     }
 }

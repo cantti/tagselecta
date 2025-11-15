@@ -7,4 +7,9 @@ public static class StringListExtensions
     {
         return string.Join("; ", strings);
     }
+
+    public static List<string> ToMulti(this string str)
+    {
+        return str.Split(";").Select(x => x.Trim()).ToList();
+    }
 }

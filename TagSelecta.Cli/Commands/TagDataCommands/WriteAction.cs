@@ -1,79 +1,79 @@
+using System.ComponentModel;
 using Spectre.Console.Cli;
+using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
 public class WriteSettings : BaseSettings
 {
-    [CommandOption("--genre|-g")]
-    public string[]? Genre { get; set; }
-
     [CommandOption("--artist|-a")]
-    public string[]? Artist { get; set; }
+    [Description("One or more artists. Multiple values can be provided using a ';' separator")]
+    public string? Artist { get; set; }
 
     [CommandOption("--albumartist|-A")]
-    public string[]? AlbumArtist { get; set; }
+    [Description(
+        "One or more album artists. Multiple values can be provided using a ';' separator."
+    )]
+    public string? AlbumArtist { get; set; }
 
     [CommandOption("--title|-t")]
+    [Description("Track title.")]
     public string? Title { get; set; }
 
     [CommandOption("--album|-l")]
+    [Description("Album name.")]
     public string? Album { get; set; }
 
     [CommandOption("--year|-y")]
+    [Description("Release year.")]
     public int? Year { get; set; }
 
+    [CommandOption("--genre|-g")]
+    [Description("One or more genres. Multiple values can be provided using a ';' separator")]
+    public string? Genre { get; set; }
+
     [CommandOption("--track|-n")]
+    [Description("Track number.")]
     public int? Track { get; set; }
 
     [CommandOption("--tracktotal|-N")]
+    [Description("Total number of tracks.")]
     public int? TrackTotal { get; set; }
 
-    [CommandOption("--comment|-c")]
+    [CommandOption("--comment|-C")]
+    [Description("Comment or notes.")]
     public string? Comment { get; set; }
 
     [CommandOption("--disc|-d")]
+    [Description("Disc number.")]
     public int? Disc { get; set; }
 
     [CommandOption("--disctotal|-D")]
+    [Description("Total number of discs.")]
     public int? DiscTotal { get; set; }
 
     [CommandOption("--composers")]
-    public string[]? Composer { get; set; }
+    [Description("One or more composers. Multiple values can be provided using a ';' separator")]
+    public string? Composer { get; set; }
 
     [CommandOption("--label")]
+    [Description("Record label.")]
     public string? Label { get; set; }
 
     [CommandOption("--catalognumber")]
+    [Description("Catalog number.")]
     public string? CatallogNumber { get; set; }
 
-    [CommandOption("--custom")]
-    public string[]? Custom { get; set; }
+    [CommandOption("--custom|-c")]
+    [Description(
+        "Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g., key1=val1;key2=val2)."
+    )]
+    public string? Custom { get; set; }
 }
 
 public class WriteAction : TagDataAction<WriteSettings>
 {
-    protected override bool BeforeProcessTagData(TagDataActionContext<WriteSettings> context)
-    {
-        // convert arrays with empty first element to empty arrays
-        foreach (var prop in typeof(WriteSettings).GetProperties())
-        {
-            if (prop.Name == nameof(WriteSettings.Path))
-                continue;
-            var val = prop.GetValue(context.Settings);
-            if (val is null)
-                continue;
-            if (val is string[] valArray)
-            {
-                if (valArray.First() == "")
-                {
-                    prop.SetValue(context.Settings, Array.Empty<string>());
-                }
-            }
-        }
-        return true;
-    }
-
     protected override void ProcessTagData(TagDataActionContext<WriteSettings> context)
     {
         var settings = context.Settings;
@@ -82,27 +82,27 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Album is not null)
         {
-            tagData.Album = formatter.Format(settings.Album);
+            tagData.Album = formatter.Format(settings.Album).Trim();
         }
 
         if (settings.AlbumArtist is not null)
         {
-            tagData.AlbumArtists = settings.AlbumArtist.Select(formatter.Format).ToList();
+            tagData.AlbumArtists = formatter.Format(settings.AlbumArtist).ToMulti();
         }
 
         if (settings.Artist is not null)
         {
-            tagData.Artists = settings.Artist.Select(formatter.Format).ToList();
+            tagData.Artists = formatter.Format(settings.Artist).ToMulti();
         }
 
         if (settings.Comment is not null)
         {
-            tagData.Comment = formatter.Format(settings.Comment);
+            tagData.Comment = formatter.Format(settings.Comment).Trim();
         }
 
         if (settings.Composer is not null)
         {
-            tagData.Composers = settings.Composer.Select(formatter.Format).ToList();
+            tagData.Composers = formatter.Format(settings.Composer).ToMulti();
         }
 
         if (settings.Disc is not null)
@@ -117,12 +117,12 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Genre is not null)
         {
-            tagData.Genres = settings.Genre.Select(formatter.Format).ToList();
+            tagData.Genres = formatter.Format(settings.Genre).ToMulti();
         }
 
         if (settings.Title is not null)
         {
-            tagData.Title = formatter.Format(settings.Title);
+            tagData.Title = formatter.Format(settings.Title).Trim();
         }
 
         if (settings.Track is not null)
@@ -142,17 +142,18 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Label is not null)
         {
-            tagData.Label = formatter.Format(settings.Label);
+            tagData.Label = formatter.Format(settings.Label).Trim();
         }
 
         if (settings.CatallogNumber is not null)
         {
-            tagData.CatalogNumber = formatter.Format(settings.CatallogNumber);
+            tagData.CatalogNumber = formatter.Format(settings.CatallogNumber).Trim();
         }
 
         if (settings.Custom is not null)
         {
-            foreach (var entry in settings.Custom)
+            var custom = settings.Custom.ToMulti();
+            foreach (var entry in custom)
             {
                 var parts = entry.Split('=', 2);
                 var key = parts[0].Trim().ToLower();

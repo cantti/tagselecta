@@ -1,7 +1,6 @@
 using System.Reflection;
-using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Tests;
+namespace TagSelecta.Tagging.Tests;
 
 public class TagDataForTemplateTests
 {

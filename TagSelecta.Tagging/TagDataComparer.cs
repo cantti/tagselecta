@@ -4,7 +4,7 @@ namespace TagSelecta.Tagging;
 
 public static class TagDataComparer
 {
-    public static bool TagDataEquals(TagData obj1, TagData obj2)
+    public static bool AreEqual(TagData obj1, TagData obj2)
     {
         // compare normal tags
         foreach (
@@ -15,7 +15,7 @@ public static class TagDataComparer
         {
             var val1 = prop.GetValue(obj1);
             var val2 = prop.GetValue(obj2);
-            if (!BuiltinFieldEquals(val1, val2))
+            if (!FieldsEqual(val1, val2))
             {
                 return false;
             }
@@ -33,37 +33,57 @@ public static class TagDataComparer
         return true;
     }
 
-    public static bool BuiltinFieldEquals(object? val1, object? val2)
+    public static bool FieldsEqual(object? val1, object? val2)
     {
-        if (val1 == null && val2 == null)
+        if (ReferenceEquals(val1, val2))
             return true;
 
         if (val1 == null || val2 == null)
             return false;
 
-        // list of strings
-        if (val1 is List<string> list1 && val2 is List<string> list2)
+        // Must match exactly
+        var t = val1.GetType();
+        if (t != val2.GetType())
+            return false;
+
+        // List<string>
+        if (t == typeof(List<string>))
         {
-            if (!list1.SequenceEqual(list2))
-                return false;
+            var a = (List<string>)val1;
+            var b = (List<string>)val2;
+            return a.SequenceEqual(b);
         }
-        // pictures
-        else if (val1 is List<TagLib.Picture> pics1 && val2 is List<TagLib.Picture> pics2)
+
+        // List<CustomField>
+        if (t == typeof(List<CustomField>))
         {
-            if (pics1.Count != pics2.Count)
+            var a = (List<CustomField>)val1;
+            var b = (List<CustomField>)val2;
+
+            if (a.Count != b.Count)
                 return false;
 
-            for (int i = 0; i < pics1.Count; i++)
+            return a.All(kv => b.FirstOrDefault(x => x.Key == kv.Key)?.Value == kv.Value);
+        }
+
+        // List<TagLib.Picture>
+        if (t == typeof(List<TagLib.Picture>))
+        {
+            var a = (List<TagLib.Picture>)val1;
+            var b = (List<TagLib.Picture>)val2;
+
+            if (a.Count != b.Count)
+                return false;
+
+            for (int i = 0; i < a.Count; i++)
             {
-                var p1 = pics1[i];
-                var p2 = pics2[i];
+                var p1 = a[i];
+                var p2 = b[i];
 
                 if (p1.Description != p2.Description)
                     return false;
 
-                // picture file name should be ignored, because they are not stored in actual metadata
-                // if (p1.Filename != p2.Filename)
-                //     return false;
+                // Filename intentionally ignored
 
                 if (p1.MimeType != p2.MimeType)
                     return false;
@@ -71,16 +91,14 @@ public static class TagDataComparer
                 if (p1.Type != p2.Type)
                     return false;
 
-                // do not care about nulls here
                 if (!(p1.Data ?? []).SequenceEqual(p2.Data ?? []))
                     return false;
             }
+
+            return true;
         }
-        // uint, double etc
-        else if (!val1.Equals(val2))
-        {
-            return false;
-        }
-        return true;
+
+        // Default: basic .Equals
+        return val1.Equals(val2);
     }
 }
