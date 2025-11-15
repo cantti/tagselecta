@@ -16,13 +16,11 @@ var commands = new (string DisplayName, string CommandLine)[]
     ("Read", "run --project ./TagSelecta.Cli -- read --help"),
     ("Write", "run --project ./TagSelecta.Cli -- write --help"),
     ("Split", "run --project ./TagSelecta.Cli -- split --help"),
-    ("Clean", "run --project ./TagSelecta.Cli -- clean --help"),
     ("Auto Track", "run --project ./TagSelecta.Cli -- autotrack --help"),
     ("Rename Directory", "run --project ./TagSelecta.Cli -- renamedir --help"),
     ("Rename File", "run --project ./TagSelecta.Cli -- renamefile --help"),
     ("Fix Album", "run --project ./TagSelecta.Cli -- fixalbum --help"),
     ("Discogs", "run --project ./TagSelecta.Cli -- discogs --help"),
-    ("Various Artists", "run --project ./TagSelecta.Cli -- va --help"),
     ("Find", "run --project ./TagSelecta.Cli -- find --help"),
 };
 
