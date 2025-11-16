@@ -39,21 +39,24 @@ EXAMPLES:
     tagselecta write song.mp3 -c 'url=https://github.com'
     tagselecta write song.mp3 -t 'My Track' -l 'Best Album' -y 2024
     tagselecta write song.mp3 -g 'Rock;Heavy Metal;Punk'
-    tagselecta write song.mp3 -a 'John Doe' -A 'Various Artists' --label 'Example Records'
+    tagselecta write song.mp3 -a 'John Doe' -A 'Various Artists' --label 
+'Example Records'
 
 OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    read <path>          Read tags                                                                                  
-    write <path>         Write tags                                                                                 
-    split <path>         Split artists, album artists and composers                                                 
-    autotrack <path>     Auto track                                                                                 
-    renamedir <path>     Rename directories                                                                         
-    renamefile <path>    Rename files                                                                               
-    fixalbum <path>      Set album name, year and album artists to the same value to all files in the same directory
-    discogs <path>       Update album from discogs. You can pass discogs release id (not master) or query to search 
-    titlecase <path>     Convert all fields to title case                                                           
+    read <path>          Read tags                                              
+    write <path>         Write tags                                             
+    split <path>         Split artists, album artists and composers             
+    autotrack <path>     Auto track                                             
+    renamedir <path>     Rename directories                                     
+    renamefile <path>    Rename files                                           
+    fixalbum <path>      Set album name, year and album artists to the same     
+                         value to all files in the same directory               
+    discogs <path>       Update album from discogs. You can pass discogs release
+                         id (not master) or query to search                     
+    titlecase <path>     Convert all fields to title case                       
     find <path>          Find files by metadata
 ```
 
@@ -87,33 +90,43 @@ EXAMPLES:
     tagselecta write song.mp3 -c 'url=https://github.com'
     tagselecta write song.mp3 -t 'My Track' -l 'Best Album' -y 2024
     tagselecta write song.mp3 -g 'Rock;Heavy Metal;Punk'
-    tagselecta write song.mp3 -a 'John Doe' -A 'Various Artists' --label 'Example Records'
+    tagselecta write song.mp3 -a 'John Doe' -A 'Various Artists' --label 
+'Example Records'
     tagselecta write song.mp3 -n 5 -N 12 -d 1 -D 2
     tagselecta write song.mp3 --composers 'Composer 1;Composer 2;Composer 3'
-    tagselecta write song.mp3 -c 'key1=value1;key2=Some Value;key3=Another Value'
-    tagselecta write song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}'
+    tagselecta write song.mp3 -c 'key1=value1;key2=Some Value;key3=Another 
+Value'
+    tagselecta write song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
+Artists" "-i" }}'
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help             Prints help information                                                                                            
-    -a, --artist           One or more artists. Multiple values can be provided using a ';' separator                                         
-    -A, --albumartist      One or more album artists. Multiple values can be provided using a ';' separator                                   
-    -t, --title            Track title                                                                                                        
-    -l, --album            Album name                                                                                                         
-    -y, --year             Release year                                                                                                       
-    -g, --genre            One or more genres. Multiple values can be provided using a ';' separator                                          
-    -n, --track            Track number                                                                                                       
-    -N, --tracktotal       Total number of tracks                                                                                             
-    -C, --comment          Comment or notes                                                                                                   
-    -d, --disc             Disc number                                                                                                        
-    -D, --disctotal        Total number of discs                                                                                              
-        --composers        One or more composers. Multiple values can be provided using a ';' separator                                       
-        --label            Record label                                                                                                       
-        --catalognumber    Catalog number                                                                                                     
-    -c, --custom           Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g., key1=val1;key2=val2)
-        --clearcustom     Clear all other custom tags, not specified using --custom or -c
+    -h, --help             Prints help information                              
+    -a, --artist           One or more artists. Multiple values can be provided 
+                           using a ';' separator                                
+    -A, --albumartist      One or more album artists. Multiple values can be    
+                           provided using a ';' separator                       
+    -t, --title            Track title                                          
+    -l, --album            Album name                                           
+    -y, --year             Release year                                         
+    -g, --genre            One or more genres. Multiple values can be provided  
+                           using a ';' separator                                
+    -n, --track            Track number                                         
+    -N, --tracktotal       Total number of tracks                               
+    -C, --comment          Comment or notes                                     
+    -d, --disc             Disc number                                          
+    -D, --disctotal        Total number of discs                                
+        --composers        One or more composers. Multiple values can be        
+                           provided using a ';' separator                       
+        --label            Record label                                         
+        --catalognumber    Catalog number                                       
+    -c, --custom           Custom tags in key=value format. Multiple entries can
+                           be provided using a ';' separator (e.g.,             
+                           key1=val1;key2=val2)                                 
+        --clearcustom      Clear all other custom tags, not specified using     
+                           --custom or -c
 ```
 
 ### Split command
@@ -188,7 +201,8 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Set album name, year and album artists to the same value to all files in the same directory
+Set album name, year and album artists to the same value to all files in the 
+same directory
 
 USAGE:
     tagselecta fixalbum <path> [OPTIONS]
@@ -204,22 +218,25 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Update album from discogs. You can pass discogs release id (not master) or query to search
+Update album from discogs. You can pass discogs release id (not master) or query
+to search
 
 USAGE:
     tagselecta discogs <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta discogs path-to-album -r 
+https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help       Prints help information                                                            
-    -r, --release                                                                                       
-    -f, --fields     Fields to update from Discogs release. If not specified, all values will be updated
+    -h, --help       Prints help information                                    
+    -r, --release                                                               
+    -f, --fields     Fields to update from Discogs release. If not specified,   
+                     all values will be updated
 ```
 
 ### Find command
