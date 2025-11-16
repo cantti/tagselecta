@@ -113,7 +113,7 @@ OPTIONS:
         --label            Record label                                                                                                       
         --catalognumber    Catalog number                                                                                                     
     -c, --custom           Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g., key1=val1;key2=val2)
-        --clear-custom     Clear all other custom tags, not specified using --custom or -c
+        --clearcustom     Clear all other custom tags, not specified using --custom or -c
 ```
 
 ### Split command
@@ -256,9 +256,10 @@ It also integrates smoothly with shell functionality, enabling even more advance
 
 ### Replace va with Various Artists
 
-```sh
-tagselecta write ./song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}' -A '{{ albumartist | regex.replace "^VA$" "Various Artists" "-i" }}'
+Assign Scriban expression to environment variable and use it to replace value of artist and albumartist. 
 
+```sh
+REPLACE='regex.replace "^va$" "Various Artists" "-i"' ts write . -a "{{ artist | $REPLACE }}" -A "{{ albumartist | $REPLACE }}"
 ```
 
 ### Clean tags
@@ -266,13 +267,13 @@ tagselecta write ./song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artist
 Common action to remove fields you do not need. The command below will remove label and catalognumber and all custom tags except url.
 
 ```sh
-tagselecta write ./song.mp3 --label '' -catalognumber '' --clear-custom --custom 'url={{ custom.url }}'
+tagselecta write ./song.mp3 --label '' -catalognumber '' --clearcustom --custom 'url={{ custom.url }}'
 ```
 
 Or just remove all custom tags:
 
 ```sh
-tagselecta write ./song.mp3 --clear-custom
+tagselecta write ./song.mp3 --clearcustom
 ```
 
 

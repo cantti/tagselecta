@@ -71,7 +71,7 @@ public class WriteSettings : BaseSettings
     )]
     public string? Custom { get; set; }
 
-    [CommandOption("--clear-custom")]
+    [CommandOption("--clearcustom")]
     [Description("Clear all other custom tags, not specified using --custom or -c")]
     public bool ClearCustom { get; set; }
 }
