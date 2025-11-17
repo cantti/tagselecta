@@ -18,17 +18,17 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     public string Album => tagData.Album;
 
-    public int Year => tagData.Year;
+    public string Date => tagData.Date;
 
     public string Title => tagData.Title;
 
-    public int Track => tagData.Track;
+    public string Track => tagData.Track;
 
-    public int TrackTotal => tagData.TrackTotal;
+    public string TrackTotal => tagData.TrackTotal;
 
-    public int Disc => tagData.Disc;
+    public string Disc => tagData.Disc;
 
-    public int DiscTotal => tagData.DiscTotal;
+    public string DiscTotal => tagData.DiscTotal;
 
     public List<string> Genres => tagData.Genres;
 

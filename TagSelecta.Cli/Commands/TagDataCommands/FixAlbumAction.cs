@@ -18,7 +18,7 @@ public class Album
     public required FixType FixType { get; set; }
     public required List<string> AlbumArtists { get; set; } = [];
     public required string AlbumName { get; set; }
-    public required int Year { get; set; }
+    public required string Date { get; set; }
 }
 
 public class FixAlbumSettings : BaseSettings { }
@@ -55,9 +55,9 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
                 ?? "";
 
             // find most common album year in dir
-            var albumYear = dirTagData
-                .Select(x => x.Year)
-                .Where(x => x != 0)
+            var albumDate = dirTagData
+                .Select(x => x.Date)
+                .Where(x => string.IsNullOrWhiteSpace(x))
                 .GroupBy(x => x)
                 .OrderByDescending(g => g.Count())
                 .First()
@@ -101,7 +101,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
                 Dir = dir,
                 AlbumName = albumName,
                 AlbumArtists = albumArtist,
-                Year = albumYear,
+                Date = albumDate,
             };
             _albums.Add(album);
         }
@@ -119,9 +119,9 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
         console.MarkupLine(
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
-        console.MarkupLine($"The most common album year: [yellow]{album.Year}[/]");
+        console.MarkupLine($"The most common album year: [yellow]{album.Date}[/]");
         context.TagData.AlbumArtists = album.AlbumArtists;
         context.TagData.Album = album.AlbumName;
-        context.TagData.Year = album.Year;
+        context.TagData.Date = album.Date;
     }
 }

@@ -11,23 +11,23 @@ public class TagData
     [TagDataField("Album")]
     public string Album { get; set; } = "";
 
-    [TagDataField("Year")]
-    public int Year { get; set; }
+    [TagDataField("Date")]
+    public string Date { get; set; } = "";
 
     [TagDataField("Title")]
     public string Title { get; set; } = "";
 
     [TagDataField("Track")]
-    public int Track { get; set; }
+    public string Track { get; set; } = "";
 
     [TagDataField("Track Total")]
-    public int TrackTotal { get; set; }
+    public string TrackTotal { get; set; } = "";
 
     [TagDataField("Disc")]
-    public int Disc { get; set; }
+    public string Disc { get; set; } = "";
 
     [TagDataField("Disc Total")]
-    public int DiscTotal { get; set; }
+    public string DiscTotal { get; set; } = "";
 
     [TagDataField("Genre")]
     public List<string> Genres { get; set; } = [];
@@ -51,6 +51,10 @@ public class TagData
     public string DiscogsReleaseId { get; set; } = "";
 
     public List<CustomField> Custom { get; set; } = [];
+
+    [TagDataField("BPM")]
+    public string Bpm { get; set; } = "";
+    public string Conductor { get; internal set; }
 
     public TagData Clone()
     {

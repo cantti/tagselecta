@@ -36,13 +36,14 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             Artists = xiph.Performers.ToList(),
             Comment = xiph.Comment ?? "",
             Composers = xiph.Composers.ToList(),
-            Track = (int)xiph.Track,
-            TrackTotal = (int)xiph.TrackCount,
-            Disc = (int)xiph.Disc,
-            DiscTotal = (int)xiph.DiscCount,
+            Track = ReadField("tracknumber"),
+            TrackTotal = ReadField("tracktotal"),
+            Disc = ReadField("discnumber"),
+            DiscTotal = ReadField("disctotal"),
             Genres = xiph.Genres.ToList(),
             Title = xiph.Title ?? "",
-            Year = (int)xiph.Year,
+            Date = ReadField("date"),
+            Bpm = ReadField("bpm"),
             Label = ReadField("label"),
             CatalogNumber = ReadField("catalognumber"),
             DiscogsReleaseId = ReadField("discogs_release_id"),
@@ -60,11 +61,11 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         xiph.Performers = data.Artists.ToArray();
         xiph.Composers = data.Composers.ToArray();
         xiph.Genres = data.Genres.ToArray();
-        xiph.Track = (uint)data.Track;
-        xiph.TrackCount = (uint)data.TrackTotal;
-        xiph.Disc = (uint)data.Disc;
-        xiph.DiscCount = (uint)data.DiscTotal;
-        xiph.Year = (uint)data.Year;
+        // xiph.Track = data.Track;
+        // xiph.TrackCount = (uint)data.TrackTotal;
+        // xiph.Disc = (uint)data.Disc;
+        // xiph.DiscCount = (uint)data.DiscTotal;
+        // xiph.Year = (uint)data.Year;
         WriteField("label", data.Label);
         WriteField("catalognumber", data.CatalogNumber);
         WriteField("discogs_release_id", data.DiscogsReleaseId);
@@ -78,7 +79,8 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
 
     private string ReadField(string key)
     {
-        return xiph.GetField(key)?.FirstOrDefault() ?? "";
+        var data = xiph.GetField(key);
+        return data != null ? string.Join(";", data) : "";
     }
 
     private void ClearUnusedFields()

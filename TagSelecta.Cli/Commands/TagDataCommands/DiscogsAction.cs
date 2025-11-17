@@ -149,22 +149,22 @@ public class DiscogsAction(
 
         if (WriteRequired(TagDataFieldNames.Track))
         {
-            context.TagData.Track = context.CurrentFileIndex + 1;
+            context.TagData.Track = (context.CurrentFileIndex + 1).ToString();
         }
 
         if (WriteRequired(TagDataFieldNames.TrackTotal))
         {
-            context.TagData.TrackTotal = _release.TrackList.Count;
+            context.TagData.TrackTotal = _release.TrackList.Count.ToString();
         }
 
         if (WriteRequired(TagDataFieldNames.Disc))
         {
-            context.TagData.Disc = 0;
+            context.TagData.Disc = "";
         }
 
         if (WriteRequired(TagDataFieldNames.DiscTotal))
         {
-            context.TagData.DiscTotal = 0;
+            context.TagData.DiscTotal = "";
         }
 
         if (WriteRequired(TagDataFieldNames.Genre))
@@ -177,9 +177,9 @@ public class DiscogsAction(
             context.TagData.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
         }
 
-        if (WriteRequired(TagDataFieldNames.Year))
+        if (WriteRequired(TagDataFieldNames.Date))
         {
-            context.TagData.Year = _release.Year;
+            context.TagData.Date = _release.Year.ToString();
         }
 
         if (WriteRequired(TagDataFieldNames.Pictures))

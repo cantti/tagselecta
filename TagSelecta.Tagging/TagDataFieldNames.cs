@@ -7,7 +7,7 @@ public static class TagDataFieldNames
     public const string AlbumArtist = "albumartist";
     public const string Artist = "artist";
     public const string Album = "album";
-    public const string Year = "year";
+    public const string Date = "date";
     public const string Title = "title";
     public const string Track = "track";
     public const string TrackTotal = "tracktotal";

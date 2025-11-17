@@ -23,7 +23,8 @@ class Program
                 // Basic examples
                 .WithExample(["write", "song.mp3", "-t", "'Song 1'", "-a", "'Artist1;Artist 2'"])
                 .WithExample(["write", "song.mp3", "-c", "'url=https://github.com'"])
-                // Title, album, year
+                // Title, album, date
+
                 .WithExample(
                     ["write", "song.mp3", "-t", "'My Track'", "-l", "'Best Album'", "-y", "2024"]
                 )
@@ -75,7 +76,7 @@ class Program
             config
                 .AddCommand<TagDataCommand<FixAlbumSettings>>("fixalbum")
                 .WithDescription(
-                    "Set album name, year and album artists to the same value to all files in the same directory."
+                    "Set album name, date and album artists to the same value to all files in the same directory."
                 );
             config
                 .AddCommand<TagDataCommand<DiscogsSettings>>("discogs")

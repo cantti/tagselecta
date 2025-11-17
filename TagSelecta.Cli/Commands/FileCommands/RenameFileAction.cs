@@ -9,7 +9,7 @@ namespace TagSelecta.Cli.Commands.FileCommands;
 public class RenameFileSettings : BaseSettings
 {
     [CommandOption("--template|-t")]
-    [Description("Template. For example: {{ year }} - {{ album }}")]
+    [Description("Template. For example: {{ date }} - {{ album }}")]
     public string Template { get; set; } = "";
 
     public override ValidationResult Validate()

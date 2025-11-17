@@ -25,9 +25,9 @@ public class WriteSettings : BaseSettings
     [Description("Album name.")]
     public string? Album { get; set; }
 
-    [CommandOption("--year|-y")]
-    [Description("Release year.")]
-    public int? Year { get; set; }
+    [CommandOption("--date|-y")]
+    [Description("Release date.")]
+    public string? Date { get; set; }
 
     [CommandOption("--genre|-g")]
     [Description("One or more genres. Multiple values can be provided using a ';' separator")]
@@ -35,11 +35,11 @@ public class WriteSettings : BaseSettings
 
     [CommandOption("--track|-n")]
     [Description("Track number.")]
-    public int? Track { get; set; }
+    public string? Track { get; set; }
 
     [CommandOption("--tracktotal|-N")]
     [Description("Total number of tracks.")]
-    public int? TrackTotal { get; set; }
+    public string? TrackTotal { get; set; }
 
     [CommandOption("--comment|-C")]
     [Description("Comment or notes.")]
@@ -47,11 +47,11 @@ public class WriteSettings : BaseSettings
 
     [CommandOption("--disc|-d")]
     [Description("Disc number.")]
-    public int? Disc { get; set; }
+    public string? Disc { get; set; }
 
     [CommandOption("--disctotal|-D")]
     [Description("Total number of discs.")]
-    public int? DiscTotal { get; set; }
+    public string? DiscTotal { get; set; }
 
     [CommandOption("--composers")]
     [Description("One or more composers. Multiple values can be provided using a ';' separator")]
@@ -111,12 +111,12 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Disc is not null)
         {
-            tagData.Disc = settings.Disc.Value;
+            tagData.Disc = settings.Disc;
         }
 
         if (settings.DiscTotal is not null)
         {
-            tagData.DiscTotal = settings.DiscTotal.Value;
+            tagData.DiscTotal = settings.DiscTotal;
         }
 
         if (settings.Genre is not null)
@@ -131,17 +131,17 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Track is not null)
         {
-            tagData.Track = settings.Track.Value;
+            tagData.Track = settings.Track;
         }
 
         if (settings.TrackTotal is not null)
         {
-            tagData.TrackTotal = settings.TrackTotal.Value;
+            tagData.TrackTotal = settings.TrackTotal;
         }
 
-        if (settings.Year is not null)
+        if (settings.Date is not null)
         {
-            tagData.Year = settings.Year.Value;
+            tagData.Date = settings.Date;
         }
 
         if (settings.Label is not null)

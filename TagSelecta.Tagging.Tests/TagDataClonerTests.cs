@@ -20,7 +20,7 @@ public class TagDataClonerTests
             Title = "Test Title",
             Track = 5,
             TrackTotal = 10,
-            Year = 2022,
+            Date = 2022,
             Label = "Test Label",
             CatalogNumber = "12345",
             DiscogsReleaseId = "67890",

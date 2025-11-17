@@ -40,6 +40,7 @@ public static class Tagger
         if (mime.Contains("mpeg") || mime.Contains("mp3"))
         {
             var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
+            id3v2.Version = 4;
             return new Id3TagDataProcessor(id3v2);
         }
         throw new TagSelectaException($"Unsupported format: {mime}");

@@ -15,7 +15,7 @@ public class RenameFileTests
         var result = app.Run(
             "./TestData/RenameFileTest/01 Song 1.mp3",
             "-t",
-            "{{year}} - {{title}} - {{album}}"
+            "{{date}} - {{title}} - {{album}}"
         );
 
         return Verify(result.Output);
