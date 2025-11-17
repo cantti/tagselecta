@@ -20,25 +20,61 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
     {
         return new TagData
         {
+            // 1. Album
             Album = id3v2.Album ?? "",
+
+            // 2. AlbumArtists
             AlbumArtists = id3v2.AlbumArtists.ToList(),
+
+            // 3. Artists
             Artists = id3v2.Performers.ToList(),
+
+            // 4. Bpm
+            Bpm = GetText("TBPM"),
+
+            // 5. CatalogNumber
+            CatalogNumber = GetUserTextAsString("catalognumber"),
+
+            // 6. Comment
             Comment = id3v2.Comment ?? "",
+
+            // 7. Composers
             Composers = id3v2.Composers.ToList(),
-            Track = GetTextValueAndTotal("TRCK").Value,
-            TrackTotal = GetTextValueAndTotal("TRCK").Total,
+
+            // 8. Conductor
+            Conductor = id3v2.Conductor,
+
+            // 9. Date
+            Date = GetText("TDRC"),
+
+            // 10–11. Disc + DiscTotal
             Disc = GetTextValueAndTotal("TPOS").Value,
             DiscTotal = GetTextValueAndTotal("TPOS").Total,
-            Genres = id3v2.Genres.ToList(),
-            Title = id3v2.Title ?? "",
-            Date = GetText("TDRC"),
-            Bpm = GetText("TBPM"),
-            Conductor = id3v2.Conductor,
-            Custom = ReadCustomFields(),
-            Label = GetUserTextAsString("label"),
-            CatalogNumber = GetUserTextAsString("catalognumber"),
+
+            // 12. DiscogsReleaseId
             DiscogsReleaseId = GetUserTextAsString("discogs_release_id"),
+
+            // 13. Genres
+            Genres = id3v2.Genres.ToList(),
+
+            // 14. Isrc
+            Isrc = id3v2.ISRC,
+
+            // 15. Label
+            Label = GetUserTextAsString("label"),
+
+            // 16. Title
+            Title = id3v2.Title ?? "",
+
+            // 17–18. Track + TrackTotal
+            Track = GetTextValueAndTotal("TRCK").Value,
+            TrackTotal = GetTextValueAndTotal("TRCK").Total,
+
+            // Pictures (not numbered)
             Pictures = id3v2.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
+
+            // Custom (not numbered)
+            Custom = ReadCustomFields(),
         };
     }
 
@@ -46,26 +82,63 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
     {
         id3v2.Version = 4;
 
+        // 1. Album
         id3v2.Album = data.Album;
-        id3v2.Comment = data.Comment;
-        id3v2.Title = data.Title;
+
+        // 2. AlbumArtists
         id3v2.AlbumArtists = data.AlbumArtists.ToArray();
+
+        // 3. Artists
         id3v2.Performers = data.Artists.ToArray();
-        id3v2.Composers = data.Composers.ToArray();
-        id3v2.Genres = data.Genres.ToArray();
-        WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
-        WriteTextValueAndTotal("TPOS", data.Disc, data.DiscTotal);
-        WriteText("TDRC", data.Date);
+
+        // 4. Bpm
         WriteText("TBPM", data.Bpm);
-        WriteUserText("label", data.Label);
+
+        // 5. CatalogNumber
         WriteUserText("catalognumber", data.CatalogNumber);
+
+        // 6. Comment
+        id3v2.Comment = data.Comment;
+
+        // 7. Composers
+        id3v2.Composers = data.Composers.ToArray();
+
+        // 8. Conductor
+        id3v2.Conductor = data.Conductor;
+
+        // 9. Date
+        WriteText("TDRC", data.Date);
+
+        // 10–11. Disc + DiscTotal
+        WriteTextValueAndTotal("TPOS", data.Disc, data.DiscTotal);
+
+        // 12. DiscogsReleaseId
         WriteUserText("discogs_release_id", data.DiscogsReleaseId);
+
+        // 13. Genres
+        id3v2.Genres = data.Genres.ToArray();
+
+        // 14. Isrc
+        id3v2.ISRC = data.Isrc;
+
+        // 15. Label
+        WriteUserText("label", data.Label);
+
+        // 16. Title
+        id3v2.Title = data.Title;
+
+        // 17–18. Track + TrackTotal
+        WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
+
+        // Pictures (not numbered)
+        id3v2.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
+
+        // Custom (not numbered)
         ClearUnusedUserTextFrames();
         foreach (var field in data.Custom)
         {
             WriteUserText(field.Key, field.Text);
         }
-        id3v2.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
     }
 
     private List<CustomField> ReadCustomFields()
