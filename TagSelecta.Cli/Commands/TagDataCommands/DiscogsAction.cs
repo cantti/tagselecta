@@ -55,10 +55,10 @@ public class DiscogsAction(
             console.MarkupLineInterpolated($"[blue]Release[/]");
             console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{_release.Uri}[/]");
             console.MarkupLineInterpolated(
-                $"  [blue]Release[/]: {_release.Artists.Select(x => x.Name).Joined()} - {_release.Title} ({_release.Year})"
+                $"  [blue]Release[/]: {_release.Artists.Select(x => x.Name).ToJoined()} - {_release.Title} ({_release.Year})"
             );
             console.MarkupLineInterpolated(
-                $"  [blue]Tracks[/]: {_release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Joined()}"
+                $"  [blue]Tracks[/]: {_release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").ToJoined()}"
             );
             console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {_release.TrackList.Count}");
         }
@@ -80,10 +80,10 @@ public class DiscogsAction(
                 console.MarkupLineInterpolated($"[blue]Option[/] [yellow]{index + 1}[/]");
                 console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{release.Uri}[/]");
                 console.MarkupLineInterpolated(
-                    $"  [blue]Release[/]: {release.Artists.Select(x => x.Name).Joined()} - {release.Title} ({release.Year})"
+                    $"  [blue]Release[/]: {release.Artists.Select(x => x.Name).ToJoined()} - {release.Title} ({release.Year})"
                 );
                 console.MarkupLineInterpolated(
-                    $"  [blue]Tracks[/]: {release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").Joined()}"
+                    $"  [blue]Tracks[/]: {release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").ToJoined()}"
                 );
                 console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {release.TrackList.Count}");
                 console.WriteLine();

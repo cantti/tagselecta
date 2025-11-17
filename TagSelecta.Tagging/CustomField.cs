@@ -2,10 +2,10 @@ namespace TagSelecta.Tagging;
 
 public class CustomField
 {
-    public CustomField(string key, string value)
+    public CustomField(string key, string text)
     {
         Key = key;
-        Value = value;
+        Text = text;
     }
 
     private string _key = string.Empty;
@@ -16,5 +16,5 @@ public class CustomField
         set => _key = value.ToLowerInvariant();
     }
 
-    public string Value { get; set; }
+    public string Text { get; set; }
 }

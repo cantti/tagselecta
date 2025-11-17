@@ -31,7 +31,7 @@ public static class TagDataPrinter
             foreach (var custom in tagData.Custom)
             {
                 table.AddRow(
-                    [$"[blue]{custom.Key.EscapeMarkup()}[/]", custom.Value.EscapeMarkup()]
+                    [$"[blue]{custom.Key.EscapeMarkup()}[/]", custom.Text.EscapeMarkup()]
                 );
             }
         }
@@ -81,8 +81,8 @@ public static class TagDataPrinter
                     .Union(tagData2.Custom.Select(x => x.Key))
             )
             {
-                var value1 = tagData1.Custom.SingleOrDefault(x => x.Key == key)?.Value;
-                var value2 = tagData2.Custom.SingleOrDefault(x => x.Key == key)?.Value;
+                var value1 = tagData1.Custom.SingleOrDefault(x => x.Key == key)?.Text;
+                var value2 = tagData2.Custom.SingleOrDefault(x => x.Key == key)?.Text;
                 var areEqual = value1 == value2;
                 var color1 = areEqual ? "[white]" : "[red]";
                 var color2 = areEqual ? "[white]" : "[green]";

@@ -72,7 +72,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         ClearUnusedFields();
         foreach (var field in data.Custom)
         {
-            WriteField(field.Key, field.Value);
+            WriteField(field.Key, field.Text);
         }
         flac.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
     }

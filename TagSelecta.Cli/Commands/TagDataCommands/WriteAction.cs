@@ -174,7 +174,7 @@ public class WriteAction : TagDataAction<WriteSettings>
 
                 if (customTagData is not null)
                 {
-                    customTagData.Value = value;
+                    customTagData.Text = value;
                 }
                 else
                 {

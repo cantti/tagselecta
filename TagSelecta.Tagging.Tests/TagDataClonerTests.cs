@@ -50,6 +50,6 @@ public class TagDataClonerTests
         Assert.Equal(original.Custom.Count, clone.Custom.Count);
         Assert.NotSame(original.Custom[0], clone.Custom[0]);
         Assert.Equal(original.Custom[0].Key, clone.Custom[0].Key);
-        Assert.Equal(original.Custom[0].Value, clone.Custom[0].Value);
+        Assert.Equal(original.Custom[0].Text, clone.Custom[0].Text);
     }
 }

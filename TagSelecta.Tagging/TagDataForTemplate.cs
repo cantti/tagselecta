@@ -10,11 +10,11 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     public List<string> AlbumArtists => tagData.AlbumArtists;
 
-    public string AlbumArtist => tagData.AlbumArtists.Joined();
+    public string AlbumArtist => tagData.AlbumArtists.ToJoined();
 
     public List<string> Artists => tagData.Artists;
 
-    public string Artist => tagData.Artists.Joined();
+    public string Artist => tagData.Artists.ToJoined();
 
     public string Album => tagData.Album;
 
@@ -32,16 +32,16 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     public List<string> Genres => tagData.Genres;
 
-    public string Genre => tagData.Genres.Joined();
+    public string Genre => tagData.Genres.ToJoined();
 
     public string Comment => tagData.Comment;
 
     public List<string> Composers => tagData.Composers;
 
-    public string Composer => tagData.Composers.Joined();
+    public string Composer => tagData.Composers.ToJoined();
 
     public Dictionary<string, string> Custom =>
-        tagData.Custom.ToDictionary(x => x.Key, x => x.Value);
+        tagData.Custom.ToDictionary(x => x.Key, x => x.Text);
 
     public List<TagLib.Picture> Pictures => tagData.Pictures;
 

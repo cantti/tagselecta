@@ -108,11 +108,11 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
         string albumArtistMessage = album.FixType switch
         {
             FixType.PrimaryArtists =>
-                $"Primary artist(s) identified: [yellow]{album.AlbumArtists.Joined().EscapeMarkup()}[/]",
+                $"Primary artist(s) identified: [yellow]{album.AlbumArtists.ToJoined().EscapeMarkup()}[/]",
             FixType.AllArtists =>
-                $"No primary artist(s) detected. Using all contributing artists: [yellow]{album.AlbumArtists.Joined().EscapeMarkup()}[/]",
+                $"No primary artist(s) detected. Using all contributing artists: [yellow]{album.AlbumArtists.ToJoined().EscapeMarkup()}[/]",
             FixType.VariousArtists =>
-                $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtists.Joined().EscapeMarkup()}[/]",
+                $"Multiple distinct artists detected. Assigning album artist as: [yellow]{album.AlbumArtists.ToJoined().EscapeMarkup()}[/]",
             _ => "",
         };
         console.MarkupLine(albumArtistMessage);

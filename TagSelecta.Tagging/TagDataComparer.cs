@@ -24,7 +24,7 @@ public static class TagDataComparer
         if (
             obj1.Custom.Count != obj2.Custom.Count
             || !obj1.Custom.All(kv =>
-                obj2.Custom.FirstOrDefault(x => x.Key == kv.Key)?.Value == kv.Value
+                obj2.Custom.FirstOrDefault(x => x.Key == kv.Key)?.Text == kv.Text
             )
         )
         {
@@ -63,7 +63,7 @@ public static class TagDataComparer
             if (a.Count != b.Count)
                 return false;
 
-            return a.All(kv => b.FirstOrDefault(x => x.Key == kv.Key)?.Value == kv.Value);
+            return a.All(kv => b.FirstOrDefault(x => x.Key == kv.Key)?.Text == kv.Text);
         }
 
         // List<TagLib.Picture>

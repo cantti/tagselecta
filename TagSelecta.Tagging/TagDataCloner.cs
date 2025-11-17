@@ -73,7 +73,7 @@ public class TagDataCloner
         if (type == typeof(CustomField))
         {
             var c = (CustomField)value;
-            return new CustomField(c.Key, c.Value);
+            return new CustomField(c.Key, c.Text);
         }
 
         // Fallback: try shallow clone

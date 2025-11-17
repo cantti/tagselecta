@@ -1,4 +1,5 @@
 using TagLib.Id3v2;
+using TagSelecta.Shared;
 
 namespace TagSelecta.Tagging;
 
@@ -24,10 +25,10 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             Artists = id3v2.Performers.ToList(),
             Comment = id3v2.Comment ?? "",
             Composers = id3v2.Composers.ToList(),
-            Track = GetValueAndTotal("TRCK").Value,
-            TrackTotal = GetValueAndTotal("TRCK").Total,
-            Disc = GetValueAndTotal("TPOS").Value,
-            DiscTotal = GetValueAndTotal("TPOS").Total,
+            Track = GetTextValueAndTotal("TRCK").Value,
+            TrackTotal = GetTextValueAndTotal("TRCK").Total,
+            Disc = GetTextValueAndTotal("TPOS").Value,
+            DiscTotal = GetTextValueAndTotal("TPOS").Total,
             Genres = id3v2.Genres.ToList(),
             Title = id3v2.Title ?? "",
             Date = GetText("TDRC"),
@@ -43,6 +44,8 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
 
     public override void Write(TagData data)
     {
+        id3v2.Version = 4;
+
         id3v2.Album = data.Album;
         id3v2.Comment = data.Comment;
         id3v2.Title = data.Title;
@@ -50,8 +53,8 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.Performers = data.Artists.ToArray();
         id3v2.Composers = data.Composers.ToArray();
         id3v2.Genres = data.Genres.ToArray();
-        WriteValueAndTotal("TRCK", data.Track, data.TrackTotal);
-        WriteValueAndTotal("TPOS", data.Disc, data.DiscTotal);
+        WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
+        WriteTextValueAndTotal("TPOS", data.Disc, data.DiscTotal);
         WriteText("TDRC", data.Date);
         WriteText("TBPM", data.Bpm);
         WriteUserText("label", data.Label);
@@ -60,7 +63,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         ClearUnusedUserTextFrames();
         foreach (var field in data.Custom)
         {
-            WriteUserText(field.Key, field.Value);
+            WriteUserText(field.Key, field.Text);
         }
         id3v2.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
     }
@@ -76,25 +79,26 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                 && !_usedUserTextFields.Contains(txxx.Description)
             )
             {
-                // todo handle duplicated txxx
-                list.Add(new CustomField(txxx.Description, string.Join("; ", txxx.Text)));
+                var description = txxx.Description?.ToLowerInvariant() ?? "";
+                var text = txxx.Text.ToJoined();
+                var existing = list.SingleOrDefault(x => x.Key == description);
+                if (existing != null)
+                {
+                    existing.Text = $"{existing.Text}; {text}";
+                }
+                else
+                {
+                    list.Add(new(description, text));
+                }
             }
         }
         return list;
     }
 
-    private string GetUserTextAsString(string key)
-    {
-        var frame = UserTextInformationFrame.Get(id3v2, key, Tag.DefaultEncoding, false, false);
-        //TXXX frames support multivalue strings, join them up and return
-        //only the text from the frame.
-        var result = frame == null ? null : string.Join(";", frame.Text);
-        return string.IsNullOrEmpty(result) ? "" : result;
-    }
-
     private string GetText(string ident)
     {
-        return id3v2.GetTextAsString(ident);
+        var frame = TextInformationFrame.Get(id3v2, ident, false);
+        return frame == null ? "" : frame.Text.ToJoined();
     }
 
     private void WriteText(string ident, string text)
@@ -102,7 +106,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.SetTextFrame(ident, text);
     }
 
-    private (string Value, string Total) GetValueAndTotal(string ident)
+    private (string Value, string Total) GetTextValueAndTotal(string ident)
     {
         var raw = GetText(ident);
 
@@ -117,7 +121,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         return (value, total);
     }
 
-    private void WriteValueAndTotal(string ident, string value, string total)
+    private void WriteTextValueAndTotal(string ident, string value, string total)
     {
         string text = string.IsNullOrEmpty(total) ? value : $"{value}/{total}";
 
@@ -127,12 +131,6 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             id3v2.RemoveFrame(frame);
         else
             frame.Text = [text];
-    }
-
-    private List<string> GetTextAsList(string ident)
-    {
-        var frame = TextInformationFrame.Get(id3v2, ident, false);
-        return frame != null ? frame.Text.ToList() : [];
     }
 
     private void ClearUnusedUserTextFrames()
@@ -147,6 +145,15 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                 id3v2.RemoveFrame(txxx);
             }
         }
+    }
+
+    private string GetUserTextAsString(string key)
+    {
+        var frame = UserTextInformationFrame.Get(id3v2, key, Tag.DefaultEncoding, false, false);
+        //TXXX frames support multivalue strings, join them up and return
+        //only the text from the frame.
+        var result = frame == null ? null : string.Join(";", frame.Text);
+        return string.IsNullOrEmpty(result) ? "" : result;
     }
 
     private void WriteUserText(string key, string value)
