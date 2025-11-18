@@ -10,7 +10,10 @@ public static class TagDataComparer
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(p => p.GetCustomAttribute<TagDataFieldAttribute>() != null)
+                .Where(p =>
+                    p.GetCustomAttribute<TagDataFieldAttribute>() != null
+                    || p.Name == nameof(TagData.Custom)
+                )
         )
         {
             var val1 = prop.GetValue(obj1);
@@ -19,16 +22,6 @@ public static class TagDataComparer
             {
                 return false;
             }
-        }
-        // compare custom
-        if (
-            obj1.Custom.Count != obj2.Custom.Count
-            || !obj1.Custom.All(kv =>
-                obj2.Custom.FirstOrDefault(x => x.Key == kv.Key)?.Text == kv.Text
-            )
-        )
-        {
-            return false;
         }
         return true;
     }

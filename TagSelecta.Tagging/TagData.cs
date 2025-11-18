@@ -47,6 +47,9 @@ public class TagData
     [TagDataField("Label")]
     public string Label { get; set; } = "";
 
+    [TagDataField("Publisher")]
+    public string Publisher { get; set; } = "";
+
     [TagDataField("Title")]
     public string Title { get; set; } = "";
 

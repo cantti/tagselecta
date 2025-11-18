@@ -35,6 +35,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             Genres = id3v2.Genres.ToList(),
             Isrc = id3v2.ISRC,
             Label = GetUserTextAsString("label"),
+            Publisher = id3v2.Publisher,
             Title = id3v2.Title ?? "",
             Track = GetTextValueAndTotal("TRCK").Value,
             TrackTotal = GetTextValueAndTotal("TRCK").Total,
@@ -60,6 +61,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.Genres = data.Genres.ToArray();
         id3v2.ISRC = data.Isrc;
         WriteUserText("label", data.Label);
+        id3v2.Publisher = data.Publisher;
         id3v2.Title = data.Title;
         WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
         id3v2.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();

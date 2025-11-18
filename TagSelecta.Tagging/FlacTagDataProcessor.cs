@@ -14,18 +14,22 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         "album",
         "albumartist",
         "artist",
+        "bpm",
+        "catalognumber",
         "comment",
         "composer",
-        "tracknumber",
-        "tracktotal",
+        "conductor",
+        "date",
         "discnumber",
         "disctotal",
-        "genre",
-        "title",
-        "date",
-        "label",
-        "catalognumber",
         "discogs_release_id",
+        "genre",
+        "isrc",
+        "label",
+        "organization",
+        "title",
+        "tracknumber",
+        "tracktotal",
     };
 
     public override TagData Read()
@@ -47,6 +51,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             Genres = ReadFieldMulti("genre"),
             Isrc = ReadField("isrc"),
             Label = ReadField("label"),
+            Publisher = ReadField("organization"),
             Title = ReadField("title"),
             Track = ReadField("tracknumber"),
             TrackTotal = ReadField("tracktotal"),
@@ -72,6 +77,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         WriteFieldMulti("genre", data.Genres);
         WriteField("isrc", data.Isrc);
         WriteField("label", data.Label);
+        WriteField("Publisher", data.Publisher);
         WriteField("title", data.Title);
         WriteField("tracknumber", data.Track);
         WriteField("tracktotal", data.TrackTotal);

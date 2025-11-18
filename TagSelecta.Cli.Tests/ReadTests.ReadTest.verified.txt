@@ -4,18 +4,18 @@
 
 > (1/1) "{CurrentDirectory}TestData/ReadTest/01 Song 1.mp3"
 ╭──────────────┬───────────────────╮
+│ Album        │ Test Album        │
 │ Album Artist │ Test Album Artist │
 │ Artist       │ Test Artist       │
-│ Album        │ Test Album        │
-│ Year         │ 1990              │
-│ Title        │ Song 1            │
-│ Track        │ 1                 │
-│ Track Total  │ 3                 │
+│ Comment      │ Test              │
+│ Date         │ 1990              │
 │ Disc         │ 1                 │
 │ Disc Total   │ 1                 │
 │ Genre        │ Rock              │
 │              │ Pop               │
-│ Comment      │ Test              │
+│ Title        │ Song 1            │
+│ Track        │ 1                 │
+│ Track Total  │ 3                 │
 ╰──────────────┴───────────────────╯
 
 Finished!

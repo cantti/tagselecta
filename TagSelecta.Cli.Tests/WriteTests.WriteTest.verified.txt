@@ -6,18 +6,18 @@
 ╭──────────────┬───────────────────┬───────────────────────╮
 │ Field        │ Old Value         │ New Value             │
 ├──────────────┼───────────────────┼───────────────────────┤
+│ Album        │ Test Album        │ New Test Album        │
 │ Album Artist │ Test Album Artist │ New Test Album Artist │
 │ Artist       │ Test Artist       │ New Test Artist       │
-│ Album        │ Test Album        │ New Test Album        │
-│ Year         │ 1990              │ 2000                  │
-│ Title        │ Song 1            │ New Song 1            │
-│ Track        │ 1                 │ 10                    │
-│ Track Total  │ 3                 │ 20                    │
+│ Comment      │ Test              │ Test                  │
+│ Date         │ 1990              │ 2000                  │
 │ Disc         │ 1                 │ 30                    │
 │ Disc Total   │ 1                 │ 40                    │
 │ Genre        │ Rock              │ Reggae                │
 │              │ Pop               │ Dub                   │
-│ Comment      │ Test              │ Test                  │
+│ Title        │ Song 1            │ New Song 1            │
+│ Track        │ 1                 │ 10                    │
+│ Track Total  │ 3                 │ 20                    │
 ╰──────────────┴───────────────────┴───────────────────────╯
 Confirm? ([y]es/[n]o/[a]ll) [y/n/a] (y): y
 Status: success
