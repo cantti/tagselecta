@@ -1,5 +1,4 @@
 using Spectre.Console;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -9,7 +8,7 @@ public static class TagDataActionHelper
     {
         foreach (var field in fields)
         {
-            if (!TagDataFieldNames.All.Contains(field))
+            if (!Fields.All.Contains(field))
             {
                 console.MarkupLineInterpolated($"[red]Unknown field: {field}[/]");
                 return false;

@@ -4,7 +4,7 @@ namespace TagSelecta.Cli.IO;
 
 public static class FileHelper
 {
-    private static readonly HashSet<string> allowedExtensions = [".mp3", ".flac", ".ogg"];
+    private static readonly HashSet<string> allowedExtensions = [".mp3", ".flac", ".wav"];
 
     public static List<string> GetAllAudioFiles(IEnumerable<string> paths, bool recursive = false)
     {
@@ -21,9 +21,6 @@ public static class FileHelper
             }
             else
             {
-                // Common audio file extensions
-                string[] audioExtensions = [".mp3", ".flac", ".ogg"];
-
                 var searchOption = recursive
                     ? SearchOption.AllDirectories
                     : SearchOption.TopDirectoryOnly;
@@ -40,7 +37,7 @@ public static class FileHelper
                                 ).Name;
                                 return !fileName.StartsWith('.')
                                     && !dirName.StartsWith('.')
-                                    && audioExtensions.Contains(Path.GetExtension(f).ToLower());
+                                    && allowedExtensions.Contains(Path.GetExtension(f).ToLower());
                             })
                             .Order(),
                     ]

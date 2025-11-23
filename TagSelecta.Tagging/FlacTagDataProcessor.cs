@@ -19,6 +19,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         "comment",
         "composer",
         "conductor",
+        "copyright",
         "date",
         "discnumber",
         "disctotal",
@@ -37,25 +38,26 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         return new TagData
         {
             Album = ReadField("album"),
-            AlbumArtists = ReadFieldMulti("albumartist"),
-            Artists = ReadFieldMulti("artist"),
+            AlbumArtist = ReadFieldMulti("albumartist"),
+            Artist = ReadFieldMulti("artist"),
             Bpm = ReadField("bpm"),
             CatalogNumber = ReadField("catalognumber"),
             Comment = ReadField("comment"),
-            Composers = ReadFieldMulti("composer"),
+            Composer = ReadFieldMulti("composer"),
             Conductor = ReadField("conductor"),
+            Copyright = ReadField("copyright"),
             Date = ReadField("date"),
             Disc = ReadField("discnumber"),
             DiscTotal = ReadField("disctotal"),
             DiscogsReleaseId = ReadField("discogs_release_id"),
-            Genres = ReadFieldMulti("genre"),
+            Genre = ReadFieldMulti("genre"),
             Isrc = ReadField("isrc"),
             Label = ReadField("label"),
             Publisher = ReadField("organization"),
             Title = ReadField("title"),
             Track = ReadField("tracknumber"),
             TrackTotal = ReadField("tracktotal"),
-            Pictures = flac.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
+            Picture = flac.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
             Custom = ReadCustomFields(),
         };
     }
@@ -63,18 +65,19 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
     public override void Write(TagData data)
     {
         WriteField("album", data.Album);
-        WriteFieldMulti("albumartist", data.AlbumArtists);
-        WriteFieldMulti("artist", data.Artists);
+        WriteFieldMulti("albumartist", data.AlbumArtist);
+        WriteFieldMulti("artist", data.Artist);
         WriteField("bpm", data.Bpm);
         WriteField("catalognumber", data.CatalogNumber);
         WriteField("comment", data.Comment);
-        WriteFieldMulti("composer", data.Composers);
+        WriteFieldMulti("composer", data.Composer);
         WriteField("conductor", data.Conductor);
+        WriteField("copyright", data.Copyright);
         WriteField("date", data.Date);
         WriteField("discnumber", data.Disc);
         WriteField("disctotal", data.DiscTotal);
         WriteField("discogs_release_id", data.DiscogsReleaseId);
-        WriteFieldMulti("genre", data.Genres);
+        WriteFieldMulti("genre", data.Genre);
         WriteField("isrc", data.Isrc);
         WriteField("label", data.Label);
         WriteField("Publisher", data.Publisher);
@@ -86,7 +89,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         {
             WriteField(field.Key, field.Text);
         }
-        flac.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
+        flac.Pictures = data.Picture.Select(p => new TagLib.Picture(p)).ToArray();
     }
 
     private string ReadField(string key)
@@ -132,7 +135,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
                 continue;
 
             var values = xiph.GetField(key) ?? [];
-            result.Add(new CustomField(key, string.Join("; ", values)));
+            result.Add(new CustomField(key, values.ToJoined()));
         }
 
         return result;

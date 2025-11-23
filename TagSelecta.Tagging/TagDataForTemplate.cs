@@ -8,17 +8,47 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     public string FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
 
-    public List<string> AlbumArtists => tagData.AlbumArtists;
-
-    public string AlbumArtist => tagData.AlbumArtists.ToJoined();
-
-    public List<string> Artists => tagData.Artists;
-
-    public string Artist => tagData.Artists.ToJoined();
-
     public string Album => tagData.Album;
 
+    public string AlbumArtist => tagData.AlbumArtist.ToJoined();
+
+    public List<string> AlbumArtists => tagData.AlbumArtist;
+
+    public string Artist => tagData.Artist.ToJoined();
+
+    public List<string> Artists => tagData.Artist;
+
+    public string Bpm => tagData.Bpm;
+
+    public string CatalogNumber => tagData.CatalogNumber;
+
+    public string Comment => tagData.Comment;
+
+    public string Composer => tagData.Composer.ToJoined();
+
+    public List<string> Composers => tagData.Composer;
+
+    public string Conductor => tagData.Conductor;
+
+    public string Copyright => tagData.Copyright;
+
     public string Date => tagData.Date;
+
+    public string Disc => tagData.Disc;
+
+    public string DiscTotal => tagData.DiscTotal;
+
+    public string DiscogsReleaseId => tagData.DiscogsReleaseId;
+
+    public string Genre => tagData.Genre.ToJoined();
+
+    public List<string> Genres => tagData.Genre;
+
+    public string Isrc => tagData.Isrc;
+
+    public string Label => tagData.Label;
+
+    public string Publisher => tagData.Publisher;
 
     public string Title => tagData.Title;
 
@@ -26,28 +56,6 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     public string TrackTotal => tagData.TrackTotal;
 
-    public string Disc => tagData.Disc;
-
-    public string DiscTotal => tagData.DiscTotal;
-
-    public List<string> Genres => tagData.Genres;
-
-    public string Genre => tagData.Genres.ToJoined();
-
-    public string Comment => tagData.Comment;
-
-    public List<string> Composers => tagData.Composers;
-
-    public string Composer => tagData.Composers.ToJoined();
-
     public Dictionary<string, string> Custom =>
         tagData.Custom.ToDictionary(x => x.Key, x => x.Text);
-
-    public List<TagLib.Picture> Pictures => tagData.Pictures;
-
-    public string Label => tagData.Label;
-
-    public string CatalogNumber => tagData.CatalogNumber;
-
-    public string DiscogsReleaseId => tagData.DiscogsReleaseId;
 }

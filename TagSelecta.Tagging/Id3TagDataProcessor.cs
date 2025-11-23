@@ -21,25 +21,26 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         return new TagData
         {
             Album = id3v2.Album ?? "",
-            AlbumArtists = id3v2.AlbumArtists.ToList(),
-            Artists = id3v2.Performers.ToList(),
+            AlbumArtist = id3v2.AlbumArtists.ToList(),
+            Artist = id3v2.Performers.ToList(),
             Bpm = GetText("TBPM"),
             CatalogNumber = GetUserTextAsString("catalognumber"),
             Comment = id3v2.Comment ?? "",
-            Composers = id3v2.Composers.ToList(),
-            Conductor = id3v2.Conductor,
+            Composer = id3v2.Composers.ToList(),
+            Conductor = id3v2.Conductor ?? "",
+            Copyright = id3v2.Copyright ?? "",
             Date = GetText("TDRC"),
             Disc = GetTextValueAndTotal("TPOS").Value,
             DiscTotal = GetTextValueAndTotal("TPOS").Total,
             DiscogsReleaseId = GetUserTextAsString("discogs_release_id"),
-            Genres = id3v2.Genres.ToList(),
-            Isrc = id3v2.ISRC,
+            Genre = id3v2.Genres.ToList(),
+            Isrc = id3v2.ISRC ?? "",
             Label = GetUserTextAsString("label"),
-            Publisher = id3v2.Publisher,
+            Publisher = id3v2.Publisher ?? "",
             Title = id3v2.Title ?? "",
             Track = GetTextValueAndTotal("TRCK").Value,
             TrackTotal = GetTextValueAndTotal("TRCK").Total,
-            Pictures = id3v2.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
+            Picture = id3v2.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
             Custom = ReadCustomFields(),
         };
     }
@@ -48,23 +49,24 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
     {
         id3v2.Version = 4;
         id3v2.Album = data.Album;
-        id3v2.AlbumArtists = data.AlbumArtists.ToArray();
-        id3v2.Performers = data.Artists.ToArray();
+        id3v2.AlbumArtists = data.AlbumArtist.ToArray();
+        id3v2.Performers = data.Artist.ToArray();
         WriteText("TBPM", data.Bpm);
         WriteUserText("catalognumber", data.CatalogNumber);
         id3v2.Comment = data.Comment;
-        id3v2.Composers = data.Composers.ToArray();
+        id3v2.Composers = data.Composer.ToArray();
         id3v2.Conductor = data.Conductor;
+        id3v2.Copyright = data.Copyright;
         WriteText("TDRC", data.Date);
         WriteTextValueAndTotal("TPOS", data.Disc, data.DiscTotal);
         WriteUserText("discogs_release_id", data.DiscogsReleaseId);
-        id3v2.Genres = data.Genres.ToArray();
+        id3v2.Genres = data.Genre.ToArray();
         id3v2.ISRC = data.Isrc;
         WriteUserText("label", data.Label);
         id3v2.Publisher = data.Publisher;
         id3v2.Title = data.Title;
         WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
-        id3v2.Pictures = data.Pictures.Select(p => new TagLib.Picture(p)).ToArray();
+        id3v2.Pictures = data.Picture.Select(p => new TagLib.Picture(p)).ToArray();
         ClearUnusedUserTextFrames();
         foreach (var field in data.Custom)
         {

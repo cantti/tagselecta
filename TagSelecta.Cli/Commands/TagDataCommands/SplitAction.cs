@@ -27,17 +27,17 @@ public class SplitAction : TagDataAction<SplitSettings>
 
     protected override void ProcessTagData(TagDataActionContext<SplitSettings> context)
     {
-        var artists = context.TagData.Artists.SelectMany(Split).Distinct().ToList();
-        var albumArtists = context.TagData.AlbumArtists.SelectMany(Split).Distinct().ToList();
+        var artists = context.TagData.Artist.SelectMany(Split).Distinct().ToList();
+        var albumArtists = context.TagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
         var composers = context
-            .TagData.Composers.Select(Split)
+            .TagData.Composer.Select(Split)
             .SelectMany(x => x)
             .Distinct()
             .ToList();
 
-        context.TagData.Artists = artists;
-        context.TagData.AlbumArtists = albumArtists;
-        context.TagData.Composers = composers;
+        context.TagData.Artist = artists;
+        context.TagData.AlbumArtist = albumArtists;
+        context.TagData.Composer = composers;
     }
 
     private List<string> Split(string input)

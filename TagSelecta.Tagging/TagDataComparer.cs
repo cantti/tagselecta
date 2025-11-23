@@ -4,7 +4,7 @@ namespace TagSelecta.Tagging;
 
 public static class TagDataComparer
 {
-    public static bool AreEqual(TagData obj1, TagData obj2)
+    public static bool TagDataEqual(TagData obj1, TagData obj2)
     {
         // compare normal tags
         foreach (
@@ -13,12 +13,13 @@ public static class TagDataComparer
                 .Where(p =>
                     p.GetCustomAttribute<TagDataFieldAttribute>() != null
                     || p.Name == nameof(TagData.Custom)
+                    || p.Name == nameof(TagData.Picture)
                 )
         )
         {
             var val1 = prop.GetValue(obj1);
             var val2 = prop.GetValue(obj2);
-            if (!FieldsEqual(val1, val2))
+            if (!PropertiesEqual(val1, val2))
             {
                 return false;
             }
@@ -26,7 +27,32 @@ public static class TagDataComparer
         return true;
     }
 
-    public static bool FieldsEqual(object? val1, object? val2)
+    public static bool PicturesEqual(TagLib.Picture? p1, TagLib.Picture? p2)
+    {
+        if (ReferenceEquals(p1, p2))
+            return true;
+
+        if (p1 == null || p2 == null)
+            return false;
+
+        // Filename intentionally ignored
+
+        if (p1.Description != p2.Description)
+            return false;
+
+        if (p1.MimeType != p2.MimeType)
+            return false;
+
+        if (p1.Type != p2.Type)
+            return false;
+
+        if (!(p1.Data ?? []).SequenceEqual(p2.Data ?? []))
+            return false;
+
+        return true;
+    }
+
+    private static bool PropertiesEqual(object? val1, object? val2)
     {
         if (ReferenceEquals(val1, val2))
             return true;
@@ -72,20 +98,10 @@ public static class TagDataComparer
             {
                 var p1 = a[i];
                 var p2 = b[i];
-
-                if (p1.Description != p2.Description)
+                if (!PicturesEqual(p1, p2))
+                {
                     return false;
-
-                // Filename intentionally ignored
-
-                if (p1.MimeType != p2.MimeType)
-                    return false;
-
-                if (p1.Type != p2.Type)
-                    return false;
-
-                if (!(p1.Data ?? []).SequenceEqual(p2.Data ?? []))
-                    return false;
+                }
             }
 
             return true;

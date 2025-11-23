@@ -10,13 +10,13 @@ public class TagDataClonerTests
         var original = new TagData
         {
             Album = "Test Album",
-            AlbumArtists = ["Artist1", "Artist2"],
-            Artists = ["ArtistA"],
+            AlbumArtist = ["Artist1", "Artist2"],
+            Artist = ["ArtistA"],
             Comment = "Some comment",
-            Composers = ["Composer1"],
+            Composer = ["Composer1"],
             Disc = "1",
             DiscTotal = "2",
-            Genres = ["Genre1", "Genre2"],
+            Genre = ["Genre1", "Genre2"],
             Title = "Test Title",
             Track = "5",
             TrackTotal = "10",
@@ -24,7 +24,7 @@ public class TagDataClonerTests
             Label = "Test Label",
             CatalogNumber = "12345",
             DiscogsReleaseId = "67890",
-            Pictures =
+            Picture =
             [
                 new Picture
                 {
@@ -42,11 +42,11 @@ public class TagDataClonerTests
 
         Assert.NotSame(original, clone);
         Assert.Equal(original.Album, clone.Album);
-        Assert.Equal(original.AlbumArtists, clone.AlbumArtists);
-        Assert.NotSame(original.AlbumArtists, clone.AlbumArtists);
-        Assert.Equal(original.Pictures.Count, clone.Pictures.Count);
-        Assert.NotSame(original.Pictures[0], clone.Pictures[0]);
-        Assert.Equal(original.Pictures[0].Data, clone.Pictures[0].Data);
+        Assert.Equal(original.AlbumArtist, clone.AlbumArtist);
+        Assert.NotSame(original.AlbumArtist, clone.AlbumArtist);
+        Assert.Equal(original.Picture.Count, clone.Picture.Count);
+        Assert.NotSame(original.Picture[0], clone.Picture[0]);
+        Assert.Equal(original.Picture[0].Data, clone.Picture[0].Data);
         Assert.Equal(original.Custom.Count, clone.Custom.Count);
         Assert.NotSame(original.Custom[0], clone.Custom[0]);
         Assert.Equal(original.Custom[0].Key, clone.Custom[0].Key);

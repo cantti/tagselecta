@@ -31,16 +31,16 @@ public static class Tagger
     private static TagDataProcessor CreateProcessor(TagLib.File tfile)
     {
         string mime = tfile.MimeType.ToLowerInvariant();
+        if (mime.Contains("mpeg") || mime.Contains("mp3") || mime.Contains("wav"))
+        {
+            var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
+            return new Id3TagDataProcessor(id3v2);
+        }
         if (mime.Contains("flac"))
         {
             var xiph = (TagLib.Ogg.XiphComment)tfile.GetTag(TagTypes.Xiph, true);
             var flac = (TagLib.Flac.Metadata)tfile.GetTag(TagTypes.FlacMetadata, true);
             return new FlacTagDataProcessor(xiph, flac);
-        }
-        if (mime.Contains("mpeg") || mime.Contains("mp3"))
-        {
-            var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
-            return new Id3TagDataProcessor(id3v2);
         }
         throw new TagSelectaException($"Unsupported format: {mime}");
     }

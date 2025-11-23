@@ -5,7 +5,6 @@ using Spectre.Console.Cli;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Exceptions;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -127,67 +126,67 @@ public class DiscogsAction(
             .ToList();
         var artists = track.Artists.Select(x => RemoveTrailingNumberParentheses(x.Name)).ToList();
 
-        if (WriteRequired(TagDataFieldNames.AlbumArtist))
+        if (WriteRequired(Fields.AlbumArtist))
         {
-            context.TagData.AlbumArtists = albumArtists;
+            context.TagData.AlbumArtist = albumArtists;
         }
 
-        if (WriteRequired(TagDataFieldNames.Artist))
+        if (WriteRequired(Fields.Artist))
         {
-            context.TagData.Artists = artists.Count != 0 ? artists : albumArtists;
+            context.TagData.Artist = artists.Count != 0 ? artists : albumArtists;
         }
 
-        if (WriteRequired(TagDataFieldNames.Album))
+        if (WriteRequired(Fields.Album))
         {
             context.TagData.Album = _release.Title;
         }
 
-        if (WriteRequired(TagDataFieldNames.Title))
+        if (WriteRequired(Fields.Title))
         {
             context.TagData.Title = track.Title;
         }
 
-        if (WriteRequired(TagDataFieldNames.Track))
+        if (WriteRequired(Fields.Track))
         {
             context.TagData.Track = (context.CurrentFileIndex + 1).ToString();
         }
 
-        if (WriteRequired(TagDataFieldNames.TrackTotal))
+        if (WriteRequired(Fields.TrackTotal))
         {
             context.TagData.TrackTotal = _release.TrackList.Count.ToString();
         }
 
-        if (WriteRequired(TagDataFieldNames.Disc))
+        if (WriteRequired(Fields.Disc))
         {
             context.TagData.Disc = "";
         }
 
-        if (WriteRequired(TagDataFieldNames.DiscTotal))
+        if (WriteRequired(Fields.DiscTotal))
         {
             context.TagData.DiscTotal = "";
         }
 
-        if (WriteRequired(TagDataFieldNames.Genre))
+        if (WriteRequired(Fields.Genre))
         {
-            context.TagData.Genres = _release.Styles;
+            context.TagData.Genre = _release.Styles;
         }
 
-        if (WriteRequired(TagDataFieldNames.Label))
+        if (WriteRequired(Fields.Label))
         {
             context.TagData.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
         }
 
-        if (WriteRequired(TagDataFieldNames.Date))
+        if (WriteRequired(Fields.Date))
         {
             context.TagData.Date = _release.Year.ToString();
         }
 
-        if (WriteRequired(TagDataFieldNames.Pictures))
+        if (WriteRequired(Fields.Picture))
         {
-            context.TagData.Pictures = [new TagLib.Picture(_image)];
+            context.TagData.Picture = [new TagLib.Picture(_image)];
         }
 
-        if (WriteRequired(TagDataFieldNames.CatalogNumber))
+        if (WriteRequired(Fields.CatalogNumber))
         {
             context.TagData.CatalogNumber = _release.Labels.FirstOrDefault()?.CatNo ?? "";
         }

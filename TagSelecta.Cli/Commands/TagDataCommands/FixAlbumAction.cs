@@ -65,7 +65,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
 
             // get all artists on album
             var artistList = dirTagData
-                .SelectMany(x => x.Artists)
+                .SelectMany(x => x.Artist)
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct()
                 .Order()
@@ -75,7 +75,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
 
             // found artists that exist on all songs
             var primaryArtist = artistList
-                .Where(x => dirTagData.All(x2 => x2.Artists.Contains(x)))
+                .Where(x => dirTagData.All(x2 => x2.Artist.Contains(x)))
                 .ToList();
 
             FixType fixType;
@@ -120,7 +120,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
         console.MarkupLine($"The most common album year: [yellow]{album.Date}[/]");
-        context.TagData.AlbumArtists = album.AlbumArtists;
+        context.TagData.AlbumArtist = album.AlbumArtists;
         context.TagData.Album = album.AlbumName;
         context.TagData.Date = album.Date;
     }

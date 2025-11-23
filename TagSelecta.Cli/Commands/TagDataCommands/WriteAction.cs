@@ -7,65 +7,89 @@ namespace TagSelecta.Cli.Commands.TagDataCommands;
 
 public class WriteSettings : BaseSettings
 {
-    [CommandOption("--artist|-a")]
-    [Description("One or more artists. Multiple values can be provided using a ';' separator")]
-    public string? Artist { get; set; }
+    [CommandOption($"--{Fields.Album}|-l")]
+    [Description("Album name.")]
+    public string? Album { get; set; }
 
-    [CommandOption("--albumartist|-A")]
+    [CommandOption($"--{Fields.AlbumArtist}|-A")]
     [Description(
         "One or more album artists. Multiple values can be provided using a ';' separator."
     )]
     public string? AlbumArtist { get; set; }
 
-    [CommandOption("--title|-t")]
-    [Description("Track title.")]
-    public string? Title { get; set; }
+    [CommandOption($"--{Fields.Artist}|-a")]
+    [Description("One or more artists. Multiple values can be provided using a ';' separator")]
+    public string? Artist { get; set; }
 
-    [CommandOption("--album|-l")]
-    [Description("Album name.")]
-    public string? Album { get; set; }
+    [CommandOption($"--{Fields.Bpm}")]
+    [Description("Beat per minutes")]
+    public string? Bpm { get; set; }
 
-    [CommandOption("--date|-y")]
-    [Description("Release date.")]
-    public string? Date { get; set; }
-
-    [CommandOption("--genre|-g")]
-    [Description("One or more genres. Multiple values can be provided using a ';' separator")]
-    public string? Genre { get; set; }
-
-    [CommandOption("--track|-n")]
-    [Description("Track number.")]
-    public string? Track { get; set; }
-
-    [CommandOption("--tracktotal|-N")]
-    [Description("Total number of tracks.")]
-    public string? TrackTotal { get; set; }
-
-    [CommandOption("--comment|-C")]
-    [Description("Comment or notes.")]
-    public string? Comment { get; set; }
-
-    [CommandOption("--disc|-d")]
-    [Description("Disc number.")]
-    public string? Disc { get; set; }
-
-    [CommandOption("--disctotal|-D")]
-    [Description("Total number of discs.")]
-    public string? DiscTotal { get; set; }
-
-    [CommandOption("--composers")]
-    [Description("One or more composers. Multiple values can be provided using a ';' separator")]
-    public string? Composer { get; set; }
-
-    [CommandOption("--label")]
-    [Description("Record label.")]
-    public string? Label { get; set; }
-
-    [CommandOption("--catalognumber")]
+    [CommandOption($"--{Fields.CatalogNumber}")]
     [Description("Catalog number.")]
     public string? CatallogNumber { get; set; }
 
-    [CommandOption("--custom|-c")]
+    [CommandOption($"--{Fields.Comment}|-C")]
+    [Description("Comment or notes.")]
+    public string? Comment { get; set; }
+
+    [CommandOption($"--{Fields.Composer}")]
+    [Description("Composer.")]
+    public string? Composer { get; set; }
+
+    [CommandOption($"--{Fields.Conductor}")]
+    [Description("Conductor.")]
+    public string? Conductor { get; set; }
+
+    [CommandOption($"--{Fields.Copyright}")]
+    [Description("Copyright.")]
+    public string? Copyright { get; set; }
+
+    [CommandOption($"--{Fields.Date}|-y")]
+    [Description("Release date.")]
+    public string? Date { get; set; }
+
+    [CommandOption($"--{Fields.Disc}|-d")]
+    [Description("Disc number.")]
+    public string? Disc { get; set; }
+
+    [CommandOption($"--{Fields.DiscTotal}|-D")]
+    [Description("Total number of discs.")]
+    public string? DiscTotal { get; set; }
+
+    [CommandOption($"--{Fields.DiscogsReleaseId}")]
+    [Description("Discogs release id.")]
+    public string? DiscogsReleaseId { get; set; }
+
+    [CommandOption($"--{Fields.Genre}|-g")]
+    [Description("One or more genres. Multiple values can be provided using a ';' separator")]
+    public string? Genre { get; set; }
+
+    [CommandOption($"--{Fields.Isrc}")]
+    [Description("International standard recording code")]
+    public string? Isrc { get; set; }
+
+    [CommandOption($"--{Fields.Label}")]
+    [Description("Record label.")]
+    public string? Label { get; set; }
+
+    [CommandOption($"--{Fields.Publisher}")]
+    [Description("Publisher.")]
+    public string? Publisher { get; set; }
+
+    [CommandOption($"--{Fields.Title}|-t")]
+    [Description("Track title.")]
+    public string? Title { get; set; }
+
+    [CommandOption($"--{Fields.Track}|-n")]
+    [Description("Track number.")]
+    public string? Track { get; set; }
+
+    [CommandOption($"--{Fields.TrackTotal}|-N")]
+    [Description("Total number of tracks.")]
+    public string? TrackTotal { get; set; }
+
+    [CommandOption($"--{Fields.Custom}|-c")]
     [Description(
         "Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g., key1=val1;key2=val2)."
     )]
@@ -84,74 +108,41 @@ public class WriteAction : TagDataAction<WriteSettings>
         var tagData = context.TagData;
         var formatter = new TagDataFormatter(tagData.Clone(), context.CurrentFile);
 
-        if (settings.Album is not null)
+        var map = new (Func<WriteSettings, object?> get, Action<string> set)[]
         {
-            tagData.Album = formatter.Format(settings.Album);
-        }
+            (s => s.Album, v => tagData.Album = v),
+            (s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti()),
+            (s => s.Artist, v => tagData.Artist = v.ToMulti()),
+            (s => s.Bpm, v => tagData.Bpm = v),
+            (s => s.CatallogNumber, v => tagData.CatalogNumber = v),
+            (s => s.Comment, v => tagData.Comment = v),
+            (s => s.Composer, v => tagData.Composer = v.ToMulti()),
+            (s => s.Conductor, v => tagData.Conductor = v),
+            (s => s.Copyright, v => tagData.Copyright = v),
+            (s => s.Date, v => tagData.Date = v),
+            (s => s.Disc, v => tagData.Disc = v),
+            (s => s.DiscTotal, v => tagData.DiscTotal = v),
+            (s => s.DiscogsReleaseId, v => tagData.DiscogsReleaseId = v),
+            (s => s.Genre, v => tagData.Genre = v.ToMulti()),
+            (s => s.Isrc, v => tagData.Isrc = v),
+            (s => s.Label, v => tagData.Label = v),
+            (s => s.Publisher, v => tagData.Publisher = v),
+            (s => s.Title, v => tagData.Title = v),
+            (s => s.Track, v => tagData.Track = v),
+            (s => s.TrackTotal, v => tagData.TrackTotal = v),
+            (s => s.TrackTotal, v => tagData.TrackTotal = v),
+        };
 
-        if (settings.AlbumArtist is not null)
+        foreach (var (get, set) in map)
         {
-            tagData.AlbumArtists = formatter.Format(settings.AlbumArtist).ToMulti();
-        }
-
-        if (settings.Artist is not null)
-        {
-            tagData.Artists = formatter.Format(settings.Artist).ToMulti();
-        }
-
-        if (settings.Comment is not null)
-        {
-            tagData.Comment = formatter.Format(settings.Comment);
-        }
-
-        if (settings.Composer is not null)
-        {
-            tagData.Composers = formatter.Format(settings.Composer).ToMulti();
-        }
-
-        if (settings.Disc is not null)
-        {
-            tagData.Disc = settings.Disc;
-        }
-
-        if (settings.DiscTotal is not null)
-        {
-            tagData.DiscTotal = settings.DiscTotal;
-        }
-
-        if (settings.Genre is not null)
-        {
-            tagData.Genres = formatter.Format(settings.Genre).ToMulti();
-        }
-
-        if (settings.Title is not null)
-        {
-            tagData.Title = formatter.Format(settings.Title);
-        }
-
-        if (settings.Track is not null)
-        {
-            tagData.Track = settings.Track;
-        }
-
-        if (settings.TrackTotal is not null)
-        {
-            tagData.TrackTotal = settings.TrackTotal;
-        }
-
-        if (settings.Date is not null)
-        {
-            tagData.Date = settings.Date;
-        }
-
-        if (settings.Label is not null)
-        {
-            tagData.Label = formatter.Format(settings.Label);
-        }
-
-        if (settings.CatallogNumber is not null)
-        {
-            tagData.CatalogNumber = formatter.Format(settings.CatallogNumber);
+            var value = get(settings);
+            if (value == null)
+            {
+                continue;
+            }
+            var str = (string)value;
+            str = formatter.Format(str);
+            set(str);
         }
 
         if (settings.ClearCustom)

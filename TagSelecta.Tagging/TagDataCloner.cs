@@ -13,6 +13,7 @@ public class TagDataCloner
             .Where(p =>
                 p.GetCustomAttribute<TagDataFieldAttribute>() != null
                 || p.Name == nameof(TagData.Custom)
+                || p.Name == nameof(TagData.Picture)
             );
 
         foreach (var prop in props)

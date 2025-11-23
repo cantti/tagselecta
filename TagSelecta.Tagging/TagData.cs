@@ -6,10 +6,10 @@ public class TagData
     public string Album { get; set; } = "";
 
     [TagDataField("Album Artist")]
-    public List<string> AlbumArtists { get; set; } = [];
+    public List<string> AlbumArtist { get; set; } = [];
 
     [TagDataField("Artist")]
-    public List<string> Artists { get; set; } = [];
+    public List<string> Artist { get; set; } = [];
 
     [TagDataField("BPM")]
     public string Bpm { get; set; } = "";
@@ -21,10 +21,13 @@ public class TagData
     public string Comment { get; set; } = "";
 
     [TagDataField("Composers")]
-    public List<string> Composers { get; set; } = [];
+    public List<string> Composer { get; set; } = [];
 
     [TagDataField("Conductor")]
     public string Conductor { get; set; } = "";
+
+    [TagDataField("Copyright")]
+    public string Copyright { get; set; } = "";
 
     [TagDataField("Date")]
     public string Date { get; set; } = "";
@@ -39,7 +42,7 @@ public class TagData
     public string DiscogsReleaseId { get; set; } = "";
 
     [TagDataField("Genre")]
-    public List<string> Genres { get; set; } = [];
+    public List<string> Genre { get; set; } = [];
 
     [TagDataField("ISRC")]
     public string Isrc { get; set; } = "";
@@ -59,8 +62,7 @@ public class TagData
     [TagDataField("Track Total")]
     public string TrackTotal { get; set; } = "";
 
-    [TagDataField("Pictures")]
-    public List<TagLib.Picture> Pictures { get; set; } = [];
+    public List<TagLib.Picture> Picture { get; set; } = [];
 
     public List<CustomField> Custom { get; set; } = [];
 
