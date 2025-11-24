@@ -3,6 +3,8 @@ Set WindowBar Colorful
 Set FontFamily "JetBrainsMono Nerd Font"
 Set Theme "MaterialDarker"
 Set Padding 10
+Set Width 1500
+Set Height 800
 
 
 Set Shell bash
