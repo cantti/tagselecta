@@ -98,7 +98,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                 }
             }
         }
-        return list;
+        return list.OrderBy(x => x.Key).ToList();
     }
 
     private string GetText(string ident)

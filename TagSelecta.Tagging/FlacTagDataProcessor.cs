@@ -138,6 +138,6 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             result.Add(new CustomField(key, values.ToJoined()));
         }
 
-        return result;
+        return result.OrderBy(x => x.Key).ToList();
     }
 }
