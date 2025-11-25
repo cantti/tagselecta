@@ -9,10 +9,6 @@ class Program
 {
     static int Main(string[] args)
     {
-        bool noAnsi = Environment.GetEnvironmentVariable("TAGSELECTA_NOANSI") == "1";
-
-        Spectre.Console.AnsiConsole.Profile.Capabilities.Ansi = !noAnsi;
-
         var app = new CommandApp(new TypeRegistrar(DependencyInjection.Configure()));
         app.Configure(config =>
         {
