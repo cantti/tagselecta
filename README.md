@@ -68,7 +68,7 @@ DESCRIPTION:
 Read tags
 
 USAGE:
-    tagselecta [4mread[0m <path> [OPTIONS]
+    tagselecta read <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -84,7 +84,7 @@ DESCRIPTION:
 Write tags
 
 USAGE:
-    tagselecta [4mwrite[0m <path> [OPTIONS]
+    tagselecta write <path> [OPTIONS]
 
 EXAMPLES:
     tagselecta write song.mp3 -t 'Song 1' -a 'Artist1;Artist 2'
@@ -142,7 +142,7 @@ DESCRIPTION:
 Split artists, album artists and composers
 
 USAGE:
-    tagselecta [4msplit[0m <path> [OPTIONS]
+    tagselecta split <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -159,7 +159,7 @@ DESCRIPTION:
 Auto track
 
 USAGE:
-    tagselecta [4mautotrack[0m <path> [OPTIONS]
+    tagselecta autotrack <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -176,7 +176,7 @@ DESCRIPTION:
 Rename directories
 
 USAGE:
-    tagselecta [4mrenamedir[0m <path> [OPTIONS]
+    tagselecta renamedir <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -193,7 +193,7 @@ DESCRIPTION:
 Rename files
 
 USAGE:
-    tagselecta [4mrenamefile[0m <path> [OPTIONS]
+    tagselecta renamefile <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -211,7 +211,7 @@ Set album name, date and album artists to the same value to all files in the
 same directory
 
 USAGE:
-    tagselecta [4mfixalbum[0m <path> [OPTIONS]
+    tagselecta fixalbum <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
@@ -228,7 +228,7 @@ Update album from discogs. You can pass discogs release id (not master) or query
 to search
 
 USAGE:
-    tagselecta [4mdiscogs[0m <path> [OPTIONS]
+    tagselecta discogs <path> [OPTIONS]
 
 EXAMPLES:
     tagselecta discogs path-to-album -r 
@@ -252,7 +252,7 @@ DESCRIPTION:
 Find files by metadata
 
 USAGE:
-    tagselecta [4mfind[0m <path> [OPTIONS]
+    tagselecta find <path> [OPTIONS]
 
 EXAMPLES:
     tagselecta find . -q "title | string.downcase |  string.contains 'dub'"
