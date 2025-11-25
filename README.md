@@ -53,7 +53,7 @@ COMMANDS:
     autotrack <path>     Auto track                                             
     renamedir <path>     Rename directories                                     
     renamefile <path>    Rename files                                           
-    fixalbum <path>      Set album name, year and album artists to the same     
+    fixalbum <path>      Set album name, date and album artists to the same     
                          value to all files in the same directory               
     discogs <path>       Update album from discogs. You can pass discogs release
                          id (not master) or query to search                     
@@ -104,30 +104,35 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help             Prints help information                              
-    -a, --artist           One or more artists. Multiple values can be provided 
-                           using a ';' separator                                
-    -A, --albumartist      One or more album artists. Multiple values can be    
-                           provided using a ';' separator                       
-    -t, --title            Track title                                          
-    -l, --album            Album name                                           
-    -y, --year             Release year                                         
-    -g, --genre            One or more genres. Multiple values can be provided  
-                           using a ';' separator                                
-    -n, --track            Track number                                         
-    -N, --tracktotal       Total number of tracks                               
-    -C, --comment          Comment or notes                                     
-    -d, --disc             Disc number                                          
-    -D, --disctotal        Total number of discs                                
-        --composers        One or more composers. Multiple values can be        
-                           provided using a ';' separator                       
-        --label            Record label                                         
-        --catalognumber    Catalog number                                       
-    -c, --custom           Custom tags in key=value format. Multiple entries can
-                           be provided using a ';' separator (e.g.,             
-                           key1=val1;key2=val2)                                 
-        --clearcustom      Clear all other custom tags, not specified using     
-                           --custom or -c
+    -h, --help                Prints help information                           
+    -l, --album               Album name                                        
+    -A, --albumartist         One or more album artists. Multiple values can be 
+                              provided using a ';' separator                    
+    -a, --artist              One or more artists. Multiple values can be       
+                              provided using a ';' separator                    
+        --Bpm                 Beat per minutes                                  
+        --catalognumber       Catalog number                                    
+    -C, --comment             Comment or notes                                  
+        --composer            Composer                                          
+        --conductor           Conductor                                         
+        --copyright           Copyright                                         
+    -y, --date                Release date                                      
+    -d, --disc                Disc number                                       
+    -D, --disctotal           Total number of discs                             
+        --discogsreleaseid    Discogs release id                                
+    -g, --genre               One or more genres. Multiple values can be        
+                              provided using a ';' separator                    
+        --isrc                International standard recording code             
+        --label               Record label                                      
+        --publisher           Publisher                                         
+    -t, --title               Track title                                       
+    -n, --track               Track number                                      
+    -N, --tracktotal          Total number of tracks                            
+    -c, --custom              Custom tags in key=value format. Multiple entries 
+                              can be provided using a ';' separator (e.g.,      
+                              key1=val1;key2=val2)                              
+        --clearcustom         Clear all other custom tags, not specified using  
+                              --custom or -c
 ```
 
 ### Split command
@@ -195,14 +200,14 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help        Prints help information                        
-    -t, --template    Template. For example: {{ year }} - {{ album }}
+    -t, --template    Template. For example: {{ date }} - {{ album }}
 ```
 
 ### Fix Album command
 
 ```
 DESCRIPTION:
-Set album name, year and album artists to the same value to all files in the 
+Set album name, date and album artists to the same value to all files in the 
 same directory
 
 USAGE:
