@@ -73,7 +73,7 @@ static string Run(string cmd, string args)
         CreateNoWindow = true,
     };
 
-    psi.Environment["NO_COLOR"] = "1";
+    psi.Environment["TAGSELECTA_NOANSI"] = "1";
 
     using var p = Process.Start(psi)!;
     string output = p.StandardOutput.ReadToEnd();
