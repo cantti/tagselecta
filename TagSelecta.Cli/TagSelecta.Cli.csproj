@@ -13,10 +13,6 @@
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0"/>
     <PackageReference Include="Spectre.Console.Cli" Version="0.53.0"/>
   </ItemGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj"/>
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj"/>

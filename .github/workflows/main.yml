@@ -1,5 +1,4 @@
 name: Build and Release
-
 on:
   push:
     tags:
@@ -10,53 +9,45 @@ on:
         description: "Tag to release (e.g. v1.0.0)"
         required: false
         default: ""
-
 permissions:
   contents: write
-
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         rid: [linux-x64, win-x64, osx-x64, osx-arm64, linux-arm64]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.tag_name || github.ref }}
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9.0.x"
-
       - name: Restore
         run: dotnet restore
-
       - name: Publish for ${{ matrix.rid }}
         run: |
           dotnet publish -c Release -r ${{ matrix.rid }} \
             --self-contained true \
             -p:PublishSingleFile=true \
             -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:DebugType=None \
+            -p:DebugSymbols=false \
             -o artifacts/${{ matrix.rid }} \
             TagSelecta.Cli
-
       - name: Zip output
         run: |
           cd artifacts/${{ matrix.rid }}
           zip -r ../tagselecta-${{ matrix.rid }}.zip .
           cd ../..
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: tagselecta-${{ matrix.rid }}
           path: artifacts/tagselecta-${{ matrix.rid }}.zip
-
   release:
     needs: build-and-release
     runs-on: ubuntu-latest
@@ -65,7 +56,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: dist
-
       - name: Determine tag name
         id: get_tag
         run: |
@@ -74,7 +64,6 @@ jobs:
           else
             echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
