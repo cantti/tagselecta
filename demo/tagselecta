@@ -1,3 +1,0 @@
-#!/bin/bash
-
-../TagSelecta.Cli/bin/Debug/net9.0/tagselecta "$@"
