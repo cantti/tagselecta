@@ -20,7 +20,7 @@ cd "$TMPDIR"
 vhs demo.tape
 
 # Move resulting GIF back to original directory
-mv demo.gif "$dir/"
+mv demo.mp4 "$dir/"
 
 cd "$dir"
 rm -rf "$TMPDIR"

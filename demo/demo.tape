@@ -1,4 +1,4 @@
-Output demo.gif
+Output demo.mp4
 Set FontFamily "JetBrainsMono Nerd Font"
 Set FontSize 18
 Set Theme "GitHub Dark"
