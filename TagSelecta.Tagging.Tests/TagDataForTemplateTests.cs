@@ -9,7 +9,7 @@ public class TagDataForTemplateTests
     {
         var tagDataProps = typeof(TagData)
             .GetProperties()
-            .Where(p => p.GetCustomAttribute<TagDataFieldAttribute>() != null)
+            .Where(p => p.GetCustomAttribute<BuiltinFieldAttribute>() != null)
             .Select(p => p.Name)
             .Where(p => p != nameof(TagData.Picture))
             .ToHashSet();

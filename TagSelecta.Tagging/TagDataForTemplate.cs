@@ -56,6 +56,8 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     public string TrackTotal => tagData.TrackTotal;
 
+    public string Year => DateTime.TryParse(tagData.Date, out var d) ? d.Year.ToString() : "";
+
     public Dictionary<string, string> Custom =>
         tagData.Custom.ToDictionary(x => x.Key, x => x.Text);
 }

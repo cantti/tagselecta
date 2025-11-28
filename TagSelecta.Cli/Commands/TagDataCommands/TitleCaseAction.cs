@@ -14,16 +14,21 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(x => x.GetCustomAttribute<TagDataFieldAttribute>() is not null)
+                .Where(x => x.GetCustomAttribute<BuiltinFieldAttribute>() is not null)
         )
         {
-            if (prop.GetValue(context.TagData) is string value)
+            var value =
+                prop.GetValue(context.TagData)
+                ?? throw new InvalidOperationException("TagData values can not be null!");
+            if (prop.PropertyType == typeof(string))
             {
-                prop.SetValue(context.TagData, ToTitleCase(value));
+                var str = (string)value;
+                prop.SetValue(context.TagData, ToTitleCase(str));
             }
-            if (prop.GetValue(context.TagData) is List<string> valueList)
+            if (prop.PropertyType == typeof(List<string>))
             {
-                prop.SetValue(context.TagData, valueList.Select(ToTitleCase).ToList());
+                var list = (List<string>)value;
+                prop.SetValue(context.TagData, list.Select(ToTitleCase).ToList());
             }
         }
     }

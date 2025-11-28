@@ -11,7 +11,7 @@ public class TagDataCloner
         var props = typeof(TagData)
             .GetProperties()
             .Where(p =>
-                p.GetCustomAttribute<TagDataFieldAttribute>() != null
+                p.GetCustomAttribute<BuiltinFieldAttribute>() != null
                 || p.Name == nameof(TagData.Custom)
                 || p.Name == nameof(TagData.Picture)
             );

@@ -15,7 +15,7 @@ public static class TagDataPrinter
         table.HideHeaders();
         foreach (var prop in typeof(TagData).GetProperties())
         {
-            var attr = prop.GetCustomAttribute<TagDataFieldAttribute>();
+            var attr = prop.GetCustomAttribute<BuiltinFieldAttribute>();
             if (attr is null)
                 continue;
             var value = prop.GetValue(tagData);
@@ -56,7 +56,7 @@ public static class TagDataPrinter
         table.AddColumn("[yellow]New Value[/]");
         foreach (var prop in typeof(TagData).GetProperties())
         {
-            var attr = prop.GetCustomAttribute<TagDataFieldAttribute>();
+            var attr = prop.GetCustomAttribute<BuiltinFieldAttribute>();
             if (attr is null)
                 continue;
             var value1 = prop.GetValue(tagData1)!;

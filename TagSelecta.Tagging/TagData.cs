@@ -2,64 +2,64 @@ namespace TagSelecta.Tagging;
 
 public class TagData
 {
-    [TagDataField("Album")]
+    [BuiltinField("Album")]
     public string Album { get; set; } = "";
 
-    [TagDataField("Album Artist")]
+    [BuiltinField("Album Artist")]
     public List<string> AlbumArtist { get; set; } = [];
 
-    [TagDataField("Artist")]
+    [BuiltinField("Artist")]
     public List<string> Artist { get; set; } = [];
 
-    [TagDataField("BPM")]
+    [BuiltinField("BPM")]
     public string Bpm { get; set; } = "";
 
-    [TagDataField("Catalog Number")]
+    [BuiltinField("Catalog Number")]
     public string CatalogNumber { get; set; } = "";
 
-    [TagDataField("Comment")]
+    [BuiltinField("Comment")]
     public string Comment { get; set; } = "";
 
-    [TagDataField("Composers")]
+    [BuiltinField("Composers")]
     public List<string> Composer { get; set; } = [];
 
-    [TagDataField("Conductor")]
+    [BuiltinField("Conductor")]
     public string Conductor { get; set; } = "";
 
-    [TagDataField("Copyright")]
+    [BuiltinField("Copyright")]
     public string Copyright { get; set; } = "";
 
-    [TagDataField("Date")]
+    [BuiltinField("Date")]
     public string Date { get; set; } = "";
 
-    [TagDataField("Disc")]
+    [BuiltinField("Disc")]
     public string Disc { get; set; } = "";
 
-    [TagDataField("Disc Total")]
+    [BuiltinField("Disc Total")]
     public string DiscTotal { get; set; } = "";
 
-    [TagDataField("Discogs Release Id")]
+    [BuiltinField("Discogs Release Id")]
     public string DiscogsReleaseId { get; set; } = "";
 
-    [TagDataField("Genre")]
+    [BuiltinField("Genre")]
     public List<string> Genre { get; set; } = [];
 
-    [TagDataField("ISRC")]
+    [BuiltinField("ISRC")]
     public string Isrc { get; set; } = "";
 
-    [TagDataField("Label")]
+    [BuiltinField("Label")]
     public string Label { get; set; } = "";
 
-    [TagDataField("Publisher")]
+    [BuiltinField("Publisher")]
     public string Publisher { get; set; } = "";
 
-    [TagDataField("Title")]
+    [BuiltinField("Title")]
     public string Title { get; set; } = "";
 
-    [TagDataField("Track")]
+    [BuiltinField("Track")]
     public string Track { get; set; } = "";
 
-    [TagDataField("Track Total")]
+    [BuiltinField("Track Total")]
     public string TrackTotal { get; set; } = "";
 
     public List<TagLib.Picture> Picture { get; set; } = [];
