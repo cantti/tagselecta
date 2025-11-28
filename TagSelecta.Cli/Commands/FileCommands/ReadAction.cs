@@ -1,5 +1,4 @@
 using Spectre.Console;
-using TagSelecta.Cli.Commands;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.FileCommands;
@@ -12,16 +11,8 @@ public class ReadAction(IAnsiConsole console) : FileAction<ReadSettings>
 
     protected override void ProcessFile(FileActionContext<ReadSettings> context)
     {
-        TagData tagData;
-        try
-        {
-            tagData = Tagger.ReadTags(context.CurrentFile);
-        }
-        catch (Exception ex)
-        {
-            console.WriteLine(ex.Message);
-            return;
-        }
+        var tagData = Tagger.ReadTags(context.CurrentFile);
+
         TagDataPrinter.PrintTagData(console, tagData);
 
         if (context.CurrentFileIndex < context.Files.Count - 1)
