@@ -63,7 +63,7 @@ internal class Program
         string updated = Regex.Replace(
             readme,
             $"{Regex.Escape(helpStart)}.*?{Regex.Escape(helpEnd)}",
-            $"{helpStart}\n\n{sb}\n{helpEnd}",
+            $"{helpStart}\n{sb}\n{helpEnd}",
             RegexOptions.Singleline
         );
 
@@ -82,7 +82,7 @@ internal class Program
         string updated = Regex.Replace(
             readme,
             $"{Regex.Escape(start)}.*?{Regex.Escape(end)}",
-            $"{start}\n\n{output}\n{end}",
+            $"{start}\n```\n{output}\n```\n{end}",
             RegexOptions.Singleline
         );
         return updated;
