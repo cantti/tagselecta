@@ -19,9 +19,7 @@ Download the latest release from the [Releases page](https://github.com/cantti/a
 - Works with both files and directories (recursively) as input
 - Read command to read tags
 - Write command to update tags
-- Clean command to remove unsupported tags
-- Fix album command to set album name and album artists to the same value to all files in the same directory.
-- Autotrack command
+- And many other commands to work with audio metadata. See the full list below.
 
 ## Usage
 
