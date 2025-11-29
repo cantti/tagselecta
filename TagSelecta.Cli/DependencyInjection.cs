@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddTransient<FileAction<RenameDirSettings>, RenameDirAction>();
         services.AddTransient<FileAction<RenameFileSettings>, RenameFileAction>();
         services.AddTransient<FileAction<ReadSettings>, ReadAction>();
+        services.AddTransient<TagDataAction<ExtractPictureSettings>, ExtractPictureAction>();
         return services;
     }
 }

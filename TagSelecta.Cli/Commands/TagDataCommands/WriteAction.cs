@@ -98,6 +98,16 @@ public class WriteSettings : BaseSettings
     [CommandOption("--clearcustom")]
     [Description("Clear all other custom tags, not specified using --custom or -c")]
     public bool ClearCustom { get; set; }
+
+    [CommandOption($"--{Fields.Picture}|-p")]
+    [Description(
+        "Pictures in path=type format. Multiple entries can be provided using a ';' separator. Type can be omitted.\nCommon types: FrontCover, BackCover, Artist, Other"
+    )]
+    public string? Picture { get; set; }
+
+    [CommandOption("--clearpicture")]
+    [Description("Clear all other pictures")]
+    public bool ClearPicture { get; set; }
 }
 
 public class WriteAction : TagDataAction<WriteSettings>
@@ -171,6 +181,28 @@ public class WriteAction : TagDataAction<WriteSettings>
                 {
                     tagData.Custom.Add(new CustomField(key, value));
                 }
+            }
+        }
+
+        if (settings.ClearPicture)
+        {
+            tagData.Picture = [];
+        }
+
+        if (settings.Picture is not null)
+        {
+            foreach (var entry in settings.Picture.ToMulti())
+            {
+                var parts = entry.Split('=', 2);
+                var path = parts[0].Trim().ToLower();
+                var typeStr = parts.Length > 1 ? parts[1].Trim() : "";
+                var picture = new TagLib.Picture(path)
+                {
+                    Type = Enum.TryParse<TagLib.PictureType>(typeStr, out var type)
+                        ? type
+                        : TagLib.PictureType.FrontCover,
+                };
+                tagData.Picture.Add(picture);
             }
         }
     }

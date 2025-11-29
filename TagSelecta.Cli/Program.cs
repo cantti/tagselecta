@@ -102,10 +102,16 @@ class Program
                     ["find", ".", "-q", "\"title | string.downcase |  string.contains 'dub'\""]
                 );
             config
+                .AddCommand<TagDataCommand<ExtractPictureSettings>>("extractpicture")
+                .WithDescription("Extract pictures to files.");
+            config
                 .AddCommand<HelpFormattingCommand>("helpformatting")
                 .WithDescription(
                     "Show help information about built-in formatting functions and field references."
                 );
+            config
+                .AddCommand<HelpPictureTypesCommand>("helppicturetypes")
+                .WithDescription("Show list of supported picture types.");
         });
 
         return app.Run(args);
