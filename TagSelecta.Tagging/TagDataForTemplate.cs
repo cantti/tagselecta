@@ -86,7 +86,7 @@ public class TagDataForTemplate(TagData tagData, string path)
     [Description("Year extracted from the Date field.")]
     public string Year => DateTime.TryParse(tagData.Date, out var d) ? d.Year.ToString() : "";
 
-    [Description("Custom fields as key/value pairs.")]
+    [Description("Custom fields. Usage example: custom.url")]
     public Dictionary<string, string> Custom =>
         tagData.Custom.ToDictionary(x => x.Key, x => x.Text);
 }
