@@ -22,6 +22,7 @@ public class HelpFormattingCommand(IAnsiConsole console) : Command<HelpFormattin
         console.WriteLine();
         console.WriteLine("Example:");
         console.WriteLine("{{ year }} - {{ album }}");
+        console.WriteLine();
         console.WriteLine("Useful links:");
         console.MarkupLine(
             "[link=https://github.com/scriban/scriban/blob/master/doc/language.md]https://github.com/scriban/scriban/blob/master/doc/language.md[/]"
