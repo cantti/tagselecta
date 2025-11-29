@@ -53,9 +53,6 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         var pictures = new List<TagLib.Picture>();
         pictures = context
             .TagData.Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
-            .ToList();
-        pictures = context
-            .TagData.Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
             .OrderBy(x =>
             {
                 return x.Type switch
