@@ -33,6 +33,8 @@ internal class Program
             ("Rename File", "run --project ./TagSelecta.Cli -- renamefile --help"),
             ("Fix Album", "run --project ./TagSelecta.Cli -- fixalbum --help"),
             ("Discogs", "run --project ./TagSelecta.Cli -- discogs --help"),
+            ("Discogs", "run --project ./TagSelecta.Cli -- discogs --help"),
+            ("Extract Picture", "run --project ./TagSelecta.Cli -- extractpicture --help"),
             ("Find", "run --project ./TagSelecta.Cli -- find --help"),
         };
 
