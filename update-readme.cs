@@ -27,14 +27,14 @@ internal class Program
             ("Help", "run --project ./TagSelecta.Cli -- --help"),
             ("Read", "run --project ./TagSelecta.Cli -- read --help"),
             ("Write", "run --project ./TagSelecta.Cli -- write --help"),
-            ("Split", "run --project ./TagSelecta.Cli -- split --help"),
-            ("Auto Track", "run --project ./TagSelecta.Cli -- autotrack --help"),
+            ("Extract Picture", "run --project ./TagSelecta.Cli -- extractpicture --help"),
             ("Rename Directory", "run --project ./TagSelecta.Cli -- renamedir --help"),
             ("Rename File", "run --project ./TagSelecta.Cli -- renamefile --help"),
+            ("Split", "run --project ./TagSelecta.Cli -- split --help"),
+            ("Title case", "run --project ./TagSelecta.Cli -- titlecase --help"),
+            ("Auto Track", "run --project ./TagSelecta.Cli -- autotrack --help"),
             ("Fix Album", "run --project ./TagSelecta.Cli -- fixalbum --help"),
             ("Discogs", "run --project ./TagSelecta.Cli -- discogs --help"),
-            ("Discogs", "run --project ./TagSelecta.Cli -- discogs --help"),
-            ("Extract Picture", "run --project ./TagSelecta.Cli -- extractpicture --help"),
             ("Find", "run --project ./TagSelecta.Cli -- find --help"),
         };
 

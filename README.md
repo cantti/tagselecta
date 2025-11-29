@@ -100,67 +100,55 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help                Prints help information                                                                                        
-    -l, --album               Album name                                                                                                     
-    -A, --albumartist         One or more album artists. Multiple values can be provided using a ';' separator                               
-    -a, --artist              One or more artists. Multiple values can be provided using a ';' separator                                     
-        --Bpm                 Beat per minutes                                                                                               
-        --catalognumber       Catalog number                                                                                                 
-    -C, --comment             Comment or notes                                                                                               
-        --composer            Composer                                                                                                       
-        --conductor           Conductor                                                                                                      
-        --copyright           Copyright                                                                                                      
-    -y, --date                Release date                                                                                                   
-    -d, --disc                Disc number                                                                                                    
-    -D, --disctotal           Total number of discs                                                                                          
-        --discogsreleaseid    Discogs release id                                                                                             
-    -g, --genre               One or more genres. Multiple values can be provided using a ';' separator                                      
-        --isrc                International standard recording code                                                                          
-        --label               Record label                                                                                                   
-        --publisher           Publisher                                                                                                      
-    -t, --title               Track title                                                                                                    
-    -n, --track               Track number                                                                                                   
-    -N, --tracktotal          Total number of tracks                                                                                         
-    -c, --custom              Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g.,                 
-                              key1=val1;key2=val2)                                                                                           
-        --clearcustom         Clear all other custom tags, not specified using --custom or -c                                                
-    -p, --picture             Pictures in path=type format. Multiple entries can be provided using a ';' separator. Type can be omitted.     
-                              Common types: FrontCover, BackCover, Artist, Other                                                             
+    -h, --help                Prints help information                                                          
+    -l, --album               Album name                                                                       
+    -A, --albumartist         One or more album artists. Multiple values can be provided using a ';' separator 
+    -a, --artist              One or more artists. Multiple values can be provided using a ';' separator       
+        --Bpm                 Beat per minutes                                                                 
+        --catalognumber       Catalog number                                                                   
+    -C, --comment             Comment or notes                                                                 
+        --composer            Composer                                                                         
+        --conductor           Conductor                                                                        
+        --copyright           Copyright                                                                        
+    -y, --date                Release date                                                                     
+    -d, --disc                Disc number                                                                      
+    -D, --disctotal           Total number of discs                                                            
+        --discogsreleaseid    Discogs release id                                                               
+    -g, --genre               One or more genres. Multiple values can be provided using a ';' separator        
+        --isrc                International standard recording code                                            
+        --label               Record label                                                                     
+        --publisher           Publisher                                                                        
+    -t, --title               Track title                                                                      
+    -n, --track               Track number                                                                     
+    -N, --tracktotal          Total number of tracks                                                           
+    -c, --custom              Custom tags in key=value format. Multiple entries can be provided using a ';'    
+                              separator (e.g., key1=val1;key2=val2)                                            
+        --clearcustom         Clear all other custom tags, not specified using --custom or -c                  
+    -p, --picture             Pictures in path=type format. Multiple entries can be provided using a ';'       
+                              separator. Type can be omitted.                                                  
+                              Common types: FrontCover, BackCover, Artist, Other                               
         --clearpicture        Clear all other pictures
 ```
 
-### Split command
+### Extract Picture command
 
 ```
 DESCRIPTION:
-Split artists, album artists and composers
+Extract pictures to files
 
 USAGE:
-    tagselecta split <path> [OPTIONS]
+    tagselecta extractpicture <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help         Prints help information       
-    -s, --separator    Default values are: , ; feat.
-```
-
-### Auto Track command
-
-```
-DESCRIPTION:
-Auto track
-
-USAGE:
-    tagselecta autotrack <path> [OPTIONS]
-
-ARGUMENTS:
-    <path>     
-
-OPTIONS:
-    -h, --help        Prints help information  
-        --keepdisk    Remove Disc and DiscTotal
+    -h, --help        Prints help information                                                              
+    -t, --type        Types of pictures to extract. Multiple entries can be provided using a ';' separator.
+                      Common types: FrontCover, BackCover, Artist, Other                                   
+    -o, --output      Output file name                                                                     
+        --override    Override files                                                                       
+    -l, --limit       Limit number of files to be extracted
 ```
 
 ### Rename Directory command
@@ -197,6 +185,56 @@ OPTIONS:
     -t, --template    Template. For example: {{ date }} - {{ album }}
 ```
 
+### Split command
+
+```
+DESCRIPTION:
+Split artists, album artists and composers
+
+USAGE:
+    tagselecta split <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help         Prints help information       
+    -s, --separator    Default values are: , ; feat.
+```
+
+### Title case command
+
+```
+DESCRIPTION:
+Convert all fields to title case
+
+USAGE:
+    tagselecta titlecase <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help    Prints help information
+```
+
+### Auto Track command
+
+```
+DESCRIPTION:
+Auto track
+
+USAGE:
+    tagselecta autotrack <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information  
+        --keepdisk    Remove Disc and DiscTotal
+```
+
 ### Fix Album command
 
 ```
@@ -223,7 +261,8 @@ USAGE:
     tagselecta discogs <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta discogs path-to-album -r 
+https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 ARGUMENTS:
@@ -233,49 +272,6 @@ OPTIONS:
     -h, --help       Prints help information                                                            
     -r, --release                                                                                       
     -f, --fields     Fields to update from Discogs release. If not specified, all values will be updated
-```
-
-### Discogs command
-
-```
-DESCRIPTION:
-Update album from discogs. You can pass discogs release id (not master) or query to search
-
-USAGE:
-    tagselecta discogs <path> [OPTIONS]
-
-EXAMPLES:
-    tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
-    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
-
-ARGUMENTS:
-    <path>     
-
-OPTIONS:
-    -h, --help       Prints help information                                                            
-    -r, --release                                                                                       
-    -f, --fields     Fields to update from Discogs release. If not specified, all values will be updated
-```
-
-### Extract Picture command
-
-```
-DESCRIPTION:
-Extract pictures to files
-
-USAGE:
-    tagselecta extractpicture <path> [OPTIONS]
-
-ARGUMENTS:
-    <path>     
-
-OPTIONS:
-    -h, --help        Prints help information                                                              
-    -t, --type        Types of pictures to extract. Multiple entries can be provided using a ';' separator.
-                      Common types: FrontCover, BackCover, Artist, Other                                   
-    -o, --output      Output file name                                                                     
-        --override    Override files                                                                       
-    -l, --limit       Limit number of files to be extracted
 ```
 
 ### Find command
