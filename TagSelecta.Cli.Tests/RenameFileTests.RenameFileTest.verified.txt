@@ -2,7 +2,7 @@
 
 1 file found.
 
-> (1/1) "{CurrentDirectory}TestData/RenameFileTest/01 Song 1.mp3"
+> (1/1) "TestData/RenameFileTest/01 Song 1.mp3"
 File rename details:
   Old: {CurrentDirectory}TestData/RenameFileTest/01 Song 1.mp3
   New: {CurrentDirectory}TestData/RenameFileTest/1990 - Song 1 - Test Album.mp3

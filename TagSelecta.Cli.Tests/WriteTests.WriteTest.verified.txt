@@ -2,7 +2,7 @@
 
 1 file found.
 
-> (1/1) "{CurrentDirectory}TestData/WriteTest/01 Song 1.mp3"
+> (1/1) "TestData/WriteTest/01 Song 1.mp3"
 ╭──────────────┬───────────────────┬───────────────────────╮
 │ Field        │ Old Value         │ New Value             │
 ├──────────────┼───────────────────┼───────────────────────┤

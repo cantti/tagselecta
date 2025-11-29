@@ -2,7 +2,7 @@
 
 1 file found.
 
-> (1/1) "{CurrentDirectory}TestData/ReadTest/01 Song 1.mp3"
+> (1/1) "TestData/ReadTest/01 Song 1.mp3"
 ╭──────────────┬───────────────────╮
 │ Album        │ Test Album        │
 │ Album Artist │ Test Album Artist │
