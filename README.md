@@ -308,6 +308,15 @@ Or just remove all custom tags:
 tagselecta write ./song.mp3 --clearcustom
 ```
 
+### Extract picture to file and remove from tags
+
+```sh
+tagselecta extractpicture ./song.mp3 -o cover && ts write ./song.mp3 --clearpicture
+```
+
+Multiple pictures will be saved as cover, cover(1), cover(2), etc. Front covers come first.
+
+
 ## Formatting
 
 <!-- start:formatting -->
