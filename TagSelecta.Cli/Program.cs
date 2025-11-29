@@ -101,6 +101,11 @@ class Program
                 .WithExample(
                     ["find", ".", "-q", "\"title | string.downcase |  string.contains 'dub'\""]
                 );
+            config
+                .AddCommand<HelpFormattingCommand>("helpformatting")
+                .WithDescription(
+                    "Show help information about built-in formatting functions and field references."
+                );
         });
 
         return app.Run(args);
