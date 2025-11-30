@@ -101,9 +101,15 @@ public class WriteSettings : BaseSettings
 
     [CommandOption($"--{Fields.Picture}|-p")]
     [Description(
-        "Pictures in path=type format. Multiple entries can be provided using a ';' separator. Type can be omitted.\nCommon types: FrontCover, BackCover, Artist, Other"
+        "Path to a picture file. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)."
     )]
-    public string? Picture { get; set; }
+    public string[]? Picture { get; set; }
+
+    [CommandOption($"--{Fields.PictureType}")]
+    [Description(
+        "Type of each picture provided. Specify multiple times to match the order of the pictures. This option is optional.\nCommon values: FrontCover, BackCover, Artist, Other."
+    )]
+    public string[]? PictureType { get; set; }
 
     [CommandOption("--clearpicture")]
     [Description("Clear all other pictures")]
@@ -191,16 +197,20 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Picture is not null)
         {
-            foreach (var entry in settings.Picture.ToMulti())
+            for (int i = 0; i < settings.Picture.Length; i++)
             {
-                var parts = entry.Split('=', 2);
-                var path = parts[0].Trim().ToLower();
-                var typeStr = parts.Length > 1 ? parts[1].Trim() : "";
+                var path = settings.Picture[i];
+                // try to find corresponding picture type, or use first
+                var typeStr =
+                    settings.PictureType?.ElementAtOrDefault(i)
+                    ?? settings.PictureType?.FirstOrDefault();
                 var picture = new TagLib.Picture(path)
                 {
-                    Type = Enum.TryParse<TagLib.PictureType>(typeStr, out var type)
-                        ? type
-                        : TagLib.PictureType.FrontCover,
+                    Type =
+                        !string.IsNullOrEmpty(typeStr)
+                        && Enum.TryParse<TagLib.PictureType>(typeStr, true, out var type)
+                            ? type
+                            : TagLib.PictureType.FrontCover,
                 };
                 tagData.Picture.Add(picture);
             }

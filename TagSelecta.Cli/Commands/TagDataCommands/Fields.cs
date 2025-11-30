@@ -25,6 +25,7 @@ public static class Fields
     public const string Track = "track";
     public const string TrackTotal = "tracktotal";
     public const string Picture = "picture";
+    public const string PictureType = "picturetype";
     public const string Custom = "custom";
 
     public static IReadOnlyList<string> All { get; } =
