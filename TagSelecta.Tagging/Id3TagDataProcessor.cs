@@ -158,8 +158,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         var frame = UserTextInformationFrame.Get(id3v2, key, Tag.DefaultEncoding, false, false);
         //TXXX frames support multivalue strings, join them up and return
         //only the text from the frame.
-        var result = frame == null ? null : string.Join(";", frame.Text);
-        return string.IsNullOrEmpty(result) ? "" : result;
+        return frame?.Text.ToJoined() ?? "";
     }
 
     private void WriteUserText(string key, string value)
