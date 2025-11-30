@@ -91,9 +91,9 @@ public class WriteSettings : BaseSettings
 
     [CommandOption($"--{Fields.Custom}|-c")]
     [Description(
-        "Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g., key1=val1;key2=val2)."
+        "Custom tags in key=value format. Use this option multiple times to include multiple fields (e.g., -c key1=value1 -c key2=value2)."
     )]
-    public string? Custom { get; set; }
+    public string[]? Custom { get; set; }
 
     [CommandOption("--clearcustom")]
     [Description("Clear all other custom tags, not specified using --custom or -c")]
@@ -168,8 +168,7 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         if (settings.Custom is not null)
         {
-            var custom = settings.Custom.ToMulti();
-            foreach (var entry in custom)
+            foreach (var entry in settings.Custom)
             {
                 var parts = entry.Split('=', 2);
                 var key = parts[0].Trim().ToLower();

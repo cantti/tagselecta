@@ -98,34 +98,32 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help                Prints help information                                                                                        
-    -l, --album               Album name                                                                                                     
-    -A, --albumartist         One or more album artists. Multiple values can be provided using a ';' separator                               
-    -a, --artist              One or more artists. Multiple values can be provided using a ';' separator                                     
-        --Bpm                 Beat per minutes                                                                                               
-        --catalognumber       Catalog number                                                                                                 
-    -C, --comment             Comment or notes                                                                                               
-        --composer            Composer                                                                                                       
-        --conductor           Conductor                                                                                                      
-        --copyright           Copyright                                                                                                      
-    -y, --date                Release date                                                                                                   
-    -d, --disc                Disc number                                                                                                    
-    -D, --disctotal           Total number of discs                                                                                          
-        --discogsreleaseid    Discogs release id                                                                                             
-    -g, --genre               One or more genres. Multiple values can be provided using a ';' separator                                      
-        --isrc                International standard recording code                                                                          
-        --label               Record label                                                                                                   
-        --publisher           Publisher                                                                                                      
-    -t, --title               Track title                                                                                                    
-    -n, --track               Track number                                                                                                   
-    -N, --tracktotal          Total number of tracks                                                                                         
-    -c, --custom              Custom tags in key=value format. Multiple entries can be provided using a ';' separator (e.g.,                 
-                              key1=val1;key2=val2)                                                                                           
-        --clearcustom         Clear all other custom tags, not specified using --custom or -c                                                
-    -p, --picture             Path to a picture file. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)    
-        --picturetype         Type of each picture provided. Specify multiple times to match the order of the pictures. This option is       
-                              optional.                                                                                                      
-                              Common values: FrontCover, BackCover, Artist, Other                                                            
+    -h, --help                Prints help information                                                                                                         
+    -l, --album               Album name                                                                                                                      
+    -A, --albumartist         One or more album artists. Multiple values can be provided using a ';' separator                                                
+    -a, --artist              One or more artists. Multiple values can be provided using a ';' separator                                                      
+        --Bpm                 Beat per minutes                                                                                                                
+        --catalognumber       Catalog number                                                                                                                  
+    -C, --comment             Comment or notes                                                                                                                
+        --composer            Composer                                                                                                                        
+        --conductor           Conductor                                                                                                                       
+        --copyright           Copyright                                                                                                                       
+    -y, --date                Release date                                                                                                                    
+    -d, --disc                Disc number                                                                                                                     
+    -D, --disctotal           Total number of discs                                                                                                           
+        --discogsreleaseid    Discogs release id                                                                                                              
+    -g, --genre               One or more genres. Multiple values can be provided using a ';' separator                                                       
+        --isrc                International standard recording code                                                                                           
+        --label               Record label                                                                                                                    
+        --publisher           Publisher                                                                                                                       
+    -t, --title               Track title                                                                                                                     
+    -n, --track               Track number                                                                                                                    
+    -N, --tracktotal          Total number of tracks                                                                                                          
+    -c, --custom              Custom tags in key=value format. Use this option multiple times to include multiple fields (e.g., -c key1=value1 -c key2=value2)
+        --clearcustom         Clear all other custom tags, not specified using --custom or -c                                                                 
+    -p, --picture             Path to a picture file. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)                     
+        --picturetype         Type of each picture provided. Specify multiple times to match the order of the pictures. This option is optional.              
+                              Common values: FrontCover, BackCover, Artist, Other                                                                             
         --clearpicture        Clear all other pictures
 ```
 
