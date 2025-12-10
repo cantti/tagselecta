@@ -10,16 +10,53 @@ Adding new tags or functionality is straightforward and contributions are welcom
 
 The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spectre.console) for rich command-line output and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 
-## Download
-
-Download the latest release from the [Releases page](https://github.com/cantti/audio-tag-helper/releases).
-
 ## Features
 
 - Works with both files and directories (recursively) as input
 - Read command to read tags
 - Write command to update tags
 - And many other commands to work with audio metadata. See the full list below.
+
+# Install
+
+## Option 1. Download Release (Manual Install)
+
+1. Go to the **[Releases page](https://github.com/cantti/tagselecta/releases)**
+2. Download the latest archive for your system
+3. Extract it
+4. Move the binary into your preferred location (for example):
+
+```sh
+mv tagselecta "$HOME/.local/bin"
+```
+
+Ensure `"$HOME/.local/bin"` is in your `PATH`.
+
+## Option 2. Install via Script (Automatic Install)
+
+You can install the latest release automatically using the provided installer script:
+
+```sh
+wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | bash -s "$HOME/.local/bin"
+```
+
+This will:
+
+* download the latest release,
+* extract it,
+* install it into the directory you provide (default recommended: `$HOME/.local/bin`).
+
+Works from **bash**, **zsh**, **fish**, and other shells.
+
+## Option 3. Download Script Manually
+
+If you prefer to inspect the script before running it:
+
+```sh
+wget https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh
+chmod +x install.sh
+./install.sh "$HOME/.local/bin"
+```
 
 ## Usage
 
