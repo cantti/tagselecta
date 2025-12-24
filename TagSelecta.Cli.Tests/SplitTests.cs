@@ -1,5 +1,5 @@
 using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Tests.Utils;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
 
@@ -7,14 +7,27 @@ namespace TagSelecta.Cli.Tests;
 public class SplitTests
 {
     [Fact]
-    public Task SplitTest()
+    public async Task SplitTest()
     {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<SplitSettings>>();
-        app.Console.Input.PushTextWithEnter("y");
+        // Arrange
+        var action = new SplitAction();
 
-        var result = app.Run("./TestData/SplitTest/01 Song 1.mp3");
+        var settings = new SplitSettings();
 
-        Console.WriteLine(result.Output);
-        return Verify(result.Output);
+        var tagData = new TagData() { Artist = ["Artist1; Artist2"] };
+
+        var context = new TagDataActionContext<SplitSettings>
+        {
+            Files = ["file1.mp3"],
+            Settings = settings,
+        };
+
+        // Act
+        context.SetCurrentFile(context.Files[0], 0, tagData);
+        await action.ProcessTagDataAsync(context);
+
+        // Assert
+        Assert.Equal("Artist1", tagData.Artist[0]);
+        Assert.Equal("Artist2", tagData.Artist[1]);
     }
 }

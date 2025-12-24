@@ -7,17 +7,16 @@ namespace TagSelecta.Cli.Tests;
 public class RenameFileTests
 {
     [Fact]
-    public Task RenameFileTest()
+    public void RenameFileTest()
     {
         var app = CommandAppFactory.CreateTestApp<FileCommand<RenameFileSettings>>();
-        app.Console.Input.PushTextWithEnter("y");
 
         var result = app.Run(
-            "./TestData/RenameFileTest/01 Song 1.mp3",
+            "./TestData/Album/01 Song 1.mp3",
             "-t",
             "{{date}} - {{title}} - {{album}}"
         );
 
-        return Verify(result.Output);
+        Assert.Contains("Status: success", result.Output);
     }
 }

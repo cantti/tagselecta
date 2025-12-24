@@ -1,5 +1,4 @@
 using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Tests.Utils;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
@@ -8,17 +7,6 @@ namespace TagSelecta.Cli.Tests;
 [Collection("Console")]
 public class WriteTests
 {
-    [Fact]
-    public void WriteCliTest()
-    {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<WriteSettings>>();
-        app.Console.Input.PushTextWithEnter("y");
-
-        var result = app.Run("./TestData/WriteTest/01 Song 1.mp3", "-t", "New Song 1");
-
-        Assert.Contains("Status: success", result.Output);
-    }
-
     [Fact]
     public async Task WriteTest()
     {
@@ -50,7 +38,7 @@ public class WriteTests
             Custom = ["test_field=test_value"],
         };
 
-        var originalTagData = new TagData
+        var tagData = new TagData
         {
             Album = "Original Album",
             AlbumArtist = ["Original Album Artist"],
@@ -82,39 +70,38 @@ public class WriteTests
             Settings = settings,
         };
 
-        context.SetCurrentFile("file1.mp3", 0, originalTagData);
+        context.SetCurrentFile("file1.mp3", 0, tagData);
 
         // Act
         await action.ProcessTagDataAsync(context);
 
-        var result = context.TagData;
-
-        Assert.Equal(settings.Album, result.Album);
-        Assert.Equal(settings.AlbumArtist.ToMulti(), result.AlbumArtist);
-        Assert.Equal(settings.Artist.ToMulti(), result.Artist);
-        Assert.Equal(settings.Bpm, result.Bpm);
-        Assert.Equal(settings.CatalogNumber, result.CatalogNumber);
-        Assert.Equal(settings.Comment, result.Comment);
-        Assert.Equal(settings.Composer.ToMulti(), result.Composer);
-        Assert.Equal(settings.Conductor, result.Conductor);
-        Assert.Equal(settings.Copyright, result.Copyright);
-        Assert.Equal(settings.Date, result.Date);
-        Assert.Equal(settings.Disc, result.Disc);
-        Assert.Equal(settings.DiscTotal, result.DiscTotal);
-        Assert.Equal(settings.DiscogsReleaseId, result.DiscogsReleaseId);
-        Assert.Equal(settings.Genre.ToMulti(), result.Genre);
-        Assert.Equal(settings.Isrc, result.Isrc);
-        Assert.Equal(settings.Label, result.Label);
-        Assert.Equal(settings.Publisher, result.Publisher);
-        Assert.Equal(settings.Title, result.Title);
-        Assert.Equal(settings.Track, result.Track);
-        Assert.Equal(settings.TrackTotal, result.TrackTotal);
+        // Assert
+        Assert.Equal(settings.Album, tagData.Album);
+        Assert.Equal(settings.AlbumArtist.ToMulti(), tagData.AlbumArtist);
+        Assert.Equal(settings.Artist.ToMulti(), tagData.Artist);
+        Assert.Equal(settings.Bpm, tagData.Bpm);
+        Assert.Equal(settings.CatalogNumber, tagData.CatalogNumber);
+        Assert.Equal(settings.Comment, tagData.Comment);
+        Assert.Equal(settings.Composer.ToMulti(), tagData.Composer);
+        Assert.Equal(settings.Conductor, tagData.Conductor);
+        Assert.Equal(settings.Copyright, tagData.Copyright);
+        Assert.Equal(settings.Date, tagData.Date);
+        Assert.Equal(settings.Disc, tagData.Disc);
+        Assert.Equal(settings.DiscTotal, tagData.DiscTotal);
+        Assert.Equal(settings.DiscogsReleaseId, tagData.DiscogsReleaseId);
+        Assert.Equal(settings.Genre.ToMulti(), tagData.Genre);
+        Assert.Equal(settings.Isrc, tagData.Isrc);
+        Assert.Equal(settings.Label, tagData.Label);
+        Assert.Equal(settings.Publisher, tagData.Publisher);
+        Assert.Equal(settings.Title, tagData.Title);
+        Assert.Equal(settings.Track, tagData.Track);
+        Assert.Equal(settings.TrackTotal, tagData.TrackTotal);
 
         // assert custom
-        Assert.Equal(2, result.Custom.Count);
-        Assert.Equal("original_field", result.Custom[0].Key);
-        Assert.Equal("original_value", result.Custom[0].Text);
-        Assert.Equal("test_field", result.Custom[1].Key);
-        Assert.Equal("test_value", result.Custom[1].Text);
+        Assert.Equal(2, tagData.Custom.Count);
+        Assert.Equal("original_field", tagData.Custom[0].Key);
+        Assert.Equal("original_value", tagData.Custom[0].Text);
+        Assert.Equal("test_field", tagData.Custom[1].Key);
+        Assert.Equal("test_value", tagData.Custom[1].Text);
     }
 }

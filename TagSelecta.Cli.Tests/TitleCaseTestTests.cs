@@ -1,5 +1,5 @@
 using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Tests.Utils;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
 
@@ -7,13 +7,27 @@ namespace TagSelecta.Cli.Tests;
 public class TitleCaseTests
 {
     [Fact]
-    public Task TitleCaseTest()
+    public async Task TitleCaseTest()
     {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<TitleCaseSettings>>();
-        app.Console.Input.PushTextWithEnter("y");
+        // Arrange
+        var action = new TitleCaseAction();
 
-        var result = app.Run("./TestData/TitleCaseTest/01 Song 1.mp3");
+        var settings = new TitleCaseSettings();
 
-        return Verify(result.Output);
+        var tagData = new TagData() { Title = "test title", Artist = ["test artist"] };
+
+        var context = new TagDataActionContext<TitleCaseSettings>
+        {
+            Files = ["file1.mp3"],
+            Settings = settings,
+        };
+
+        // Act
+        context.SetCurrentFile(context.Files[0], 0, tagData);
+        await action.ProcessTagDataAsync(context);
+
+        // Assert
+        Assert.Equal("Test Title", tagData.Title);
+        Assert.Equal("Test Artist", tagData.Artist[0]);
     }
 }
