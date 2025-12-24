@@ -27,7 +27,7 @@ public class WriteSettings : BaseSettings
 
     [CommandOption($"--{Fields.CatalogNumber}")]
     [Description("Catalog number.")]
-    public string? CatallogNumber { get; set; }
+    public string? CatalogNumber { get; set; }
 
     [CommandOption($"--{Fields.Comment}|-C")]
     [Description("Comment or notes.")]
@@ -130,7 +130,7 @@ public class WriteAction : TagDataAction<WriteSettings>
             (s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti()),
             (s => s.Artist, v => tagData.Artist = v.ToMulti()),
             (s => s.Bpm, v => tagData.Bpm = v),
-            (s => s.CatallogNumber, v => tagData.CatalogNumber = v),
+            (s => s.CatalogNumber, v => tagData.CatalogNumber = v),
             (s => s.Comment, v => tagData.Comment = v),
             (s => s.Composer, v => tagData.Composer = v.ToMulti()),
             (s => s.Conductor, v => tagData.Conductor = v),

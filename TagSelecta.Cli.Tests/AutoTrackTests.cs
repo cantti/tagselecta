@@ -1,5 +1,5 @@
 using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Tests.Utils;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
 
@@ -7,15 +7,52 @@ namespace TagSelecta.Cli.Tests;
 public class AutoTrackTests
 {
     [Fact]
-    public Task AutoTrackTest()
+    public async Task AutoTrackTest()
     {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<AutoTrackSettings>>();
-        app.Console.Input.PushTextWithEnter("y");
-        app.Console.Input.PushTextWithEnter("y");
-        app.Console.Input.PushTextWithEnter("y");
+        // Arrange
+        var action = new AutoTrackAction();
 
-        var result = app.Run("./TestData/AutoTrackTest");
+        var settings = new AutoTrackSettings { KeepDisk = true };
 
-        return Verify(result.Output);
+        TagData[] tagDataList =
+        [
+            new()
+            {
+                Disc = "1",
+                DiscTotal = "1",
+                Track = "",
+                TrackTotal = "",
+            },
+            new()
+            {
+                Disc = "1",
+                DiscTotal = "1",
+                Track = "",
+                TrackTotal = "",
+            },
+        ];
+
+        var context = new TagDataActionContext<AutoTrackSettings>
+        {
+            Files = ["file1.mp3", "file2.mp3"],
+            Settings = settings,
+        };
+
+        // Act
+        context.SetCurrentFile(context.Files[0], 0, tagDataList[0]);
+        await action.ProcessTagDataAsync(context);
+
+        context.SetCurrentFile(context.Files[1], 1, tagDataList[1]);
+        await action.ProcessTagDataAsync(context);
+
+        // Assert
+        Assert.Equal("1", tagDataList[0].Track);
+        Assert.Equal("2", tagDataList[0].TrackTotal);
+        Assert.Equal("1", tagDataList[0].Disc);
+        Assert.Equal("1", tagDataList[0].DiscTotal);
+        Assert.Equal("2", tagDataList[1].Track);
+        Assert.Equal("2", tagDataList[1].TrackTotal);
+        Assert.Equal("1", tagDataList[1].Disc);
+        Assert.Equal("1", tagDataList[1].DiscTotal);
     }
 }
