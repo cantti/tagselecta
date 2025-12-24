@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Reflection;
 using Spectre.Console;
 using TagSelecta.Tagging;
 
@@ -14,12 +13,11 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(x => x.GetCustomAttribute<BuiltinFieldAttribute>() is not null)
+                .Where(p => p.Name != nameof(TagData.Picture))
+                .Where(p => p.Name != nameof(TagData.Custom))
         )
         {
-            var value =
-                prop.GetValue(context.TagData)
-                ?? throw new InvalidOperationException("TagData values can not be null!");
+            var value = prop.GetValue(context.TagData)!;
             if (prop.PropertyType == typeof(string))
             {
                 var str = (string)value;

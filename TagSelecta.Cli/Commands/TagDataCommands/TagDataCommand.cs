@@ -42,7 +42,7 @@ public class TagDataCommand<TSettings>(TagDataAction<TSettings> action, IAnsiCon
                 await action.ProcessTagDataAsync(actionContext);
                 if (
                     action.CompareBeforeWriteTagData
-                    && TagDataComparer.TagDataEqual(originalTagData, tagData)
+                    && TagDataComparer.AreEqual(originalTagData, tagData)
                 )
                 {
                     console.MarkupLine("Nothing to change.");

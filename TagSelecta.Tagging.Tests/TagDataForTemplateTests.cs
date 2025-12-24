@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace TagSelecta.Tagging.Tests;
 
 public class TagDataForTemplateTests
@@ -9,9 +7,9 @@ public class TagDataForTemplateTests
     {
         var tagDataProps = typeof(TagData)
             .GetProperties()
-            .Where(p => p.GetCustomAttribute<BuiltinFieldAttribute>() != null)
             .Select(p => p.Name)
             .Where(p => p != nameof(TagData.Picture))
+            .Where(p => p != nameof(TagData.Custom))
             .ToHashSet();
 
         var templateProps = typeof(TagDataForTemplate)

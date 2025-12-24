@@ -1,83 +1,70 @@
-using System.Reflection;
-
 namespace TagSelecta.Tagging;
 
-public class TagDataCloner
+public static class TagDataCloner
 {
     public static TagData Clone(TagData source)
     {
-        var clone = new TagData();
-
-        var props = typeof(TagData)
-            .GetProperties()
-            .Where(p =>
-                p.GetCustomAttribute<BuiltinFieldAttribute>() != null
-                || p.Name == nameof(TagData.Custom)
-                || p.Name == nameof(TagData.Picture)
-            );
-
-        foreach (var prop in props)
+        var clone = new TagData
         {
-            var originalValue = prop.GetValue(source);
-            var copiedValue = DeepCopyValue(originalValue);
-            prop.SetValue(clone, copiedValue);
+            Picture = ClonePictures(source.Picture),
+            Custom = CloneCustom(source.Custom),
+        };
+        foreach (
+            var prop in typeof(TagData)
+                .GetProperties()
+                .Where(p => p.Name != nameof(TagData.Picture))
+                .Where(p => p.Name != nameof(TagData.Custom))
+        )
+        {
+            if (prop.PropertyType == typeof(string))
+            {
+                prop.SetValue(clone, prop.GetValue(source));
+            }
+            else if (prop.PropertyType == typeof(List<string>))
+            {
+                prop.SetValue(clone, CloneList((List<string>)prop.GetValue(source)!));
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Unsupported property type: {prop.PropertyType}"
+                );
+            }
         }
-
         return clone;
     }
 
-    private static object? DeepCopyValue(object? value)
+    private static List<string> CloneList(List<string> source) => [.. source];
+
+    private static List<TagLib.Picture> ClonePictures(List<TagLib.Picture> source)
     {
-        if (value == null)
-            return null;
-
-        var type = value.GetType();
-
-        // Primitive, string, decimal, datetime, etc.
-        if (type.IsValueType || type == typeof(string))
-            return value;
-
-        // IList<T>
-        if (type.IsGenericType && typeof(System.Collections.IEnumerable).IsAssignableFrom(type))
+        var list = new List<TagLib.Picture>();
+        foreach (var pic in source)
         {
-            var listType = typeof(List<>).MakeGenericType(type.GetGenericArguments());
-
-            var newListObj =
-                Activator.CreateInstance(listType)
-                ?? throw new InvalidOperationException(
-                    $"Could not create list of type {listType}."
-                );
-
-            var newList = (System.Collections.IList)newListObj;
-
-            foreach (var item in (System.Collections.IEnumerable)value)
-                newList.Add(DeepCopyValue(item));
-
-            return newList;
+            list.Add(ClonePicture(pic));
         }
+        return list;
+    }
 
-        // Special case: TagLib.Picture
-        if (type == typeof(TagLib.Picture))
+    private static TagLib.Picture ClonePicture(TagLib.Picture source)
+    {
+        return new TagLib.Picture
         {
-            var pic = (TagLib.Picture)value;
-            return new TagLib.Picture
-            {
-                Data = pic.Data?.ToArray(),
-                Description = pic.Description,
-                Filename = pic.Filename,
-                MimeType = pic.MimeType,
-                Type = pic.Type,
-            };
-        }
+            Type = source.Type,
+            Filename = source.Filename,
+            MimeType = source.MimeType,
+            Description = source.Description,
+            Data = [.. source.Data.Data],
+        };
+    }
 
-        // Special case: CustomField
-        if (type == typeof(CustomField))
+    private static List<CustomField> CloneCustom(IEnumerable<CustomField> source)
+    {
+        var list = new List<CustomField>();
+        foreach (var field in source)
         {
-            var c = (CustomField)value;
-            return new CustomField(c.Key, c.Text);
+            list.Add(new CustomField(field.Key, field.Text));
         }
-
-        // Fallback: try shallow clone
-        return value;
+        return list;
     }
 }
