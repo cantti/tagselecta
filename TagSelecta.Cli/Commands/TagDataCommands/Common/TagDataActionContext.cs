@@ -1,8 +1,8 @@
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
+namespace TagSelecta.Cli.Commands.TagDataCommands.Common;
 
-public class TagDataActionContext<TSettings>
+public class TagDataActionContext<TSettings> : ITagDataActionContext<TSettings>
 {
     public required List<string> Files { get; set; }
 

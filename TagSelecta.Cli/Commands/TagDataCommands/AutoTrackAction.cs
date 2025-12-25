@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -12,7 +13,7 @@ public class AutoTrackSettings : BaseSettings
 
 public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
-    protected override void ProcessTagData(TagDataActionContext<AutoTrackSettings> context)
+    protected override void ProcessTagData(ITagDataActionContext<AutoTrackSettings> context)
     {
         var dir = Directory.GetParent(context.CurrentFile)?.FullName;
         var filesInDir = context

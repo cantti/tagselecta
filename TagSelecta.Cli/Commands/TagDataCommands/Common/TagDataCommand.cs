@@ -1,11 +1,15 @@
+using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
+namespace TagSelecta.Cli.Commands.TagDataCommands.Common;
 
-public class TagDataCommand<TSettings>(TagDataAction<TSettings> action, IAnsiConsole console)
-    : AsyncCommand<TSettings>
+public class TagDataCommand<TSettings>(
+    TagDataAction<TSettings> action,
+    IAnsiConsole console,
+    ITagger tagger
+) : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
     private bool _allConfirmed = false;
@@ -34,9 +38,10 @@ public class TagDataCommand<TSettings>(TagDataAction<TSettings> action, IAnsiCon
             var currentFile = files[currentFileIndex];
 
             CommandHelper.PrintCurrentFile(console, currentFile, currentFileIndex, files.Count);
+
             try
             {
-                var tagData = Tagger.ReadTags(currentFile);
+                var tagData = tagger.ReadTags(currentFile);
                 actionContext.SetCurrentFile(currentFile, currentFileIndex, tagData);
                 var originalTagData = tagData.Clone();
                 await action.ProcessTagDataAsync(actionContext);
@@ -54,7 +59,7 @@ public class TagDataCommand<TSettings>(TagDataAction<TSettings> action, IAnsiCon
                     if (ConfirmPrompt())
                     {
                         await action.BeforeWriteTagDataAsync(actionContext);
-                        Tagger.WriteTags(currentFile, tagData);
+                        tagger.WriteTags(currentFile, tagData);
                         CommandHelper.PrintStatusSuccess(console);
                     }
                     else

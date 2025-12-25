@@ -1,4 +1,5 @@
 using TagSelecta.Cli.Commands.TagDataCommands;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 

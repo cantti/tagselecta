@@ -1,5 +1,6 @@
 using System.Globalization;
 using Spectre.Console;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
@@ -8,7 +9,7 @@ public class TitleCaseSettings : BaseSettings { }
 
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
-    protected override void ProcessTagData(TagDataActionContext<TitleCaseSettings> context)
+    protected override void ProcessTagData(ITagDataActionContext<TitleCaseSettings> context)
     {
         foreach (
             var prop in typeof(TagData)

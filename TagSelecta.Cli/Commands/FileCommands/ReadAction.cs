@@ -5,13 +5,13 @@ namespace TagSelecta.Cli.Commands.FileCommands;
 
 public class ReadSettings : BaseSettings { }
 
-public class ReadAction(IAnsiConsole console) : FileAction<ReadSettings>
+public class ReadAction(IAnsiConsole console, ITagger tagger) : FileAction<ReadSettings>
 {
     private bool _allConfirmed;
 
-    protected override void ProcessFile(FileActionContext<ReadSettings> context)
+    protected override void ProcessFile(IFileActionContext<ReadSettings> context)
     {
-        var tagData = Tagger.ReadTags(context.CurrentFile);
+        var tagData = tagger.ReadTags(context.CurrentFile);
 
         TagDataPrinter.PrintTagData(console, tagData);
 

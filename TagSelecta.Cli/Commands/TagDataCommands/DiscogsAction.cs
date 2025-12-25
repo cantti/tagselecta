@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Exceptions;
@@ -31,7 +32,7 @@ public class DiscogsAction(
     private List<string> _fieldToWriteList = [];
 
     public override async Task<bool> BeforeProcessTagDataAsync(
-        TagDataActionContext<DiscogsSettings> context
+        ITagDataActionContext<DiscogsSettings> context
     )
     {
         if (context.Settings.Fields is not null)
@@ -116,7 +117,7 @@ public class DiscogsAction(
         return true;
     }
 
-    protected override void ProcessTagData(TagDataActionContext<DiscogsSettings> context)
+    protected override void ProcessTagData(ITagDataActionContext<DiscogsSettings> context)
     {
         _release = _release ?? throw new InvalidOperationException("Release not set");
 

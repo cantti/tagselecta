@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Shared;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
@@ -30,7 +31,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
     private readonly List<TagLib.PictureType> _types = [];
 
     protected override bool BeforeProcessTagData(
-        TagDataActionContext<ExtractPictureSettings> context
+        ITagDataActionContext<ExtractPictureSettings> context
     )
     {
         if (context.Settings.Type is not null)
@@ -47,7 +48,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         return true;
     }
 
-    protected override void ProcessTagData(TagDataActionContext<ExtractPictureSettings> context)
+    protected override void ProcessTagData(ITagDataActionContext<ExtractPictureSettings> context)
     {
         var dir = Path.GetDirectoryName(context.CurrentFile)!;
         var pictures = new List<TagLib.Picture>();

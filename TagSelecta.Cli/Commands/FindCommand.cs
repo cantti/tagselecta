@@ -13,7 +13,7 @@ public class FindSettings : BaseSettings
     public string Query { get; set; } = "";
 }
 
-public class FindCommand(IAnsiConsole console) : Command<FindSettings>
+public class FindCommand(IAnsiConsole console, ITagger tagger) : Command<FindSettings>
 {
     public override int Execute(CommandContext context, FindSettings settings, CancellationToken ct)
     {
@@ -25,7 +25,7 @@ public class FindCommand(IAnsiConsole console) : Command<FindSettings>
                 TagData? tagData = null;
                 try
                 {
-                    tagData = Tagger.ReadTags(file);
+                    tagData = tagger.ReadTags(file);
                 }
                 catch { }
                 if (tagData is null)

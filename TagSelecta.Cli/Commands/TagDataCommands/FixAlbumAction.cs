@@ -1,4 +1,5 @@
 using Spectre.Console;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Tagging;
@@ -23,11 +24,11 @@ public class Album
 
 public class FixAlbumSettings : BaseSettings { }
 
-public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettings>
+public class FixAlbumAction(IAnsiConsole console, ITagger tagger) : TagDataAction<FixAlbumSettings>
 {
     private readonly List<Album> _albums = [];
 
-    protected override void ProcessTagData(TagDataActionContext<FixAlbumSettings> context)
+    protected override void ProcessTagData(ITagDataActionContext<FixAlbumSettings> context)
     {
         var dir = Directory.GetParent(context.CurrentFile)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
@@ -40,7 +41,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
             var dirTagData = new List<TagData>();
             foreach (var fileInDir in filesInDir)
             {
-                dirTagData.Add(Tagger.ReadTags(fileInDir));
+                dirTagData.Add(tagger.ReadTags(fileInDir));
             }
 
             // find most common album name in dir

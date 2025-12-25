@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
@@ -118,7 +119,7 @@ public class WriteSettings : BaseSettings
 
 public class WriteAction : TagDataAction<WriteSettings>
 {
-    protected override void ProcessTagData(TagDataActionContext<WriteSettings> context)
+    protected override void ProcessTagData(ITagDataActionContext<WriteSettings> context)
     {
         var settings = context.Settings;
         var tagData = context.TagData;

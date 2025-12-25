@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands;
 using TagSelecta.Cli.IO;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Tagging;
@@ -24,11 +23,11 @@ public class RenameDirSettings : BaseSettings
     }
 }
 
-public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSettings>
+public class RenameDirAction(IAnsiConsole console, ITagger tagger) : FileAction<RenameDirSettings>
 {
     private readonly List<string> _renamed = [];
 
-    protected override void ProcessFile(FileActionContext<RenameDirSettings> context)
+    protected override void ProcessFile(IFileActionContext<RenameDirSettings> context)
     {
         var dir = Path.GetDirectoryName(context.CurrentFile)!;
         if (_renamed.Contains(dir))
@@ -36,7 +35,7 @@ public class RenameDirAction(IAnsiConsole console) : FileAction<RenameDirSetting
             return;
         }
         _renamed.Add(dir);
-        var tagData = Tagger.ReadTags(context.CurrentFile);
+        var tagData = tagger.ReadTags(context.CurrentFile);
 
         var formatter = new TagDataFormatter(tagData, context.CurrentFile);
 

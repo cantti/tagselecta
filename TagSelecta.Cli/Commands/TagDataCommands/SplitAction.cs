@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -16,7 +17,7 @@ public class SplitAction : TagDataAction<SplitSettings>
 {
     private string[] separators = [",", ";", "feat."];
 
-    protected override bool BeforeProcessTagData(TagDataActionContext<SplitSettings> context)
+    protected override bool BeforeProcessTagData(ITagDataActionContext<SplitSettings> context)
     {
         if (context.Settings.Separator is not null)
         {
@@ -25,7 +26,7 @@ public class SplitAction : TagDataAction<SplitSettings>
         return true;
     }
 
-    protected override void ProcessTagData(TagDataActionContext<SplitSettings> context)
+    protected override void ProcessTagData(ITagDataActionContext<SplitSettings> context)
     {
         var artists = context.TagData.Artist.SelectMany(Split).Distinct().ToList();
         var albumArtists = context.TagData.AlbumArtist.SelectMany(Split).Distinct().ToList();

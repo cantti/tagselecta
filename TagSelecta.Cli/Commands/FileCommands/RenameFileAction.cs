@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.IO;
+using TagSelecta.Shared.IO;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.FileCommands;
@@ -22,13 +23,14 @@ public class RenameFileSettings : BaseSettings
     }
 }
 
-public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSettings>
+public class RenameFileAction(IAnsiConsole console, IFileSystem fs, ITagger tagger)
+    : FileAction<RenameFileSettings>
 {
-    protected override void ProcessFile(FileActionContext<RenameFileSettings> context)
+    protected override void ProcessFile(IFileActionContext<RenameFileSettings> context)
     {
         var dir = Path.GetDirectoryName(context.CurrentFile)!;
 
-        var tagData = Tagger.ReadTags(context.CurrentFile);
+        var tagData = tagger.ReadTags(context.CurrentFile);
 
         var formatter = new TagDataFormatter(tagData, context.CurrentFile);
 
@@ -52,7 +54,7 @@ public class RenameFileAction(IAnsiConsole console) : FileAction<RenameFileSetti
 
         if (context.ConfirmPrompt())
         {
-            File.Move(context.CurrentFile, newPath);
+            fs.Move(context.CurrentFile, newPath);
             CommandHelper.PrintStatusSuccess(console);
         }
     }

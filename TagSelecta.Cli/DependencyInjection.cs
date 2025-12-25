@@ -1,8 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using TagSelecta.Cli.Commands.FileCommands;
 using TagSelecta.Cli.Commands.TagDataCommands;
+using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared.Configuration;
+using TagSelecta.Shared.IO;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli;
 
@@ -13,6 +16,8 @@ public static class DependencyInjection
         var services = new ServiceCollection();
         services.AddDiscogs();
         services.AddTransient<IConfig, Config>();
+        services.AddTransient<IFileSystem, FileSystem>();
+        services.AddTransient<ITagger, Tagger>();
         services.AddTransient<TagDataAction<DiscogsSettings>, DiscogsAction>();
         services.AddTransient<TagDataAction<AutoTrackSettings>, AutoTrackAction>();
         services.AddTransient<TagDataAction<SplitSettings>, SplitAction>();
