@@ -9,7 +9,11 @@ public class TitleCaseSettings : BaseSettings { }
 
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
-    protected override void ProcessTagData(ITagDataActionContext<TitleCaseSettings> context)
+    protected override void ProcessTagData(
+        Item current,
+        List<Item> items,
+        TitleCaseSettings settings
+    )
     {
         foreach (
             var prop in typeof(TagData)
@@ -18,16 +22,16 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
                 .Where(p => p.Name != nameof(TagData.Custom))
         )
         {
-            var value = prop.GetValue(context.TagData)!;
+            var value = prop.GetValue(current.TagData)!;
             if (prop.PropertyType == typeof(string))
             {
                 var str = (string)value;
-                prop.SetValue(context.TagData, ToTitleCase(str));
+                prop.SetValue(current.TagData, ToTitleCase(str));
             }
             if (prop.PropertyType == typeof(List<string>))
             {
                 var list = (List<string>)value;
-                prop.SetValue(context.TagData, list.Select(ToTitleCase).ToList());
+                prop.SetValue(current.TagData, list.Select(ToTitleCase).ToList());
             }
         }
     }

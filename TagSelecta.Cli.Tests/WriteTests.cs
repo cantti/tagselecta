@@ -65,16 +65,10 @@ public class WriteTests
             Custom = [new("original_field", "original_value")],
         };
 
-        var context = new TagDataActionContext<WriteSettings>
-        {
-            Files = ["file1.mp3"],
-            Settings = settings,
-        };
-
-        context.SetCurrentFile("file1.mp3", 0, tagData);
+        var item = new Item("file.mp3", tagData);
 
         // Act
-        await action.ProcessTagDataAsync(context);
+        await action.ProcessTagDataAsync(item, [item], settings);
 
         // Assert
         Assert.Equal(settings.Album, tagData.Album);

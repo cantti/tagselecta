@@ -5,29 +5,29 @@ public abstract class TagDataAction<TSettings>
 {
     public virtual bool CompareBeforeWriteTagData => true;
 
-    protected virtual bool BeforeProcessTagData(ITagDataActionContext<TSettings> context)
+    protected virtual bool BeforeProcessTagData(TSettings settings)
     {
         return true;
     }
 
-    public virtual Task<bool> BeforeProcessTagDataAsync(ITagDataActionContext<TSettings> context)
+    public virtual Task<bool> BeforeProcessTagDataAsync(TSettings settings)
     {
-        return Task.FromResult(BeforeProcessTagData(context));
+        return Task.FromResult(BeforeProcessTagData(settings));
     }
 
-    protected virtual void ProcessTagData(ITagDataActionContext<TSettings> context) { }
+    protected virtual void ProcessTagData(Item current, List<Item> items, TSettings settings) { }
 
-    public virtual Task ProcessTagDataAsync(ITagDataActionContext<TSettings> context)
+    public virtual Task ProcessTagDataAsync(Item current, List<Item> items, TSettings settings)
     {
-        ProcessTagData(context);
+        ProcessTagData(current, items, settings);
         return Task.CompletedTask;
     }
 
-    protected virtual void BeforeWriteTagData(ITagDataActionContext<TSettings> context) { }
-
-    public virtual Task BeforeWriteTagDataAsync(ITagDataActionContext<TSettings> context)
-    {
-        BeforeWriteTagData(context);
-        return Task.CompletedTask;
-    }
+    // protected virtual void BeforeWriteTagData(TagDataActionContext<TSettings> context) { }
+    //
+    // public virtual Task BeforeWriteTagDataAsync(TagDataActionContext<TSettings> context)
+    // {
+    //     BeforeWriteTagData(context);
+    //     return Task.CompletedTask;
+    // }
 }

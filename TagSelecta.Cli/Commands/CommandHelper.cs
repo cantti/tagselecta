@@ -21,10 +21,17 @@ public static class CommandHelper
         console.MarkupLineInterpolated($"[blue]Status[/]: skipped");
     }
 
-    public static void PrintCurrentFile(IAnsiConsole console, string file, int index, int total)
+    public static void PrintCurrentFile(
+        IAnsiConsole console,
+        string command,
+        string file,
+        int index,
+        int total
+    )
     {
         // todo: make it configurable to print relative path
         file = Path.GetRelativePath(Environment.CurrentDirectory, file);
+        console.WriteLine(command);
         console.MarkupInterpolated($"[dim]>[/] [yellow]({index + 1}/{total})[/] \"");
         var path = new TextPath(file)
             .RootColor(Color.White)

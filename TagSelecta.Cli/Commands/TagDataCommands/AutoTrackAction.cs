@@ -13,19 +13,24 @@ public class AutoTrackSettings : BaseSettings
 
 public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
-    protected override void ProcessTagData(ITagDataActionContext<AutoTrackSettings> context)
+    protected override void ProcessTagData(
+        Item current,
+        List<Item> items,
+        AutoTrackSettings settings
+    )
     {
-        var dir = Directory.GetParent(context.CurrentFile)?.FullName;
-        var filesInDir = context
-            .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
+        var dir = Directory.GetParent(current.Path)?.FullName;
+        var filesInDir = items
+            .Select(x => x.Path)
+            .Where(x => Directory.GetParent(x)?.FullName == dir)
             .Order()
             .ToList();
-        context.TagData.Track = (filesInDir.IndexOf(context.CurrentFile) + 1).ToString();
-        context.TagData.TrackTotal = filesInDir.Count.ToString();
-        if (!context.Settings.KeepDisk)
+        current.TagData.Track = (filesInDir.IndexOf(current.Path) + 1).ToString();
+        current.TagData.TrackTotal = filesInDir.Count.ToString();
+        if (!settings.KeepDisk)
         {
-            context.TagData.Disc = "";
-            context.TagData.DiscTotal = "";
+            current.TagData.Disc = "";
+            current.TagData.DiscTotal = "";
         }
     }
 }

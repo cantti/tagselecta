@@ -31,23 +31,19 @@ public class DiscogsAction(
     private byte[]? _image;
     private List<string> _fieldToWriteList = [];
 
-    public override async Task<bool> BeforeProcessTagDataAsync(
-        ITagDataActionContext<DiscogsSettings> context
-    )
+    public override async Task<bool> BeforeProcessTagDataAsync(DiscogsSettings settings)
     {
-        if (context.Settings.Fields is not null)
+        if (settings.Fields is not null)
         {
-            _fieldToWriteList = TagDataActionHelper.NormalizeFieldNames(
-                context.Settings.Fields.ToMulti()
-            );
+            _fieldToWriteList = TagDataActionHelper.NormalizeFieldNames(settings.Fields.ToMulti());
             if (!TagDataActionHelper.ValidateFieldNameList(console, _fieldToWriteList))
             {
                 return false;
             }
         }
-        if (context.Settings.Release.StartsWith("http"))
+        if (settings.Release.StartsWith("http"))
         {
-            var (urlType, urlId) = GetDiscogsReleaseInfo(context.Settings.Release);
+            var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Release);
             var releaseId =
                 urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
             _release = await discogsApi.GetRelease(releaseId);
@@ -64,7 +60,7 @@ public class DiscogsAction(
         }
         else
         {
-            var search = await discogsApi.Search("master", context.Settings.Release);
+            var search = await discogsApi.Search("master", settings.Release);
             search.Results = search.Results.Take(5).ToList();
             var releases = new List<Release>();
             var index = -1;
@@ -117,11 +113,11 @@ public class DiscogsAction(
         return true;
     }
 
-    protected override void ProcessTagData(ITagDataActionContext<DiscogsSettings> context)
+    protected override void ProcessTagData(Item current, List<Item> items, DiscogsSettings settings)
     {
         _release = _release ?? throw new InvalidOperationException("Release not set");
 
-        var track = _release.TrackList[context.CurrentFileIndex];
+        var track = _release.TrackList[items.IndexOf(current)];
         var albumArtists = _release
             .Artists.Select(x => RemoveTrailingNumberParentheses(x.Name))
             .ToList();
@@ -129,70 +125,70 @@ public class DiscogsAction(
 
         if (WriteRequired(Fields.AlbumArtist))
         {
-            context.TagData.AlbumArtist = albumArtists;
+            current.TagData.AlbumArtist = albumArtists;
         }
 
         if (WriteRequired(Fields.Artist))
         {
-            context.TagData.Artist = artists.Count != 0 ? artists : albumArtists;
+            current.TagData.Artist = artists.Count != 0 ? artists : albumArtists;
         }
 
         if (WriteRequired(Fields.Album))
         {
-            context.TagData.Album = _release.Title;
+            current.TagData.Album = _release.Title;
         }
 
         if (WriteRequired(Fields.Title))
         {
-            context.TagData.Title = track.Title;
+            current.TagData.Title = track.Title;
         }
 
         if (WriteRequired(Fields.Track))
         {
-            context.TagData.Track = (context.CurrentFileIndex + 1).ToString();
+            current.TagData.Track = (items.IndexOf(current) + 1).ToString();
         }
 
         if (WriteRequired(Fields.TrackTotal))
         {
-            context.TagData.TrackTotal = _release.TrackList.Count.ToString();
+            current.TagData.TrackTotal = _release.TrackList.Count.ToString();
         }
 
         if (WriteRequired(Fields.Disc))
         {
-            context.TagData.Disc = "";
+            current.TagData.Disc = "";
         }
 
         if (WriteRequired(Fields.DiscTotal))
         {
-            context.TagData.DiscTotal = "";
+            current.TagData.DiscTotal = "";
         }
 
         if (WriteRequired(Fields.Genre))
         {
-            context.TagData.Genre = _release.Styles;
+            current.TagData.Genre = _release.Styles;
         }
 
         if (WriteRequired(Fields.Label))
         {
-            context.TagData.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
+            current.TagData.Label = _release.Labels.FirstOrDefault()?.Name ?? "";
         }
 
         if (WriteRequired(Fields.Date))
         {
-            context.TagData.Date = _release.Year.ToString();
+            current.TagData.Date = _release.Year.ToString();
         }
 
         if (WriteRequired(Fields.Picture))
         {
-            context.TagData.Picture = [new TagLib.Picture(_image)];
+            current.TagData.Picture = [new TagLib.Picture(_image)];
         }
 
         if (WriteRequired(Fields.CatalogNumber))
         {
-            context.TagData.CatalogNumber = _release.Labels.FirstOrDefault()?.CatNo ?? "";
+            current.TagData.CatalogNumber = _release.Labels.FirstOrDefault()?.CatNo ?? "";
         }
 
-        context.TagData.DiscogsReleaseId = _release.Id.ToString();
+        current.TagData.DiscogsReleaseId = _release.Id.ToString();
     }
 
     private bool WriteRequired(string fieldName)

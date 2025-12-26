@@ -17,28 +17,28 @@ public class SplitAction : TagDataAction<SplitSettings>
 {
     private string[] separators = [",", ";", "feat."];
 
-    protected override bool BeforeProcessTagData(ITagDataActionContext<SplitSettings> context)
+    protected override bool BeforeProcessTagData(SplitSettings settings)
     {
-        if (context.Settings.Separator is not null)
+        if (settings.Separator is not null)
         {
-            separators = context.Settings.Separator;
+            separators = settings.Separator;
         }
         return true;
     }
 
-    protected override void ProcessTagData(ITagDataActionContext<SplitSettings> context)
+    protected override void ProcessTagData(Item current, List<Item> items, SplitSettings settings)
     {
-        var artists = context.TagData.Artist.SelectMany(Split).Distinct().ToList();
-        var albumArtists = context.TagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
-        var composers = context
+        var artists = current.TagData.Artist.SelectMany(Split).Distinct().ToList();
+        var albumArtists = current.TagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
+        var composers = current
             .TagData.Composer.Select(Split)
             .SelectMany(x => x)
             .Distinct()
             .ToList();
 
-        context.TagData.Artist = artists;
-        context.TagData.AlbumArtist = albumArtists;
-        context.TagData.Composer = composers;
+        current.TagData.Artist = artists;
+        current.TagData.AlbumArtist = albumArtists;
+        current.TagData.Composer = composers;
     }
 
     private List<string> Split(string input)

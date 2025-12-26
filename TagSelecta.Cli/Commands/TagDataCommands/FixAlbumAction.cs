@@ -2,7 +2,6 @@ using Spectre.Console;
 using TagSelecta.Cli.Commands.TagDataCommands.Common;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Configuration;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TagDataCommands;
 
@@ -24,25 +23,25 @@ public class Album
 
 public class FixAlbumSettings : BaseSettings { }
 
-public class FixAlbumAction(IAnsiConsole console, ITagger tagger) : TagDataAction<FixAlbumSettings>
+public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettings>
 {
     private readonly List<Album> _albums = [];
 
-    protected override void ProcessTagData(ITagDataActionContext<FixAlbumSettings> context)
+    protected override void ProcessTagData(
+        Item current,
+        List<Item> items,
+        FixAlbumSettings settings
+    )
     {
-        var dir = Directory.GetParent(context.CurrentFile)!.FullName;
+        var dir = Directory.GetParent(current.Path)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
-            var filesInDir = context
-                .Files.Where(x => Directory.GetParent(x)?.FullName == dir)
-                .Order()
+            var dirTagData = items
+                .Where(x => Directory.GetParent(x.Path)?.FullName == dir)
+                .OrderBy(x => x.Path)
+                .Select(x => x.TagData)
                 .ToList();
-            var dirTagData = new List<TagData>();
-            foreach (var fileInDir in filesInDir)
-            {
-                dirTagData.Add(tagger.ReadTags(fileInDir));
-            }
 
             // find most common album name in dir
             var albumName =
@@ -121,8 +120,8 @@ public class FixAlbumAction(IAnsiConsole console, ITagger tagger) : TagDataActio
             $"The most common album mame: [yellow]{album.AlbumName.EscapeMarkup()}[/]"
         );
         console.MarkupLine($"The most common album year: [yellow]{album.Date}[/]");
-        context.TagData.AlbumArtist = album.AlbumArtists;
-        context.TagData.Album = album.AlbumName;
-        context.TagData.Date = album.Date;
+        current.TagData.AlbumArtist = album.AlbumArtists;
+        current.TagData.Album = album.AlbumName;
+        current.TagData.Date = album.Date;
     }
 }

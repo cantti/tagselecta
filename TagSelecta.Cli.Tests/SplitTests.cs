@@ -12,20 +12,12 @@ public class SplitTests
     {
         // Arrange
         var action = new SplitAction();
-
         var settings = new SplitSettings();
-
         var tagData = new TagData() { Artist = ["Artist1; Artist2"] };
-
-        var context = new TagDataActionContext<SplitSettings>
-        {
-            Files = ["file1.mp3"],
-            Settings = settings,
-        };
+        var item = new Item("file.mp3", tagData);
 
         // Act
-        context.SetCurrentFile(context.Files[0], 0, tagData);
-        await action.ProcessTagDataAsync(context);
+        await action.ProcessTagDataAsync(item, [item], settings);
 
         // Assert
         Assert.Equal("Artist1", tagData.Artist[0]);

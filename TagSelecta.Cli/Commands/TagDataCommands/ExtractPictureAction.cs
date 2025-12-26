@@ -30,13 +30,11 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 {
     private readonly List<TagLib.PictureType> _types = [];
 
-    protected override bool BeforeProcessTagData(
-        ITagDataActionContext<ExtractPictureSettings> context
-    )
+    protected override bool BeforeProcessTagData(ExtractPictureSettings settings)
     {
-        if (context.Settings.Type is not null)
+        if (settings.Type is not null)
         {
-            var typesStr = context.Settings.Type.ToMulti();
+            var typesStr = settings.Type.ToMulti();
             foreach (var typeStr in typesStr)
             {
                 if (Enum.TryParse<TagLib.PictureType>(typeStr, out var type))
@@ -48,11 +46,15 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         return true;
     }
 
-    protected override void ProcessTagData(ITagDataActionContext<ExtractPictureSettings> context)
+    protected override void ProcessTagData(
+        Item current,
+        List<Item> items,
+        ExtractPictureSettings settings
+    )
     {
-        var dir = Path.GetDirectoryName(context.CurrentFile)!;
+        var dir = Path.GetDirectoryName(current.Path)!;
         var pictures = new List<TagLib.Picture>();
-        pictures = context
+        pictures = current
             .TagData.Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
             .OrderBy(x =>
             {
@@ -66,7 +68,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             .ToList();
         for (int i = 0; i < pictures.Count; i++)
         {
-            if (context.Settings.Limit.HasValue && i >= context.Settings.Limit.Value)
+            if (settings.Limit.HasValue && i >= settings.Limit.Value)
             {
                 break;
             }
@@ -74,7 +76,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             TagLib.Picture? picture = pictures[i];
             var ext = TagLib.Picture.GetExtensionFromData(picture.Data);
 
-            var output = context.Settings.Output;
+            var output = settings.Output;
 
             string baseName;
             string finalExt;
@@ -104,7 +106,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             var fileName = baseName + finalExt;
             var filePath = Path.Combine(dir, fileName);
 
-            if (!context.Settings.Override)
+            if (!settings.Override)
             {
                 int counter = 1;
                 while (File.Exists(filePath))

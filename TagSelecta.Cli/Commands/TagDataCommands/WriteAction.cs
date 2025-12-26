@@ -119,11 +119,10 @@ public class WriteSettings : BaseSettings
 
 public class WriteAction : TagDataAction<WriteSettings>
 {
-    protected override void ProcessTagData(ITagDataActionContext<WriteSettings> context)
+    protected override void ProcessTagData(Item current, List<Item> items, WriteSettings settings)
     {
-        var settings = context.Settings;
-        var tagData = context.TagData;
-        var formatter = new TagDataFormatter(tagData.Clone(), context.CurrentFile);
+        var tagData = current.TagData;
+        var formatter = new TagDataFormatter(tagData.Clone(), current.Path);
 
         var map = new (Func<WriteSettings, object?> get, Action<string> set)[]
         {
