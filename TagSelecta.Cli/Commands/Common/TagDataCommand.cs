@@ -106,11 +106,11 @@ public class TagDataCommand<TSettings>(
             $"{operations.Count(x => x.IsSaved && x.Exception is null)}/{operations.Count} files written"
         );
 
-        if (operations.Count > 0)
+        var errorsCount = operations.Count(x => x.IsSaved && x.Exception is not null);
+
+        if (errorsCount > 0)
         {
-            console.MarkupLineInterpolated(
-                $"{operations.Count(x => x.IsSaved && x.Exception is not null)} errors"
-            );
+            console.MarkupLineInterpolated($"{errorsCount} errors");
         }
 
         return 0;
