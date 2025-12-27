@@ -32,34 +32,6 @@ public static class CommandHelper
         console.WriteLine();
     }
 
-    public static List<string> Scan(
-        IAnsiConsole console,
-        IAudioFileScanner audioFileScanner,
-        IEnumerable<string> path
-    )
-    {
-        console.MarkupLine("Searching for files...");
-        console.WriteLine();
-        return audioFileScanner.Scan(path, true);
-    }
-
-    public static List<FileWithTagData> ScanAndRead(
-        IAnsiConsole console,
-        IAudioFileScanner audioFileScanner,
-        ITagger tagger,
-        IEnumerable<string> path
-    )
-    {
-        var files = Scan(console, audioFileScanner, path);
-        var result = new List<FileWithTagData>();
-        foreach (var file in files)
-        {
-            var tagData = tagger.ReadTags(file);
-            result.Add(new() { Path = file, TagData = tagData });
-        }
-        return result;
-    }
-
     public static UserInput ReadNavigationCommand(IAnsiConsole console, bool showWrite)
     {
         console.Cursor.Hide();

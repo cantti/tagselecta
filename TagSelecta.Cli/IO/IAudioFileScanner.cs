@@ -2,5 +2,6 @@ namespace TagSelecta.Cli.IO;
 
 public interface IAudioFileScanner
 {
-    List<string> Scan(IEnumerable<string> paths, bool recursive = false);
+    List<string> Scan(IEnumerable<string> path, bool recursively);
+    List<FileWithTagData> ScanAndRead(IEnumerable<string> path);
 }

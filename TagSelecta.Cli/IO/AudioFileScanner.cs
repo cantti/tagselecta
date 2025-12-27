@@ -1,10 +1,87 @@
+using System.Collections.Concurrent;
+using Spectre.Console;
+using TagSelecta.Tagging;
+
 namespace TagSelecta.Cli.IO;
 
-public class AudioFileScanner : IAudioFileScanner
+public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFileScanner
 {
     private static readonly HashSet<string> allowedExtensions = [".mp3", ".flac", ".wav"];
 
-    public List<string> Scan(IEnumerable<string> paths, bool recursive = false)
+    public List<string> Scan(IEnumerable<string> path, bool recursively)
+    {
+        var result = AnsiConsole
+            .Status()
+            .Start("Searching for files...", ctx => Search(path, true));
+        return result;
+    }
+
+    public List<FileWithTagData> ScanAndRead(IEnumerable<string> path)
+    {
+        var files = Scan(path, true);
+        var result = new ConcurrentBag<FileWithTagData>();
+        var progressLock = new object();
+        console
+            .Progress()
+            .Start(ctx =>
+            {
+                var task = ctx.AddTask("Reading metadata...", maxValue: files.Count);
+                Parallel.ForEach(
+                    files,
+                    (file, state, index) =>
+                    {
+                        try
+                        {
+                            var tagData = tagger.ReadTags(file);
+                            result.Add(new FileWithTagData { Path = file, TagData = tagData });
+                        }
+                        catch (Exception ex)
+                        {
+                            console.WriteException(ex);
+                        }
+                        lock (progressLock)
+                        {
+                            task.Increment(1);
+                        }
+                    }
+                );
+            });
+        return result.ToList();
+    }
+
+    // public List<FileWithTagData> ScanAndRead(IEnumerable<string> path)
+    // {
+    //     var files = Scan(path, true);
+    //     var result = console
+    //         .Progress()
+    //         .Start(ctx =>
+    //         {
+    //             var task = ctx.AddTask("Reading metadata...", maxValue: files.Count);
+    //             var result = new List<FileWithTagData>();
+    //             for (var i = 0; i < files.Count; i++)
+    //             {
+    //                 var file = files[i];
+    //                 try
+    //                 {
+    //                     var tagData = tagger.ReadTags(file);
+    //                     result.Add(new FileWithTagData { Path = file, TagData = tagData });
+    //                 }
+    //                 catch (Exception ex)
+    //                 {
+    //                     console.WriteException(ex);
+    //                 }
+    //
+    //                 task.Description = $"Reading metadata for {i + 1} of {files.Count}";
+    //
+    //                 task.Increment(1);
+    //             }
+    //
+    //             return result;
+    //         });
+    //     return result;
+    // }
+
+    private List<string> Search(IEnumerable<string> paths, bool recursive = false)
     {
         var files = new List<string>();
         foreach (var path in paths)

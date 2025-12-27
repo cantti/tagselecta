@@ -26,8 +26,8 @@ public class TagDataCommand<TSettings>(
             return 0;
         }
 
-        var operations = CommandHelper
-            .ScanAndRead(console, audioFileScanner, tagger, settings.Path)
+        var operations = audioFileScanner
+            .ScanAndRead(settings.Path)
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
 
@@ -75,47 +75,27 @@ public class TagDataCommand<TSettings>(
                 console.MarkupLine("[red]Error processing file:[/]");
                 console.WriteException(item.Exception, ExceptionFormats.ShortenEverything);
             }
-            var cmd = CommandHelper.ReadNavigationCommand(
-                console,
-                item.Exception is null && !areEqual
-            );
-            if (item.Exception is null)
+            var cmd = CommandHelper.ReadNavigationCommand(console, true);
+            if (cmd == UserInput.Next)
             {
-                if (cmd == UserInput.Next)
-                {
-                    index++;
-                }
-                else if (cmd == UserInput.Previous)
-                {
-                    index--;
-                }
-                else if (cmd == UserInput.WriteAll)
-                {
-                    WriteAll(operations);
-                }
-                else if (cmd == UserInput.Write)
-                {
-                    WriteTags(item);
-                }
-                else
-                {
-                    break;
-                }
+                index++;
+            }
+            else if (cmd == UserInput.Previous)
+            {
+                index--;
+            }
+            else if (cmd == UserInput.WriteAll)
+            {
+                console.Clear();
+                WriteAll(operations);
+            }
+            else if (cmd == UserInput.Write)
+            {
+                WriteTags(item);
             }
             else
             {
-                if (cmd == UserInput.Next)
-                {
-                    index++;
-                }
-                else if (cmd == UserInput.Previous)
-                {
-                    index--;
-                }
-                else
-                {
-                    break;
-                }
+                break;
             }
         }
 
@@ -135,13 +115,23 @@ public class TagDataCommand<TSettings>(
         return 0;
     }
 
-    private void WriteAll(List<TagDataOperation> items)
+    private void WriteAll(List<TagDataOperation> operations)
     {
-        foreach (var item in items.Where(x => !x.IsSaved).ToList())
-        {
-            tagger.WriteTags(item.Path, item.TagData);
-            item.MarkSaved();
-        }
+        var operationsToWrite = operations.Where(x => !x.IsSaved).ToList();
+        console
+            .Progress()
+            .Start(ctx =>
+            {
+                var task = ctx.AddTask("Writing metadata...", maxValue: operationsToWrite.Count);
+                for (var i = 0; i < operationsToWrite.Count; i++)
+                {
+                    var operation = operationsToWrite[i];
+                    WriteTags(operation);
+                    task.Description =
+                        $"Writing metadata {i + 1} of {operationsToWrite.Count}({operation.Path})";
+                    task.Increment(1);
+                }
+            });
     }
 
     private void WriteTags(TagDataOperation operation)

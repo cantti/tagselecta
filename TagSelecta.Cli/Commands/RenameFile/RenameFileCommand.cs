@@ -20,9 +20,7 @@ public class RenameFileCommand(
     {
         AltScreen.Enter();
 
-        console.Cursor.Hide();
-
-        var files = CommandHelper.ScanAndRead(console, audioFileScanner, tagger, settings.Path);
+        var files = audioFileScanner.ScanAndRead(settings.Path);
 
         var items = new List<RenameFileOperation>();
 

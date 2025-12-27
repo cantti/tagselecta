@@ -20,18 +20,23 @@ public class RenameFileTests
             .ReturnsForAnyArgs(new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false));
         var fs = Substitute.For<IFileSystem>();
         var scanner = Substitute.For<IAudioFileScanner>();
-        scanner.Scan(new List<string>()).ReturnsForAnyArgs(["/file1.mp3"]);
-        var tagger = Substitute.For<ITagger>();
-        tagger
-            .ReadTags(Arg.Any<string>())
-            .Returns(
-                new TagData
-                {
-                    Date = "1990",
-                    Album = "Test Album",
-                    Artist = ["Test Artist"],
-                }
+        scanner
+            .ScanAndRead(new List<string>())
+            .ReturnsForAnyArgs(
+                [
+                    new FileWithTagData
+                    {
+                        Path = "/file1.mp3",
+                        TagData = new()
+                        {
+                            Date = "1990",
+                            Album = "Test Album",
+                            Artist = ["Test Artist"],
+                        },
+                    },
+                ]
             );
+        var tagger = Substitute.For<ITagger>();
         var command = new RenameFileCommand(console, tagger, fs, scanner);
         var settings = new RenameFileSettings
         {

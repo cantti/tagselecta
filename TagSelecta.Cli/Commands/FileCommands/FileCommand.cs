@@ -21,7 +21,7 @@ public class FileCommand<TSettings>(
 
         console.Cursor.Hide();
 
-        var files = CommandHelper.Scan(console, audioFileScanner, settings.Path);
+        var files = audioFileScanner.Scan(settings.Path, true);
 
         var actionContext = new FileActionContext<TSettings>(console)
         {
@@ -32,8 +32,8 @@ public class FileCommand<TSettings>(
         var currentFileIndex = 0;
         while (true)
         {
-            currentFileIndex = ClampIndex(currentFileIndex, files.Count);
             console.Clear();
+            currentFileIndex = ClampIndex(currentFileIndex, files.Count);
             var currentFile = files[currentFileIndex];
 
             CommandHelper.PrintCurrentFile(console, currentFile, currentFileIndex, files.Count);
