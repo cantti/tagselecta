@@ -66,8 +66,8 @@ The program support multiple commands:
 ### Help command
 
 ```
-/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/Commands/RenameFile/RenameFileCommand.cs(10,13): warning CS9113: Parameter 'tagger' is unread. [/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/TagSelecta.Cli.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/Commands/Find/FindCommand.cs(8,92): warning CS9113: Parameter 'tagger' is unread. [/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/TagSelecta.Cli.csproj]
+/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/Commands/RenameFile/RenameFileCommand.cs(10,13): warning CS9113: Parameter 'tagger' is unread. [/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/TagSelecta.Cli.csproj]
 USAGE:
     tagselecta <path> [OPTIONS] [COMMAND]
 
@@ -119,7 +119,7 @@ COMMANDS:
     discogs <path>           Update album from discogs. You can pass discogs    
                              release id (not master) or query to search         
     write <path>             Read and write tags. Do not specify any options for
-                             reading                                            
+                             reading. Unknown options become custom tags        
     split <path>             Split artists, album artists and composers         
     autotrack <path>         Auto track                                         
     extractpicture <path>    Extract pictures to files                          
@@ -185,7 +185,7 @@ COMMANDS:
     discogs <path>           Update album from discogs. You can pass discogs    
                              release id (not master) or query to search         
     write <path>             Read and write tags. Do not specify any options for
-                             reading                                            
+                             reading. Unknown options become custom tags        
     split <path>             Split artists, album artists and composers         
     autotrack <path>         Auto track                                         
     extractpicture <path>    Extract pictures to files                          
@@ -201,13 +201,15 @@ COMMANDS:
 
 ```
 DESCRIPTION:
-Read and write tags. Do not specify any options for reading
+Read and write tags. Do not specify any options for reading. Unknown options 
+become custom tags
 
 USAGE:
     tagselecta write <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta write song.mp3 -t 'Song 1' -a 'Artist1;Artist 2'
+    tagselecta write song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' 
+--some-custom-tag custom-value
     tagselecta write song.mp3 -c 'url=https://github.com'
     tagselecta write song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
 Artists" "-i" }}'
