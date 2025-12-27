@@ -66,6 +66,8 @@ The program support multiple commands:
 ### Help command
 
 ```
+/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/Commands/RenameFile/RenameFileCommand.cs(10,13): warning CS9113: Parameter 'tagger' is unread. [/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/TagSelecta.Cli.csproj]
+/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/Commands/Find/FindCommand.cs(8,92): warning CS9113: Parameter 'tagger' is unread. [/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/TagSelecta.Cli.csproj]
 USAGE:
     tagselecta <path> [OPTIONS] [COMMAND]
 
