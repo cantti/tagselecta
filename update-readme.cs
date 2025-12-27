@@ -28,7 +28,6 @@ internal class Program
             ("Read", "run --project ./TagSelecta.Cli -- read --help"),
             ("Write", "run --project ./TagSelecta.Cli -- write --help"),
             ("Extract Picture", "run --project ./TagSelecta.Cli -- extractpicture --help"),
-            ("Rename Directory", "run --project ./TagSelecta.Cli -- renamedir --help"),
             ("Rename File", "run --project ./TagSelecta.Cli -- renamefile --help"),
             ("Split", "run --project ./TagSelecta.Cli -- split --help"),
             ("Title case", "run --project ./TagSelecta.Cli -- titlecase --help"),

@@ -2,7 +2,7 @@ using Spectre.Console;
 
 namespace TagSelecta.Cli.Commands.FileCommands;
 
-public class FileActionContext<TSettings>(IAnsiConsole console)
+public class FileActionContext<TSettings>(IAnsiConsole console) : IFileActionContext<TSettings>
 {
     private bool _allConfirmed = false;
 

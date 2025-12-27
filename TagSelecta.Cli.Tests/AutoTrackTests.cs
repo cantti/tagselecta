@@ -1,5 +1,4 @@
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Tests.Utils;
+using TagSelecta.Cli.Commands.AutoTrack;
 
 namespace TagSelecta.Cli.Tests;
 
@@ -7,15 +6,49 @@ namespace TagSelecta.Cli.Tests;
 public class AutoTrackTests
 {
     [Fact]
-    public Task AutoTrackTest()
+    public async Task AutoTrackTest()
     {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<AutoTrackSettings>>();
-        app.Console.Input.PushTextWithEnter("y");
-        app.Console.Input.PushTextWithEnter("y");
-        app.Console.Input.PushTextWithEnter("y");
+        // Arrange
+        var action = new AutoTrackAction();
 
-        var result = app.Run("./TestData/AutoTrackTest");
+        var settings = new AutoTrackSettings { KeepDisk = true };
 
-        return Verify(result.Output);
+        var item1 = new FileWithTagData
+        {
+            Path = "file1.mp3",
+            TagData = new()
+            {
+                Disc = "1",
+                DiscTotal = "1",
+                Track = "",
+                TrackTotal = "",
+            },
+        };
+
+        var item2 = new FileWithTagData
+        {
+            Path = "file2.mp3",
+            TagData = new()
+            {
+                Disc = "1",
+                DiscTotal = "1",
+                Track = "",
+                TrackTotal = "",
+            },
+        };
+
+        // Act
+        await action.ProcessTagDataAsync(item1, [item1, item2], settings);
+        await action.ProcessTagDataAsync(item2, [item1, item2], settings);
+
+        // Assert
+        Assert.Equal("1", item1.TagData.Track);
+        Assert.Equal("2", item1.TagData.TrackTotal);
+        Assert.Equal("1", item1.TagData.Disc);
+        Assert.Equal("1", item1.TagData.DiscTotal);
+        Assert.Equal("2", item2.TagData.Track);
+        Assert.Equal("2", item2.TagData.TrackTotal);
+        Assert.Equal("1", item2.TagData.Disc);
+        Assert.Equal("1", item2.TagData.DiscTotal);
     }
 }

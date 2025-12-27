@@ -8,14 +8,14 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1"/>
-    <PackageReference Include="Spectre.Console.Testing" Version="0.53.0"/>
-    <PackageReference Include="Verify.XunitV3" Version="31.4.3"/>
-    <PackageReference Include="xunit.v3" Version="3.2.0"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="NSubstitute" Version="5.3.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
+    <PackageReference Include="Spectre.Console.Testing" Version="0.53.0" />
+    <PackageReference Include="xunit.v3" Version="3.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <Using Include="Xunit"/>
+    <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../TestData/**">
@@ -24,9 +24,9 @@
     </None>
   </ItemGroup>
   <Target Name="CleanTestData" BeforeTargets="BeforeBuild">
-    <RemoveDir Directories="$(OutDir)TestData"/>
+    <RemoveDir Directories="$(OutDir)TestData" />
   </Target>
   <ItemGroup>
-    <ProjectReference Include="..\TagSelecta.Cli\TagSelecta.Cli.csproj"/>
+    <ProjectReference Include="..\TagSelecta.Cli\TagSelecta.Cli.csproj" />
   </ItemGroup>
 </Project>

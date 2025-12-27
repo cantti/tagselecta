@@ -1,5 +1,7 @@
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Tests.Utils;
+using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.Write;
+using TagSelecta.Shared;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
 
@@ -7,35 +9,94 @@ namespace TagSelecta.Cli.Tests;
 public class WriteTests
 {
     [Fact]
-    public Task WriteTest()
+    public async Task WriteTest()
     {
-        var app = CommandAppFactory.CreateTestApp<TagDataCommand<WriteSettings>>();
-        app.Console.Input.PushTextWithEnter("y");
+        // Arrange
+        var action = new WriteAction();
 
-        var result = app.Run(
-            "./TestData/WriteTest/01 Song 1.mp3",
-            "-a",
-            "New Test Artist",
-            "-A",
-            "New Test Album Artist",
-            "-t",
-            "New Song 1",
-            "-l",
-            "New Test Album",
-            "-y",
-            "2000",
-            "-g",
-            "Reggae; Dub",
-            "-n",
-            "10",
-            "-N",
-            "20",
-            "-d",
-            "30",
-            "-D",
-            "40"
-        );
+        var settings = new WriteSettings
+        {
+            Album = "Test Album",
+            AlbumArtist = "Test Album Artist",
+            Artist = "Test Artist",
+            Bpm = "120",
+            CatalogNumber = "TEST-001",
+            Comment = "Test comment",
+            Composer = "Test Composer",
+            Conductor = "Test Conductor",
+            Copyright = "Test Copyright",
+            Date = "2025",
+            Disc = "1",
+            DiscTotal = "2",
+            DiscogsReleaseId = "123456",
+            Genre = "Test Genre",
+            Isrc = "TESTISRC123",
+            Label = "Test Label",
+            Publisher = "Test Publisher",
+            Title = "Test Title",
+            Track = "5",
+            TrackTotal = "12",
+            Custom = ["test_field=test_value"],
+        };
 
-        return Verify(result.Output);
+        var tagData = new TagData
+        {
+            Album = "Original Album",
+            AlbumArtist = ["Original Album Artist"],
+            Artist = ["Original Artist"],
+            Bpm = "90",
+            CatalogNumber = "ORIG-999",
+            Comment = "Original comment",
+            Composer = ["Original Composer"],
+            Conductor = "Original Conductor",
+            Copyright = "Original Copyright",
+            Date = "2000",
+            Disc = "1",
+            DiscTotal = "1",
+            DiscogsReleaseId = "000000",
+            Genre = ["Original Genre"],
+            Isrc = "ORIGINALISRC",
+            Label = "Original Label",
+            Publisher = "Original Publisher",
+            Title = "Original Title",
+            Track = "1",
+            TrackTotal = "10",
+            Picture = [],
+            Custom = [new("original_field", "original_value")],
+        };
+
+        var item = new FileWithTagData { Path = "file.mp3", TagData = tagData };
+
+        // Act
+        await action.ProcessTagDataAsync(item, [item], settings);
+
+        // Assert
+        Assert.Equal(settings.Album, tagData.Album);
+        Assert.Equal(settings.AlbumArtist.ToMulti(), tagData.AlbumArtist);
+        Assert.Equal(settings.Artist.ToMulti(), tagData.Artist);
+        Assert.Equal(settings.Bpm, tagData.Bpm);
+        Assert.Equal(settings.CatalogNumber, tagData.CatalogNumber);
+        Assert.Equal(settings.Comment, tagData.Comment);
+        Assert.Equal(settings.Composer.ToMulti(), tagData.Composer);
+        Assert.Equal(settings.Conductor, tagData.Conductor);
+        Assert.Equal(settings.Copyright, tagData.Copyright);
+        Assert.Equal(settings.Date, tagData.Date);
+        Assert.Equal(settings.Disc, tagData.Disc);
+        Assert.Equal(settings.DiscTotal, tagData.DiscTotal);
+        Assert.Equal(settings.DiscogsReleaseId, tagData.DiscogsReleaseId);
+        Assert.Equal(settings.Genre.ToMulti(), tagData.Genre);
+        Assert.Equal(settings.Isrc, tagData.Isrc);
+        Assert.Equal(settings.Label, tagData.Label);
+        Assert.Equal(settings.Publisher, tagData.Publisher);
+        Assert.Equal(settings.Title, tagData.Title);
+        Assert.Equal(settings.Track, tagData.Track);
+        Assert.Equal(settings.TrackTotal, tagData.TrackTotal);
+
+        // assert custom
+        Assert.Equal(2, tagData.Custom.Count);
+        Assert.Equal("original_field", tagData.Custom[0].Key);
+        Assert.Equal("original_value", tagData.Custom[0].Text);
+        Assert.Equal("test_field", tagData.Custom[1].Key);
+        Assert.Equal("test_value", tagData.Custom[1].Text);
     }
 }

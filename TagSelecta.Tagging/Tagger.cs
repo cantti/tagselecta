@@ -3,9 +3,9 @@ using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Tagging;
 
-public static class Tagger
+public class Tagger : ITagger
 {
-    public static TagData ReadTags(string file)
+    public TagData ReadTags(string file)
     {
         using var tfile = TagLib.File.Create(file);
         var processor = CreateProcessor(tfile);
@@ -13,7 +13,7 @@ public static class Tagger
         return tagData;
     }
 
-    public static void WriteTags(string file, TagData data)
+    public void WriteTags(string file, TagData data)
     {
         using var tfile = TagLib.File.Create(file);
         var processor = CreateProcessor(tfile);
@@ -21,7 +21,7 @@ public static class Tagger
         tfile.Save();
     }
 
-    public static void RemoveTags(string file)
+    public void RemoveTags(string file)
     {
         using var tfile = TagLib.File.Create(file);
         tfile.RemoveTags(TagTypes.AllTags);

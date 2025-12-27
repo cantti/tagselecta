@@ -6,87 +6,88 @@ namespace TagSelecta.Tagging;
 public class TagDataForTemplate(TagData tagData, string path)
 {
     [Description("Full file path.")]
-    public string Path => path;
+    public string Path { get; } = path;
 
     [Description("File name without extension.")]
-    public string FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
+    public string FileName { get; } = System.IO.Path.GetFileNameWithoutExtension(path);
 
     [Description("Album name.")]
-    public string Album => tagData.Album;
+    public string Album { get; } = tagData.Album;
 
     [Description("Album artists as a single string.")]
-    public string AlbumArtist => tagData.AlbumArtist.ToJoined();
+    public string AlbumArtist { get; } = tagData.AlbumArtist.ToJoined();
 
     [Description("List of album artists.")]
-    public List<string> AlbumArtists => tagData.AlbumArtist;
+    public List<string> AlbumArtists { get; } = tagData.AlbumArtist;
 
     [Description("Artists as a single string.")]
-    public string Artist => tagData.Artist.ToJoined();
+    public string Artist { get; } = tagData.Artist.ToJoined();
 
     [Description("List of artists.")]
-    public List<string> Artists => tagData.Artist;
+    public List<string> Artists { get; } = tagData.Artist;
 
     [Description("Beats per minute.")]
-    public string Bpm => tagData.Bpm;
+    public string Bpm { get; } = tagData.Bpm;
 
     [Description("Catalog number.")]
-    public string CatalogNumber => tagData.CatalogNumber;
+    public string CatalogNumber { get; } = tagData.CatalogNumber;
 
     [Description("User comment.")]
-    public string Comment => tagData.Comment;
+    public string Comment { get; } = tagData.Comment;
 
     [Description("Composers as a single string.")]
-    public string Composer => tagData.Composer.ToJoined();
+    public string Composer { get; } = tagData.Composer.ToJoined();
 
     [Description("List of composers.")]
-    public List<string> Composers => tagData.Composer;
+    public List<string> Composers { get; } = tagData.Composer;
 
     [Description("Conductor name.")]
-    public string Conductor => tagData.Conductor;
+    public string Conductor { get; } = tagData.Conductor;
 
     [Description("Copyright text.")]
-    public string Copyright => tagData.Copyright;
+    public string Copyright { get; } = tagData.Copyright;
 
     [Description("Original date value.")]
-    public string Date => tagData.Date;
+    public string Date { get; } = tagData.Date;
 
     [Description("Disc number.")]
-    public string Disc => tagData.Disc;
+    public string Disc { get; } = tagData.Disc;
 
     [Description("Total number of discs.")]
-    public string DiscTotal => tagData.DiscTotal;
+    public string DiscTotal { get; } = tagData.DiscTotal;
 
     [Description("Discogs release ID.")]
-    public string DiscogsReleaseId => tagData.DiscogsReleaseId;
+    public string DiscogsReleaseId { get; } = tagData.DiscogsReleaseId;
 
     [Description("Genres as a single string.")]
-    public string Genre => tagData.Genre.ToJoined();
+    public string Genre { get; } = tagData.Genre.ToJoined();
 
     [Description("List of genres.")]
-    public List<string> Genres => tagData.Genre;
+    public List<string> Genres { get; } = tagData.Genre;
 
     [Description("ISRC code.")]
-    public string Isrc => tagData.Isrc;
+    public string Isrc { get; } = tagData.Isrc;
 
     [Description("Record label.")]
-    public string Label => tagData.Label;
+    public string Label { get; } = tagData.Label;
 
     [Description("Publisher.")]
-    public string Publisher => tagData.Publisher;
+    public string Publisher { get; } = tagData.Publisher;
 
     [Description("Track title.")]
-    public string Title => tagData.Title;
+    public string Title { get; } = tagData.Title;
 
     [Description("Track number.")]
-    public string Track => tagData.Track;
+    public string Track { get; } = tagData.Track;
 
     [Description("Total number of tracks.")]
-    public string TrackTotal => tagData.TrackTotal;
+    public string TrackTotal { get; } = tagData.TrackTotal;
 
     [Description("Year extracted from the Date field.")]
-    public string Year => DateTime.TryParse(tagData.Date, out var d) ? d.Year.ToString() : "";
+    public string Year { get; } =
+        DateTime.TryParse(tagData.Date, out var d) ? d.Year.ToString() : "";
 
     [Description("Custom fields. Usage example: custom.url")]
-    public Dictionary<string, string> Custom =>
+    public Dictionary<string, string> Custom { get; } =
         tagData.Custom.ToDictionary(x => x.Key, x => x.Text);
 }
