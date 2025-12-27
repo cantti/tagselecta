@@ -9,9 +9,22 @@ public static class Registration
     {
         configurator
             .AddTagDataAction<WriteAction>(services, "write")
-            .WithDescription("Read and write tags. Do not specify any options for reading.")
+            .WithDescription(
+                "Read and write tags. Do not specify any options for reading. Unknown options become custom tags."
+            )
             // Basic examples
-            .WithExample(["write", "song.mp3", "-t", "'Song 1'", "-a", "'Artist1;Artist 2'"])
+            .WithExample(
+                [
+                    "write",
+                    "song.mp3",
+                    "-t",
+                    "'Song 1'",
+                    "-a",
+                    "'Artist1;Artist 2'",
+                    "--some-custom-tag",
+                    "custom-value",
+                ]
+            )
             .WithExample(["write", "song.mp3", "-c", "'url=https://github.com'"])
             .WithExample(
                 [

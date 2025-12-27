@@ -45,7 +45,7 @@ public class WriteAction : TagDataAction<WriteSettings>
         // TODO refactor code duplication etc
         foreach (var item in remainingOptions)
         {
-            var key = item.Key.Trim().TrimStart('-').ToLower();
+            var key = item.Key.Trim(' ', '-').ToLower().Replace("-", " ");
             var value = formatter.Format(item.ToJoined());
             var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
             if (customTagData is not null)
