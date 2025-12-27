@@ -69,25 +69,25 @@ USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
 EXAMPLES:
-    tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
-    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
     tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' --some-custom-tag custom-value
     tagselecta edit song.mp3 -c 'url=https://github.com'
     tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}'
+    tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    titlecase <path>         Convert all fields to title case                                                                                                        
-    discogs <path>           Update album from discogs. You can pass discogs release id (not master) or query to search                                              
     edit <path>              Edit (read and write) tags. Unrecognized options are saved as custom fields. Another way to edit custom fields is to use --custom option
-    split <path>             Split artists, album artists and composers                                                                                              
-    autotrack <path>         Auto track                                                                                                                              
     extractpicture <path>    Extract pictures to files                                                                                                               
+    titlecase <path>         Convert all fields to title case                                                                                                        
+    split <path>             Split artists, album artists and composers                                                                                              
+    discogs <path>           Update album from discogs. You can pass discogs release id (not master) or query to search                                              
+    autotrack <path>         Auto track                                                                                                                              
     fixalbum <path>          Set album name, date and album artists to the same value to all files in the same directory                                             
-    find <path>              Find files by metadata                                                                                                                  
     renamefile <path>        Rename files                                                                                                                            
+    find <path>              Find files by metadata                                                                                                                  
     helpformatting           Show help information about built-in formatting functions and field references
 ```
 

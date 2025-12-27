@@ -48,15 +48,15 @@ class Program
 
     private static void AddCommands(IConfigurator config, IServiceCollection services)
     {
-        config.AddTitleCase(services);
-        config.AddDiscogs(services);
         config.AddEdit(services);
-        config.AddSplit(services);
-        config.AddAutoTrack(services);
         config.AddExtractPicture(services);
+        config.AddTitleCase(services);
+        config.AddSplit(services);
+        config.AddDiscogs(services);
+        config.AddAutoTrack(services);
         config.AddFixAlbum(services);
-        config.AddFind(services);
         config.AddRenameFile(services);
+        config.AddFind(services);
         config.AddHelpFormatting(services);
     }
 
