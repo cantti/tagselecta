@@ -11,7 +11,7 @@ public static class Registration
             .AddTagDataAction<EditAction>(services, "edit")
             .WithAlias("e")
             .WithDescription(
-                "Edit (read and write) tags. Unrecognized options are saved as custom fields."
+                "Edit (read and write) tags. Unrecognized options are saved as custom fields. Another way to edit custom fields is to use --custom option."
             )
             // Basic examples
             .WithExample(

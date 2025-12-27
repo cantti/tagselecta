@@ -89,7 +89,7 @@ public class EditSettings : BaseSettings
 
     [CommandOption($"--{Fields.Custom}|-c")]
     [Description(
-        "Custom tags in key=value format. Use this option multiple times to include multiple fields (e.g., -c key1=value1 -c key2=value2)."
+        "Custom fields in key=value format. Use this option multiple times to include multiple fields (e.g., -c key1=value1 -c key2=value2)."
     )]
     public string[]? Custom { get; set; }
 
