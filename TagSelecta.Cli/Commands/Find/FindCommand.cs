@@ -5,7 +5,7 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.Find;
 
-public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanner, ITagger tagger)
+public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanner)
     : Command<FindSettings>
 {
     public override int Execute(CommandContext context, FindSettings settings, CancellationToken ct)

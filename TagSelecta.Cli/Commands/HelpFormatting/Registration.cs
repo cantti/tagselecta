@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.FixAlbum;
 
 namespace TagSelecta.Cli.Commands.HelpFormatting;
 

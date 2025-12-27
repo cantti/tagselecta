@@ -1,13 +1,11 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.IO;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.RenameFile;
 
 public class RenameFileCommand(
     IAnsiConsole console,
-    ITagger tagger,
     IFileSystem fs,
     IAudioFileScanner audioFileScanner
 ) : Command<RenameFileSettings>

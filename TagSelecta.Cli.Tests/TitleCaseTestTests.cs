@@ -1,4 +1,3 @@
-using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Cli.Commands.TitleCase;
 using TagSelecta.Tagging;
 

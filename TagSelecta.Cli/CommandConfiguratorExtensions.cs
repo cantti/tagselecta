@@ -40,7 +40,7 @@ public static class CommandConfiguratorExtensions
             addCommandMethod.MakeGenericMethod(commandType).Invoke(configurator, [name])!;
     }
 
-    private static Type GetSettingsTypeFromAction(Type actionType)
+    private static Type GetSettingsTypeFromAction(Type? actionType)
     {
         while (actionType != null)
         {

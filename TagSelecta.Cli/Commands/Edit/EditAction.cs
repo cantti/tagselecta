@@ -2,14 +2,14 @@ using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.Write;
+namespace TagSelecta.Cli.Commands.Edit;
 
-public class WriteAction : TagDataAction<WriteSettings>
+public class EditAction : TagDataAction<EditSettings>
 {
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,
-        WriteSettings settings,
+        EditSettings settings,
         ILookup<string, string?> remainingOptions
     )
     {
@@ -106,7 +106,7 @@ public class WriteAction : TagDataAction<WriteSettings>
 
         return;
 
-        void Write(Func<WriteSettings, string?> get, Action<string> set)
+        void Write(Func<EditSettings, string?> get, Action<string> set)
         {
             var value = get(settings);
             if (string.IsNullOrEmpty(value))

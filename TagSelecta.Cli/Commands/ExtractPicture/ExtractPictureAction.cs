@@ -31,8 +31,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
     )
     {
         var dir = Path.GetDirectoryName(current.Path)!;
-        var pictures = new List<TagLib.Picture>();
-        pictures = current
+        var pictures = current
             .TagData.Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
             .OrderBy(x =>
             {
@@ -51,7 +50,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
                 break;
             }
 
-            TagLib.Picture? picture = pictures[i];
+            var picture = pictures[i];
             var ext = TagLib.Picture.GetExtensionFromData(picture.Data);
 
             var output = settings.Output;

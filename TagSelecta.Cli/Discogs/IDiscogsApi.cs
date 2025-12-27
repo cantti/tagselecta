@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Refit;
 
 namespace TagSelecta.Cli.Discogs;

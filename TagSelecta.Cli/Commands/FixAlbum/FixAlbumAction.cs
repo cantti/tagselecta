@@ -54,7 +54,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
                 .Order()
                 .ToList();
 
-            var albumArtist = new List<string>();
+            List<string> albumArtist;
 
             // found artists that exist on all songs
             var primaryArtist = artistList

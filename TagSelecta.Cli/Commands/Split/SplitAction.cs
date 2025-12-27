@@ -4,13 +4,13 @@ namespace TagSelecta.Cli.Commands.Split;
 
 public class SplitAction : TagDataAction<SplitSettings>
 {
-    private string[] separators = [",", ";", "feat."];
+    private string[] _separators = [",", ";", "feat."];
 
     protected override bool BeforeProcessTagData(SplitSettings settings)
     {
         if (settings.Separator is not null)
         {
-            separators = settings.Separator;
+            _separators = settings.Separator;
         }
         return true;
     }
@@ -38,7 +38,7 @@ public class SplitAction : TagDataAction<SplitSettings>
     private List<string> Split(string input)
     {
         return input
-            .Split(separators, StringSplitOptions.RemoveEmptyEntries)
+            .Split(_separators, StringSplitOptions.RemoveEmptyEntries)
             .Select(x => x.Trim())
             .ToList();
     }

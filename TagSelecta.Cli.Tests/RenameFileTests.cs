@@ -37,7 +37,7 @@ public class RenameFileTests
                 ]
             );
         var tagger = Substitute.For<ITagger>();
-        var command = new RenameFileCommand(console, tagger, fs, scanner);
+        var command = new RenameFileCommand(console, fs, scanner);
         var settings = new RenameFileSettings
         {
             Template = "{{ date }} - {{ artist }} - {{ album }}",

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.ExtractPicture;
 
 namespace TagSelecta.Cli.Commands.FixAlbum;
 

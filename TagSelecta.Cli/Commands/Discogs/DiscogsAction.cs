@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Spectre.Console;
 using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Shared;
 

@@ -1,7 +1,5 @@
 using System.Text.RegularExpressions;
 using Spectre.Console;
-using TagSelecta.Cli.IO;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli;
 

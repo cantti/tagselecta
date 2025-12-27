@@ -4,7 +4,7 @@ namespace TagSelecta.Cli.Commands.FileCommands;
 
 public class FileActionContext<TSettings>(IAnsiConsole console) : IFileActionContext<TSettings>
 {
-    private bool _allConfirmed = false;
+    private bool _allConfirmed;
 
     public required List<string> Files { get; set; }
 

@@ -1,20 +1,19 @@
-using TagSelecta.Cli.Commands.Common;
-using TagSelecta.Cli.Commands.Write;
+using TagSelecta.Cli.Commands.Edit;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
 
 [Collection("Console")]
-public class WriteTests
+public class EditTests
 {
     [Fact]
-    public async Task WriteTest()
+    public async Task EditTest()
     {
         // Arrange
-        var action = new WriteAction();
+        var action = new EditAction();
 
-        var settings = new WriteSettings
+        var settings = new EditSettings
         {
             Album = "Test Album",
             AlbumArtist = "Test Album Artist",

@@ -2,8 +2,8 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.Commands.AutoTrack;
-using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Cli.Commands.Discogs;
+using TagSelecta.Cli.Commands.Edit;
 using TagSelecta.Cli.Commands.ExtractPicture;
 using TagSelecta.Cli.Commands.Find;
 using TagSelecta.Cli.Commands.FixAlbum;
@@ -11,7 +11,6 @@ using TagSelecta.Cli.Commands.HelpFormatting;
 using TagSelecta.Cli.Commands.RenameFile;
 using TagSelecta.Cli.Commands.Split;
 using TagSelecta.Cli.Commands.TitleCase;
-using TagSelecta.Cli.Commands.Write;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Cli.IO;
 using TagSelecta.Shared.Configuration;
@@ -31,7 +30,6 @@ class Program
         {
             AddCommands(config, services);
         });
-        app.SetDefaultCommand<TagDataCommand<WriteSettings>>();
         try
         {
             return app.Run(args);
@@ -52,7 +50,7 @@ class Program
     {
         config.AddTitleCase(services);
         config.AddDiscogs(services);
-        config.AddWrite(services);
+        config.AddEdit(services);
         config.AddSplit(services);
         config.AddAutoTrack(services);
         config.AddExtractPicture(services);

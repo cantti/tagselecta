@@ -66,7 +66,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.Publisher = data.Publisher;
         id3v2.Title = data.Title;
         WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
-        id3v2.Pictures = data.Picture.Select(p => new TagLib.Picture(p)).ToArray();
+        id3v2.Pictures = data.Picture.Select(p => new TagLib.Picture(p)).ToArray<TagLib.IPicture>();
         ClearUnusedUserTextFrames();
         foreach (var field in data.Custom)
         {
@@ -82,6 +82,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         {
             if (
                 frame is UserTextInformationFrame txxx
+                && txxx.Description != null
                 && !_usedUserTextFields.Contains(txxx.Description)
             )
             {

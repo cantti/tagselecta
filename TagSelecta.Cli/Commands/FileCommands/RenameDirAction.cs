@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.IO;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Tagging;
 

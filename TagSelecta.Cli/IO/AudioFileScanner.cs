@@ -6,13 +6,11 @@ namespace TagSelecta.Cli.IO;
 
 public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFileScanner
 {
-    private static readonly HashSet<string> allowedExtensions = [".mp3", ".flac", ".wav"];
+    private static readonly HashSet<string> AllowedExtensions = [".mp3", ".flac", ".wav"];
 
     public List<string> Scan(IEnumerable<string> path, bool recursively)
     {
-        var result = AnsiConsole
-            .Status()
-            .Start("Searching for files...", ctx => Search(path, true));
+        var result = AnsiConsole.Status().Start("Searching for files...", _ => Search(path, true));
         return result;
     }
 
@@ -30,7 +28,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                 var task = ctx.AddTask("Reading metadata...", maxValue: files.Count);
                 Parallel.ForEach(
                     files,
-                    (file, state, index) =>
+                    file =>
                     {
                         try
                         {
@@ -94,7 +92,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
             var fullPath = Path.GetFullPath(path);
             if (File.Exists(fullPath))
             {
-                if (allowedExtensions.Contains(Path.GetExtension(fullPath).ToLower()))
+                if (AllowedExtensions.Contains(Path.GetExtension(fullPath).ToLower()))
                 {
                     files.Add(fullPath);
                 }
@@ -117,7 +115,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                                 ).Name;
                                 return !fileName.StartsWith('.')
                                     && !dirName.StartsWith('.')
-                                    && allowedExtensions.Contains(Path.GetExtension(f).ToLower());
+                                    && AllowedExtensions.Contains(Path.GetExtension(f).ToLower());
                             })
                             .Order(),
                     ]

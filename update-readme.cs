@@ -25,8 +25,7 @@ internal class Program
         var commands = new (string DisplayName, string CommandLine)[]
         {
             ("Help", "run --project ./TagSelecta.Cli -- --help"),
-            ("Read", "run --project ./TagSelecta.Cli -- read --help"),
-            ("Write", "run --project ./TagSelecta.Cli -- write --help"),
+            ("Edit", "run --project ./TagSelecta.Cli -- edit --help"),
             ("Extract Picture", "run --project ./TagSelecta.Cli -- extractpicture --help"),
             ("Rename File", "run --project ./TagSelecta.Cli -- renamefile --help"),
             ("Split", "run --project ./TagSelecta.Cli -- split --help"),

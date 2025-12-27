@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.Split;
 
 namespace TagSelecta.Cli.Commands.AutoTrack;
 

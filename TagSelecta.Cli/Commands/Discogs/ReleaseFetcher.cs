@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging.Abstractions;
 using Spectre.Console;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared;

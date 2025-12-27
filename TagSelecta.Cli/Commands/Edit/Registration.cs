@@ -1,21 +1,22 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Cli.Commands.Write;
+namespace TagSelecta.Cli.Commands.Edit;
 
 public static class Registration
 {
-    public static void AddWrite(this IConfigurator configurator, IServiceCollection services)
+    public static void AddEdit(this IConfigurator configurator, IServiceCollection services)
     {
         configurator
-            .AddTagDataAction<WriteAction>(services, "write")
+            .AddTagDataAction<EditAction>(services, "edit")
+            .WithAlias("e")
             .WithDescription(
-                "Read and write tags. Do not specify any options for reading. Unknown options become custom tags."
+                "Edit (read and write) tags. Unrecognized options are saved as custom fields."
             )
             // Basic examples
             .WithExample(
                 [
-                    "write",
+                    "edit",
                     "song.mp3",
                     "-t",
                     "'Song 1'",
@@ -25,10 +26,10 @@ public static class Registration
                     "custom-value",
                 ]
             )
-            .WithExample(["write", "song.mp3", "-c", "'url=https://github.com'"])
+            .WithExample(["edit", "song.mp3", "-c", "'url=https://github.com'"])
             .WithExample(
                 [
-                    "write",
+                    "edit",
                     "song.mp3",
                     "-a",
                     "'{{ artist | regex.replace \"^VA$\" \"Various Artists\" \"-i\" }}'",

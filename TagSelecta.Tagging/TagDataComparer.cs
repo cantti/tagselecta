@@ -2,7 +2,7 @@ namespace TagSelecta.Tagging;
 
 public static class TagDataComparer
 {
-    public static bool AreEqual(TagData a, TagData b)
+    public static bool AreEqual(TagData? a, TagData? b)
     {
         if (ReferenceEquals(a, b))
             return true;
@@ -45,7 +45,7 @@ public static class TagDataComparer
 
     private static bool Eq(string a, string b) => a == b;
 
-    private static bool ListEq(List<string> a, List<string> b)
+    private static bool ListEq(List<string>? a, List<string>? b)
     {
         if (ReferenceEquals(a, b))
             return true;
@@ -57,7 +57,7 @@ public static class TagDataComparer
         return a.SequenceEqual(b);
     }
 
-    private static bool PictureListEq(List<TagLib.Picture> a, List<TagLib.Picture> b)
+    private static bool PictureListEq(List<TagLib.Picture>? a, List<TagLib.Picture>? b)
     {
         if (ReferenceEquals(a, b))
             return true;
@@ -89,7 +89,7 @@ public static class TagDataComparer
             && a.Data?.Data.SequenceEqual(b.Data?.Data ?? []) == true;
     }
 
-    private static bool CustomListEq(List<CustomField> a, List<CustomField> b)
+    private static bool CustomListEq(List<CustomField>? a, List<CustomField>? b)
     {
         if (ReferenceEquals(a, b))
             return true;
@@ -107,7 +107,7 @@ public static class TagDataComparer
         return true;
     }
 
-    private static bool CustomFieldEq(CustomField a, CustomField b)
+    private static bool CustomFieldEq(CustomField? a, CustomField? b)
     {
         if (ReferenceEquals(a, b))
             return true;
