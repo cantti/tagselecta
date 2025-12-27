@@ -14,7 +14,7 @@ public class SplitTests
         var action = new SplitAction();
         var settings = new SplitSettings();
         var tagData = new TagData() { Artist = ["Artist1; Artist2"] };
-        var item = new TagDataOperation("file.mp3", tagData);
+        var item = new FileWithTagData { Path = "file.mp3", TagData = tagData };
 
         // Act
         await action.ProcessTagDataAsync(item, [item], settings);

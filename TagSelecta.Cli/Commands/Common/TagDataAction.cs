@@ -1,6 +1,6 @@
 namespace TagSelecta.Cli.Commands.Common;
 
-public abstract class TagDataAction<TSettings>
+public abstract class TagDataAction<TSettings> : ITagDataAction
     where TSettings : BaseSettings
 {
     protected virtual bool BeforeProcessTagData(TSettings settings)
@@ -14,14 +14,14 @@ public abstract class TagDataAction<TSettings>
     }
 
     protected virtual void ProcessTagData(
-        TagDataOperation current,
-        List<TagDataOperation> operations,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         TSettings settings
     ) { }
 
     public virtual Task ProcessTagDataAsync(
-        TagDataOperation current,
-        List<TagDataOperation> items,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         TSettings settings
     )
     {

@@ -5,13 +5,13 @@ namespace TagSelecta.Cli.Commands.AutoTrack;
 public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
     protected override void ProcessTagData(
-        TagDataOperation current,
-        List<TagDataOperation> operations,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         AutoTrackSettings settings
     )
     {
         var dir = Directory.GetParent(current.Path)?.FullName;
-        var filesInDir = operations
+        var filesInDir = items
             .Select(x => x.Path)
             .Where(x => Directory.GetParent(x)?.FullName == dir)
             .Order()

@@ -7,50 +7,34 @@ namespace TagSelecta.Cli.Commands.Write;
 public class WriteAction : TagDataAction<WriteSettings>
 {
     protected override void ProcessTagData(
-        TagDataOperation current,
-        List<TagDataOperation> operations,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         WriteSettings settings
     )
     {
         var tagData = current.TagData;
-        var formatter = new TagDataFormatter(tagData.Clone(), current.Path);
+        var formatter = new TagDataFormatter(tagData, current.Path);
 
-        var map = new (Func<WriteSettings, object?> get, Action<string> set)[]
-        {
-            (s => s.Album, v => tagData.Album = v),
-            (s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti()),
-            (s => s.Artist, v => tagData.Artist = v.ToMulti()),
-            (s => s.Bpm, v => tagData.Bpm = v),
-            (s => s.CatalogNumber, v => tagData.CatalogNumber = v),
-            (s => s.Comment, v => tagData.Comment = v),
-            (s => s.Composer, v => tagData.Composer = v.ToMulti()),
-            (s => s.Conductor, v => tagData.Conductor = v),
-            (s => s.Copyright, v => tagData.Copyright = v),
-            (s => s.Date, v => tagData.Date = v),
-            (s => s.Disc, v => tagData.Disc = v),
-            (s => s.DiscTotal, v => tagData.DiscTotal = v),
-            (s => s.DiscogsReleaseId, v => tagData.DiscogsReleaseId = v),
-            (s => s.Genre, v => tagData.Genre = v.ToMulti()),
-            (s => s.Isrc, v => tagData.Isrc = v),
-            (s => s.Label, v => tagData.Label = v),
-            (s => s.Publisher, v => tagData.Publisher = v),
-            (s => s.Title, v => tagData.Title = v),
-            (s => s.Track, v => tagData.Track = v),
-            (s => s.TrackTotal, v => tagData.TrackTotal = v),
-            (s => s.TrackTotal, v => tagData.TrackTotal = v),
-        };
-
-        foreach (var (get, set) in map)
-        {
-            var value = get(settings);
-            if (value == null)
-            {
-                continue;
-            }
-            var str = (string)value;
-            str = formatter.Format(str);
-            set(str);
-        }
+        Write(s => s.Album, v => tagData.Album = v);
+        Write(s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti());
+        Write(s => s.Artist, v => tagData.Artist = v.ToMulti());
+        Write(s => s.Bpm, v => tagData.Bpm = v);
+        Write(s => s.CatalogNumber, v => tagData.CatalogNumber = v);
+        Write(s => s.Comment, v => tagData.Comment = v);
+        Write(s => s.Composer, v => tagData.Composer = v.ToMulti());
+        Write(s => s.Conductor, v => tagData.Conductor = v);
+        Write(s => s.Copyright, v => tagData.Copyright = v);
+        Write(s => s.Date, v => tagData.Date = v);
+        Write(s => s.Disc, v => tagData.Disc = v);
+        Write(s => s.DiscTotal, v => tagData.DiscTotal = v);
+        Write(s => s.DiscogsReleaseId, v => tagData.DiscogsReleaseId = v);
+        Write(s => s.Genre, v => tagData.Genre = v.ToMulti());
+        Write(s => s.Isrc, v => tagData.Isrc = v);
+        Write(s => s.Label, v => tagData.Label = v);
+        Write(s => s.Publisher, v => tagData.Publisher = v);
+        Write(s => s.Title, v => tagData.Title = v);
+        Write(s => s.Track, v => tagData.Track = v);
+        Write(s => s.TrackTotal, v => tagData.TrackTotal = v);
 
         if (settings.ClearCustom)
         {
@@ -104,6 +88,20 @@ public class WriteAction : TagDataAction<WriteSettings>
                 };
                 tagData.Picture.Add(picture);
             }
+        }
+
+        return;
+
+        void Write(Func<WriteSettings, string?> get, Action<string> set)
+        {
+            var value = get(settings);
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+
+            var formatted = formatter.Format(value);
+            set(formatted);
         }
     }
 }

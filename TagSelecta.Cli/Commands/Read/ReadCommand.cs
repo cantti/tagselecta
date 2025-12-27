@@ -3,9 +3,7 @@ using Spectre.Console.Cli;
 using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands;
-
-public class ReadSettings : BaseSettings { }
+namespace TagSelecta.Cli.Commands.Read;
 
 public class ReadCommand(IAnsiConsole console, IAudioFileScanner audioFileScanner, ITagger tagger)
     : Command<ReadSettings>
@@ -32,15 +30,15 @@ public class ReadCommand(IAnsiConsole console, IAudioFileScanner audioFileScanne
 
             var file = files[index];
 
-            CommandHelper.PrintCurrentFile(console, "Read", file.Path, index, files.Count);
+            CommandHelper.PrintCurrentFile(console, file.Path, index, files.Count);
 
             TagDataPrinter.PrintTagData(console, file.TagData);
             var cmd = CommandHelper.ReadNavigationCommand(console, false);
-            if (cmd == NavCommand.Next)
+            if (cmd == UserInput.Next)
             {
                 index++;
             }
-            else if (cmd == NavCommand.Previous)
+            else if (cmd == UserInput.Previous)
             {
                 index--;
             }

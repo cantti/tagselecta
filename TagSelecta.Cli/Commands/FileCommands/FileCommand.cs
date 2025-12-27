@@ -36,13 +36,7 @@ public class FileCommand<TSettings>(
             console.Clear();
             var currentFile = files[currentFileIndex];
 
-            CommandHelper.PrintCurrentFile(
-                console,
-                action.GetType().Name,
-                currentFile,
-                currentFileIndex,
-                files.Count
-            );
+            CommandHelper.PrintCurrentFile(console, currentFile, currentFileIndex, files.Count);
             try
             {
                 actionContext.SetCurrentFile(currentFile, currentFileIndex);

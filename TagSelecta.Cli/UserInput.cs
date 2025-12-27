@@ -1,6 +1,6 @@
-namespace TagSelecta.Cli.Commands;
+namespace TagSelecta.Cli;
 
-public enum NavCommand
+public enum UserInput
 {
     Next,
     Previous,

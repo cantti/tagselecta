@@ -3,7 +3,7 @@ using Spectre.Console;
 using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands;
+namespace TagSelecta.Cli;
 
 public static class CommandHelper
 {
@@ -17,17 +17,10 @@ public static class CommandHelper
         console.MarkupLineInterpolated($"[blue]Status[/]: [red]error[/]");
     }
 
-    public static void PrintCurrentFile(
-        IAnsiConsole console,
-        string command,
-        string file,
-        int index,
-        int total
-    )
+    public static void PrintCurrentFile(IAnsiConsole console, string file, int index, int total)
     {
         // todo: make it configurable to print relative path
         file = Path.GetRelativePath(Environment.CurrentDirectory, file);
-        console.WriteLine(command);
         console.MarkupInterpolated($"[dim]>[/] [yellow]({index + 1}/{total})[/] \"");
         var path = new TextPath(file)
             .RootColor(Color.White)
@@ -67,8 +60,10 @@ public static class CommandHelper
         return result;
     }
 
-    public static NavCommand ReadNavigationCommand(IAnsiConsole console, bool showWrite)
+    public static UserInput ReadNavigationCommand(IAnsiConsole console, bool showWrite)
     {
+        console.Cursor.Hide();
+
         console.WriteLine(
             $"j = next, k = previous{(showWrite ? ", w = write, a = write all" : "")}, q = quit"
         );
@@ -76,19 +71,19 @@ public static class CommandHelper
         while (true)
         {
             var key = console.Input.ReadKey(true)?.KeyChar;
-
-            switch (key)
+            UserInput? input = key switch
             {
-                case 'j':
-                    return NavCommand.Next;
-                case 'k':
-                    return NavCommand.Previous;
-                case 'w':
-                    return NavCommand.Write;
-                case 'a':
-                    return NavCommand.WriteAll;
-                case 'q':
-                    return NavCommand.Quit;
+                'j' => UserInput.Next,
+                'k' => UserInput.Previous,
+                'w' => UserInput.Write,
+                'a' => UserInput.WriteAll,
+                'q' => UserInput.Quit,
+                _ => null,
+            };
+            if (input.HasValue)
+            {
+                console.Cursor.Show();
+                return input.Value;
             }
         }
     }

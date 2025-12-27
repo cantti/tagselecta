@@ -10,8 +10,8 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
     private readonly List<Album> _albums = [];
 
     protected override void ProcessTagData(
-        TagDataOperation current,
-        List<TagDataOperation> operations,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         FixAlbumSettings settings
     )
     {
@@ -19,7 +19,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
-            var dirTagData = operations
+            var dirTagData = items
                 .Where(x => Directory.GetParent(x.Path)?.FullName == dir)
                 .OrderBy(x => x.Path)
                 .Select(x => x.TagData)

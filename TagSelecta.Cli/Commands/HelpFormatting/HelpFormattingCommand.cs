@@ -4,9 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands;
-
-public class HelpFormattingSettings : CommandSettings { }
+namespace TagSelecta.Cli.Commands.HelpFormatting;
 
 public class HelpFormattingCommand(IAnsiConsole console) : Command<HelpFormattingSettings>
 {

@@ -28,7 +28,7 @@ public class RenameFileCommand(
 
         foreach (var file in files)
         {
-            var newPath = GetNewPath(settings, file);
+            var newPath = FileRenamer.GetNewPath(settings, file);
             items.Add(new() { Path = file.Path, NewPath = newPath });
         }
 
@@ -42,7 +42,7 @@ public class RenameFileCommand(
 
             var item = items[index];
 
-            CommandHelper.PrintCurrentFile(console, "Rename File", item.Path, index, files.Count);
+            CommandHelper.PrintCurrentFile(console, item.Path, index, files.Count);
 
             var grid = new Grid();
             grid.AddColumn();
@@ -54,19 +54,20 @@ public class RenameFileCommand(
             console.Write(panel);
 
             var cmd = CommandHelper.ReadNavigationCommand(console, true);
-            if (cmd == NavCommand.Next)
+            if (cmd == UserInput.Next)
             {
                 index++;
             }
-            else if (cmd == NavCommand.Previous)
+            else if (cmd == UserInput.Previous)
             {
                 index--;
             }
-            else if (cmd == NavCommand.WriteAll)
+            else if (cmd == UserInput.WriteAll)
             {
                 WriteAll(items);
+                break;
             }
-            else if (cmd == NavCommand.Write)
+            else if (cmd == UserInput.Write)
             {
                 fs.Move(item.Path, item.NewPath);
                 item.IsSaved = true;
@@ -86,16 +87,5 @@ public class RenameFileCommand(
             fs.Move(item.Path, item.NewPath);
             item.IsSaved = true;
         }
-    }
-
-    private static string GetNewPath(RenameFileSettings settings, FileWithTagData file)
-    {
-        var dir = Path.GetDirectoryName(file.Path)!;
-        var formatter = new TagDataFormatter(file.TagData, file.Path);
-        var newName = formatter.Format(settings.Template);
-        newName = CommandHelper.CleanFileName(newName);
-        newName = $"{newName}{Path.GetExtension(file.Path)}";
-        var newPath = Path.Combine(dir, newName);
-        return newPath;
     }
 }

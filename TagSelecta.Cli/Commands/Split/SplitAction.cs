@@ -16,8 +16,8 @@ public class SplitAction : TagDataAction<SplitSettings>
     }
 
     protected override void ProcessTagData(
-        TagDataOperation current,
-        List<TagDataOperation> operations,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         SplitSettings settings
     )
     {

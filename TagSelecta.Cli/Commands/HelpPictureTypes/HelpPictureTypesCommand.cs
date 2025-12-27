@@ -1,15 +1,13 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Cli.Commands;
+namespace TagSelecta.Cli.Commands.HelpPictureTypes;
 
-public class HelpPictureTypes : CommandSettings { }
-
-public class HelpPictureTypesCommand(IAnsiConsole console) : Command<HelpPictureTypes>
+public class HelpPictureTypesCommand(IAnsiConsole console) : Command<HelpPictureTypesSettings>
 {
     public override int Execute(
         CommandContext context,
-        HelpPictureTypes settings,
+        HelpPictureTypesSettings settings,
         CancellationToken cancellationToken
     )
     {

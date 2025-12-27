@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Cli.Commands;
+namespace TagSelecta.Cli;
 
 public abstract class BaseSettings : CommandSettings
 {

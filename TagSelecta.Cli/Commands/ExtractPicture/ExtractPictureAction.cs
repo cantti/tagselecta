@@ -24,8 +24,8 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
     }
 
     protected override void ProcessTagData(
-        TagDataOperation current,
-        List<TagDataOperation> operations,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         ExtractPictureSettings settings
     )
     {

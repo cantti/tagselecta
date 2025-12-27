@@ -7,8 +7,8 @@ namespace TagSelecta.Cli.Commands.TitleCase;
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
     protected override void ProcessTagData(
-        TagDataOperation current,
-        List<TagDataOperation> operations,
+        FileWithTagData current,
+        List<FileWithTagData> items,
         TitleCaseSettings settings
     )
     {

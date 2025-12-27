@@ -21,27 +21,31 @@ public class TagDataCommand<TSettings>(
     {
         AltScreen.Enter();
 
-        console.Cursor.Hide();
-
         if (!await action.BeforeProcessTagDataAsync(settings))
         {
             return 0;
         }
 
-        var items = CommandHelper
+        var operations = CommandHelper
             .ScanAndRead(console, audioFileScanner, tagger, settings.Path)
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
 
-        foreach (var item in items)
+        foreach (var operation in operations)
         {
             try
             {
-                await action.ProcessTagDataAsync(item, items, settings);
+                await action.ProcessTagDataAsync(
+                    new FileWithTagData { Path = operation.Path, TagData = operation.TagData },
+                    operations
+                        .Select(x => new FileWithTagData { Path = x.Path, TagData = x.TagData })
+                        .ToList(),
+                    settings
+                );
             }
             catch (Exception ex)
             {
-                item.MarkError(ex);
+                operation.MarkError(ex);
             }
         }
 
@@ -51,38 +55,47 @@ public class TagDataCommand<TSettings>(
         {
             console.Clear();
 
-            index = CommandHelper.ClampIndex(index, items.Count);
+            index = CommandHelper.ClampIndex(index, operations.Count);
 
-            var item = items[index];
+            var item = operations[index];
 
-            CommandHelper.PrintCurrentFile(
-                console,
-                action.GetType().Name,
-                item.Path,
-                index,
-                items.Count
-            );
+            CommandHelper.PrintCurrentFile(console, item.Path, index, operations.Count);
 
-            if (item.Exception is null)
+            var areEqual = TagDataComparer.AreEqual(item.OriginalTagData, item.TagData);
+            if (areEqual)
+            {
+                TagDataPrinter.PrintTagData(console, item.TagData);
+            }
+            else
             {
                 TagDataPrinter.PrintComparison(console, item.OriginalTagData, item.TagData);
-                var cmd = CommandHelper.ReadNavigationCommand(console, true);
-                if (cmd == NavCommand.Next)
+            }
+            if (item.Exception is not null)
+            {
+                console.MarkupLine("[red]Error processing file:[/]");
+                console.WriteException(item.Exception, ExceptionFormats.ShortenEverything);
+            }
+            var cmd = CommandHelper.ReadNavigationCommand(
+                console,
+                item.Exception is null && !areEqual
+            );
+            if (item.Exception is null)
+            {
+                if (cmd == UserInput.Next)
                 {
                     index++;
                 }
-                else if (cmd == NavCommand.Previous)
+                else if (cmd == UserInput.Previous)
                 {
                     index--;
                 }
-                else if (cmd == NavCommand.WriteAll)
+                else if (cmd == UserInput.WriteAll)
                 {
-                    WriteAll(items);
+                    WriteAll(operations);
                 }
-                else if (cmd == NavCommand.Write && item.HasChanges)
+                else if (cmd == UserInput.Write)
                 {
-                    tagger.WriteTags(item.Path, item.TagData);
-                    item.MarkSaved();
+                    WriteTags(item);
                 }
                 else
                 {
@@ -91,13 +104,11 @@ public class TagDataCommand<TSettings>(
             }
             else
             {
-                console.WriteException(item.Exception);
-                var cmd = CommandHelper.ReadNavigationCommand(console, false);
-                if (cmd == NavCommand.Next)
+                if (cmd == UserInput.Next)
                 {
                     index++;
                 }
-                else if (cmd == NavCommand.Previous)
+                else if (cmd == UserInput.Previous)
                 {
                     index--;
                 }
@@ -110,12 +121,16 @@ public class TagDataCommand<TSettings>(
 
         AltScreen.Exit();
 
-        foreach (var item in items.Where(x => x.Exception is not null).ToList())
-        {
-            console.WriteException(item.Exception);
-        }
+        console.MarkupLineInterpolated(
+            $"{operations.Count(x => x.IsSaved && x.Exception is null)}/{operations.Count} files written"
+        );
 
-        console.MarkupLineInterpolated($"{items.Count(x => x.IsSaved)} files written");
+        if (operations.Count > 0)
+        {
+            console.MarkupLineInterpolated(
+                $"{operations.Count(x => x.IsSaved && x.Exception is not null)} errors"
+            );
+        }
 
         return 0;
     }
@@ -126,6 +141,19 @@ public class TagDataCommand<TSettings>(
         {
             tagger.WriteTags(item.Path, item.TagData);
             item.MarkSaved();
+        }
+    }
+
+    private void WriteTags(TagDataOperation operation)
+    {
+        try
+        {
+            tagger.WriteTags(operation.Path, operation.TagData);
+            operation.MarkSaved();
+        }
+        catch (Exception ex)
+        {
+            operation.MarkError(ex);
         }
     }
 }

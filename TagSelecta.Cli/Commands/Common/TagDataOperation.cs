@@ -15,7 +15,7 @@ public class TagDataOperation
     public TagData TagData { get; private set; }
     public TagData OriginalTagData { get; private set; }
     public bool IsSaved { get; private set; }
-    public Exception Exception { get; private set; }
+    public Exception? Exception { get; private set; }
 
     public bool HasChanges => !TagDataComparer.AreEqual(TagData, OriginalTagData);
 

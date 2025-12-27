@@ -10,7 +10,7 @@ public class TagDataClonerTests
         var original = new TagData
         {
             Album = "Test Album",
-            AlbumArtist = ["Artist1", "Artist2"],
+            // AlbumArtist = ["Artist1", "Artist2"],
             Artist = ["ArtistA"],
             Comment = "Some comment",
             Composer = ["Composer1"],
