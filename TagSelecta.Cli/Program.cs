@@ -5,11 +5,9 @@ using TagSelecta.Cli.Commands.AutoTrack;
 using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Cli.Commands.Discogs;
 using TagSelecta.Cli.Commands.ExtractPicture;
-using TagSelecta.Cli.Commands.FileCommands;
 using TagSelecta.Cli.Commands.Find;
 using TagSelecta.Cli.Commands.FixAlbum;
 using TagSelecta.Cli.Commands.HelpFormatting;
-using TagSelecta.Cli.Commands.HelpPictureTypes;
 using TagSelecta.Cli.Commands.RenameFile;
 using TagSelecta.Cli.Commands.Split;
 using TagSelecta.Cli.Commands.TitleCase;
@@ -61,14 +59,7 @@ class Program
         config.AddFixAlbum(services);
         config.AddFind(services);
         config.AddRenameFile(services);
-        config
-            .AddCommand<HelpFormattingCommand>("helpformatting")
-            .WithDescription(
-                "Show help information about built-in formatting functions and field references."
-            );
-        config
-            .AddCommand<HelpPictureTypesCommand>("helppicturetypes")
-            .WithDescription("Show list of supported picture types.");
+        config.AddHelpFormatting(services);
     }
 
     private static ServiceCollection ConfigureServices()
@@ -81,7 +72,7 @@ class Program
         services.AddTransient<IAudioFileScanner, AudioFileScanner>();
 
         // todo refactor that action
-        services.AddTransient<FileAction<RenameDirSettings>, RenameDirAction>();
+        // services.AddTransient<FileAction<RenameDirSettings>, RenameDirAction>();
         return services;
     }
 

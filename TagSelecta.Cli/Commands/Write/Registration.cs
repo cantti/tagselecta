@@ -9,7 +9,7 @@ public static class Registration
     {
         configurator
             .AddTagDataAction<WriteAction>(services, "write")
-            .WithDescription("Write tags.")
+            .WithDescription("Read and write tags. Do not specify any options for reading.")
             // Basic examples
             .WithExample(["write", "song.mp3", "-t", "'Song 1'", "-a", "'Artist1;Artist 2'"])
             .WithExample(["write", "song.mp3", "-c", "'url=https://github.com'"])
