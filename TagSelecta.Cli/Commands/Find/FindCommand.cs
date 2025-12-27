@@ -10,32 +10,18 @@ public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanne
 {
     public override int Execute(CommandContext context, FindSettings settings, CancellationToken ct)
     {
-        var files = audioFileScanner.Scan(settings.Path, true);
-        Parallel.ForEach(
-            files,
-            file =>
+        var files = audioFileScanner.ScanAndRead(settings.Path);
+        foreach (var file in files)
+        {
+            var formatter = new TagDataFormatter(file.TagData, file.Path);
+            var shouldPrint =
+                string.IsNullOrWhiteSpace(settings.Query)
+                || (formatter.Format("{{ " + settings.Query + " }}") == "true");
+            if (shouldPrint)
             {
-                TagData? tagData = null;
-                try
-                {
-                    tagData = tagger.ReadTags(file);
-                }
-                catch { }
-                if (tagData is null)
-                    return;
-
-                var formatter = new TagDataFormatter(tagData, file);
-
-                var shouldPrint =
-                    string.IsNullOrWhiteSpace(settings.Query)
-                    || (formatter.Format("{{ " + settings.Query + " }}") == "true");
-
-                if (shouldPrint)
-                {
-                    console.WriteLine(file);
-                }
+                console.WriteLine(file.Path);
             }
-        );
+        }
         return 0;
     }
 }
