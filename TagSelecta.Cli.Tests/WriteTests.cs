@@ -68,7 +68,7 @@ public class WriteTests
         var item = new FileWithTagData { Path = "file.mp3", TagData = tagData };
 
         // Act
-        await action.ProcessTagDataAsync(item, [item], settings);
+        await action.ProcessTagDataAsync(item, [item], settings, StringLookup.Empty());
 
         // Assert
         Assert.Equal(settings.Album, tagData.Album);

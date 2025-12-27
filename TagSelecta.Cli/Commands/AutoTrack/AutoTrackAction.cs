@@ -6,13 +6,13 @@ public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
     protected override void ProcessTagData(
         FileWithTagData current,
-        List<FileWithTagData> items,
+        List<FileWithTagData> files,
         AutoTrackSettings settings,
-        ILookup<string, string?> remainingArgs
+        ILookup<string, string?> remainingOptions
     )
     {
         var dir = Directory.GetParent(current.Path)?.FullName;
-        var filesInDir = items
+        var filesInDir = files
             .Select(x => x.Path)
             .Where(x => Directory.GetParent(x)?.FullName == dir)
             .Order()

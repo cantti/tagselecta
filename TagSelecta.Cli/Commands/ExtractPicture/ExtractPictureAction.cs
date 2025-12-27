@@ -25,9 +25,9 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 
     protected override void ProcessTagData(
         FileWithTagData current,
-        List<FileWithTagData> items,
+        List<FileWithTagData> files,
         ExtractPictureSettings settings,
-        ILookup<string, string?> remainingArgs
+        ILookup<string, string?> remainingOptions
     )
     {
         var dir = Path.GetDirectoryName(current.Path)!;

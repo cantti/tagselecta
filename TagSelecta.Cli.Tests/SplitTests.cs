@@ -17,7 +17,7 @@ public class SplitTests
         var item = new FileWithTagData { Path = "file.mp3", TagData = tagData };
 
         // Act
-        await action.ProcessTagDataAsync(item, [item], settings);
+        await action.ProcessTagDataAsync(item, [item], settings, StringLookup.Empty());
 
         // Assert
         Assert.Equal("Artist1", tagData.Artist[0]);

@@ -24,15 +24,15 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
 
     protected override void ProcessTagData(
         FileWithTagData current,
-        List<FileWithTagData> items,
+        List<FileWithTagData> files,
         DiscogsSettings settings,
-        ILookup<string, string?> remainingArgs
+        ILookup<string, string?> remainingOptions
     )
     {
         if (_release is null)
             throw new InvalidOperationException("Release not set");
 
-        var index = items.FindIndex(x => x.Path == current.Path);
+        var index = files.FindIndex(x => x.Path == current.Path);
         var track = _release.Release.TrackList[index];
 
         var albumArtists = _release

@@ -11,16 +11,16 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
 
     protected override void ProcessTagData(
         FileWithTagData current,
-        List<FileWithTagData> items,
+        List<FileWithTagData> files,
         FixAlbumSettings settings,
-        ILookup<string, string?> remainingArgs
+        ILookup<string, string?> remainingOptions
     )
     {
         var dir = Directory.GetParent(current.Path)!.FullName;
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
-            var dirTagData = items
+            var dirTagData = files
                 .Where(x => Directory.GetParent(x.Path)?.FullName == dir)
                 .OrderBy(x => x.Path)
                 .Select(x => x.TagData)
