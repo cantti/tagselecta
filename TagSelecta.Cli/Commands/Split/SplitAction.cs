@@ -18,7 +18,8 @@ public class SplitAction : TagDataAction<SplitSettings>
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> items,
-        SplitSettings settings
+        SplitSettings settings,
+        ILookup<string, string?> remainingArgs
     )
     {
         var artists = current.TagData.Artist.SelectMany(Split).Distinct().ToList();

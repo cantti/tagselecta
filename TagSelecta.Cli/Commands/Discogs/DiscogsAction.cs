@@ -25,7 +25,8 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> items,
-        DiscogsSettings settings
+        DiscogsSettings settings,
+        ILookup<string, string?> remainingArgs
     )
     {
         if (_release is null)

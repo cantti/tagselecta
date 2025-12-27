@@ -9,7 +9,8 @@ public class WriteAction : TagDataAction<WriteSettings>
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> items,
-        WriteSettings settings
+        WriteSettings settings,
+        ILookup<string, string?> remainingArgs
     )
     {
         var tagData = current.TagData;
@@ -41,6 +42,21 @@ public class WriteAction : TagDataAction<WriteSettings>
             tagData.Custom = [];
         }
 
+        foreach (var item in remainingArgs)
+        {
+            var key = item.Key.Trim().TrimStart('-').ToLower();
+            var value = formatter.Format(item.ToJoined());
+            var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
+            if (customTagData is not null)
+            {
+                customTagData.Text = value;
+            }
+            else
+            {
+                tagData.Custom.Add(new CustomField(key, value));
+            }
+        }
+
         if (settings.Custom is not null)
         {
             foreach (var entry in settings.Custom)
@@ -50,17 +66,6 @@ public class WriteAction : TagDataAction<WriteSettings>
                 var value = parts.Length > 1 ? parts[1].Trim() : "";
 
                 value = formatter.Format(value);
-
-                var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
-
-                if (customTagData is not null)
-                {
-                    customTagData.Text = value;
-                }
-                else
-                {
-                    tagData.Custom.Add(new CustomField(key, value));
-                }
             }
         }
 

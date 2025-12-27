@@ -40,7 +40,8 @@ public class TagDataCommand<TSettings>(
                     operations
                         .Select(x => new FileWithTagData { Path = x.Path, TagData = x.TagData })
                         .ToList(),
-                    settings
+                    settings,
+                    context.Remaining.Parsed
                 );
             }
             catch (Exception ex)

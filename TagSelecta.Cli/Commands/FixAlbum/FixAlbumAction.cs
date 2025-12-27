@@ -12,7 +12,8 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> items,
-        FixAlbumSettings settings
+        FixAlbumSettings settings,
+        ILookup<string, string?> remainingArgs
     )
     {
         var dir = Directory.GetParent(current.Path)!.FullName;

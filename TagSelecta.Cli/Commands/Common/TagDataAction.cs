@@ -16,16 +16,18 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     protected virtual void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> items,
-        TSettings settings
+        TSettings settings,
+        ILookup<string, string?> remainingArgs
     ) { }
 
     public virtual Task ProcessTagDataAsync(
         FileWithTagData current,
         List<FileWithTagData> items,
-        TSettings settings
+        TSettings settings,
+        ILookup<string, string?> remainingArgs
     )
     {
-        ProcessTagData(current, items, settings);
+        ProcessTagData(current, items, settings, remainingArgs);
         return Task.CompletedTask;
     }
 }
