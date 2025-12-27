@@ -1,12 +1,10 @@
-using System.Text.RegularExpressions;
-
 namespace TagSelecta.Cli.IO;
 
-public static class FileHelper
+public class AudioFileScanner : IAudioFileScanner
 {
     private static readonly HashSet<string> allowedExtensions = [".mp3", ".flac", ".wav"];
 
-    public static List<string> GetAllAudioFiles(IEnumerable<string> paths, bool recursive = false)
+    public List<string> Scan(IEnumerable<string> paths, bool recursive = false)
     {
         var files = new List<string>();
         foreach (var path in paths)
@@ -45,17 +43,5 @@ public static class FileHelper
             }
         }
         return files;
-    }
-
-    public static string CleanFileName(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return input;
-
-        input = input
-            .Replace(Path.DirectorySeparatorChar.ToString(), "")
-            .Replace(Path.AltDirectorySeparatorChar.ToString(), "");
-        input = Regex.Replace(input, @"\s+", " ");
-        return input;
     }
 }

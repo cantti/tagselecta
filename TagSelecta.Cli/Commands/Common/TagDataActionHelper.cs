@@ -1,6 +1,6 @@
 using Spectre.Console;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
+namespace TagSelecta.Cli.Commands.Common;
 
 public static class TagDataActionHelper
 {

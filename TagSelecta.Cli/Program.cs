@@ -1,9 +1,17 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.Commands;
+using TagSelecta.Cli.Commands.AutoTrack;
+using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.Discogs;
+using TagSelecta.Cli.Commands.ExtractPicture;
 using TagSelecta.Cli.Commands.FileCommands;
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Find;
+using TagSelecta.Cli.Commands.FixAlbum;
+using TagSelecta.Cli.Commands.RenameFile;
+using TagSelecta.Cli.Commands.Split;
+using TagSelecta.Cli.Commands.TitleCase;
+using TagSelecta.Cli.Commands.Write;
 
 namespace TagSelecta.Cli;
 
@@ -23,7 +31,7 @@ class Program
         var app = new CommandApp(new TypeRegistrar(DependencyInjection.Configure()));
         app.Configure(config =>
         {
-            config.AddCommand<FileCommand<ReadSettings>>("read").WithDescription("Read tags.");
+            config.AddCommand<ReadCommand>("read").WithDescription("Read tags.");
             config
                 .AddCommand<TagDataCommand<WriteSettings>>("write")
                 .WithDescription("Write tags.")
@@ -77,9 +85,7 @@ class Program
             config
                 .AddCommand<FileCommand<RenameDirSettings>>("renamedir")
                 .WithDescription("Rename directories.");
-            config
-                .AddCommand<FileCommand<RenameFileSettings>>("renamefile")
-                .WithDescription("Rename files.");
+            config.AddCommand<RenameFileCommand>("renamefile").WithDescription("Rename files.");
             config
                 .AddCommand<TagDataCommand<FixAlbumSettings>>("fixalbum")
                 .WithDescription(

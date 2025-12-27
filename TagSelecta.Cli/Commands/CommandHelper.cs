@@ -1,6 +1,7 @@
+using System.Text.RegularExpressions;
 using Spectre.Console;
-using Spectre.Console.Advanced;
 using TagSelecta.Cli.IO;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands;
 
@@ -14,11 +15,6 @@ public static class CommandHelper
     public static void PrintStatusError(IAnsiConsole console)
     {
         console.MarkupLineInterpolated($"[blue]Status[/]: [red]error[/]");
-    }
-
-    public static void PrintStatusSkipped(IAnsiConsole console)
-    {
-        console.MarkupLineInterpolated($"[blue]Status[/]: skipped");
     }
 
     public static void PrintCurrentFile(
@@ -43,20 +39,80 @@ public static class CommandHelper
         console.WriteLine();
     }
 
-    public static List<string> GetFiles(IAnsiConsole console, IEnumerable<string> path)
+    public static List<string> Scan(
+        IAnsiConsole console,
+        IAudioFileScanner audioFileScanner,
+        IEnumerable<string> path
+    )
     {
         console.MarkupLine("Searching for files...");
-
         console.WriteLine();
+        return audioFileScanner.Scan(path, true);
+    }
 
-        var files = FileHelper.GetAllAudioFiles(path, true);
+    public static List<FileWithTagData> ScanAndRead(
+        IAnsiConsole console,
+        IAudioFileScanner audioFileScanner,
+        ITagger tagger,
+        IEnumerable<string> path
+    )
+    {
+        var files = Scan(console, audioFileScanner, path);
+        var result = new List<FileWithTagData>();
+        foreach (var file in files)
+        {
+            var tagData = tagger.ReadTags(file);
+            result.Add(new() { Path = file, TagData = tagData });
+        }
+        return result;
+    }
 
-        console.MarkupLineInterpolated(
-            $"[yellow]{files.Count}[/] {(files.Count == 1 ? "file" : "files")} found."
+    public static NavCommand ReadNavigationCommand(IAnsiConsole console, bool showWrite)
+    {
+        console.WriteLine(
+            $"j = next, k = previous{(showWrite ? ", w = write, a = write all" : "")}, q = quit"
         );
 
-        console.WriteLine();
+        while (true)
+        {
+            var key = console.Input.ReadKey(true)?.KeyChar;
 
-        return files;
+            switch (key)
+            {
+                case 'j':
+                    return NavCommand.Next;
+                case 'k':
+                    return NavCommand.Previous;
+                case 'w':
+                    return NavCommand.Write;
+                case 'a':
+                    return NavCommand.WriteAll;
+                case 'q':
+                    return NavCommand.Quit;
+            }
+        }
+    }
+
+    public static int ClampIndex(int index, int count)
+    {
+        if (index < 0)
+            return 0;
+
+        if (index >= count)
+            return count - 1;
+
+        return index;
+    }
+
+    public static string CleanFileName(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        input = input
+            .Replace(Path.DirectorySeparatorChar.ToString(), "")
+            .Replace(Path.AltDirectorySeparatorChar.ToString(), "");
+        input = Regex.Replace(input, @"\s+", " ");
+        return input;
     }
 }

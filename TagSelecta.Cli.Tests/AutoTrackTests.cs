@@ -1,5 +1,5 @@
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.AutoTrack;
+using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
@@ -15,7 +15,7 @@ public class AutoTrackTests
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
-        var item1 = new Item(
+        var item1 = new TagDataOperation(
             "file1.mp3",
             new()
             {
@@ -26,7 +26,7 @@ public class AutoTrackTests
             }
         );
 
-        var item2 = new Item(
+        var item2 = new TagDataOperation(
             "file2.mp3",
             new()
             {

@@ -1,4 +1,4 @@
-namespace TagSelecta.Shared.IO;
+namespace TagSelecta.Cli.IO;
 
 public class FileSystem : IFileSystem
 {

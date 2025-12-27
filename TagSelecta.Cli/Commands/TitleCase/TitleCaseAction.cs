@@ -1,17 +1,14 @@
 using System.Globalization;
-using Spectre.Console;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
-
-public class TitleCaseSettings : BaseSettings { }
+namespace TagSelecta.Cli.Commands.TitleCase;
 
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
     protected override void ProcessTagData(
-        Item current,
-        List<Item> items,
+        TagDataOperation current,
+        List<TagDataOperation> operations,
         TitleCaseSettings settings
     )
     {

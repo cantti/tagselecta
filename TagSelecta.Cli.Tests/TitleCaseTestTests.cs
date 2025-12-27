@@ -1,5 +1,5 @@
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.TitleCase;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
@@ -17,7 +17,7 @@ public class TitleCaseTests
 
         var tagData = new TagData() { Title = "test title", Artist = ["test artist"] };
 
-        var item = new Item("file.mp3", tagData);
+        var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
         await action.ProcessTagDataAsync(item, [item], settings);

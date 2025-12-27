@@ -1,17 +1,6 @@
-using System.ComponentModel;
-using Spectre.Console;
-using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
-
-public class SplitSettings : BaseSettings
-{
-    [CommandOption("--separator|-s")]
-    // last space is reauired otherwise . deleted
-    [Description("Default values are: , ; feat. ")]
-    public string[]? Separator { get; set; }
-}
+namespace TagSelecta.Cli.Commands.Split;
 
 public class SplitAction : TagDataAction<SplitSettings>
 {
@@ -26,7 +15,11 @@ public class SplitAction : TagDataAction<SplitSettings>
         return true;
     }
 
-    protected override void ProcessTagData(Item current, List<Item> items, SplitSettings settings)
+    protected override void ProcessTagData(
+        TagDataOperation current,
+        List<TagDataOperation> operations,
+        SplitSettings settings
+    )
     {
         var artists = current.TagData.Artist.SelectMany(Split).Distinct().ToList();
         var albumArtists = current.TagData.AlbumArtist.SelectMany(Split).Distinct().ToList();

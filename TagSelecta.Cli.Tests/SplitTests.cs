@@ -1,5 +1,5 @@
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.Split;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
@@ -14,7 +14,7 @@ public class SplitTests
         var action = new SplitAction();
         var settings = new SplitSettings();
         var tagData = new TagData() { Artist = ["Artist1; Artist2"] };
-        var item = new Item("file.mp3", tagData);
+        var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
         await action.ProcessTagDataAsync(item, [item], settings);

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
+namespace TagSelecta.Cli;
 
 public static class Fields
 {

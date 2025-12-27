@@ -1,35 +1,17 @@
 using Spectre.Console;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Configuration;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
-
-public enum FixType
-{
-    PrimaryArtists,
-    AllArtists,
-    VariousArtists,
-}
-
-public class Album
-{
-    public required string Dir { get; set; }
-    public required FixType FixType { get; set; }
-    public required List<string> AlbumArtists { get; set; } = [];
-    public required string AlbumName { get; set; }
-    public required string Date { get; set; }
-}
-
-public class FixAlbumSettings : BaseSettings { }
+namespace TagSelecta.Cli.Commands.FixAlbum;
 
 public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettings>
 {
     private readonly List<Album> _albums = [];
 
     protected override void ProcessTagData(
-        Item current,
-        List<Item> items,
+        TagDataOperation current,
+        List<TagDataOperation> operations,
         FixAlbumSettings settings
     )
     {
@@ -37,7 +19,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
         var album = _albums.SingleOrDefault(x => x.Dir == dir);
         if (album is null)
         {
-            var dirTagData = items
+            var dirTagData = operations
                 .Where(x => Directory.GetParent(x.Path)?.FullName == dir)
                 .OrderBy(x => x.Path)
                 .Select(x => x.TagData)
@@ -105,7 +87,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
             };
             _albums.Add(album);
         }
-        string albumArtistMessage = album.FixType switch
+        var albumArtistMessage = album.FixType switch
         {
             FixType.PrimaryArtists =>
                 $"Primary artist(s) identified: [yellow]{album.AlbumArtists.ToJoined().EscapeMarkup()}[/]",

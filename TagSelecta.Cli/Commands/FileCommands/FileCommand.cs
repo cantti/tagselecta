@@ -1,10 +1,14 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.Cli.IO;
 
 namespace TagSelecta.Cli.Commands.FileCommands;
 
-public class FileCommand<TSettings>(FileAction<TSettings> action, IAnsiConsole console)
-    : AsyncCommand<TSettings>
+public class FileCommand<TSettings>(
+    FileAction<TSettings> action,
+    IAnsiConsole console,
+    IAudioFileScanner audioFileScanner
+) : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
     public override async Task<int> ExecuteAsync(
@@ -17,7 +21,7 @@ public class FileCommand<TSettings>(FileAction<TSettings> action, IAnsiConsole c
 
         console.Cursor.Hide();
 
-        var files = CommandHelper.GetFiles(console, settings.Path);
+        var files = CommandHelper.Scan(console, audioFileScanner, settings.Path);
 
         var actionContext = new FileActionContext<TSettings>(console)
         {

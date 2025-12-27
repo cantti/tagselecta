@@ -1,7 +1,7 @@
 using NSubstitute;
 using Spectre.Console;
 using TagSelecta.Cli.Commands.FileCommands;
-using TagSelecta.Shared.IO;
+using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;

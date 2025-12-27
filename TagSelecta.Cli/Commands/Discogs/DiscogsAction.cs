@@ -1,25 +1,11 @@
-using System.ComponentModel;
 using System.Text.RegularExpressions;
 using Spectre.Console;
-using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Exceptions;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
-
-public class DiscogsSettings : BaseSettings
-{
-    [CommandOption("--release|-r")]
-    public string Release { get; set; } = "";
-
-    [CommandOption("--fields|-f")]
-    [Description(
-        "Fields to update from Discogs release. If not specified, all values will be updated"
-    )]
-    public string? Fields { get; set; }
-}
+namespace TagSelecta.Cli.Commands.Discogs;
 
 public class DiscogsAction(
     IDiscogsApi discogsApi,
@@ -113,11 +99,15 @@ public class DiscogsAction(
         return true;
     }
 
-    protected override void ProcessTagData(Item current, List<Item> items, DiscogsSettings settings)
+    protected override void ProcessTagData(
+        TagDataOperation current,
+        List<TagDataOperation> operations,
+        DiscogsSettings settings
+    )
     {
         _release = _release ?? throw new InvalidOperationException("Release not set");
 
-        var track = _release.TrackList[items.IndexOf(current)];
+        var track = _release.TrackList[operations.IndexOf(current)];
         var albumArtists = _release
             .Artists.Select(x => RemoveTrailingNumberParentheses(x.Name))
             .ToList();
@@ -145,7 +135,7 @@ public class DiscogsAction(
 
         if (WriteRequired(Fields.Track))
         {
-            current.TagData.Track = (items.IndexOf(current) + 1).ToString();
+            current.TagData.Track = (operations.IndexOf(current) + 1).ToString();
         }
 
         if (WriteRequired(Fields.TrackTotal))

@@ -1,23 +1,16 @@
-using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands;
+namespace TagSelecta.Cli.Commands.Find;
 
-public class FindSettings : BaseSettings
-{
-    [CommandOption("--query|-q")]
-    [Description("Find query")]
-    public string Query { get; set; } = "";
-}
-
-public class FindCommand(IAnsiConsole console, ITagger tagger) : Command<FindSettings>
+public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanner, ITagger tagger)
+    : Command<FindSettings>
 {
     public override int Execute(CommandContext context, FindSettings settings, CancellationToken ct)
     {
-        var files = FileHelper.GetAllAudioFiles(settings.Path, true);
+        var files = audioFileScanner.Scan(settings.Path, true);
         Parallel.ForEach(
             files,
             file =>

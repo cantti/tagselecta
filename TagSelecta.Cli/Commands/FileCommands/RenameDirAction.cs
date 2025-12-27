@@ -41,7 +41,7 @@ public class RenameDirAction(IAnsiConsole console, ITagger tagger) : FileAction<
 
         var newName = formatter.Format(context.Settings.Template);
 
-        newName = FileHelper.CleanFileName(newName);
+        newName = CommandHelper.CleanFileName(newName);
 
         var newPath = GetNewPath(dir, newName);
 

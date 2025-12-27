@@ -1,26 +1,17 @@
-using System.ComponentModel;
-using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
 
-namespace TagSelecta.Cli.Commands.TagDataCommands;
-
-public class AutoTrackSettings : BaseSettings
-{
-    [CommandOption("--keepdisk")]
-    [Description("Remove Disc and DiscTotal")]
-    public bool KeepDisk { get; set; }
-}
+namespace TagSelecta.Cli.Commands.AutoTrack;
 
 public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
     protected override void ProcessTagData(
-        Item current,
-        List<Item> items,
+        TagDataOperation current,
+        List<TagDataOperation> operations,
         AutoTrackSettings settings
     )
     {
         var dir = Directory.GetParent(current.Path)?.FullName;
-        var filesInDir = items
+        var filesInDir = operations
             .Select(x => x.Path)
             .Where(x => Directory.GetParent(x)?.FullName == dir)
             .Order()

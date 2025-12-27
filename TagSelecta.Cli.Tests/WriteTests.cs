@@ -1,5 +1,5 @@
-using TagSelecta.Cli.Commands.TagDataCommands;
-using TagSelecta.Cli.Commands.TagDataCommands.Common;
+using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.Write;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
@@ -65,7 +65,7 @@ public class WriteTests
             Custom = [new("original_field", "original_value")],
         };
 
-        var item = new Item("file.mp3", tagData);
+        var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
         await action.ProcessTagDataAsync(item, [item], settings);
