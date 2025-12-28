@@ -19,6 +19,11 @@ public class TagDataCommand<TSettings>(
         CancellationToken ct
     )
     {
+        if (!ValidateOptions(context))
+        {
+            return 1;
+        }
+
         AltScreen.Enter();
 
         if (!await action.BeforeProcessTagDataAsync(settings))
@@ -36,12 +41,9 @@ public class TagDataCommand<TSettings>(
             try
             {
                 await action.ProcessTagDataAsync(
-                    new FileWithTagData { Path = operation.Path, TagData = operation.TagData },
-                    operations
-                        .Select(x => new FileWithTagData { Path = x.Path, TagData = x.TagData })
-                        .ToList(),
-                    settings,
-                    context.Remaining.Parsed
+                    new FileWithTagData(operation.Path, operation.TagData),
+                    operations.Select(x => new FileWithTagData(x.Path, x.TagData)).ToList(),
+                    settings
                 );
             }
             catch (Exception ex)
@@ -114,6 +116,24 @@ public class TagDataCommand<TSettings>(
         }
 
         return 0;
+    }
+
+    private bool ValidateOptions(CommandContext context)
+    {
+        var unknownOptions = context
+            .Remaining.Parsed.Select(kvp => kvp.Key)
+            .Concat(context.Remaining.Raw)
+            .ToList();
+        if (unknownOptions.Count != 0)
+        {
+            console.MarkupLine($"[red]Unknown option(s) provided:[/]");
+            foreach (var option in unknownOptions)
+            {
+                console.MarkupLine($"  [yellow]{option}[/]");
+            }
+            return false;
+        }
+        return true;
     }
 
     private void WriteAll(List<TagDataOperation> operations)

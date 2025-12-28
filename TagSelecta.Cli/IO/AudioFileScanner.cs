@@ -33,7 +33,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                         try
                         {
                             var tagData = tagger.ReadTags(file);
-                            result.Add(new FileWithTagData { Path = file, TagData = tagData });
+                            result.Add(new FileWithTagData(file, tagData));
                         }
                         catch (Exception ex)
                         {
@@ -115,7 +115,9 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                                 ).Name;
                                 return !fileName.StartsWith('.')
                                     && !dirName.StartsWith('.')
-                                    && AllowedExtensions.Contains(Path.GetExtension(f).ToLower());
+                                    && AllowedExtensions.Contains(
+                                        Path.GetExtension(f).ToLowerInvariant()
+                                    );
                             })
                             .Order(),
                     ]

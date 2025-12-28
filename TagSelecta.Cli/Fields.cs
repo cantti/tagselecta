@@ -26,7 +26,7 @@ public static class Fields
     public const string TrackTotal = "tracktotal";
     public const string Picture = "picture";
     public const string PictureType = "picturetype";
-    public const string Custom = "custom";
+    public const string Set = "set";
 
     public static IReadOnlyList<string> All { get; } =
         typeof(Fields)

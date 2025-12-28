@@ -1,4 +1,5 @@
 using TagSelecta.Cli.Commands.AutoTrack;
+using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
 
@@ -13,33 +14,31 @@ public class AutoTrackTests
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
-        var item1 = new FileWithTagData
-        {
-            Path = "file1.mp3",
-            TagData = new()
+        var item1 = new FileWithTagData(
+            "file1.mp3",
+            new TagData()
             {
                 Disc = "1",
                 DiscTotal = "1",
                 Track = "",
                 TrackTotal = "",
-            },
-        };
+            }
+        );
 
-        var item2 = new FileWithTagData
-        {
-            Path = "file2.mp3",
-            TagData = new()
+        var item2 = new FileWithTagData(
+            "file2.mp3",
+            new TagData
             {
                 Disc = "1",
                 DiscTotal = "1",
                 Track = "",
                 TrackTotal = "",
-            },
-        };
+            }
+        );
 
         // Act
-        await action.ProcessTagDataAsync(item1, [item1, item2], settings, StringLookup.Empty());
-        await action.ProcessTagDataAsync(item2, [item1, item2], settings, StringLookup.Empty());
+        await action.ProcessTagDataAsync(item1, [item1, item2], settings);
+        await action.ProcessTagDataAsync(item2, [item1, item2], settings);
 
         // Assert
         Assert.Equal("1", item1.TagData.Track);

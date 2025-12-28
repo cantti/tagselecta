@@ -16,10 +16,10 @@ public class TitleCaseTests
 
         var tagData = new TagData() { Title = "test title", Artist = ["test artist"] };
 
-        var item = new FileWithTagData { Path = "file.mp3", TagData = tagData };
+        var item = new FileWithTagData("file.mp3", tagData);
 
         // Act
-        await action.ProcessTagDataAsync(item, [item], settings, StringLookup.Empty());
+        await action.ProcessTagDataAsync(item, [item], settings);
 
         // Assert
         Assert.Equal("Test Title", tagData.Title);

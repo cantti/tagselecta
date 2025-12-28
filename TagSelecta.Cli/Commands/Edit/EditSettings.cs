@@ -27,11 +27,11 @@ public class EditSettings : BaseSettings
     [Description("Catalog number.")]
     public string? CatalogNumber { get; set; }
 
-    [CommandOption($"--{Fields.Comment}|-C")]
+    [CommandOption($"--{Fields.Comment}|-c")]
     [Description("Comment or notes.")]
     public string? Comment { get; set; }
 
-    [CommandOption($"--{Fields.Composer}")]
+    [CommandOption($"--{Fields.Composer}|-C")]
     [Description("Composer.")]
     public string? Composer { get; set; }
 
@@ -87,14 +87,14 @@ public class EditSettings : BaseSettings
     [Description("Total number of tracks.")]
     public string? TrackTotal { get; set; }
 
-    [CommandOption($"--{Fields.Custom}|-c")]
+    [CommandOption($"--{Fields.Set}|-s")]
     [Description(
         "Custom fields in key=value format. Use this option multiple times to include multiple fields (e.g., -c key1=value1 -c key2=value2)."
     )]
-    public string[]? Custom { get; set; }
+    public string[]? Set { get; set; }
 
     [CommandOption("--clearcustom")]
-    [Description("Clear all other custom tags, not specified using --custom or -c")]
+    [Description("Clear all other custom fields.")]
     public bool ClearCustom { get; set; }
 
     [CommandOption($"--{Fields.Picture}|-p")]

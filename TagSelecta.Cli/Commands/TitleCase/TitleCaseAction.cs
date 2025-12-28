@@ -9,8 +9,7 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,
-        TitleCaseSettings settings,
-        ILookup<string, string?> remainingOptions
+        TitleCaseSettings settings
     )
     {
         foreach (

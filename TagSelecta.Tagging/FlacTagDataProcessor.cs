@@ -131,10 +131,13 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
 
         foreach (var key in xiph)
         {
-            if (_usedXiphFields.Contains(key))
+            var normKey = key.NormalizeKey();
+
+            if (_usedXiphFields.Contains(normKey))
                 continue;
 
             var values = xiph.GetField(key) ?? [];
+
             result.Add(new CustomField(key, values.ToJoined()));
         }
 

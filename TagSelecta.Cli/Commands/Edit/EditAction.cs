@@ -9,8 +9,7 @@ public class EditAction : TagDataAction<EditSettings>
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,
-        EditSettings settings,
-        ILookup<string, string?> remainingOptions
+        EditSettings settings
     )
     {
         var tagData = current.TagData;
@@ -42,39 +41,15 @@ public class EditAction : TagDataAction<EditSettings>
             tagData.Custom = [];
         }
 
-        // TODO refactor code duplication etc
-        foreach (var item in remainingOptions)
+        if (settings.Set is not null)
         {
-            var key = item.Key.Trim(' ', '-').ToLower().Replace("-", " ");
-            var value = formatter.Format(item.ToJoined());
-            var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
-            if (customTagData is not null)
-            {
-                customTagData.Text = value;
-            }
-            else
-            {
-                tagData.Custom.Add(new CustomField(key, value));
-            }
-        }
-
-        if (settings.Custom is not null)
-        {
-            foreach (var entry in settings.Custom)
+            foreach (var entry in settings.Set)
             {
                 var parts = entry.Split('=', 2);
-                var key = parts[0].Trim().ToLower();
+                var key = parts[0].NormalizeKey();
                 var value = parts.Length > 1 ? parts[1].Trim() : "";
                 value = formatter.Format(value);
-                var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
-                if (customTagData is not null)
-                {
-                    customTagData.Text = value;
-                }
-                else
-                {
-                    tagData.Custom.Add(new CustomField(key, value));
-                }
+                WriteSet(tagData, key, value);
             }
         }
 
@@ -116,6 +91,39 @@ public class EditAction : TagDataAction<EditSettings>
 
             var formatted = formatter.Format(value);
             set(formatted);
+        }
+    }
+
+    private static void WriteSet(TagData tagData, string key, string value)
+    {
+        var prop = typeof(TagData)
+            .GetProperties()
+            .SingleOrDefault(x =>
+                x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                && (x.PropertyType == typeof(string) || x.PropertyType == typeof(List<string>))
+            );
+        if (prop is not null)
+        {
+            if (prop.PropertyType == typeof(string))
+            {
+                prop.SetValue(tagData, value);
+            }
+            else
+            {
+                prop.SetValue(tagData, new List<string> { value });
+            }
+        }
+        else
+        {
+            var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
+            if (customTagData is not null)
+            {
+                customTagData.Text = value;
+            }
+            else
+            {
+                tagData.Custom.Add(new CustomField(key, value));
+            }
         }
     }
 }

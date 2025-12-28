@@ -1,20 +1,24 @@
+using TagSelecta.Shared;
+
 namespace TagSelecta.Tagging;
 
 public class CustomField
 {
     public CustomField(string key, string text)
     {
-        Key = key;
-        Text = text;
+        Key = !string.IsNullOrEmpty(key)
+            ? key.NormalizeKey()
+            : throw new ArgumentException("Key cannot be null or empty", nameof(key));
+        Text = text; // Goes through the property setter for validation
     }
 
-    private string _key = string.Empty;
+    public string Key { get; }
 
-    public string Key
+    private string _text = string.Empty;
+    public string Text
     {
-        get => _key;
-        set => _key = value.ToLowerInvariant();
+        get => _text;
+        set =>
+            _text = value ?? throw new ArgumentNullException(nameof(Text), "Text cannot be null");
     }
-
-    public string Text { get; set; }
 }

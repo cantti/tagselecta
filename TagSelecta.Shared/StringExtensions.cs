@@ -15,6 +15,11 @@ public static class StringListExtensions
         return str.Split(";").Select(x => x.Trim()).ToList();
     }
 
+    public static string NormalizeKey(this string? value)
+    {
+        return value?.Trim().ToLowerInvariant() ?? string.Empty;
+    }
+
     public static string ToSpacedWords(this string input)
     {
         if (string.IsNullOrWhiteSpace(input))

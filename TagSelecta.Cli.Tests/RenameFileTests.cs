@@ -24,16 +24,15 @@ public class RenameFileTests
             .ScanAndRead(new List<string>())
             .ReturnsForAnyArgs(
                 [
-                    new FileWithTagData
-                    {
-                        Path = "/file1.mp3",
-                        TagData = new()
+                    new FileWithTagData(
+                        "/file1.mp3",
+                        new TagData
                         {
                             Date = "1990",
                             Album = "Test Album",
                             Artist = ["Test Artist"],
-                        },
-                    },
+                        }
+                    ),
                 ]
             );
         var tagger = Substitute.For<ITagger>();
@@ -59,11 +58,10 @@ public class RenameFileTests
     {
         var settings = new RenameFileSettings { Template = "{{artist}} - {{title}}" };
 
-        var file = new FileWithTagData
-        {
-            Path = Path.Combine("/Music", "oldname.mp3"),
-            TagData = new TagData { Artist = ["Artist"], Title = "Title" },
-        };
+        var file = new FileWithTagData(
+            Path.Combine("/Music", "oldname.mp3"),
+            new TagData { Artist = ["Artist"], Title = "Title" }
+        );
 
         var result = FileRenamer.GetNewPath(settings, file);
 

@@ -80,22 +80,22 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
 
         foreach (var frame in id3v2.GetFrames())
         {
-            if (
-                frame is UserTextInformationFrame txxx
-                && txxx.Description != null
-                && !_usedUserTextFields.Contains(txxx.Description)
-            )
+            if (frame is UserTextInformationFrame txxx)
             {
-                var description = txxx.Description?.ToLowerInvariant() ?? "";
+                var key = txxx.Description.NormalizeKey();
+                if (_usedUserTextFields.Contains(key))
+                {
+                    continue;
+                }
                 var text = txxx.Text.ToJoined();
-                var existing = list.SingleOrDefault(x => x.Key == description);
+                var existing = list.SingleOrDefault(x => x.Key == key);
                 if (existing != null)
                 {
                     existing.Text = $"{existing.Text}; {text}";
                 }
                 else
                 {
-                    list.Add(new(description, text));
+                    list.Add(new(key, text));
                 }
             }
         }

@@ -7,8 +7,7 @@ public class AutoTrackAction : TagDataAction<AutoTrackSettings>
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,
-        AutoTrackSettings settings,
-        ILookup<string, string?> remainingOptions
+        AutoTrackSettings settings
     )
     {
         var dir = Directory.GetParent(current.Path)?.FullName;

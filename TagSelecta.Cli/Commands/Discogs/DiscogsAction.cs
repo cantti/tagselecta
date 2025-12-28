@@ -24,8 +24,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,
-        DiscogsSettings settings,
-        ILookup<string, string?> remainingOptions
+        DiscogsSettings settings
     )
     {
         if (_release is null)
@@ -74,7 +73,8 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
 
     private bool WriteRequired(string fieldName)
     {
-        return _fieldToWriteList.Count == 0 || _fieldToWriteList.Contains(fieldName.ToLower());
+        return _fieldToWriteList.Count == 0
+            || _fieldToWriteList.Contains(fieldName.ToLowerInvariant());
     }
 
     private static string RemoveTrailingNumberParentheses(string input)
