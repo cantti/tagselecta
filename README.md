@@ -70,7 +70,7 @@ USAGE:
 
 EXAMPLES:
     tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' --some-custom-tag custom-value
-    tagselecta edit song.mp3 -c 'url=https://github.com'
+    tagselecta edit song.mp3 -s 'url=https://github.com'
     tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}'
     tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
@@ -310,7 +310,7 @@ REPLACE='regex.replace "^va$" "Various Artists" "-i"' tagselecta edit . -a "{{ a
 Common action to remove fields you do not need. The command below will remove label and catalognumber and all custom fields except url.
 
 ```sh
-tagselecta edit ./song.mp3 --label '' --catalognumber '' --clearcustom --custom 'url={{ custom.url }}'
+tagselecta edit ./song.mp3 --label '' --catalognumber '' --clearcustom -s 'url={{ custom.url }}'
 ```
 
 Or just remove all custom tags:

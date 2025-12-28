@@ -22,8 +22,8 @@ public static class Registration
                     "'Song 1'",
                     "-a",
                     "'Artist1;Artist 2'",
-                    "--some-custom-tag",
-                    "custom-value",
+                    "-s",
+                    "description=test",
                 ]
             )
             .WithExample(["edit", "song.mp3", "-c", "'url=https://github.com'"])
