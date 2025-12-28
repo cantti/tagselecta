@@ -35,7 +35,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
 
     public override TagData Read()
     {
-        return new TagData
+        var tagData = new TagData
         {
             Album = ReadField("album"),
             AlbumArtist = ReadFieldMulti("albumartist"),
@@ -58,8 +58,9 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             Track = ReadField("tracknumber"),
             TrackTotal = ReadField("tracktotal"),
             Picture = flac.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
-            Custom = ReadCustomFields(),
         };
+        ReadCustomFields(tagData);
+        return tagData;
     }
 
     public override void Write(TagData data)
@@ -125,10 +126,8 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         }
     }
 
-    private List<CustomField> ReadCustomFields()
+    private void ReadCustomFields(TagData tagData)
     {
-        var result = new List<CustomField>();
-
         foreach (var key in xiph)
         {
             var normKey = key.NormalizeKey();
@@ -137,10 +136,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
                 continue;
 
             var values = xiph.GetField(key) ?? [];
-
-            result.Add(new CustomField(key, values.ToJoined()));
+            tagData.SetCustomField(normKey, values.ToJoined());
         }
-
-        return result.OrderBy(x => x.Key).ToList();
     }
 }

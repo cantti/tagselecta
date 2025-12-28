@@ -36,6 +36,8 @@ public class TagDataCommand<TSettings>(
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
 
+        console.WriteLine(operations.Count + " files found");
+
         foreach (var operation in operations)
         {
             try

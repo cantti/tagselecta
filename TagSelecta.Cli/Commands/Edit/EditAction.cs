@@ -38,7 +38,7 @@ public class EditAction : TagDataAction<EditSettings>
 
         if (settings.ClearCustom)
         {
-            tagData.Custom = [];
+            tagData.ClearCustomFields();
         }
 
         if (settings.Set is not null)
@@ -115,15 +115,9 @@ public class EditAction : TagDataAction<EditSettings>
         }
         else
         {
-            var customTagData = tagData.Custom.SingleOrDefault(x => x.Key == key);
-            if (customTagData is not null)
-            {
-                customTagData.Text = value;
-            }
-            else
-            {
-                tagData.Custom.Add(new CustomField(key, value));
-            }
+            tagData.SetCustomField(key, value);
         }
     }
+
+    void Test() { }
 }

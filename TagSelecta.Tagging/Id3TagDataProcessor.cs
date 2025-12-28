@@ -18,7 +18,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
 
     public override TagData Read()
     {
-        return new TagData
+        var tagData = new TagData
         {
             Album = id3v2.Album ?? "",
             AlbumArtist = id3v2.AlbumArtists.ToList(),
@@ -41,8 +41,9 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             Track = GetTextValueAndTotal("TRCK").Value,
             TrackTotal = GetTextValueAndTotal("TRCK").Total,
             Picture = id3v2.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
-            Custom = ReadCustomFields(),
         };
+        ReadCustomFields(tagData);
+        return tagData;
     }
 
     public override void Write(TagData data)
@@ -74,10 +75,8 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         }
     }
 
-    private List<CustomField> ReadCustomFields()
+    private void ReadCustomFields(TagData tagData)
     {
-        var list = new List<CustomField>();
-
         foreach (var frame in id3v2.GetFrames())
         {
             if (frame is UserTextInformationFrame txxx)
@@ -88,18 +87,13 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                     continue;
                 }
                 var text = txxx.Text.ToJoined();
-                var existing = list.SingleOrDefault(x => x.Key == key);
-                if (existing != null)
-                {
-                    existing.Text = $"{existing.Text}; {text}";
-                }
-                else
-                {
-                    list.Add(new(key, text));
-                }
+                var existing = tagData.Custom.SingleOrDefault(x => x.Key == key);
+                tagData.SetCustomField(
+                    key,
+                    existing is not null ? $"{existing.Text}; {text}" : text
+                );
             }
         }
-        return list.OrderBy(x => x.Key).ToList();
     }
 
     private string GetText(string ident)

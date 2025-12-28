@@ -11,8 +11,9 @@ public static class TagDataComparer
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
-                .Where(p => p.Name != nameof(TagData.Picture))
-                .Where(p => p.Name != nameof(TagData.Custom))
+                .Where(p =>
+                    p.PropertyType == typeof(string) || p.PropertyType == typeof(List<string>)
+                )
         )
         {
             if (prop.PropertyType == typeof(string))
@@ -89,7 +90,7 @@ public static class TagDataComparer
             && a.Data?.Data.SequenceEqual(b.Data?.Data ?? []) == true;
     }
 
-    private static bool CustomListEq(List<CustomField>? a, List<CustomField>? b)
+    private static bool CustomListEq(IReadOnlyList<CustomField>? a, IReadOnlyList<CustomField>? b)
     {
         if (ReferenceEquals(a, b))
             return true;
@@ -100,20 +101,10 @@ public static class TagDataComparer
 
         for (int i = 0; i < a.Count; i++)
         {
-            if (!CustomFieldEq(a[i], b[i]))
+            if (!(a[i] == b[i]))
                 return false;
         }
 
         return true;
-    }
-
-    private static bool CustomFieldEq(CustomField? a, CustomField? b)
-    {
-        if (ReferenceEquals(a, b))
-            return true;
-        if (a == null || b == null)
-            return false;
-
-        return Eq(a.Key, b.Key) && Eq(a.Text, b.Text);
     }
 }

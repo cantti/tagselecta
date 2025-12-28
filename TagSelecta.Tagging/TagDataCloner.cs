@@ -4,11 +4,8 @@ public static class TagDataCloner
 {
     public static TagData Clone(TagData source)
     {
-        var clone = new TagData
-        {
-            Picture = ClonePictures(source.Picture),
-            Custom = CloneCustom(source.Custom),
-        };
+        var clone = new TagData { Picture = ClonePictures(source.Picture) };
+        CloneCustom(clone, source.Custom);
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -58,13 +55,11 @@ public static class TagDataCloner
         };
     }
 
-    private static List<CustomField> CloneCustom(IEnumerable<CustomField> source)
+    private static void CloneCustom(TagData clone, IEnumerable<CustomField> source)
     {
-        var list = new List<CustomField>();
         foreach (var field in source)
         {
-            list.Add(new CustomField(field.Key, field.Text));
+            clone.SetCustomField(field.Key, field.Text);
         }
-        return list;
     }
 }

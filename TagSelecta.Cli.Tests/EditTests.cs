@@ -61,8 +61,9 @@ public class EditTests
             Track = "1",
             TrackTotal = "10",
             Picture = [],
-            Custom = [new("original_field", "original_value")],
         };
+
+        tagData.SetCustomField("original_field", "original_value");
 
         var item = new FileWithTagData("file.mp3", tagData);
 

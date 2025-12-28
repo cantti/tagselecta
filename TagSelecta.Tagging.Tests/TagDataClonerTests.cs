@@ -35,8 +35,9 @@ public class TagDataClonerTests
                     Type = PictureType.FrontCover,
                 },
             ],
-            Custom = [new CustomField("key", "value")],
         };
+
+        original.SetCustomField("key", "value");
 
         var clone = TagDataCloner.Clone(original);
 

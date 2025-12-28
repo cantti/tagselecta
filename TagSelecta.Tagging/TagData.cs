@@ -1,3 +1,5 @@
+using TagSelecta.Shared;
+
 namespace TagSelecta.Tagging;
 
 public class TagData
@@ -44,7 +46,37 @@ public class TagData
 
     public List<TagLib.Picture> Picture { get; set; } = [];
 
-    public List<CustomField> Custom { get; set; } = [];
+    private readonly List<CustomField> _custom = [];
+    public IReadOnlyList<CustomField> Custom => _custom.OrderBy(cf => cf.Key).ToList();
+
+    public void ClearCustomFields() => _custom.Clear();
+
+    public void SetCustomField(string key, string value)
+    {
+        key = key.NormalizeKey();
+
+        var index = _custom.FindIndex(cf => cf.Key == key);
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (index >= 0)
+            {
+                _custom.RemoveAt(index);
+            }
+        }
+        else
+        {
+            var replacement = new CustomField(key, value);
+            if (index < 0)
+            {
+                _custom.Add(replacement);
+            }
+            else
+            {
+                _custom[index] = replacement;
+            }
+        }
+    }
 
     public TagData Clone()
     {

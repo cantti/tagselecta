@@ -97,7 +97,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                     files.Add(fullPath);
                 }
             }
-            else
+            else if (Directory.Exists(fullPath))
             {
                 var searchOption = recursive
                     ? SearchOption.AllDirectories
