@@ -54,6 +54,33 @@ public class TagDataCommand<TSettings>(
             }
         }
 
+        if (settings.Yes)
+        {
+            WriteAll(operations);
+        }
+        else
+        {
+            InteractiveWrite(operations);
+        }
+
+        AltScreen.Exit();
+
+        console.MarkupLineInterpolated(
+            $"{operations.Count(x => x.IsSaved && x.Exception is null)}/{operations.Count} files written"
+        );
+
+        var errorsCount = operations.Count(x => x.IsSaved && x.Exception is not null);
+
+        if (errorsCount > 0)
+        {
+            console.MarkupLineInterpolated($"{errorsCount} errors");
+        }
+
+        return 0;
+    }
+
+    private void InteractiveWrite(List<TagDataOperation> operations)
+    {
         var index = 0;
 
         while (true)
@@ -91,7 +118,6 @@ public class TagDataCommand<TSettings>(
             }
             else if (cmd == UserInput.WriteAll)
             {
-                console.Clear();
                 WriteAll(operations);
             }
             else if (cmd == UserInput.Write)
@@ -103,21 +129,6 @@ public class TagDataCommand<TSettings>(
                 break;
             }
         }
-
-        AltScreen.Exit();
-
-        console.MarkupLineInterpolated(
-            $"{operations.Count(x => x.IsSaved && x.Exception is null)}/{operations.Count} files written"
-        );
-
-        var errorsCount = operations.Count(x => x.IsSaved && x.Exception is not null);
-
-        if (errorsCount > 0)
-        {
-            console.MarkupLineInterpolated($"{errorsCount} errors");
-        }
-
-        return 0;
     }
 
     private bool ValidateOptions(CommandContext context)
@@ -140,6 +151,7 @@ public class TagDataCommand<TSettings>(
 
     private void WriteAll(List<TagDataOperation> operations)
     {
+        console.Clear();
         var operationsToWrite = operations.Where(x => !x.IsSaved).ToList();
         console
             .Progress()

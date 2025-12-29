@@ -44,12 +44,15 @@ public static class CommandHelper
             UserInput? input = key switch
             {
                 'j' => UserInput.Next,
+                '\x0E' => UserInput.Next, // Ctrl+N
                 'k' => UserInput.Previous,
+                '\x10' => UserInput.Previous, // Ctrl+P
                 'w' => UserInput.Write,
                 'a' => UserInput.WriteAll,
                 'q' => UserInput.Quit,
                 _ => null,
             };
+
             if (input.HasValue)
             {
                 console.Cursor.Show();
