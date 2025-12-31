@@ -121,6 +121,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help                Prints help information                           
+        --yes                                                                   
     -l, --album               Album name                                        
     -A, --albumartist         One or more album artists. Multiple values can be 
                               provided using a ';' separator                    
@@ -173,6 +174,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help        Prints help information                                   
+        --yes                                                                   
     -t, --type        Types of pictures to extract. Multiple entries can be     
                       provided using a ';' separator.                           
                       Common types: FrontCover, BackCover, Artist, Other        
@@ -195,6 +197,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help        Prints help information                        
+        --yes                                                        
     -t, --template    Template. For example: {{ date }} - {{ album }}
 ```
 
@@ -212,6 +215,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help         Prints help information       
+        --yes                                        
     -s, --separator    Default values are: , ; feat.
 ```
 
@@ -229,6 +233,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+        --yes
 ```
 
 ### Auto Track command
@@ -245,6 +250,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help        Prints help information  
+        --yes                                  
         --keepdisk    Remove Disc and DiscTotal
 ```
 
@@ -263,6 +269,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+        --yes
 ```
 
 ### Discogs command
@@ -285,6 +292,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help       Prints help information                                    
+        --yes                                                                   
     -r, --release                                                               
     -f, --fields     Fields to update from Discogs release. If not specified,   
                      all values will be updated
@@ -307,6 +315,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help     Prints help information
+        --yes                             
     -q, --query    Find query
 ```
 
