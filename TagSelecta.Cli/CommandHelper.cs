@@ -34,9 +34,18 @@ public static class CommandHelper
     {
         console.Cursor.Hide();
 
-        console.WriteLine(
-            $"j = next, k = previous{(showWrite ? ", w = write, a = write all" : "")}, q = quit"
-        );
+        var parts = new List<string> { "[bold yellow]j[/]=next", "[bold yellow]k[/]=previous" };
+
+        if (showWrite)
+        {
+            parts.Add("[bold yellow]w[/]=write");
+            parts.Add("[bold yellow]a[/]=write all");
+        }
+
+        parts.Add("[bold yellow]q[/]=quit");
+
+        // single line
+        console.MarkupLine(string.Join("[grey], [/]", parts));
 
         while (true)
         {
