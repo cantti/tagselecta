@@ -38,21 +38,7 @@ public class TagDataCommand<TSettings>(
 
         console.WriteLine(operations.Count + " files found");
 
-        foreach (var operation in operations)
-        {
-            try
-            {
-                await action.ProcessTagDataAsync(
-                    new FileWithTagData(operation.Path, operation.TagData),
-                    operations.Select(x => new FileWithTagData(x.Path, x.TagData)).ToList(),
-                    settings
-                );
-            }
-            catch (Exception ex)
-            {
-                operation.MarkError(ex);
-            }
-        }
+        await ProcessTagData(settings, operations);
 
         if (settings.Yes)
         {
@@ -77,6 +63,43 @@ public class TagDataCommand<TSettings>(
         }
 
         return 0;
+    }
+
+    private async Task ProcessTagData(TSettings settings, List<TagDataOperation> operations)
+    {
+        await console
+            .Progress()
+            .AutoClear(true)
+            .StartAsync(async ctx =>
+            {
+                var progressLock = new object();
+                var allFiles = operations
+                    .Select(x => new FileWithTagData(x.Path, x.TagData))
+                    .ToList();
+                var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
+                await Parallel.ForEachAsync(
+                    operations,
+                    async (operation, _) =>
+                    {
+                        try
+                        {
+                            await action.ProcessTagDataAsync(
+                                new FileWithTagData(operation.Path, operation.TagData),
+                                allFiles,
+                                settings
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            operation.MarkError(ex);
+                        }
+                        lock (progressLock)
+                        {
+                            task.Increment(1);
+                        }
+                    }
+                );
+            });
     }
 
     private void InteractiveWrite(List<TagDataOperation> operations)
@@ -142,7 +165,7 @@ public class TagDataCommand<TSettings>(
             console.MarkupLine($"[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
             {
-                console.MarkupLine($"  [yellow]{option}[/]");
+                console.MarkupLine($"  [yellow]{option.EscapeMarkup()}[/]");
             }
             return false;
         }
@@ -163,7 +186,7 @@ public class TagDataCommand<TSettings>(
                     var operation = operationsToWrite[i];
                     WriteTags(operation);
                     task.Description =
-                        $"Writing metadata {i + 1} of {operationsToWrite.Count}({operation.Path})";
+                        $"Writing metadata {i + 1} of {operationsToWrite.Count}({operation.Path.EscapeMarkup()})";
                     task.Increment(1);
                 }
             });

@@ -18,13 +18,13 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
     {
         var files = Scan(path, true);
         var result = new ConcurrentBag<FileWithTagData>();
-        var progressLock = new object();
-        var consoleLock = new object();
         console
             .Progress()
             .AutoClear(true)
             .Start(ctx =>
             {
+                var progressLock = new object();
+                var consoleLock = new object();
                 var task = ctx.AddTask("Reading metadata...", maxValue: files.Count);
                 Parallel.ForEach(
                     files,
