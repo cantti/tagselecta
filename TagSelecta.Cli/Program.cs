@@ -44,8 +44,11 @@ class Program
 
     private static string GetAppVersion()
     {
-        var asm = Assembly.GetExecutingAssembly();
-        return asm.GetName().Version?.ToString() ?? "0.0.0";
+        return Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion
+            ?? "unknown";
     }
 
     private static void SetAnsiSupport()
