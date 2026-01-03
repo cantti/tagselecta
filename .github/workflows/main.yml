@@ -42,7 +42,7 @@ jobs:
             -p:IncludeNativeLibrariesForSelfExtract=true \
             -p:DebugType=None \
             -p:DebugSymbols=false \
-            -p:Version="$ver"
+            -p:Version="$ver" \
             -o artifacts/${{ matrix.rid }} \
             TagSelecta.Cli
       - name: Zip output
