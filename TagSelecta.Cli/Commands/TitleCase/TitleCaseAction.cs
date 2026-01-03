@@ -1,5 +1,5 @@
 using System.Globalization;
-using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.TagDataCommandShared;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TitleCase;

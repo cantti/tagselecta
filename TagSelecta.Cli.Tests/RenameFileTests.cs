@@ -20,6 +20,8 @@ public class RenameFileTests
             .ReturnsForAnyArgs(new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false));
         var fs = Substitute.For<IFileSystem>();
         var scanner = Substitute.For<IAudioFileScanner>();
+        var uar = Substitute.For<IUserActionReader>();
+        uar.Read().ReturnsForAnyArgs(UserAction.WriteAll);
         scanner
             .ScanAndRead(new List<string>())
             .ReturnsForAnyArgs(
@@ -36,7 +38,7 @@ public class RenameFileTests
                 ]
             );
         var tagger = Substitute.For<ITagger>();
-        var command = new RenameFileCommand(console, fs, scanner);
+        var command = new RenameFileCommand(console, fs, scanner, uar);
         var settings = new RenameFileSettings
         {
             Template = "{{ date }} - {{ artist }} - {{ album }}",

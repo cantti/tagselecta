@@ -3,13 +3,14 @@ using Spectre.Console.Cli;
 using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.Common;
+namespace TagSelecta.Cli.Commands.TagDataCommandShared;
 
 public class TagDataCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITagger tagger
+    ITagger tagger,
+    IUserActionReader userActionReader
 ) : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
@@ -128,8 +129,7 @@ public class TagDataCommand<TSettings>(
 
                 CommandHelper.PrintCurrentFile(console, current.Path, index, filtered.Count);
 
-                var areEqual = TagDataComparer.AreEqual(current.OriginalTagData, current.TagData);
-                if (areEqual)
+                if (current.HasChanges)
                 {
                     TagDataPrinter.PrintTagData(console, current.TagData);
                 }
@@ -146,32 +146,36 @@ public class TagDataCommand<TSettings>(
                     console.MarkupLine("[red]Error processing file:[/]");
                     console.WriteException(current.Exception, ExceptionFormats.ShortenEverything);
                 }
+                RenderFilePathList(filtered, index);
             }
             else
             {
                 console.WriteLine("No files with changes");
             }
-            var cmd = CommandHelper.ReadNavigationCommand(console);
-            if (cmd == UserInput.Next)
+
+            console.MarkupLine($"[blue]Filter:[/] {(filter ? "on" : "off")}");
+
+            var cmd = userActionReader.Read();
+            if (cmd == UserAction.Next)
             {
                 index++;
             }
-            else if (cmd == UserInput.Previous)
+            else if (cmd == UserAction.Previous)
             {
                 index--;
             }
-            else if (cmd == UserInput.WriteAll)
+            else if (cmd == UserAction.WriteAll)
             {
                 WriteAll(operations);
             }
-            else if (cmd == UserInput.Write)
+            else if (cmd == UserAction.Write)
             {
                 if (current is not null && !current.IsSaved && current.HasChanges)
                 {
                     WriteTags(current);
                 }
             }
-            else if (cmd == UserInput.ToggleFilter)
+            else if (cmd == UserAction.ToggleFilter)
             {
                 filter = !filter;
                 filtered = filter ? operations.Where(x => x.HasChanges).ToList() : operations;
@@ -181,6 +185,36 @@ public class TagDataCommand<TSettings>(
             {
                 break;
             }
+        }
+    }
+
+    private void RenderFilePathList(List<TagDataOperation> operations, int index)
+    {
+        var windowSize = 10;
+
+        if (operations.Count <= 0)
+        {
+            return;
+        }
+
+        // center around the current index (5 lines above, 4 below), but keep a full window when possible
+        var windowStart = index - (windowSize / 2);
+
+        // clamp so we dont go before 0 or past the last possible full window start
+        var maxStart = Math.Max(0, operations.Count - windowSize);
+        windowStart = Math.Clamp(windowStart, 0, maxStart);
+
+        var linesToPrint = Math.Min(windowSize, operations.Count - windowStart);
+
+        for (int i = 0; i < linesToPrint; i++)
+        {
+            var itemIndex = windowStart + i;
+            var path = Path.GetRelativePath(
+                    Environment.CurrentDirectory,
+                    operations[itemIndex].Path
+                )
+                .EscapeMarkup();
+            console.MarkupLine($"[{(itemIndex == index ? "white on grey" : "white")}]{path}[/]");
         }
     }
 

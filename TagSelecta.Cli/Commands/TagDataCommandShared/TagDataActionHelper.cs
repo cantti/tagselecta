@@ -1,4 +1,4 @@
-namespace TagSelecta.Cli.Commands.Common;
+namespace TagSelecta.Cli.Commands.TagDataCommandShared;
 
 public static class TagDataActionHelper
 {

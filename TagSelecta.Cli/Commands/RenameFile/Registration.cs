@@ -8,5 +8,6 @@ public static class Registration
     public static void AddRenameFile(this IConfigurator configurator, IServiceCollection services)
     {
         configurator.AddCommand<RenameFileCommand>("renamefile").WithDescription("Rename files.");
+        services.AddTransient<IUserActionReader, UserActionReader>();
     }
 }

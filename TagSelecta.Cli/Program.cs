@@ -11,6 +11,7 @@ using TagSelecta.Cli.Commands.FixAlbum;
 using TagSelecta.Cli.Commands.HelpFormatting;
 using TagSelecta.Cli.Commands.RenameFile;
 using TagSelecta.Cli.Commands.Split;
+using TagSelecta.Cli.Commands.TagDataCommandShared;
 using TagSelecta.Cli.Commands.TitleCase;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Cli.IO;
@@ -75,6 +76,7 @@ class Program
     {
         var services = new ServiceCollection();
         services.AddDiscogs();
+        services.AddCommonTagDataServices();
         services.AddTransient<IConfig, Config>();
         services.AddTransient<IFileSystem, FileSystem>();
         services.AddTransient<ITagger, Tagger>();

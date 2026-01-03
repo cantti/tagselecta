@@ -1,10 +1,8 @@
-using TagSelecta.Tagging;
-
-namespace TagSelecta.Cli.Commands.Common;
+namespace TagSelecta.Cli.Commands.TagDataCommandShared;
 
 public class TagDataOperation
 {
-    public TagDataOperation(string path, TagData tagData)
+    public TagDataOperation(string path, Tagging.TagData tagData)
     {
         Path = path;
         TagData = tagData;
@@ -12,8 +10,8 @@ public class TagDataOperation
     }
 
     public string Path { get; private set; }
-    public TagData TagData { get; private set; }
-    public TagData OriginalTagData { get; private set; }
+    public Tagging.TagData TagData { get; private set; }
+    public Tagging.TagData OriginalTagData { get; private set; }
     public bool IsSaved { get; private set; }
     public Exception? Exception { get; private set; }
     public bool HasChanges { get; set; }

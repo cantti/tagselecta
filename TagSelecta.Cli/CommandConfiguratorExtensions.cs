@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.TagDataCommandShared;
 
 namespace TagSelecta.Cli;
 

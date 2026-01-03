@@ -7,7 +7,8 @@ namespace TagSelecta.Cli.Commands.RenameFile;
 public class RenameFileCommand(
     IAnsiConsole console,
     IFileSystem fs,
-    IAudioFileScanner audioFileScanner
+    IAudioFileScanner audioFileScanner,
+    IUserActionReader userActionReader
 ) : Command<RenameFileSettings>
 {
     public override int Execute(
@@ -49,21 +50,21 @@ public class RenameFileCommand(
 
             console.Write(panel);
 
-            var cmd = CommandHelper.ReadNavigationCommand(console);
-            if (cmd == UserInput.Next)
+            var cmd = userActionReader.Read();
+            if (cmd == UserAction.Next)
             {
                 index++;
             }
-            else if (cmd == UserInput.Previous)
+            else if (cmd == UserAction.Previous)
             {
                 index--;
             }
-            else if (cmd == UserInput.WriteAll)
+            else if (cmd == UserAction.WriteAll)
             {
                 WriteAll(items);
                 break;
             }
-            else if (cmd == UserInput.Write)
+            else if (cmd == UserAction.Write)
             {
                 fs.Move(item.Path, item.NewPath);
                 item.IsSaved = true;

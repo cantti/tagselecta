@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using TagSelecta.Cli.Commands.Common;
+using TagSelecta.Cli.Commands.TagDataCommandShared;
 using TagSelecta.Shared;
 
 namespace TagSelecta.Cli.Commands.Discogs;

@@ -1,4 +1,4 @@
-namespace TagSelecta.Cli.Commands.Common;
+namespace TagSelecta.Cli.Commands.TagDataCommandShared;
 
 public abstract class TagDataAction<TSettings> : ITagDataAction
     where TSettings : BaseSettings

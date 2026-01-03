@@ -30,47 +30,6 @@ public static class CommandHelper
         console.WriteLine();
     }
 
-    public static UserInput ReadNavigationCommand(IAnsiConsole console)
-    {
-        console.Cursor.Hide();
-
-        var parts = new List<string>
-        {
-            "[bold yellow]j[/]=next",
-            "[bold yellow]k[/]=previous",
-            "[bold yellow]w[/]=write",
-            "[bold yellow]a[/]=write all",
-            "[bold yellow]f[/]=toggle changes filter",
-            "[bold yellow]q[/]=quit",
-        };
-
-        // single line
-        console.MarkupLine(string.Join("[grey], [/]", parts));
-
-        while (true)
-        {
-            var key = console.Input.ReadKey(true)?.KeyChar;
-            UserInput? input = key switch
-            {
-                'j' => UserInput.Next,
-                '\x0E' => UserInput.Next, // Ctrl+N
-                'k' => UserInput.Previous,
-                '\x10' => UserInput.Previous, // Ctrl+P
-                'w' => UserInput.Write,
-                'a' => UserInput.WriteAll,
-                'f' => UserInput.ToggleFilter,
-                'q' => UserInput.Quit,
-                _ => null,
-            };
-
-            if (input.HasValue)
-            {
-                console.Cursor.Show();
-                return input.Value;
-            }
-        }
-    }
-
     public static int ClampIndex(int index, int count)
     {
         if (index < 0)
