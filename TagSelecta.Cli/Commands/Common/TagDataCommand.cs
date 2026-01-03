@@ -73,11 +73,11 @@ public class TagDataCommand<TSettings>(
             .AutoClear(true)
             .StartAsync(async ctx =>
             {
+                var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
                 var progressLock = new object();
                 var allFiles = operations
                     .Select(x => new FileWithTagData(x.Path, x.TagData))
                     .ToList();
-                var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
                 await Parallel.ForEachAsync(
                     operations,
                     async (operation, _) =>

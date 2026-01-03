@@ -30,12 +30,19 @@ jobs:
         run: dotnet restore
       - name: Publish for ${{ matrix.rid }}
         run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            tag="${{ github.event.inputs.tag_name }}"
+          else
+            tag="${{ github.ref_name }}"
+          fi
+          ver="${tag#v}"
           dotnet publish -c Release -r ${{ matrix.rid }} \
             --self-contained true \
             -p:PublishSingleFile=true \
             -p:IncludeNativeLibrariesForSelfExtract=true \
             -p:DebugType=None \
             -p:DebugSymbols=false \
+            -p:Version="$ver"
             -o artifacts/${{ matrix.rid }} \
             TagSelecta.Cli
       - name: Zip output

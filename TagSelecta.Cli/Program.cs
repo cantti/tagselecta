@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.Commands.AutoTrack;
@@ -29,6 +30,7 @@ class Program
         app.Configure(config =>
         {
             AddCommands(config, services);
+            config.SetApplicationVersion(GetAppVersion());
         });
         try
         {
@@ -38,6 +40,12 @@ class Program
         {
             AltScreen.Exit();
         }
+    }
+
+    private static string GetAppVersion()
+    {
+        var asm = Assembly.GetExecutingAssembly();
+        return asm.GetName().Version?.ToString() ?? "0.0.0";
     }
 
     private static void SetAnsiSupport()
