@@ -27,4 +27,12 @@ public static class StringListExtensions
 
         return Regex.Replace(input, "(?<!^)([A-Z])", " $1");
     }
+
+    public static string SubstringFromEnd(this string value, int length)
+    {
+        if (string.IsNullOrEmpty(value) || length <= 0)
+            return string.Empty;
+
+        return value.Length <= length ? value : value.Substring(value.Length - length, length);
+    }
 }

@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
+using Spectre.Console.Rendering;
 using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
@@ -14,7 +15,7 @@ public class TagDataCommand<TSettings>(
 ) : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
-    public override async Task<int> ExecuteAsync(
+    protected override async Task<int> ExecuteAsync(
         CommandContext context,
         TSettings settings,
         CancellationToken ct
@@ -117,6 +118,15 @@ public class TagDataCommand<TSettings>(
 
         while (true)
         {
+            var navigation = userActionReader.RenderNavigation(filter);
+
+            var bodySize = (Console.WindowHeight - navigation.Size) / 2;
+            var layout = new Layout("root").SplitRows(
+                new Layout("header").Size(navigation.Size),
+                new Layout("top").Size(bodySize),
+                new Layout("body").Size(bodySize)
+            );
+
             console.Clear();
 
             index = CommandHelper.ClampIndex(index, filtered.Count);
@@ -125,35 +135,35 @@ public class TagDataCommand<TSettings>(
 
             if (filtered.Count > 0)
             {
+                // -2 to compensate header and add empty row
+                layout["top"].Update(RenderFilePathList(filtered, index, bodySize - 2));
+
                 current = filtered[index];
 
-                CommandHelper.PrintCurrentFile(console, current.Path, index, filtered.Count);
-
-                if (current.HasChanges)
-                {
-                    TagDataPrinter.PrintTagData(console, current.TagData);
-                }
-                else
-                {
-                    TagDataPrinter.PrintComparison(
+                var tagDataRenderable = current.HasChanges
+                    ? TagDataPrinter.PrintComparison(
                         console,
                         current.OriginalTagData,
                         current.TagData
-                    );
-                }
+                    )
+                    : TagDataPrinter.PrintTagData(console, current.TagData);
+
+                layout["body"].Update(tagDataRenderable);
+
                 if (current.Exception is not null)
                 {
                     console.MarkupLine("[red]Error processing file:[/]");
                     console.WriteException(current.Exception, ExceptionFormats.ShortenEverything);
                 }
-                RenderFilePathList(filtered, index);
             }
             else
             {
                 console.WriteLine("No files with changes");
             }
 
-            console.MarkupLine($"[blue]Filter:[/] {(filter ? "on" : "off")}");
+            layout["header"].Update(navigation.Content);
+
+            console.Write(layout);
 
             var cmd = userActionReader.Read();
             if (cmd == UserAction.Next)
@@ -188,13 +198,15 @@ public class TagDataCommand<TSettings>(
         }
     }
 
-    private void RenderFilePathList(List<TagDataOperation> operations, int index)
+    private IRenderable RenderFilePathList(
+        List<TagDataOperation> operations,
+        int index,
+        int windowSize
+    )
     {
-        var windowSize = 10;
-
         if (operations.Count <= 0)
         {
-            return;
+            return new Text("");
         }
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
@@ -206,16 +218,25 @@ public class TagDataCommand<TSettings>(
 
         var linesToPrint = Math.Min(windowSize, operations.Count - windowStart);
 
-        for (int i = 0; i < linesToPrint; i++)
+        var items = new List<IRenderable>();
+
+        for (var i = 0; i < linesToPrint; i++)
         {
             var itemIndex = windowStart + i;
             var path = Path.GetRelativePath(
-                    Environment.CurrentDirectory,
-                    operations[itemIndex].Path
-                )
-                .EscapeMarkup();
-            console.MarkupLine($"[{(itemIndex == index ? "white on grey" : "white")}]{path}[/]");
+                Environment.CurrentDirectory,
+                operations[itemIndex].Path
+            );
+            var lineNumber = (itemIndex + 1).ToString().PadLeft(4);
+            var modifiedMarker = operations[itemIndex].HasChanges ? "*" : " ";
+            var text = $"{lineNumber} {modifiedMarker} {path}";
+            text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
+                .PadRight(Console.WindowWidth);
+            var style = new Style(background: index == itemIndex ? Color.Grey : null);
+            items.Add(new Text(text, style));
         }
+
+        return new Rows(new Text("Files:", new Style(Color.Yellow)), new Rows(items));
     }
 
     private bool ValidateOptions(CommandContext context)
@@ -229,7 +250,7 @@ public class TagDataCommand<TSettings>(
             console.MarkupLine($"[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
             {
-                console.MarkupLine($"  [yellow]{option.EscapeMarkup()}[/]");
+                console.WriteLine($"  {option}", new Style(Color.Yellow));
             }
             return false;
         }
@@ -261,6 +282,7 @@ public class TagDataCommand<TSettings>(
         try
         {
             tagger.WriteTags(operation.Path, operation.TagData);
+            operation.HasChanges = false;
             operation.MarkSaved();
         }
         catch (Exception ex)

@@ -11,7 +11,7 @@ namespace TagSelecta.Cli.Tests;
 public class RenameFileTests
 {
     [Fact]
-    public void RenameFileTest()
+    public async Task RenameFileTest()
     {
         // Arrange
         var console = Substitute.For<IAnsiConsole>();
@@ -38,14 +38,14 @@ public class RenameFileTests
                 ]
             );
         var tagger = Substitute.For<ITagger>();
-        var command = new RenameFileCommand(console, fs, scanner, uar);
+        ICommand<RenameFileSettings> command = new RenameFileCommand(console, fs, scanner, uar);
         var settings = new RenameFileSettings
         {
             Template = "{{ date }} - {{ artist }} - {{ album }}",
         };
 
         // Act
-        command.Execute(
+        await command.ExecuteAsync(
             new CommandContext(new List<string>(), Substitute.For<IRemainingArguments>(), "", null),
             settings,
             CancellationToken.None

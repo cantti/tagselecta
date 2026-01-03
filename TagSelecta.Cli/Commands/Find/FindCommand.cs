@@ -8,7 +8,11 @@ namespace TagSelecta.Cli.Commands.Find;
 public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanner)
     : Command<FindSettings>
 {
-    public override int Execute(CommandContext context, FindSettings settings, CancellationToken ct)
+    protected override int Execute(
+        CommandContext context,
+        FindSettings settings,
+        CancellationToken ct
+    )
     {
         var files = audioFileScanner.ScanAndRead(settings.Path);
         foreach (var file in files)

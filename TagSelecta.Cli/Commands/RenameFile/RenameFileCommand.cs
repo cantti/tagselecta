@@ -11,7 +11,7 @@ public class RenameFileCommand(
     IUserActionReader userActionReader
 ) : Command<RenameFileSettings>
 {
-    public override int Execute(
+    protected override int Execute(
         CommandContext context,
         RenameFileSettings settings,
         CancellationToken cancellationToken

@@ -11,7 +11,7 @@ public class FileCommand<TSettings>(
 ) : AsyncCommand<TSettings>
     where TSettings : BaseSettings
 {
-    public override async Task<int> ExecuteAsync(
+    protected override async Task<int> ExecuteAsync(
         CommandContext context,
         TSettings settings,
         CancellationToken ct

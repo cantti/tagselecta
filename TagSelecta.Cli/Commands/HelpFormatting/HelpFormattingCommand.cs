@@ -8,7 +8,7 @@ namespace TagSelecta.Cli.Commands.HelpFormatting;
 
 public class HelpFormattingCommand(IAnsiConsole console) : Command<HelpFormattingSettings>
 {
-    public override int Execute(
+    protected override int Execute(
         CommandContext context,
         HelpFormattingSettings settings,
         CancellationToken cancellationToken

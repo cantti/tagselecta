@@ -1,4 +1,5 @@
 using Spectre.Console;
+using Spectre.Console.Rendering;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
@@ -6,11 +7,11 @@ namespace TagSelecta.Cli;
 
 public static class TagDataPrinter
 {
-    public static void PrintTagData(IAnsiConsole console, TagData tagData)
+    public static IRenderable PrintTagData(IAnsiConsole console, TagData tagData)
     {
         var table = new Table();
-        table.Border(TableBorder.Rounded);
-        table.AddColumn("");
+        table.Border(TableBorder.None);
+        table.AddColumn("", c => c.Width(15));
         table.AddColumn("");
         table.HideHeaders();
         foreach (
@@ -40,16 +41,19 @@ public static class TagDataPrinter
                 AddField(table, picture.Type.ToString(), PictureToStr(picture));
             }
         }
-        console.Write(table);
+        return new Rows(
+            new Text("Metadata:", new Style(Color.Yellow, Color.Default, Decoration.Bold)),
+            table
+        );
     }
 
-    public static void PrintComparison(IAnsiConsole console, TagData t1, TagData t2)
+    public static IRenderable PrintComparison(IAnsiConsole console, TagData t1, TagData t2)
     {
         var table = new Table();
-        table.Border(TableBorder.Rounded);
-        table.AddColumn("[yellow]Field[/]");
-        table.AddColumn("[yellow]Old Value[/]");
-        table.AddColumn("[yellow]New Value[/]");
+        table.Border(TableBorder.None);
+        table.AddColumn("", c => c.Width(15));
+        table.AddColumn("");
+        table.HideHeaders();
 
         foreach (
             var prop in typeof(TagData)
@@ -113,7 +117,7 @@ public static class TagDataPrinter
                 }
             }
         }
-        console.Write(table);
+        return new Rows(new Text("Metadata:", new Style(Color.Yellow)), table);
     }
 
     private static void AddField(Table table, string label, string value)
@@ -140,13 +144,10 @@ public static class TagDataPrinter
         var areEqual = eq ?? value1 == value2;
         var color1 = areEqual ? "[white]" : "[red]";
         var color2 = areEqual ? "[white]" : "[green]";
-        table.AddRow(
-            [
-                $"[blue]{label.ToSpacedWords().EscapeMarkup()}[/]",
-                $"{color1}{value1.EscapeMarkup()}[/]",
-                $"{color2}{value2.EscapeMarkup()}[/]",
-            ]
-        );
+        var rowText = areEqual
+            ? $"{color1}{value1.EscapeMarkup()}[/]"
+            : $"{color1}{value1.EscapeMarkup()}[/] ➔ {color2}{value2.EscapeMarkup()}[/]";
+        table.AddRow([$"[blue]{label.ToSpacedWords().EscapeMarkup()}[/]", rowText]);
     }
 
     private static string PictureToStr(TagLib.Picture? pic)

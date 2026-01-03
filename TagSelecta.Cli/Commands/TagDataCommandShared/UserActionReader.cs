@@ -1,4 +1,5 @@
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace TagSelecta.Cli.Commands.TagDataCommandShared;
 
@@ -7,19 +8,6 @@ public class UserActionReader(IAnsiConsole console) : IUserActionReader
     public UserAction Read()
     {
         console.Cursor.Hide();
-
-        var parts = new List<string>
-        {
-            "[bold yellow]j[/]=next",
-            "[bold yellow]k[/]=previous",
-            "[bold yellow]w[/]=write",
-            "[bold yellow]a[/]=write all",
-            "[bold yellow]f[/]=toggle changes filter",
-            "[bold yellow]q[/]=quit",
-        };
-
-        // single line
-        console.MarkupLine(string.Join("[grey], [/]", parts));
 
         while (true)
         {
@@ -43,5 +31,30 @@ public class UserActionReader(IAnsiConsole console) : IUserActionReader
                 return input.Value;
             }
         }
+    }
+
+    public LayoutElement RenderNavigation(bool filter)
+    {
+        var keymap = new Dictionary<string, string>
+        {
+            { "j", "next" },
+            { "k", "previous" },
+            { "w", "write" },
+            { "a", "write all" },
+            { "f", "toggle changes filter" },
+            { "q", "quit" },
+        };
+        var columns = new Columns(keymap.Select(x => new Markup($"[green]{x.Key}[/]={x.Value}")))
+        {
+            Expand = false,
+        };
+        return new LayoutElement(
+            new Rows(
+                new Text("Navigation: ", new Style(Color.Yellow)),
+                columns,
+                new Markup($"Filter: [green]{(filter ? "on" : "off")}[/]")
+            ),
+            4
+        );
     }
 }

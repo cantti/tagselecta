@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
-    <PackageReference Include="Spectre.Console.Cli" Version="0.53.0" />
+    <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj" />
