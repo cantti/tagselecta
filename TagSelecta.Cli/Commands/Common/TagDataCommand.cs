@@ -89,6 +89,10 @@ public class TagDataCommand<TSettings>(
                                 allFiles,
                                 settings
                             );
+                            operation.HasChanges = !TagDataComparer.AreEqual(
+                                operation.TagData,
+                                operation.OriginalTagData
+                            );
                         }
                         catch (Exception ex)
                         {
@@ -108,11 +112,11 @@ public class TagDataCommand<TSettings>(
         var index = 0;
         var filter = false;
 
+        var filtered = operations;
+
         while (true)
         {
             console.Clear();
-
-            var filtered = filter ? operations.Where(x => x.HasChanges).ToList() : operations;
 
             index = CommandHelper.ClampIndex(index, filtered.Count);
 
@@ -170,6 +174,7 @@ public class TagDataCommand<TSettings>(
             else if (cmd == UserInput.ToggleFilter)
             {
                 filter = !filter;
+                filtered = filter ? operations.Where(x => x.HasChanges).ToList() : operations;
                 index = 0;
             }
             else
