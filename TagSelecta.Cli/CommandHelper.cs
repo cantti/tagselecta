@@ -30,19 +30,19 @@ public static class CommandHelper
         console.WriteLine();
     }
 
-    public static UserInput ReadNavigationCommand(IAnsiConsole console, bool showWrite)
+    public static UserInput ReadNavigationCommand(IAnsiConsole console)
     {
         console.Cursor.Hide();
 
-        var parts = new List<string> { "[bold yellow]j[/]=next", "[bold yellow]k[/]=previous" };
-
-        if (showWrite)
+        var parts = new List<string>
         {
-            parts.Add("[bold yellow]w[/]=write");
-            parts.Add("[bold yellow]a[/]=write all");
-        }
-
-        parts.Add("[bold yellow]q[/]=quit");
+            "[bold yellow]j[/]=next",
+            "[bold yellow]k[/]=previous",
+            "[bold yellow]w[/]=write",
+            "[bold yellow]a[/]=write all",
+            "[bold yellow]f[/]=toggle changes filter",
+            "[bold yellow]q[/]=quit",
+        };
 
         // single line
         console.MarkupLine(string.Join("[grey], [/]", parts));
@@ -58,6 +58,7 @@ public static class CommandHelper
                 '\x10' => UserInput.Previous, // Ctrl+P
                 'w' => UserInput.Write,
                 'a' => UserInput.WriteAll,
+                'f' => UserInput.ToggleFilter,
                 'q' => UserInput.Quit,
                 _ => null,
             };

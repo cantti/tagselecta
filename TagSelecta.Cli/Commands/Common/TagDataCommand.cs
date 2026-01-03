@@ -67,6 +67,7 @@ public class TagDataCommand<TSettings>(
 
     private async Task ProcessTagData(TSettings settings, List<TagDataOperation> operations)
     {
+        console.Clear();
         await console
             .Progress()
             .AutoClear(true)
@@ -105,32 +106,48 @@ public class TagDataCommand<TSettings>(
     private void InteractiveWrite(List<TagDataOperation> operations)
     {
         var index = 0;
+        var filter = false;
 
         while (true)
         {
             console.Clear();
 
-            index = CommandHelper.ClampIndex(index, operations.Count);
+            var filtered = filter ? operations.Where(x => x.HasChanges).ToList() : operations;
 
-            var item = operations[index];
+            index = CommandHelper.ClampIndex(index, filtered.Count);
 
-            CommandHelper.PrintCurrentFile(console, item.Path, index, operations.Count);
+            TagDataOperation? current = null;
 
-            var areEqual = TagDataComparer.AreEqual(item.OriginalTagData, item.TagData);
-            if (areEqual)
+            if (filtered.Count > 0)
             {
-                TagDataPrinter.PrintTagData(console, item.TagData);
+                current = filtered[index];
+
+                CommandHelper.PrintCurrentFile(console, current.Path, index, filtered.Count);
+
+                var areEqual = TagDataComparer.AreEqual(current.OriginalTagData, current.TagData);
+                if (areEqual)
+                {
+                    TagDataPrinter.PrintTagData(console, current.TagData);
+                }
+                else
+                {
+                    TagDataPrinter.PrintComparison(
+                        console,
+                        current.OriginalTagData,
+                        current.TagData
+                    );
+                }
+                if (current.Exception is not null)
+                {
+                    console.MarkupLine("[red]Error processing file:[/]");
+                    console.WriteException(current.Exception, ExceptionFormats.ShortenEverything);
+                }
             }
             else
             {
-                TagDataPrinter.PrintComparison(console, item.OriginalTagData, item.TagData);
+                console.WriteLine("No files with changes");
             }
-            if (item.Exception is not null)
-            {
-                console.MarkupLine("[red]Error processing file:[/]");
-                console.WriteException(item.Exception, ExceptionFormats.ShortenEverything);
-            }
-            var cmd = CommandHelper.ReadNavigationCommand(console, true);
+            var cmd = CommandHelper.ReadNavigationCommand(console);
             if (cmd == UserInput.Next)
             {
                 index++;
@@ -145,7 +162,15 @@ public class TagDataCommand<TSettings>(
             }
             else if (cmd == UserInput.Write)
             {
-                WriteTags(item);
+                if (current is not null && !current.IsSaved && current.HasChanges)
+                {
+                    WriteTags(current);
+                }
+            }
+            else if (cmd == UserInput.ToggleFilter)
+            {
+                filter = !filter;
+                index = 0;
             }
             else
             {
@@ -175,7 +200,7 @@ public class TagDataCommand<TSettings>(
     private void WriteAll(List<TagDataOperation> operations)
     {
         console.Clear();
-        var operationsToWrite = operations.Where(x => !x.IsSaved).ToList();
+        var operationsToWrite = operations.Where(x => !x.IsSaved && x.HasChanges).ToList();
         console
             .Progress()
             .Start(ctx =>

@@ -7,4 +7,5 @@ public enum UserInput
     Quit,
     Write,
     WriteAll,
+    ToggleFilter,
 }

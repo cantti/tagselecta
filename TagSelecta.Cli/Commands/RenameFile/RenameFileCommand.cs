@@ -49,7 +49,7 @@ public class RenameFileCommand(
 
             console.Write(panel);
 
-            var cmd = CommandHelper.ReadNavigationCommand(console, true);
+            var cmd = CommandHelper.ReadNavigationCommand(console);
             if (cmd == UserInput.Next)
             {
                 index++;
