@@ -79,7 +79,8 @@ https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 OPTIONS:
-    -h, --help    Prints help information
+    -h, --help       Prints help information   
+    -v, --version    Prints version information
 
 COMMANDS:
     edit <path>              Edit (read and write) tags. Unrecognized options   
