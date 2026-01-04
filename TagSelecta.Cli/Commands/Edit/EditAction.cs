@@ -84,7 +84,7 @@ public class EditAction : TagDataAction<EditSettings>
         void Write(Func<EditSettings, string?> get, Action<string> set)
         {
             var value = get(settings);
-            if (string.IsNullOrEmpty(value))
+            if (value is null)
             {
                 return;
             }

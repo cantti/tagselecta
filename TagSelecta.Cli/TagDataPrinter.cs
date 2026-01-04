@@ -11,7 +11,7 @@ public static class TagDataPrinter
     {
         var table = new Table();
         table.Border(TableBorder.None);
-        table.AddColumn("", c => c.Width(15));
+        table.AddColumn("", c => c.Width(20));
         table.AddColumn("");
         table.HideHeaders();
         foreach (
@@ -51,7 +51,7 @@ public static class TagDataPrinter
     {
         var table = new Table();
         table.Border(TableBorder.None);
-        table.AddColumn("", c => c.Width(15));
+        table.AddColumn("", c => c.Width(20));
         table.AddColumn("");
         table.HideHeaders();
 
@@ -142,26 +142,29 @@ public static class TagDataPrinter
             return;
         }
         var labelText = new Text(label, new Style(Color.Blue));
+        var elements = new List<IRenderable>();
         if (eq ?? value1 == value2)
         {
-            table.AddRow(labelText, new Text(value1, new Style(Color.Default)));
-        }
-        else if (string.IsNullOrEmpty(value1))
-        {
-            table.AddRow(labelText, new Text(value2, new Style(Color.Green)));
+            elements.Add(new Text(value1, new Style(Color.Default)));
         }
         else
         {
-            var cols = new Columns(
-                new Text(value1, new Style(Color.Red)),
-                new Text("➔"),
-                new Text(value2, new Style(Color.Green))
-            )
+            if (!string.IsNullOrEmpty(value1))
             {
-                Expand = false,
-            };
-            table.AddRow(labelText, cols);
+                elements.Add(new Text(value1, new Style(Color.Red)));
+            }
+            if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(value1))
+            {
+                elements.Add(new Text("➔"));
+            }
+            if (!string.IsNullOrEmpty(value2))
+            {
+                elements.Add(new Text(value2, new Style(Color.Green)));
+            }
         }
+
+        var cols = new Columns(elements) { Expand = false };
+        table.AddRow(labelText, cols);
     }
 
     private static string PictureToStr(TagLib.Picture? pic)
