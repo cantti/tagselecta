@@ -28,6 +28,7 @@ public class TagDataCommand<TSettings>(
 
         AltScreen.Enter();
 
+        // todo add progress
         if (!await action.BeforeProcessTagDataAsync(settings))
         {
             return 0;

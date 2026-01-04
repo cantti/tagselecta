@@ -11,7 +11,7 @@ dotnet publish -c Release --self-contained true \
   -o "$TMPDIR" ../TagSelecta.Cli
 
 # Copy additional assets
-cp song.mp3 "$TMPDIR"
+cp -r Album "$TMPDIR"
 cp demo.tape "$TMPDIR"
 
 cd "$TMPDIR"

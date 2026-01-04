@@ -7,23 +7,31 @@ Set Width 1000
 Set Height 800
 Set Shell bash
 
-Type './tagselecta read song.mp3'
+Type './tagselecta e ./Album'
 Enter
-Sleep 4s
-Ctrl+L
+Sleep 2s
+Type j
+Sleep 2s
+Type j
+Sleep 2s
+Type j
+Sleep 5s
+Type q
 
-Type './tagselecta write song.mp3 -g "Reggae; Dub" -N 5 -y 2024 -c "URL=https://cantti.bandcamp.com"'
+Type './tagselecta e ./Album -g "Reggae; Dub" -N 5 -y 2024 -s "URL=https://cantti.bandcamp.com"'
 Enter
-Wait /Confirm/
-Type y
-Enter
-Sleep 4s
-Ctrl+L
+Sleep 2s
+Type j
+Sleep 2s
+Type j
+Sleep 2s
+Type j
+Sleep 2s
+Type w
+Sleep 5s
+Type q
 
-Type './tagselecta discogs song.mp3 -r https://www.discogs.com/master/186940-King-Tubby-Dub-From-The-Roots'
+Type './tagselecta discogs ./Album -r https://www.discogs.com/master/186940-King-Tubby-Dub-From-The-Roots'
 Enter
-Wait /Confirm/
-Type y
-Enter
-Sleep 4s
-Ctrl+L
+Sleep 10s
+Type q
