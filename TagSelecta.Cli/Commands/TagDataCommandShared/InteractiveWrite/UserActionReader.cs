@@ -1,7 +1,6 @@
 using Spectre.Console;
-using Spectre.Console.Rendering;
 
-namespace TagSelecta.Cli.Commands.TagDataCommandShared;
+namespace TagSelecta.Cli.Commands.TagDataCommandShared.InteractiveWrite;
 
 public class UserActionReader(IAnsiConsole console) : IUserActionReader
 {
@@ -19,6 +18,7 @@ public class UserActionReader(IAnsiConsole console) : IUserActionReader
                 'w' => UserAction.Write,
                 'a' => UserAction.WriteAll,
                 'f' => UserAction.ToggleFilter,
+                't' => UserAction.ToggleTree,
                 'q' => UserAction.Quit,
                 _ => null,
             };
@@ -39,6 +39,7 @@ public class UserActionReader(IAnsiConsole console) : IUserActionReader
             { "w", "write" },
             { "a", "write all" },
             { "f", "toggle changes filter" },
+            { "t", "toggle tree" },
             { "q", "quit" },
         };
         var columns = new Columns(keymap.Select(x => new Markup($"[green]{x.Key}[/]={x.Value}")))

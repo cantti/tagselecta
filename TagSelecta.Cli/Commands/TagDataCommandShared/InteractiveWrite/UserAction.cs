@@ -1,4 +1,4 @@
-namespace TagSelecta.Cli.Commands.TagDataCommandShared;
+namespace TagSelecta.Cli.Commands.TagDataCommandShared.InteractiveWrite;
 
 public enum UserAction
 {
@@ -7,5 +7,6 @@ public enum UserAction
     Write,
     WriteAll,
     ToggleFilter,
+    ToggleTree,
     Quit,
 }
