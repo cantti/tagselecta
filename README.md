@@ -65,6 +65,7 @@ The program support multiple commands:
 ### Help command
 
 ```
+/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/Commands/TagDataCommandShared/TagDataCommand.cs(14,13): warning CS9113: Parameter 'tagger' is unread. [/home/runner/work/tagselecta/tagselecta/TagSelecta.Cli/TagSelecta.Cli.csproj]
 USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
