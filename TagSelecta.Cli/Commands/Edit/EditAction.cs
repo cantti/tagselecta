@@ -118,6 +118,4 @@ public class EditAction : TagDataAction<EditSettings>
             tagData.SetCustomField(key, value);
         }
     }
-
-    void Test() { }
 }

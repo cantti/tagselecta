@@ -54,10 +54,10 @@ public class TagDataCommand<TSettings>(
         AltScreen.Exit();
 
         console.MarkupLineInterpolated(
-            $"{operations.Count(x => x.IsSaved && x.Exception is null)}/{operations.Count} files written"
+            $"{operations.Count(x => x.Status == TagDataOperationStatus.Written)}/{operations.Count} files written"
         );
 
-        var errorsCount = operations.Count(x => x.IsSaved && x.Exception is not null);
+        var errorsCount = operations.Count(x => x.Status == TagDataOperationStatus.Failed);
 
         if (errorsCount > 0)
         {
@@ -69,7 +69,6 @@ public class TagDataCommand<TSettings>(
 
     private async Task ProcessTagData(TSettings settings, List<TagDataOperation> operations)
     {
-        console.Clear();
         await console
             .Progress()
             .AutoClear(true)
@@ -91,10 +90,7 @@ public class TagDataCommand<TSettings>(
                                 allFiles,
                                 settings
                             );
-                            operation.HasChanges = !TagDataComparer.AreEqual(
-                                operation.TagData,
-                                operation.OriginalTagData
-                            );
+                            operation.CheckForChanges();
                         }
                         catch (Exception ex)
                         {
@@ -111,49 +107,69 @@ public class TagDataCommand<TSettings>(
 
     private void InteractiveWrite(List<TagDataOperation> operations)
     {
-        var index = 0;
-        var filter = false;
+        console.Cursor.Hide();
+
+        var selectedIndex = 0;
+        var filterEnabled = false;
 
         var filtered = operations;
 
         while (true)
         {
-            var navigation = userActionReader.RenderNavigation(filter);
-
-            var bodySize = (Console.WindowHeight - navigation.Size) / 2;
-            var layout = new Layout("root").SplitRows(
-                new Layout("header").Size(navigation.Size),
-                new Layout("top").Size(bodySize),
-                new Layout("body").Size(bodySize)
-            );
-
             console.Clear();
 
-            index = CommandHelper.ClampIndex(index, filtered.Count);
+            var navigation = userActionReader.RenderNavigation();
 
-            TagDataOperation? current = null;
+            var filesContentSize = Math.Min(
+                (Console.WindowHeight - navigation.Size) / 2,
+                // +2 for navigation and add empty row
+                filtered.Count + 2
+            );
+            const string headerLayoutKey = "navigation";
+            const string filesLayoutKey = "files";
+            const string tagDataLayoutKey = "body";
+
+            var layout = new Layout("root").SplitRows(
+                new Layout(headerLayoutKey).Size(navigation.Size),
+                new Layout(filesLayoutKey).Size(filesContentSize),
+                new Layout(tagDataLayoutKey)
+            );
+
+            selectedIndex = Math.Clamp(selectedIndex, 0, filtered.Count - 1);
+
+            TagDataOperation? operation = null;
 
             if (filtered.Count > 0)
             {
-                // -2 to compensate header and add empty row
-                layout["top"].Update(RenderFilePathList(filtered, index, bodySize - 2));
+                // -2 to compensate navigation and add empty row
+                layout[filesLayoutKey]
+                    .Update(
+                        RenderFileList(filtered, selectedIndex, filesContentSize - 2, filterEnabled)
+                    );
 
-                current = filtered[index];
+                operation = filtered[selectedIndex];
 
-                var tagDataRenderable = current.HasChanges
-                    ? TagDataPrinter.PrintComparison(
-                        console,
-                        current.OriginalTagData,
-                        current.TagData
-                    )
-                    : TagDataPrinter.PrintTagData(console, current.TagData);
+                var tagDataRenderable = operation.HasChanges
+                    ? TagDataPrinter.PrintComparison(operation.OriginalTagData, operation.TagData)
+                    : TagDataPrinter.PrintTagData(console, operation.TagData);
 
-                layout["body"].Update(tagDataRenderable);
-
-                if (current.Exception is not null)
+                if (operation.Exception is null)
                 {
-                    console.MarkupLine("[red]Error processing file:[/]");
-                    console.WriteException(current.Exception, ExceptionFormats.ShortenEverything);
+                    layout[tagDataLayoutKey].Update(tagDataRenderable);
+                }
+                else
+                {
+                    layout[tagDataLayoutKey]
+                        .Update(
+                            new Rows(
+                                tagDataRenderable,
+                                Text.NewLine,
+                                new Text(
+                                    $"Error: {operation.Exception.Message}",
+                                    new Style(Color.Red)
+                                )
+                            )
+                        );
                 }
             }
             else
@@ -161,18 +177,18 @@ public class TagDataCommand<TSettings>(
                 console.WriteLine("No files with changes");
             }
 
-            layout["header"].Update(navigation.Content);
+            layout[headerLayoutKey].Update(navigation.Content);
 
             console.Write(layout);
 
             var cmd = userActionReader.Read();
             if (cmd == UserAction.Next)
             {
-                index++;
+                selectedIndex++;
             }
             else if (cmd == UserAction.Previous)
             {
-                index--;
+                selectedIndex--;
             }
             else if (cmd == UserAction.WriteAll)
             {
@@ -180,16 +196,18 @@ public class TagDataCommand<TSettings>(
             }
             else if (cmd == UserAction.Write)
             {
-                if (current is not null && !current.IsSaved && current.HasChanges)
+                if (operation is { Status: TagDataOperationStatus.Pending, HasChanges: true })
                 {
-                    WriteTags(current);
+                    operation.Write(tagger);
                 }
             }
             else if (cmd == UserAction.ToggleFilter)
             {
-                filter = !filter;
-                filtered = filter ? operations.Where(x => x.HasChanges).ToList() : operations;
-                index = 0;
+                filterEnabled = !filterEnabled;
+                filtered = filterEnabled
+                    ? operations.Where(x => x.HasChanges).ToList()
+                    : operations;
+                selectedIndex = 0;
             }
             else
             {
@@ -198,19 +216,20 @@ public class TagDataCommand<TSettings>(
         }
     }
 
-    private IRenderable RenderFilePathList(
+    private IRenderable RenderFileList(
         List<TagDataOperation> operations,
-        int index,
-        int windowSize
+        int selectedIndex,
+        int windowSize,
+        bool filter
     )
     {
-        if (operations.Count <= 0)
+        if (operations.Count == 0)
         {
-            return new Text("");
+            return Text.Empty;
         }
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var windowStart = index - (windowSize / 2);
+        var windowStart = selectedIndex - (windowSize / 2);
 
         // clamp so we dont go before 0 or past the last possible full window start
         var maxStart = Math.Max(0, operations.Count - windowSize);
@@ -232,11 +251,17 @@ public class TagDataCommand<TSettings>(
             var text = $"{lineNumber} {modifiedMarker} {path}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
                 .PadRight(Console.WindowWidth);
-            var style = new Style(background: index == itemIndex ? Color.Grey : null);
+            var style = new Style(background: selectedIndex == itemIndex ? Color.Grey : null);
             items.Add(new Text(text, style));
         }
 
-        return new Rows(new Text("Files:", new Style(Color.Yellow)), new Rows(items));
+        return new Rows(
+            new Text(
+                $"Files ({operations.Count}{(filter ? ", filtered" : "")}):",
+                new Style(Color.Yellow)
+            ),
+            new Rows(items)
+        );
     }
 
     private bool ValidateOptions(CommandContext context)
@@ -260,7 +285,9 @@ public class TagDataCommand<TSettings>(
     private void WriteAll(List<TagDataOperation> operations)
     {
         console.Clear();
-        var operationsToWrite = operations.Where(x => !x.IsSaved && x.HasChanges).ToList();
+        var operationsToWrite = operations
+            .Where(x => x is { Status: TagDataOperationStatus.Pending, HasChanges: true })
+            .ToList();
         console
             .Progress()
             .Start(ctx =>
@@ -269,25 +296,11 @@ public class TagDataCommand<TSettings>(
                 for (var i = 0; i < operationsToWrite.Count; i++)
                 {
                     var operation = operationsToWrite[i];
-                    WriteTags(operation);
+                    operation.Write(tagger);
                     task.Description =
                         $"Writing metadata {i + 1} of {operationsToWrite.Count}({operation.Path.EscapeMarkup()})";
                     task.Increment(1);
                 }
             });
-    }
-
-    private void WriteTags(TagDataOperation operation)
-    {
-        try
-        {
-            tagger.WriteTags(operation.Path, operation.TagData);
-            operation.HasChanges = false;
-            operation.MarkSaved();
-        }
-        catch (Exception ex)
-        {
-            operation.MarkError(ex);
-        }
     }
 }

@@ -7,8 +7,6 @@ public class UserActionReader(IAnsiConsole console) : IUserActionReader
 {
     public UserAction Read()
     {
-        console.Cursor.Hide();
-
         while (true)
         {
             var key = console.Input.ReadKey(true)?.KeyChar;
@@ -27,13 +25,12 @@ public class UserActionReader(IAnsiConsole console) : IUserActionReader
 
             if (input.HasValue)
             {
-                console.Cursor.Show();
                 return input.Value;
             }
         }
     }
 
-    public LayoutElement RenderNavigation(bool filter)
+    public LayoutElement RenderNavigation()
     {
         var keymap = new Dictionary<string, string>
         {
@@ -49,12 +46,8 @@ public class UserActionReader(IAnsiConsole console) : IUserActionReader
             Expand = false,
         };
         return new LayoutElement(
-            new Rows(
-                new Text("Navigation: ", new Style(Color.Yellow)),
-                columns,
-                new Markup($"Filter: [green]{(filter ? "on" : "off")}[/]")
-            ),
-            4
+            new Rows(new Text("Navigation: ", new Style(Color.Yellow)), columns),
+            3
         );
     }
 }

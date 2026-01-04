@@ -35,7 +35,7 @@ public class RenameFileCommand(
         {
             console.Clear();
 
-            index = CommandHelper.ClampIndex(index, files.Count);
+            index = Math.Clamp(index, 0, files.Count - 1);
 
             var item = items[index];
 

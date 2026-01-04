@@ -1,3 +1,5 @@
+using TagSelecta.Tagging;
+
 namespace TagSelecta.Cli.Commands.TagDataCommandShared;
 
 public class TagDataOperation
@@ -10,21 +12,35 @@ public class TagDataOperation
     }
 
     public string Path { get; private set; }
-    public Tagging.TagData TagData { get; private set; }
+    public Tagging.TagData TagData { get; }
     public Tagging.TagData OriginalTagData { get; private set; }
-    public bool IsSaved { get; private set; }
+    public TagDataOperationStatus Status { get; private set; } = TagDataOperationStatus.Pending;
     public Exception? Exception { get; private set; }
-    public bool HasChanges { get; set; }
+    public bool HasChanges { get; private set; }
 
-    public void MarkSaved()
+    public void CheckForChanges()
     {
-        IsSaved = true;
-        OriginalTagData = TagData.Clone();
+        HasChanges = !TagDataComparer.AreEqual(TagData, OriginalTagData);
+    }
+
+    public void Write(ITagger tagger)
+    {
+        try
+        {
+            tagger.WriteTags(Path, TagData);
+            Status = TagDataOperationStatus.Written;
+            OriginalTagData = TagData.Clone();
+            HasChanges = false;
+        }
+        catch (Exception ex)
+        {
+            MarkError(ex);
+        }
     }
 
     public void MarkError(Exception ex)
     {
-        IsSaved = true;
+        Status = TagDataOperationStatus.Failed;
         Exception = ex;
     }
 }

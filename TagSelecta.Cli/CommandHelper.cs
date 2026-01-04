@@ -30,17 +30,6 @@ public static class CommandHelper
         console.WriteLine();
     }
 
-    public static int ClampIndex(int index, int count)
-    {
-        if (index < 0)
-            return 0;
-
-        if (index >= count)
-            return count - 1;
-
-        return index;
-    }
-
     public static string CleanFileName(string input)
     {
         if (string.IsNullOrEmpty(input))

@@ -47,7 +47,7 @@ public static class TagDataPrinter
         );
     }
 
-    public static IRenderable PrintComparison(IAnsiConsole console, TagData t1, TagData t2)
+    public static IRenderable PrintComparison(TagData t1, TagData t2)
     {
         var table = new Table();
         table.Border(TableBorder.None);
@@ -141,13 +141,27 @@ public static class TagDataPrinter
         {
             return;
         }
-        var areEqual = eq ?? value1 == value2;
-        var color1 = areEqual ? "[white]" : "[red]";
-        var color2 = areEqual ? "[white]" : "[green]";
-        var rowText = areEqual
-            ? $"{color1}{value1.EscapeMarkup()}[/]"
-            : $"{color1}{value1.EscapeMarkup()}[/] ➔ {color2}{value2.EscapeMarkup()}[/]";
-        table.AddRow([$"[blue]{label.ToSpacedWords().EscapeMarkup()}[/]", rowText]);
+        var labelText = new Text(label, new Style(Color.Blue));
+        if (eq ?? value1 == value2)
+        {
+            table.AddRow(labelText, new Text(value1, new Style(Color.Default)));
+        }
+        else if (string.IsNullOrEmpty(value1))
+        {
+            table.AddRow(labelText, new Text(value2, new Style(Color.Green)));
+        }
+        else
+        {
+            var cols = new Columns(
+                new Text(value1, new Style(Color.Red)),
+                new Text("➔"),
+                new Text(value2, new Style(Color.Green))
+            )
+            {
+                Expand = false,
+            };
+            table.AddRow(labelText, cols);
+        }
     }
 
     private static string PictureToStr(TagLib.Picture? pic)
