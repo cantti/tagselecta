@@ -1,4 +1,4 @@
-using TagSelecta.Cli.Commands.Edit;
+using TagSelecta.Cli.Commands.Set;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
@@ -11,9 +11,9 @@ public class EditTests
     public async Task EditTest()
     {
         // Arrange
-        var action = new EditAction();
+        var action = new SetAction();
 
-        var settings = new EditSettings
+        var settings = new SetSettings
         {
             Album = "Test Album",
             AlbumArtist = "Test Album Artist",

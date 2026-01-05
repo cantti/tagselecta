@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Cli.Commands.Edit;
+namespace TagSelecta.Cli.Commands.Set;
 
-public class EditSettings : BaseSettings
+public class SetSettings : BaseSettings
 {
     [CommandOption($"--{Fields.Album}|-l")]
     [Description("Album name.")]

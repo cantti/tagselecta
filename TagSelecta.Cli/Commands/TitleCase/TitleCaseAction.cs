@@ -1,13 +1,12 @@
 using System.Globalization;
-using TagSelecta.Cli.Commands.Tui;
+using TagSelecta.Cli.Tui;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.TitleCase;
 
+[TagDataAction("titlecase", "tc")]
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
-    public override string Name => "title-case";
-
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,

@@ -1,7 +1,7 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public class TreeFileListFactory
 {

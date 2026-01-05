@@ -1,4 +1,4 @@
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public interface ITagDataAction
 {

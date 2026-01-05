@@ -1,11 +1,10 @@
-using TagSelecta.Cli.Commands.Tui;
+using TagSelecta.Cli.Tui;
 
 namespace TagSelecta.Cli.Commands.AutoTrack;
 
+[TagDataAction("autotrack", "at")]
 public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
-    public override string Name => "auto-track";
-
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,

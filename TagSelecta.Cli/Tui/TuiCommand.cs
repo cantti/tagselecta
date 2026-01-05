@@ -4,7 +4,7 @@ using Spectre.Console.Rendering;
 using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public class TuiCommand(
     IAnsiConsole console,
@@ -19,21 +19,17 @@ public class TuiCommand(
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
 
-    // ui actions
-    private const string ActionMoveDown = "move_down";
-    private const string ActionMoveUp = "move_up";
-    private const string ActionQuit = "quit";
-    private const string ActionToggleTree = "toggle_tree";
-    private const string ActionToggleFilter = "toggle_filter";
-
+    private bool _running = true;
     private int _selectedIndex;
     private bool _filterEnabled;
     private bool _treeEnabled;
+    private bool _helpEnabled;
     private readonly TreeFileListFactory _treeListFactory = new();
     private List<TagDataOperation> _operations = [];
     private List<TagDataOperation> _shownOperations = [];
     private TagDataOperation? _selectedOperation;
-    private bool _running = true;
+
+    private Dictionary<string, Func<ValueTask>> _handlers;
 
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -42,6 +38,7 @@ public class TuiCommand(
     )
     {
         BindHotkeys();
+        SetUiHandlers();
 
         if (!ValidateOptions(context))
         {
@@ -80,32 +77,19 @@ public class TuiCommand(
         return 0;
     }
 
-    private void BindHotkeys()
-    {
-        hotkeys.Bind(ConsoleKey.J, ActionMoveDown);
-        hotkeys.Bind(ConsoleKey.K, ActionMoveUp);
-        hotkeys.Bind(ConsoleKey.Q, ActionQuit);
-        hotkeys.Bind(ConsoleKey.T, ActionToggleTree);
-        hotkeys.Bind(ConsoleKey.F, ActionToggleFilter);
-    }
-
-    private async Task Start() { }
-
     private async Task RenderConsoleLayout()
     {
         console.Clear();
 
-        // var navigation = userActionReader.RenderNavigation();
         var navigationSize = 3;
 
         var filesContentSize = Math.Min(
-            (Console.WindowHeight - 3) / 2,
-            // +2 for navigation and add empty row
+            (Console.WindowHeight - navigationSize) / 2,
             _shownOperations.Count + 2
         );
 
         var layout = new Layout("root").SplitRows(
-            new Layout(HeaderLayoutKey).Size(3).Update(Text.Empty),
+            new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
             new Layout(FilesLayoutKey).Size(filesContentSize).Update(Text.Empty),
             new Layout(TagDataLayoutKey).Update(Text.Empty)
         );
@@ -116,13 +100,15 @@ public class TuiCommand(
 
         if (_selectedOperation is not null)
         {
-            var fileListContent = _treeEnabled
-                ? _treeListFactory.Render(
-                    _shownOperations,
-                    _selectedIndex,
-                    filesContentSize - 2,
-                    _filterEnabled
-                )
+            var fileListContent =
+                _helpEnabled ? RenderHelp()
+                : _treeEnabled
+                    ? _treeListFactory.Render(
+                        _shownOperations,
+                        _selectedIndex,
+                        filesContentSize - 2,
+                        _filterEnabled
+                    )
                 : RenderFileList(
                     _shownOperations,
                     _selectedIndex,
@@ -163,42 +149,23 @@ public class TuiCommand(
             layout[TagDataLayoutKey].Update(new Text("No files found"));
         }
 
-        layout[HeaderLayoutKey].Update(new Text("Help will be here!"));
-
         console.Write(layout);
 
-        var actionRequest = userActionReader.Read();
-        switch (actionRequest.ActionName)
+        var request = userActionReader.Read();
+        if (_handlers.TryGetValue(request.ActionName, out var uiAction))
         {
-            case ActionMoveDown:
-                _selectedIndex++;
-                break;
-            case ActionMoveUp:
-                _selectedIndex--;
-                break;
-            case ActionToggleTree:
-                ToggleTree();
-                break;
-            case ActionToggleFilter:
-                ToggleFilter();
-                break;
-            case ActionQuit:
-            case "q":
-                _running = false;
-                break;
-            case "write":
-            case "w":
-                Write();
-                break;
-            case "writeall":
-            case "wa":
-                WriteAll(_shownOperations);
-                _treeListFactory.BuildTreeLines(_shownOperations);
-                break;
-            default:
-                await DispatchAction(actionRequest);
-                break;
+            await uiAction();
         }
+        else
+        {
+            await DispatchAction(request);
+        }
+    }
+
+    private void Undo()
+    {
+        _selectedOperation?.Undo();
+        UpdateTreeView();
     }
 
     private async Task DispatchAction(ActionRequest actionRequest)
@@ -279,7 +246,7 @@ public class TuiCommand(
             return;
         }
         _selectedOperation.Write(tagger);
-        _treeListFactory.BuildTreeLines(_shownOperations);
+        UpdateTreeView();
     }
 
     private void WriteAll(List<TagDataOperation> operations)
@@ -302,6 +269,7 @@ public class TuiCommand(
                     task.Increment(1);
                 }
             });
+        UpdateTreeView();
     }
 
     private IRenderable RenderFileList(
@@ -386,5 +354,125 @@ public class TuiCommand(
     private void ToggleTree()
     {
         _treeEnabled = !_treeEnabled;
+    }
+
+    private void ToggleHelp()
+    {
+        _helpEnabled = !_helpEnabled;
+    }
+
+    private IRenderable RenderHeader()
+    {
+        var keys = new List<(string Key, string Action)> { ("q", "Quit"), ("h", "Help") };
+        var cols1 = keys.Select(x => new Markup($"[bold blue]{x.Key}[/] ➔ {x.Action}")).ToList();
+        return new Rows(
+            new Text("Tagselecta:", new Style(Color.Yellow)),
+            new Columns(cols1) { Padding = new Padding(2, 0, 2, 0), Expand = false }
+        );
+    }
+
+    private static IRenderable RenderHelp()
+    {
+        var keys = new List<(string Key, string Action)>
+        {
+            ("t", "Toggle tree"),
+            ("f", "Toggle filter"),
+            ("j, move down", "Move down"),
+            ("k, move up", "Move up"),
+            ("u", "Undo. Only if not written!"),
+            (":w", "Write"),
+            (":wa", "Write all"),
+            (":s", "Set tags (artist=Bach title=\"The Goldberg Variations\" all)"),
+            (":at", "Auto track number"),
+            (":split", "Split artists"),
+            (":tc", "Title case conversion"),
+            (":tc", "Extract picture"),
+            (
+                ":discogs",
+                "release=https://www.discogs.com/master/163206-King-Tubby-Presents-The-Roots-Of-Dub"
+            ),
+        };
+        var grid = new Grid();
+        grid.AddColumn();
+        grid.AddColumn();
+        foreach (var key in keys)
+        {
+            grid.AddRow($"[bold blue]{key.Key}[/]", key.Action);
+        }
+        return new Rows(new Text("Help:", new Style(Color.Yellow)), grid);
+    }
+
+    private void SetUiHandlers()
+    {
+        _handlers = new()
+        {
+            [UiAction.MoveDown] = () =>
+            {
+                _selectedIndex++;
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.MoveUp] = () =>
+            {
+                _selectedIndex--;
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.ToggleTree] = () =>
+            {
+                ToggleTree();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.ToggleFilter] = () =>
+            {
+                ToggleFilter();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.ToggleHelp] = () =>
+            {
+                ToggleHelp();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.Undo] = () =>
+            {
+                Undo();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.Quit] = () =>
+            {
+                _running = false;
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.Write] = () =>
+            {
+                Write();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.WriteAlias] = () =>
+            {
+                Write();
+                return ValueTask.CompletedTask;
+            },
+
+            [UiAction.WriteAll] = () =>
+            {
+                WriteAll(_shownOperations);
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.WriteAllAlias] = () =>
+            {
+                WriteAll(_shownOperations);
+                return ValueTask.CompletedTask;
+            },
+        };
+    }
+
+    private void BindHotkeys()
+    {
+        hotkeys.Bind(ConsoleKey.J, UiAction.MoveDown);
+        hotkeys.Bind(ConsoleKey.K, UiAction.MoveUp);
+        hotkeys.Bind(ConsoleKey.Q, UiAction.Quit);
+        hotkeys.Bind(ConsoleKey.T, UiAction.ToggleTree);
+        hotkeys.Bind(ConsoleKey.F, UiAction.ToggleFilter);
+        hotkeys.Bind(ConsoleKey.H, UiAction.ToggleHelp);
+        hotkeys.Bind(ConsoleKey.U, UiAction.Undo);
     }
 }

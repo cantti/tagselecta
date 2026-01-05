@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.Tui;
+using TagSelecta.Cli.Tui;
 
 namespace TagSelecta.Cli.Commands.Split;
 

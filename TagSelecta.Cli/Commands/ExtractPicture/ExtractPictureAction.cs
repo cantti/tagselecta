@@ -1,12 +1,11 @@
-using TagSelecta.Cli.Commands.Tui;
+using TagSelecta.Cli.Tui;
 using TagSelecta.Shared;
 
 namespace TagSelecta.Cli.Commands.ExtractPicture;
 
+[TagDataAction("extractpicture", "ep")]
 public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 {
-    public override string Name => "extract-picture";
-
     private readonly List<TagLib.PictureType> _types = [];
 
     protected override bool BeforeProcessTagData(ExtractPictureSettings settings)

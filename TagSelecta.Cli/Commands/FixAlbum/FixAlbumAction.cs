@@ -1,5 +1,5 @@
 using Spectre.Console;
-using TagSelecta.Cli.Commands.Tui;
+using TagSelecta.Cli.Tui;
 using TagSelecta.Shared;
 using TagSelecta.Shared.Configuration;
 
@@ -7,8 +7,6 @@ namespace TagSelecta.Cli.Commands.FixAlbum;
 
 public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettings>
 {
-    public override string Name => "fix-album";
-
     private readonly List<Album> _albums = [];
 
     protected override void ProcessTagData(

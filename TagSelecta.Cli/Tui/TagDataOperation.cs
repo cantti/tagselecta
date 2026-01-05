@@ -1,6 +1,6 @@
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public class TagDataOperation
 {
@@ -12,11 +12,19 @@ public class TagDataOperation
     }
 
     public string Path { get; private set; }
-    public Tagging.TagData TagData { get; }
+    public Tagging.TagData TagData { get; private set; }
     public Tagging.TagData OriginalTagData { get; private set; }
     public TagDataOperationStatus Status { get; private set; } = TagDataOperationStatus.Pending;
     public Exception? Exception { get; private set; }
     public bool HasChanges { get; private set; }
+
+    public void Undo()
+    {
+        TagData = OriginalTagData.Clone();
+        Status = TagDataOperationStatus.Pending;
+        HasChanges = false;
+        Exception = null;
+    }
 
     public void CheckForChanges()
     {

@@ -1,4 +1,4 @@
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public abstract class TagDataAction<TSettings> : ITagDataAction
     where TSettings : BaseSettings
@@ -28,8 +28,6 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         ProcessTagData(current, files, settings);
         return Task.CompletedTask;
     }
-
-    public abstract string Name { get; }
 
     Task ITagDataAction.ProcessTagDataAsync(
         FileWithTagData current,

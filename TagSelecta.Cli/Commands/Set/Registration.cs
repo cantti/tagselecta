@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-using TagSelecta.Cli.Commands.Tui;
+using TagSelecta.Cli.Tui;
 
-namespace TagSelecta.Cli.Commands.Edit;
+namespace TagSelecta.Cli.Commands.Set;
 
 public static class Registration
 {
@@ -36,6 +36,6 @@ public static class Registration
         //             "'{{ artist | regex.replace \"^VA$\" \"Various Artists\" \"-i\" }}'",
         //         ]
         //     );
-        services.AddTransient<ITagDataAction, EditAction>();
+        services.AddTransient<ITagDataAction, SetAction>();
     }
 }

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public class UserActionReader : IUserActionReader
 {

@@ -1,8 +1,8 @@
 using System.Reflection;
 using System.Text.Json;
-using TagSelecta.Cli.Commands.Edit;
+using TagSelecta.Cli.Commands.Set;
 
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public record ActionInDispatcher(string[] Names, ITagDataAction Action);
 
@@ -20,7 +20,7 @@ public sealed class ActionDispatcher
             if (attr == null)
                 continue;
 
-            _actions.Add(new(attr.Names, handler));
+            _actions.Add(new ActionInDispatcher(attr.Names, handler));
         }
     }
 
@@ -37,15 +37,16 @@ public sealed class ActionDispatcher
             var settingsType = GetSettingsTypeFromAction(action.Action.GetType());
             BaseSettings baseSettings;
 
-            if (settingsType == typeof(EditSettings))
+            if (settingsType == typeof(SetSettings))
             {
-                var editSettings = new EditSettings();
-                editSettings.Set = request
-                    .Args?.Where(x => !x.Key.StartsWith("arg"))
-                    .Select(x => $"{x.Key}={x.Value}")
-                    .ToArray();
-                editSettings.ClearCustom =
-                    request.Args?.Any(x => x.Value == "clearcustom") ?? false;
+                var editSettings = new SetSettings
+                {
+                    Set = request
+                        .Args.Where(x => !x.Key.StartsWith("arg"))
+                        .Select(x => $"{x.Key}={x.Value}")
+                        .ToArray(),
+                    ClearCustom = request.Args.Any(x => x.Value == "clearcustom"),
+                };
                 baseSettings = editSettings;
             }
             else

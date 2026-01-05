@@ -4,17 +4,17 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Cli.Commands.AutoTrack;
 using TagSelecta.Cli.Commands.Discogs;
-using TagSelecta.Cli.Commands.Edit;
 using TagSelecta.Cli.Commands.ExtractPicture;
 using TagSelecta.Cli.Commands.Find;
 using TagSelecta.Cli.Commands.FixAlbum;
 using TagSelecta.Cli.Commands.HelpFormatting;
 using TagSelecta.Cli.Commands.RenameFile;
+using TagSelecta.Cli.Commands.Set;
 using TagSelecta.Cli.Commands.Split;
 using TagSelecta.Cli.Commands.TitleCase;
-using TagSelecta.Cli.Commands.Tui;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Cli.IO;
+using TagSelecta.Cli.Tui;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Tagging;
 
@@ -30,7 +30,7 @@ class Program
         var app = new CommandApp(new TypeRegistrar(services));
         app.Configure(config =>
         {
-            config.AddCommand<TuiCommand>("tui");
+            config.AddCommand<TuiCommand>("edit").WithAlias("e");
             AddCommands(config, services);
             config.SetApplicationVersion(GetAppVersion());
         });

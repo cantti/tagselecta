@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using TagSelecta.Cli.Commands.Tui;
+using TagSelecta.Cli.Tui;
 using TagSelecta.Shared;
 
 namespace TagSelecta.Cli.Commands.Discogs;
@@ -7,8 +7,6 @@ namespace TagSelecta.Cli.Commands.Discogs;
 [TagDataAction("discogs")]
 public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<DiscogsSettings>
 {
-    public override string Name => "discogs";
-
     private ReleaseFetcherResult? _release;
     private List<string> _fieldToWriteList = [];
 

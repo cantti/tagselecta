@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public sealed class CommandParser
 {

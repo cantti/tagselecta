@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace TagSelecta.Cli.Commands.Tui;
+namespace TagSelecta.Cli.Tui;
 
 public class TuiSettings : CommandSettings
 {
