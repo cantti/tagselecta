@@ -1,11 +1,14 @@
-using TagSelecta.Cli.Commands.TagDataCommandShared;
+using TagSelecta.Cli.Commands.Tui;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Commands.Edit;
 
+[TagDataAction("set", "s")]
 public class EditAction : TagDataAction<EditSettings>
 {
+    public override string Name => "s";
+
     protected override void ProcessTagData(
         FileWithTagData current,
         List<FileWithTagData> files,
@@ -110,7 +113,7 @@ public class EditAction : TagDataAction<EditSettings>
             }
             else
             {
-                prop.SetValue(tagData, new List<string> { value });
+                prop.SetValue(tagData, value.ToMulti());
             }
         }
         else

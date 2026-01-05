@@ -141,7 +141,7 @@ public static class TagDataPrinter
         {
             return;
         }
-        var labelText = new Text(label, new Style(Color.Blue));
+        var labelText = new Text(label.ToSpacedWords(), new Style(Color.Blue));
         var elements = new List<IRenderable>();
         if (eq ?? value1 == value2)
         {

@@ -1,4 +1,4 @@
-namespace TagSelecta.Cli.Commands.TagDataCommandShared;
+namespace TagSelecta.Cli.Commands.Tui;
 
 public enum TagDataOperationStatus
 {

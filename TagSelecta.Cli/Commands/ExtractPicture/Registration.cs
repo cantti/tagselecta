@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
+using TagSelecta.Cli.Commands.Tui;
 
 namespace TagSelecta.Cli.Commands.ExtractPicture;
 
@@ -10,8 +11,9 @@ public static class Registration
         IServiceCollection services
     )
     {
-        configurator
-            .AddTagDataAction<ExtractPictureAction>(services, "extractpicture")
-            .WithDescription("Extract pictures to files.");
+        // configurator
+        //     .AddTagDataAction<ExtractPictureAction>(services, "extractpicture")
+        //     .WithDescription("Extract pictures to files.");
+        services.AddTransient<ITagDataAction, ExtractPictureAction>();
     }
 }

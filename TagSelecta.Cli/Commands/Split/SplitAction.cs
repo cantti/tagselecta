@@ -1,9 +1,11 @@
-using TagSelecta.Cli.Commands.TagDataCommandShared;
+using TagSelecta.Cli.Commands.Tui;
 
 namespace TagSelecta.Cli.Commands.Split;
 
 public class SplitAction : TagDataAction<SplitSettings>
 {
+    public override string Name => "split";
+
     private string[] _separators = [",", ";", "feat."];
 
     protected override bool BeforeProcessTagData(SplitSettings settings)

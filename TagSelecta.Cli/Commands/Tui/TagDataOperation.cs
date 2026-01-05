@@ -1,6 +1,6 @@
 using TagSelecta.Tagging;
 
-namespace TagSelecta.Cli.Commands.TagDataCommandShared;
+namespace TagSelecta.Cli.Commands.Tui;
 
 public class TagDataOperation
 {

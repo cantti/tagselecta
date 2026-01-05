@@ -11,8 +11,8 @@ using TagSelecta.Cli.Commands.FixAlbum;
 using TagSelecta.Cli.Commands.HelpFormatting;
 using TagSelecta.Cli.Commands.RenameFile;
 using TagSelecta.Cli.Commands.Split;
-using TagSelecta.Cli.Commands.TagDataCommandShared;
 using TagSelecta.Cli.Commands.TitleCase;
+using TagSelecta.Cli.Commands.Tui;
 using TagSelecta.Cli.Discogs;
 using TagSelecta.Cli.IO;
 using TagSelecta.Shared.Configuration;
@@ -30,6 +30,7 @@ class Program
         var app = new CommandApp(new TypeRegistrar(services));
         app.Configure(config =>
         {
+            config.AddCommand<TuiCommand>("tui");
             AddCommands(config, services);
             config.SetApplicationVersion(GetAppVersion());
         });

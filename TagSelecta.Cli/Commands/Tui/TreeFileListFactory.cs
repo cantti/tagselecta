@@ -1,7 +1,7 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace TagSelecta.Cli.Commands.TagDataCommandShared.InteractiveWrite;
+namespace TagSelecta.Cli.Commands.Tui;
 
 public class TreeFileListFactory
 {
