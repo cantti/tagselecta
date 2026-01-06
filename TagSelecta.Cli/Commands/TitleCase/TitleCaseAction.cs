@@ -8,8 +8,8 @@ namespace TagSelecta.Cli.Commands.TitleCase;
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
     protected override void ProcessTagData(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         TitleCaseSettings settings
     )
     {
@@ -20,16 +20,16 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
                 .Where(p => p.Name != nameof(TagData.Custom))
         )
         {
-            var value = prop.GetValue(current.TagData)!;
+            var value = prop.GetValue(current.CurrentTagData)!;
             if (prop.PropertyType == typeof(string))
             {
                 var str = (string)value;
-                prop.SetValue(current.TagData, ToTitleCase(str));
+                prop.SetValue(current.CurrentTagData, ToTitleCase(str));
             }
             if (prop.PropertyType == typeof(List<string>))
             {
                 var list = (List<string>)value;
-                prop.SetValue(current.TagData, list.Select(ToTitleCase).ToList());
+                prop.SetValue(current.CurrentTagData, list.Select(ToTitleCase).ToList());
             }
         }
     }

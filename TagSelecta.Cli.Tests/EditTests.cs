@@ -65,7 +65,7 @@ public class EditTests
 
         tagData.SetCustomField("original_field", "original_value");
 
-        var item = new FileWithTagData("file.mp3", tagData);
+        var item = new IFileContext("file.mp3", tagData);
 
         // Act
         await action.ProcessTagDataAsync(item, [item], settings);

@@ -26,7 +26,7 @@ public class RenameFileTests
             .ScanAndRead(new List<string>())
             .ReturnsForAnyArgs(
                 [
-                    new FileWithTagData(
+                    new IFileContext(
                         "/file1.mp3",
                         new TagData
                         {
@@ -60,7 +60,7 @@ public class RenameFileTests
     {
         var settings = new RenameFileSettings { Template = "{{artist}} - {{title}}" };
 
-        var file = new FileWithTagData(
+        var file = new IFileContext(
             Path.Combine("/Music", "oldname.mp3"),
             new TagData { Artist = ["Artist"], Title = "Title" }
         );

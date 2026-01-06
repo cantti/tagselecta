@@ -3,8 +3,8 @@ namespace TagSelecta.Cli.Tui;
 public interface ITagDataAction
 {
     Task ProcessTagDataAsync(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         BaseSettings settings
     );
 

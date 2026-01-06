@@ -14,7 +14,7 @@ public class AutoTrackTests
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
-        var item1 = new FileWithTagData(
+        var item1 = new IFileContext(
             "file1.mp3",
             new TagData()
             {
@@ -25,7 +25,7 @@ public class AutoTrackTests
             }
         );
 
-        var item2 = new FileWithTagData(
+        var item2 = new IFileContext(
             "file2.mp3",
             new TagData
             {

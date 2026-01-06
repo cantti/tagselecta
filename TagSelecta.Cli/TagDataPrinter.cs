@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using TagSelecta.Cli.Tui;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
@@ -7,13 +8,14 @@ namespace TagSelecta.Cli;
 
 public static class TagDataPrinter
 {
-    public static IRenderable PrintTagData(IAnsiConsole console, TagData tagData)
+    public static IRenderable PrintTagData(TagDataOperation f)
     {
         var table = new Table();
         table.Border(TableBorder.None);
         table.AddColumn("", c => c.Width(20));
         table.AddColumn("");
         table.HideHeaders();
+        AddField(table, "Filename", Path.GetFileName(f.CurrentPath));
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -21,22 +23,26 @@ public static class TagDataPrinter
                 .Where(p => p.Name != nameof(TagData.Custom))
         )
         {
-            AddField(table, prop.Name, ConvertValue(prop.GetValue(tagData), prop.PropertyType));
+            AddField(
+                table,
+                prop.Name,
+                ConvertValue(prop.GetValue(f.CurrentTagData), prop.PropertyType)
+            );
         }
-        if (tagData.Custom.Count > 0)
+        if (f.CurrentTagData.Custom.Count > 0)
         {
             table.AddEmptyRow();
             table.AddRow("[i]Custom:[/]");
-            foreach (var custom in tagData.Custom)
+            foreach (var custom in f.CurrentTagData.Custom)
             {
                 AddField(table, custom.Key, custom.Text);
             }
         }
-        if (tagData.Picture.Count > 0)
+        if (f.CurrentTagData.Picture.Count > 0)
         {
             table.AddEmptyRow();
             table.AddRow("[i]Pictures:[/]");
-            foreach (var picture in tagData.Picture)
+            foreach (var picture in f.CurrentTagData.Picture)
             {
                 AddField(table, picture.Type.ToString(), PictureToStr(picture));
             }
@@ -47,13 +53,20 @@ public static class TagDataPrinter
         );
     }
 
-    public static IRenderable PrintComparison(TagData t1, TagData t2)
+    public static IRenderable PrintComparison(TagDataOperation f)
     {
         var table = new Table();
         table.Border(TableBorder.None);
         table.AddColumn("", c => c.Width(20));
         table.AddColumn("");
         table.HideHeaders();
+
+        AddFieldComparison(
+            table,
+            "Filename",
+            Path.GetFileName(f.OriginalPath),
+            Path.GetFileName(f.CurrentPath)
+        );
 
         foreach (
             var prop in typeof(TagData)
@@ -65,39 +78,47 @@ public static class TagDataPrinter
             AddFieldComparison(
                 table,
                 prop.Name,
-                ConvertValue(prop.GetValue(t1), prop.PropertyType),
-                ConvertValue(prop.GetValue(t2), prop.PropertyType)
+                ConvertValue(prop.GetValue(f.OriginalTagData), prop.PropertyType),
+                ConvertValue(prop.GetValue(f.CurrentTagData), prop.PropertyType)
             );
         }
-        var customKeys = t1.Custom.Select(x => x.Key).Union(t2.Custom.Select(x => x.Key)).ToList();
+        var customKeys = f
+            .OriginalTagData.Custom.Select(x => x.Key)
+            .Union(f.CurrentTagData.Custom.Select(x => x.Key))
+            .ToList();
         if (customKeys.Count > 0)
         {
             table.AddEmptyRow();
             table.AddRow("[i]Custom:[/]");
-            foreach (var key in t1.Custom.Select(x => x.Key).Union(t2.Custom.Select(x => x.Key)))
+            foreach (
+                var key in f
+                    .OriginalTagData.Custom.Select(x => x.Key)
+                    .Union(f.CurrentTagData.Custom.Select(x => x.Key))
+            )
             {
-                var value1 = t1.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
-                var value2 = t2.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
+                var value1 =
+                    f.OriginalTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
+                var value2 = f.CurrentTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
                 AddFieldComparison(table, key, value1, value2);
             }
         }
 
-        if (t1.Picture.Count > 0 || t2.Picture.Count > 0)
+        if (f.OriginalTagData.Picture.Count > 0 || f.CurrentTagData.Picture.Count > 0)
         {
             table.AddEmptyRow();
             table.AddRow("[i]Pictures:[/]");
 
             // collect unique picture types
-            var types = t1
-                .Picture.Select(p => p.Type)
-                .Union(t2.Picture.Select(p => p.Type))
+            var types = f
+                .OriginalTagData.Picture.Select(p => p.Type)
+                .Union(f.CurrentTagData.Picture.Select(p => p.Type))
                 .OrderBy(t => t.ToString())
                 .ToList();
 
             foreach (var type in types)
             {
-                var list1 = t1.Picture.Where(p => p.Type == type).ToList();
-                var list2 = t2.Picture.Where(p => p.Type == type).ToList();
+                var list1 = f.OriginalTagData.Picture.Where(p => p.Type == type).ToList();
+                var list2 = f.CurrentTagData.Picture.Where(p => p.Type == type).ToList();
 
                 int max = Math.Max(list1.Count, list2.Count);
 

@@ -8,13 +8,13 @@ namespace TagSelecta.Cli.Commands.Set;
 public class SetAction : TagDataAction<SetSettings>
 {
     protected override void ProcessTagData(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         SetSettings settings
     )
     {
-        var tagData = current.TagData;
-        var formatter = new TagDataFormatter(tagData, current.Path);
+        var tagData = current.CurrentTagData;
+        var formatter = new TagDataFormatter(tagData, current.CurrentPath);
 
         Write(s => s.Album, v => tagData.Album = v);
         Write(s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti());
@@ -64,7 +64,7 @@ public class SetAction : TagDataAction<SetSettings>
             for (int i = 0; i < settings.Picture.Length; i++)
             {
                 var path = settings.Picture[i];
-                // try to find corresponding picture type, or use first
+                // try to find a corresponding picture type, or use first
                 var typeStr =
                     settings.PictureType?.ElementAtOrDefault(i)
                     ?? settings.PictureType?.FirstOrDefault();

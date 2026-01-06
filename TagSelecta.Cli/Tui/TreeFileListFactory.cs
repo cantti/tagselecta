@@ -15,13 +15,13 @@ public class TreeFileListFactory
     {
         _treeLines.Clear();
 
-        var paths = new List<(string Path, bool IsDir)>();
+        var paths = new List<(string Path, TagDataOperation? operation)>();
 
         foreach (var operation in operations)
         {
-            paths.Add((operation.Path, false));
+            paths.Add((operation.OriginalPath, operation));
 
-            var current = operation.Path;
+            var current = operation.OriginalPath;
             var root = Path.GetPathRoot(current);
 
             while (true)
@@ -32,7 +32,7 @@ public class TreeFileListFactory
 
                 if (!paths.Any(x => string.Equals(x.Path, parent, _pathComparer)))
                 {
-                    paths.Add((parent, true));
+                    paths.Add((parent, null));
                 }
 
                 if (string.Equals(parent, root, _pathComparer))
@@ -42,7 +42,7 @@ public class TreeFileListFactory
             }
         }
 
-        void AddNode((string Path, bool IsDir) node, int depth = 0)
+        void AddNode((string Path, TagDataOperation? operation) node, int depth = 0)
         {
             var root = Path.GetPathRoot(node.Path);
 
@@ -51,19 +51,19 @@ public class TreeFileListFactory
                 : Path.GetFileName(node.Path);
 
             var operation = operations.FirstOrDefault(x =>
-                string.Equals(x.Path, node.Path, _pathComparer)
+                string.Equals(x.OriginalPath, node.Path, _pathComparer)
             );
 
             var indent = new string(' ', depth * 2);
             var prefix =
-                node.IsDir ? "[bold]▸[/] "
-                : operation != null && operation.HasChanges ? "* "
+                node.operation is null ? "[bold]▸[/] "
+                : operation is { HasChanges: true } ? "* "
                 : "  ";
             var text = $"{indent}{prefix}{name.EscapeMarkup()}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
                 .PadRight(Console.WindowWidth);
 
-            var line = new TreeLine(text, node.Path);
+            var line = new TreeLine(text, operation);
 
             _treeLines.Add(line);
 
@@ -102,7 +102,7 @@ public class TreeFileListFactory
         var selectedOperation = operations[selectedOperationIndex];
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var selectedIndexInTree = _treeLines.FindIndex(x => x.Path == selectedOperation.Path);
+        var selectedIndexInTree = _treeLines.FindIndex(x => x.Operation == selectedOperation);
         var windowStart = selectedIndexInTree - (windowSize / 2);
 
         // clamp so we dont go before 0 or past the last possible full window start
@@ -122,9 +122,7 @@ public class TreeFileListFactory
                     treeLine.Markup,
                     new Style(
                         null,
-                        string.Equals(treeLine.Path, selectedOperation.Path, _pathComparer)
-                            ? Color.Gray
-                            : Color.Default
+                        treeLine.Operation == selectedOperation ? Color.Gray : Color.Default
                     )
                 )
             );

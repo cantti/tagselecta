@@ -30,6 +30,7 @@ class Program
         var app = new CommandApp(new TypeRegistrar(services));
         app.Configure(config =>
         {
+            config.PropagateExceptions();
             config.AddCommand<TuiCommand>("edit").WithAlias("e");
             AddCommands(config, services);
             config.SetApplicationVersion(GetAppVersion());

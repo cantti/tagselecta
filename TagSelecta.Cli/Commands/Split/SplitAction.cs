@@ -17,22 +17,22 @@ public class SplitAction : TagDataAction<SplitSettings>
     }
 
     protected override void ProcessTagData(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         SplitSettings settings
     )
     {
-        var artists = current.TagData.Artist.SelectMany(Split).Distinct().ToList();
-        var albumArtists = current.TagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
+        var artists = current.CurrentTagData.Artist.SelectMany(Split).Distinct().ToList();
+        var albumArtists = current.CurrentTagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
         var composers = current
-            .TagData.Composer.Select(Split)
+            .CurrentTagData.Composer.Select(Split)
             .SelectMany(x => x)
             .Distinct()
             .ToList();
 
-        current.TagData.Artist = artists;
-        current.TagData.AlbumArtist = albumArtists;
-        current.TagData.Composer = composers;
+        current.CurrentTagData.Artist = artists;
+        current.CurrentTagData.AlbumArtist = albumArtists;
+        current.CurrentTagData.Composer = composers;
     }
 
     private List<string> Split(string input)

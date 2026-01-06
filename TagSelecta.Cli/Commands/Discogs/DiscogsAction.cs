@@ -23,15 +23,17 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
     }
 
     protected override void ProcessTagData(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         DiscogsSettings settings
     )
     {
+        var filesList = files.ToList();
+
         if (_release is null)
             throw new InvalidOperationException("Release not set");
 
-        var index = files.FindIndex(x => x.Path == current.Path);
+        var index = filesList.FindIndex(x => x.CurrentPath == current.CurrentPath);
         var track = _release.Release.TrackList[index];
 
         var albumArtists = _release
@@ -42,26 +44,34 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             .ToList();
         var label = _release.Release.Labels.FirstOrDefault();
 
-        Write(Fields.AlbumArtist, () => current.TagData.AlbumArtist = albumArtists);
+        Write(Fields.AlbumArtist, () => current.CurrentTagData.AlbumArtist = albumArtists);
         Write(
             Fields.Artist,
-            () => current.TagData.Artist = trackArtists.Count != 0 ? trackArtists : albumArtists
+            () =>
+                current.CurrentTagData.Artist =
+                    trackArtists.Count != 0 ? trackArtists : albumArtists
         );
-        Write(Fields.Album, () => current.TagData.Album = _release.Release.Title);
-        Write(Fields.Title, () => current.TagData.Title = track.Title);
-        Write(Fields.Track, () => current.TagData.Track = track.Position);
+        Write(Fields.Album, () => current.CurrentTagData.Album = _release.Release.Title);
+        Write(Fields.Title, () => current.CurrentTagData.Title = track.Title);
+        Write(Fields.Track, () => current.CurrentTagData.Track = track.Position);
         Write(
             Fields.TrackTotal,
-            () => current.TagData.TrackTotal = _release.Release.TrackList.Count.ToString()
+            () => current.CurrentTagData.TrackTotal = _release.Release.TrackList.Count.ToString()
         );
-        Write(Fields.Disc, () => current.TagData.Disc = "");
-        Write(Fields.DiscTotal, () => current.TagData.DiscTotal = "");
-        Write(Fields.Genre, () => current.TagData.Genre = _release.Release.Styles);
-        Write(Fields.Label, () => current.TagData.Label = label?.Name ?? "");
-        Write(Fields.Date, () => current.TagData.Date = _release.Release.Year.ToString());
-        Write(Fields.Picture, () => current.TagData.Picture = [new TagLib.Picture(_release.Image)]);
-        Write(Fields.CatalogNumber, () => current.TagData.CatalogNumber = label?.CatNo ?? "");
-        current.TagData.DiscogsReleaseId = _release.Release.Id.ToString();
+        Write(Fields.Disc, () => current.CurrentTagData.Disc = "");
+        Write(Fields.DiscTotal, () => current.CurrentTagData.DiscTotal = "");
+        Write(Fields.Genre, () => current.CurrentTagData.Genre = _release.Release.Styles);
+        Write(Fields.Label, () => current.CurrentTagData.Label = label?.Name ?? "");
+        Write(Fields.Date, () => current.CurrentTagData.Date = _release.Release.Year.ToString());
+        Write(
+            Fields.Picture,
+            () => current.CurrentTagData.Picture = [new TagLib.Picture(_release.Image)]
+        );
+        Write(
+            Fields.CatalogNumber,
+            () => current.CurrentTagData.CatalogNumber = label?.CatNo ?? ""
+        );
+        current.CurrentTagData.DiscogsReleaseId = _release.Release.Id.ToString();
     }
 
     private void Write(string field, Action write)

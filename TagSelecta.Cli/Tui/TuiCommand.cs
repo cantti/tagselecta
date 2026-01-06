@@ -12,7 +12,8 @@ public class TuiCommand(
     ITagger tagger,
     HotkeyMap hotkeys,
     IUserActionReader userActionReader,
-    ActionDispatcher actionDispatcher
+    ActionDispatcher actionDispatcher,
+    IFileSystem fs
 ) : AsyncCommand<TuiSettings>
 {
     private const string HeaderLayoutKey = "navigation";
@@ -28,8 +29,7 @@ public class TuiCommand(
     private List<TagDataOperation> _operations = [];
     private List<TagDataOperation> _shownOperations = [];
     private TagDataOperation? _selectedOperation;
-
-    private Dictionary<string, Func<ValueTask>> _handlers;
+    private Dictionary<string, Func<ValueTask>> _handlers = [];
 
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -45,7 +45,7 @@ public class TuiCommand(
             return 1;
         }
 
-        AltScreen.Enter();
+        // AltScreen.Enter();
 
         _operations = _shownOperations = audioFileScanner
             .ScanAndRead(settings.Path)
@@ -79,7 +79,7 @@ public class TuiCommand(
 
     private async Task RenderConsoleLayout()
     {
-        console.Clear();
+        // console.Clear();
 
         var navigationSize = 3;
 
@@ -119,11 +119,8 @@ public class TuiCommand(
             layout[FilesLayoutKey].Update(fileListContent);
 
             var tagDataRenderable = _selectedOperation.HasChanges
-                ? TagDataPrinter.PrintComparison(
-                    _selectedOperation.OriginalTagData,
-                    _selectedOperation.TagData
-                )
-                : TagDataPrinter.PrintTagData(console, _selectedOperation.TagData);
+                ? TagDataPrinter.PrintComparison(_selectedOperation)
+                : TagDataPrinter.PrintTagData(_selectedOperation);
 
             if (_selectedOperation.Exception is null)
             {
@@ -181,15 +178,15 @@ public class TuiCommand(
             {
                 await actionDispatcher.Dispatch(
                     actionRequest,
-                    new FileWithTagData(_selectedOperation.Path, _selectedOperation.TagData),
-                    _shownOperations.Select(x => new FileWithTagData(x.Path, x.TagData)).ToList(),
+                    null,
+                    null,
                     DispatchType.BeforeProcess
                 );
 
                 await actionDispatcher.Dispatch(
                     actionRequest,
-                    new FileWithTagData(_selectedOperation.Path, _selectedOperation.TagData),
-                    _shownOperations.Select(x => new FileWithTagData(x.Path, x.TagData)).ToList(),
+                    _selectedOperation,
+                    _shownOperations,
                     DispatchType.Process
                 );
                 _selectedOperation.CheckForChanges();
@@ -209,9 +206,6 @@ public class TuiCommand(
             {
                 var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
                 var progressLock = new object();
-                var allFiles = operations
-                    .Select(x => new FileWithTagData(x.Path, x.TagData))
-                    .ToList();
                 await Parallel.ForEachAsync(
                     operations,
                     async (operation, _) =>
@@ -220,8 +214,8 @@ public class TuiCommand(
                         {
                             await actionDispatcher.Dispatch(
                                 action,
-                                new FileWithTagData(operation.Path, operation.TagData),
-                                allFiles,
+                                operation,
+                                operations,
                                 DispatchType.Process
                             );
                             operation.CheckForChanges();
@@ -245,7 +239,7 @@ public class TuiCommand(
         {
             return;
         }
-        _selectedOperation.Write(tagger);
+        _selectedOperation.Write(tagger, fs);
         UpdateTreeView();
     }
 
@@ -263,9 +257,9 @@ public class TuiCommand(
                 for (var i = 0; i < operationsToWrite.Count; i++)
                 {
                     var operation = operationsToWrite[i];
-                    operation.Write(tagger);
+                    operation.Write(tagger, fs);
                     task.Description =
-                        $"Writing metadata {i + 1} of {operationsToWrite.Count}({operation.Path.EscapeMarkup()})";
+                        $"Writing metadata {i + 1} of {operationsToWrite.Count}({operation.CurrentPath.EscapeMarkup()})";
                     task.Increment(1);
                 }
             });
@@ -300,7 +294,7 @@ public class TuiCommand(
             var itemIndex = windowStart + i;
             var path = Path.GetRelativePath(
                 Environment.CurrentDirectory,
-                operations[itemIndex].Path
+                operations[itemIndex].OriginalPath
             );
             var lineNumber = (itemIndex + 1).ToString().PadLeft(4);
             var modifiedMarker = operations[itemIndex].HasChanges ? "*" : " ";

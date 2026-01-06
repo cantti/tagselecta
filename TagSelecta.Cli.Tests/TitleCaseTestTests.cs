@@ -16,7 +16,7 @@ public class TitleCaseTests
 
         var tagData = new TagData() { Title = "test title", Artist = ["test artist"] };
 
-        var item = new FileWithTagData("file.mp3", tagData);
+        var item = new IFileContext("file.mp3", tagData);
 
         // Act
         await action.ProcessTagDataAsync(item, [item], settings);

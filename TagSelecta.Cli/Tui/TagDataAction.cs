@@ -14,14 +14,14 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     }
 
     protected virtual void ProcessTagData(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         TSettings settings
     ) { }
 
     public virtual Task ProcessTagDataAsync(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         TSettings settings
     )
     {
@@ -30,8 +30,8 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     }
 
     Task ITagDataAction.ProcessTagDataAsync(
-        FileWithTagData current,
-        List<FileWithTagData> files,
+        IFileContext current,
+        IEnumerable<IFileContext> files,
         BaseSettings settings
     )
     {

@@ -6,10 +6,10 @@ public class FileWithTagData
 {
     public FileWithTagData(string path, TagData tagData)
     {
-        Path = path ?? throw new ArgumentNullException(nameof(path));
-        TagData = tagData ?? throw new ArgumentNullException(nameof(tagData));
+        Path = path;
+        TagData = tagData;
     }
 
-    public string Path { get; }
+    public string Path { get; set; }
     public TagData TagData { get; }
 }

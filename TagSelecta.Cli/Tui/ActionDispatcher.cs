@@ -26,8 +26,8 @@ public sealed class ActionDispatcher
 
     public async Task Dispatch(
         ActionRequest request,
-        FileWithTagData? current,
-        List<FileWithTagData>? files,
+        IFileContext? current,
+        IEnumerable<IFileContext>? files,
         DispatchType type
     )
     {

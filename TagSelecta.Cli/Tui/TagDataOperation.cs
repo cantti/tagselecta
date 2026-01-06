@@ -1,18 +1,21 @@
+using TagSelecta.Cli.IO;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tui;
 
-public class TagDataOperation
+public class TagDataOperation : IFileContext
 {
-    public TagDataOperation(string path, Tagging.TagData tagData)
+    public TagDataOperation(string currentPath, Tagging.TagData currentTagData)
     {
-        Path = path;
-        TagData = tagData;
-        OriginalTagData = tagData.Clone();
+        CurrentPath = currentPath;
+        CurrentTagData = currentTagData;
+        OriginalTagData = currentTagData.Clone();
+        OriginalPath = currentPath;
     }
 
-    public string Path { get; private set; }
-    public Tagging.TagData TagData { get; private set; }
+    public string CurrentPath { get; set; }
+    public string OriginalPath { get; private set; }
+    public Tagging.TagData CurrentTagData { get; private set; }
     public Tagging.TagData OriginalTagData { get; private set; }
     public TagDataOperationStatus Status { get; private set; } = TagDataOperationStatus.Pending;
     public Exception? Exception { get; private set; }
@@ -20,7 +23,7 @@ public class TagDataOperation
 
     public void Undo()
     {
-        TagData = OriginalTagData.Clone();
+        CurrentTagData = OriginalTagData.Clone();
         Status = TagDataOperationStatus.Pending;
         HasChanges = false;
         Exception = null;
@@ -28,16 +31,26 @@ public class TagDataOperation
 
     public void CheckForChanges()
     {
-        HasChanges = !TagDataComparer.AreEqual(TagData, OriginalTagData);
+        HasChanges =
+            !TagDataComparer.AreEqual(CurrentTagData, OriginalTagData)
+            || CurrentPath != OriginalPath;
     }
 
-    public void Write(ITagger tagger)
+    public void Write(ITagger tagger, IFileSystem fs)
     {
         try
         {
-            tagger.WriteTags(Path, TagData);
+            if (!TagDataComparer.AreEqual(CurrentTagData, OriginalTagData))
+            {
+                tagger.WriteTags(OriginalPath, CurrentTagData);
+                OriginalTagData = CurrentTagData.Clone();
+            }
+            if (CurrentPath != OriginalPath)
+            {
+                fs.Move(OriginalPath, CurrentPath);
+                OriginalPath = CurrentPath;
+            }
             Status = TagDataOperationStatus.Written;
-            OriginalTagData = TagData.Clone();
             HasChanges = false;
         }
         catch (Exception ex)
