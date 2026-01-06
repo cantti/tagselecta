@@ -18,4 +18,9 @@ public class RenameFileSettings : BaseSettings
         }
         return base.Validate();
     }
+
+    public override void ParseTuiArgs(Dictionary<string, string> args)
+    {
+        Template = args.GetValueOrDefault("arg0", Template);
+    }
 }

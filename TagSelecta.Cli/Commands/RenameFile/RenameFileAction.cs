@@ -4,7 +4,7 @@ using TagSelecta.Cli.Tui;
 namespace TagSelecta.Cli.Commands.RenameFile;
 
 [TagDataAction("rename", "rn")]
-public class RenameFileAction(IFileSystem fs) : TagDataAction<RenameFileSettings>
+public class RenameFileAction : TagDataAction<RenameFileSettings>
 {
     protected override void ProcessTagData(
         IFileContext current,

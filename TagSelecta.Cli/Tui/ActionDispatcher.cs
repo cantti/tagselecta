@@ -35,31 +35,13 @@ public sealed class ActionDispatcher
         if (action is not null)
         {
             var settingsType = GetSettingsTypeFromAction(action.Action.GetType());
-            BaseSettings baseSettings;
 
-            if (settingsType == typeof(SetSettings))
-            {
-                var editSettings = new SetSettings
-                {
-                    Set = request
-                        .Args.Where(x => !x.Key.StartsWith("arg"))
-                        .Select(x => $"{x.Key}={x.Value}")
-                        .ToArray(),
-                    ClearCustom = request.Args.Any(x => x.Value == "clearcustom"),
-                };
-                baseSettings = editSettings;
-            }
-            else
-            {
-                var json = JsonSerializer.Serialize(request.Args);
+            var baseSettings = (BaseSettings)(
+                Activator.CreateInstance(settingsType)
+                ?? throw new InvalidOperationException("Failed to create settings instance")
+            );
 
-                baseSettings = (BaseSettings)
-                    JsonSerializer.Deserialize(
-                        json,
-                        settingsType,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                    )!;
-            }
+            baseSettings.ParseTuiArgs(request.Args);
 
             if (type == DispatchType.BeforeProcess)
             {

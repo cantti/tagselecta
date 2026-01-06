@@ -45,7 +45,7 @@ public class TuiCommand(
             return 1;
         }
 
-        // AltScreen.Enter();
+        AltScreen.Enter();
 
         _operations = _shownOperations = audioFileScanner
             .ScanAndRead(settings.Path)
@@ -79,7 +79,7 @@ public class TuiCommand(
 
     private async Task RenderConsoleLayout()
     {
-        // console.Clear();
+        console.Clear();
 
         var navigationSize = 3;
 

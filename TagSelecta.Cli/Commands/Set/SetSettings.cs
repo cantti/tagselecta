@@ -112,4 +112,10 @@ public class SetSettings : BaseSettings
     [CommandOption("--clearpicture")]
     [Description("Clear all other pictures")]
     public bool ClearPicture { get; set; }
+
+    public override void ParseTuiArgs(Dictionary<string, string> args)
+    {
+        Set = args.Where(x => !x.Key.StartsWith("arg")).Select(x => $"{x.Key}={x.Value}").ToArray();
+        ClearCustom = args.Any(x => x.Value == nameof(ClearCustom).ToLower());
+    }
 }
