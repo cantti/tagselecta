@@ -37,5 +37,6 @@ public static class Registration
         //         ]
         //     );
         services.AddTransient<ITagDataAction, SetAction>();
+        services.AddTransient<SetAction>();
     }
 }
