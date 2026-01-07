@@ -60,29 +60,33 @@ public class TuiCommand(
 
         UpdateTreeView();
 
-        while (_running)
-        {
-            RenderConsoleLayout();
-            var request = userActionReader.Read();
-            if (_handlers.TryGetValue(request.ActionName, out var uiAction))
+        await AnsiConsole
+            .Live(new Panel("Starting..."))
+            .AutoClear(true)
+            .StartAsync(async ctx =>
             {
-                await uiAction();
-            }
-            else
-            {
-                await DispatchAction(request);
-            }
-        }
+                while (_running)
+                {
+                    ctx.UpdateTarget(RenderConsoleLayout());
+                    var request = userActionReader.Read();
+                    if (_handlers.TryGetValue(request.ActionName, out var uiAction))
+                    {
+                        await uiAction();
+                    }
+                    else
+                    {
+                        await DispatchAction(request);
+                    }
+                }
+            });
 
         AltScreen.Exit();
 
         return 0;
     }
 
-    private void RenderConsoleLayout()
+    private IRenderable RenderConsoleLayout()
     {
-        console.Clear();
-
         var navigationSize = 3;
 
         var filesContentSize = Math.Min(
@@ -145,14 +149,15 @@ public class TuiCommand(
                     );
             }
         }
+        return layout;
 
-        var segments = ((IRenderable)layout).Render(
-            new RenderOptions(
-                console.Profile.Capabilities,
-                new Size(console.Profile.Width, console.Profile.Height)
-            ),
-            80
-        );
+        // var segments = ((IRenderable)layout).Render(
+        //     new RenderOptions(
+        //         console.Profile.Capabilities,
+        //         new Size(console.Profile.Width, console.Profile.Height)
+        //     ),
+        //     80
+        // );
     }
 
     private void Undo()
