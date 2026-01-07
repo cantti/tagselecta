@@ -16,20 +16,24 @@ public class TuiCommand(
     IFileSystem fs
 ) : AsyncCommand<TuiSettings>
 {
+    private Dictionary<string, Func<ValueTask>> _handlers = [];
+
     private const string HeaderLayoutKey = "navigation";
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
 
     private bool _running = true;
-    private int _selectedIndex;
     private bool _filterEnabled;
     private bool _treeEnabled;
     private bool _helpEnabled;
     private readonly TreeFileListFactory _treeListFactory = new();
+
     private List<TagDataOperation> _operations = [];
-    private List<TagDataOperation> _shownOperations = [];
-    private TagDataOperation? _selectedOperation;
-    private Dictionary<string, Func<ValueTask>> _handlers = [];
+    private List<TagDataOperation> _visibleOperations = [];
+
+    private int _focusedOperationIndex;
+    private TagDataOperation? FocusedOperation =>
+        _visibleOperations.ElementAtOrDefault(_focusedOperationIndex);
 
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -47,7 +51,7 @@ public class TuiCommand(
 
         AltScreen.Enter();
 
-        _operations = _shownOperations = audioFileScanner
+        _operations = _visibleOperations = audioFileScanner
             .ScanAndRead(settings.Path)
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
@@ -58,26 +62,24 @@ public class TuiCommand(
 
         while (_running)
         {
-            await RenderConsoleLayout();
+            RenderConsoleLayout();
+            var request = userActionReader.Read();
+            if (_handlers.TryGetValue(request.ActionName, out var uiAction))
+            {
+                await uiAction();
+            }
+            else
+            {
+                await DispatchAction(request);
+            }
         }
 
         AltScreen.Exit();
 
-        console.MarkupLineInterpolated(
-            $"{_operations.Count(x => x.Status == TagDataOperationStatus.Written)}/{_operations.Count} files written"
-        );
-
-        var errorsCount = _operations.Count(x => x.Status == TagDataOperationStatus.Failed);
-
-        if (errorsCount > 0)
-        {
-            console.MarkupLineInterpolated($"{errorsCount} errors");
-        }
-
         return 0;
     }
 
-    private async Task RenderConsoleLayout()
+    private void RenderConsoleLayout()
     {
         console.Clear();
 
@@ -85,7 +87,7 @@ public class TuiCommand(
 
         var filesContentSize = Math.Min(
             (Console.WindowHeight - navigationSize) / 2,
-            _shownOperations.Count + 2
+            _visibleOperations.Count + 2
         );
 
         var layout = new Layout("root").SplitRows(
@@ -94,35 +96,37 @@ public class TuiCommand(
             new Layout(TagDataLayoutKey).Update(Text.Empty)
         );
 
-        _selectedIndex = Math.Clamp(_selectedIndex, 0, Math.Max(0, _shownOperations.Count - 1));
+        _focusedOperationIndex = Math.Clamp(
+            _focusedOperationIndex,
+            0,
+            Math.Max(0, _visibleOperations.Count - 1)
+        );
 
-        _selectedOperation = _shownOperations.Count > 0 ? _shownOperations[_selectedIndex] : null;
-
-        if (_selectedOperation is not null)
-        {
-            var fileListContent =
-                _helpEnabled ? RenderHelp()
-                : _treeEnabled
-                    ? _treeListFactory.Render(
-                        _shownOperations,
-                        _selectedIndex,
-                        filesContentSize - 2,
-                        _filterEnabled
-                    )
-                : RenderFileList(
-                    _shownOperations,
-                    _selectedIndex,
+        var fileListContent =
+            _helpEnabled ? RenderHelp()
+            : _treeEnabled
+                ? _treeListFactory.Render(
+                    _visibleOperations,
+                    _focusedOperationIndex,
                     filesContentSize - 2,
                     _filterEnabled
-                );
+                )
+            : RenderFileList(
+                _visibleOperations,
+                _focusedOperationIndex,
+                filesContentSize - 2,
+                _filterEnabled
+            );
 
-            layout[FilesLayoutKey].Update(fileListContent);
+        layout[FilesLayoutKey].Update(fileListContent);
 
-            var tagDataRenderable = _selectedOperation.HasChanges
-                ? TagDataPrinter.PrintComparison(_selectedOperation)
-                : TagDataPrinter.PrintTagData(_selectedOperation);
+        if (FocusedOperation is not null)
+        {
+            var tagDataRenderable = FocusedOperation.HasChanges
+                ? TagDataPrinter.PrintComparison(FocusedOperation)
+                : TagDataPrinter.PrintTagData(FocusedOperation);
 
-            if (_selectedOperation.Exception is null)
+            if (FocusedOperation.Exception is null)
             {
                 layout[TagDataLayoutKey].Update(tagDataRenderable);
             }
@@ -134,68 +138,30 @@ public class TuiCommand(
                             tagDataRenderable,
                             Text.NewLine,
                             new Text(
-                                $"Error: {_selectedOperation.Exception.Message}",
+                                $"Error: {FocusedOperation.Exception.Message}",
                                 new Style(Color.Red)
                             )
                         )
                     );
             }
         }
-        else
-        {
-            layout[TagDataLayoutKey].Update(new Text("No files found"));
-        }
 
-        console.Write(layout);
-
-        var request = userActionReader.Read();
-        if (_handlers.TryGetValue(request.ActionName, out var uiAction))
-        {
-            await uiAction();
-        }
-        else
-        {
-            await DispatchAction(request);
-        }
+        var segments = ((IRenderable)layout).Render(
+            new RenderOptions(
+                console.Profile.Capabilities,
+                new Size(console.Profile.Width, console.Profile.Height)
+            ),
+            80
+        );
     }
 
     private void Undo()
     {
-        _selectedOperation?.Undo();
+        FocusedOperation?.Undo();
         UpdateTreeView();
     }
 
-    private async Task DispatchAction(ActionRequest actionRequest)
-    {
-        if (actionRequest.Args.Any(x => x.Key.StartsWith("arg") && x.Value == "all"))
-        {
-            await ProcessAll(_shownOperations, actionRequest);
-            UpdateTreeView();
-        }
-        else
-        {
-            if (_selectedOperation is not null)
-            {
-                await actionDispatcher.Dispatch(
-                    actionRequest,
-                    null,
-                    null,
-                    DispatchType.BeforeProcess
-                );
-
-                await actionDispatcher.Dispatch(
-                    actionRequest,
-                    _selectedOperation,
-                    _shownOperations,
-                    DispatchType.Process
-                );
-                _selectedOperation.CheckForChanges();
-                UpdateTreeView();
-            }
-        }
-    }
-
-    private async Task ProcessAll(List<TagDataOperation> operations, ActionRequest action)
+    private async Task DispatchAction(ActionRequest action)
     {
         await actionDispatcher.Dispatch(action, null, null, DispatchType.BeforeProcess);
 
@@ -204,10 +170,13 @@ public class TuiCommand(
             .AutoClear(true)
             .StartAsync(async ctx =>
             {
-                var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
+                var task = ctx.AddTask(
+                    "Processing metadata...",
+                    maxValue: _visibleOperations.Count
+                );
                 var progressLock = new object();
                 await Parallel.ForEachAsync(
-                    operations,
+                    _visibleOperations.Where(x => x.IsSelected),
                     async (operation, _) =>
                     {
                         try
@@ -215,7 +184,7 @@ public class TuiCommand(
                             await actionDispatcher.Dispatch(
                                 action,
                                 operation,
-                                operations,
+                                _visibleOperations,
                                 DispatchType.Process
                             );
                             operation.CheckForChanges();
@@ -235,20 +204,8 @@ public class TuiCommand(
 
     private void Write()
     {
-        if (_selectedOperation is not { Status: TagDataOperationStatus.Pending, HasChanges: true })
-        {
-            return;
-        }
-        _selectedOperation.Write(tagger, fs);
-        UpdateTreeView();
-    }
-
-    private void WriteAll(List<TagDataOperation> operations)
-    {
         console.Clear();
-        var operationsToWrite = operations
-            .Where(x => x is { Status: TagDataOperationStatus.Pending, HasChanges: true })
-            .ToList();
+        var operationsToWrite = _visibleOperations.Where(x => x.HasChanges).ToList();
         console
             .Progress()
             .Start(ctx =>
@@ -296,12 +253,14 @@ public class TuiCommand(
                 Environment.CurrentDirectory,
                 operations[itemIndex].OriginalPath
             );
-            var lineNumber = (itemIndex + 1).ToString().PadLeft(4);
-            var modifiedMarker = operations[itemIndex].HasChanges ? "*" : " ";
-            var text = $"{lineNumber} {modifiedMarker} {path}";
+            var selectedMarker = operations[itemIndex].IsSelected ? "[x]" : "[ ]";
+            var text = $"{selectedMarker} {path}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
                 .PadRight(Console.WindowWidth);
-            var style = new Style(background: selectedIndex == itemIndex ? Color.Grey : null);
+            var style = new Style(
+                operations[itemIndex].HasChanges ? Color.Red : Color.Default,
+                selectedIndex == itemIndex ? Color.Grey : Color.Default
+            );
             items.Add(new Text(text, style));
         }
 
@@ -334,15 +293,15 @@ public class TuiCommand(
 
     private void UpdateTreeView()
     {
-        _treeListFactory.BuildTreeLines(_shownOperations);
+        _treeListFactory.BuildTreeLines(_visibleOperations);
     }
 
     private void ToggleFilter()
     {
         _filterEnabled = !_filterEnabled;
-        _shownOperations = _operations.Where(x => !_filterEnabled || x.HasChanges).ToList();
+        _visibleOperations = _operations.Where(x => !_filterEnabled || x.HasChanges).ToList();
         UpdateTreeView();
-        _selectedIndex = 0;
+        _focusedOperationIndex = 0;
     }
 
     private void ToggleTree()
@@ -402,12 +361,12 @@ public class TuiCommand(
         {
             [UiAction.MoveDown] = () =>
             {
-                _selectedIndex++;
+                _focusedOperationIndex++;
                 return ValueTask.CompletedTask;
             },
             [UiAction.MoveUp] = () =>
             {
-                _selectedIndex--;
+                _focusedOperationIndex--;
                 return ValueTask.CompletedTask;
             },
             [UiAction.ToggleTree] = () =>
@@ -448,15 +407,54 @@ public class TuiCommand(
 
             [UiAction.WriteAll] = () =>
             {
-                WriteAll(_shownOperations);
+                Write();
                 return ValueTask.CompletedTask;
             },
             [UiAction.WriteAllAlias] = () =>
             {
-                WriteAll(_shownOperations);
+                Write();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.Select] = () =>
+            {
+                Selection();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.ClearSelection] = () =>
+            {
+                ClearSelection();
+                return ValueTask.CompletedTask;
+            },
+            [UiAction.SelectAll] = () =>
+            {
+                SelectAll();
                 return ValueTask.CompletedTask;
             },
         };
+    }
+
+    private void SelectAll()
+    {
+        foreach (var operation in _operations)
+        {
+            operation.IsSelected = true;
+        }
+    }
+
+    private void ClearSelection()
+    {
+        foreach (var operation in _operations)
+        {
+            operation.IsSelected = false;
+        }
+    }
+
+    private void Selection()
+    {
+        _operations[_focusedOperationIndex].IsSelected = !_operations[
+            _focusedOperationIndex
+        ].IsSelected;
+        _focusedOperationIndex++;
     }
 
     private void BindHotkeys()
@@ -468,5 +466,10 @@ public class TuiCommand(
         hotkeys.Bind(ConsoleKey.F, UiAction.ToggleFilter);
         hotkeys.Bind(ConsoleKey.H, UiAction.ToggleHelp);
         hotkeys.Bind(ConsoleKey.U, UiAction.Undo);
+        hotkeys.Bind(ConsoleKey.Tab, UiAction.Select);
+        hotkeys.Bind(ConsoleKey.V, UiAction.Select);
+        hotkeys.Bind(ConsoleKey.Escape, UiAction.ClearSelection);
+        hotkeys.Bind(ConsoleKey.A, UiAction.SelectAll);
+        hotkeys.Bind(ConsoleKey.W, UiAction.Write);
     }
 }

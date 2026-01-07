@@ -13,4 +13,7 @@ public static class UiAction
     public const string WriteAlias = "w";
     public const string WriteAll = "writeall";
     public const string WriteAllAlias = "wa";
+    public const string Select = "select";
+    public const string ClearSelection = "clearselection";
+    public const string SelectAll = "selectall";
 }

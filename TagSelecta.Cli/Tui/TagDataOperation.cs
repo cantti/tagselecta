@@ -17,14 +17,13 @@ public class TagDataOperation : IFileContext
     public string OriginalPath { get; private set; }
     public Tagging.TagData CurrentTagData { get; private set; }
     public Tagging.TagData OriginalTagData { get; private set; }
-    public TagDataOperationStatus Status { get; private set; } = TagDataOperationStatus.Pending;
     public Exception? Exception { get; private set; }
     public bool HasChanges { get; private set; }
+    public bool IsSelected { get; set; }
 
     public void Undo()
     {
         CurrentTagData = OriginalTagData.Clone();
-        Status = TagDataOperationStatus.Pending;
         HasChanges = false;
         Exception = null;
     }
@@ -50,7 +49,6 @@ public class TagDataOperation : IFileContext
                 fs.Move(OriginalPath, CurrentPath);
                 OriginalPath = CurrentPath;
             }
-            Status = TagDataOperationStatus.Written;
             HasChanges = false;
         }
         catch (Exception ex)
@@ -61,7 +59,6 @@ public class TagDataOperation : IFileContext
 
     public void MarkError(Exception ex)
     {
-        Status = TagDataOperationStatus.Failed;
         Exception = ex;
     }
 }
