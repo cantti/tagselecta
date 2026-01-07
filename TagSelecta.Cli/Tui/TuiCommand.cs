@@ -65,7 +65,7 @@ public class TuiCommand(
             {
                 while (_running)
                 {
-                    ctx.UpdateTarget(RenderConsoleLayout());
+                    ctx.UpdateTarget(Render());
                     var request = userActionReader.Read();
                     if (_handlers.TryGetValue(request.ActionName, out var uiAction))
                     {
@@ -83,7 +83,7 @@ public class TuiCommand(
         return 0;
     }
 
-    private IRenderable RenderConsoleLayout()
+    private IRenderable Render()
     {
         var navigationSize = 3;
 
@@ -95,7 +95,7 @@ public class TuiCommand(
         var layout = new Layout("root").SplitRows(
             new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
             new Layout(FilesLayoutKey).Size(filesContentSize).Update(Text.Empty),
-            new Layout(TagDataLayoutKey).Update(Text.Empty)
+            new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty)
         );
 
         _focusedOperationIndex = Math.Clamp(

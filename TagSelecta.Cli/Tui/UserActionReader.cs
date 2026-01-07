@@ -13,6 +13,10 @@ public class UserActionReader : IUserActionReader
     private readonly StringBuilder _buffer = new();
     private int _cursor = 0;
 
+    // ANSI color codes
+    private const string CmdStyle = "\x1b[30;43m"; // black on yellow
+    private const string ResetStyle = "\x1b[0m";
+
     public UserActionReader(HotkeyMap hotkeys, CommandParser parser)
     {
         _hotkeys = hotkeys;
@@ -42,7 +46,6 @@ public class UserActionReader : IUserActionReader
 
     private ActionRequest? HandleNormalMode(ConsoleKeyInfo key)
     {
-        // Enter command mode
         if (key.KeyChar == ':')
         {
             _mode = InputMode.Command;
@@ -52,7 +55,6 @@ public class UserActionReader : IUserActionReader
             return null;
         }
 
-        // Resolve hotkey
         var action = _hotkeys.Resolve(key);
         return action != null ? new ActionRequest(action, []) : null;
     }
@@ -110,7 +112,6 @@ public class UserActionReader : IUserActionReader
                 return null;
         }
 
-        // Insert printable characters at cursor
         if (!char.IsControl(key.KeyChar))
         {
             _buffer.Insert(_cursor, key.KeyChar);
@@ -123,18 +124,28 @@ public class UserActionReader : IUserActionReader
 
     private void RenderCommandPrompt()
     {
-        AnsiConsole.Cursor.Show();
+        PaintCommandBackground();
+
         Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.Write(":");
+        Console.Write($"{CmdStyle}:{ResetStyle}");
+
         UpdateCursor();
     }
 
     private void RedrawCommandLine()
     {
+        PaintCommandBackground();
+
         Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.Write(":" + _buffer + " ");
+        Console.Write($"{CmdStyle}:{_buffer}{ResetStyle}");
 
         UpdateCursor();
+    }
+
+    private void PaintCommandBackground()
+    {
+        Console.SetCursorPosition(0, Console.WindowHeight - 1);
+        Console.Write($"{CmdStyle}{new string(' ', Console.WindowWidth)}{ResetStyle}");
     }
 
     private void UpdateCursor()
@@ -144,16 +155,16 @@ public class UserActionReader : IUserActionReader
 
     private void ExitCommandMode()
     {
-        AnsiConsole.Cursor.Show();
         _mode = InputMode.Normal;
         _buffer.Clear();
         _cursor = 0;
+
         ClearCommandLine();
     }
 
     private void ClearCommandLine()
     {
         Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.Write(new string(' ', Console.WindowWidth));
+        Console.Write($"{ResetStyle}{new string(' ', Console.WindowWidth)}");
     }
 }
