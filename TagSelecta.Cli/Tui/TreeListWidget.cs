@@ -3,17 +3,65 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Cli.Tui;
 
-public class TreeFileListFactory
+public class TreeListWidget(
+    List<TagDataOperation> operations,
+    int selectedOperationIndex,
+    int windowSize
+) : Renderable
 {
-    private readonly List<TreeLine> _treeLines = [];
-
     private readonly StringComparison _pathComparer = OperatingSystem.IsWindows()
         ? StringComparison.OrdinalIgnoreCase
         : StringComparison.Ordinal;
 
-    public void BuildTreeLines(List<TagDataOperation> operations)
+    protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        _treeLines.Clear();
+        IRenderable content;
+
+        if (operations.Count == 0)
+        {
+            content = Text.Empty;
+            return content.Render(options, maxWidth);
+        }
+
+        var treeLines = BuildTreeLines();
+
+        var selectedOperation = operations[selectedOperationIndex];
+
+        // center around the current index (5 lines above, 4 below), but keep a full window when possible
+        var selectedIndexInTree = treeLines.FindIndex(x => x.Operation == selectedOperation);
+        var windowStart = selectedIndexInTree - (windowSize / 2);
+
+        // clamp so we dont go before 0 or past the last possible full window start
+        var maxStart = Math.Max(0, treeLines.Count - windowSize);
+        windowStart = Math.Clamp(windowStart, 0, maxStart);
+
+        var linesToPrint = Math.Min(windowSize, treeLines.Count - windowStart);
+
+        var items = new List<IRenderable>();
+
+        for (var i = 0; i < linesToPrint; i++)
+        {
+            var itemIndex = windowStart + i;
+            var treeLine = treeLines[itemIndex];
+            items.Add(
+                new Markup(
+                    treeLine.Markup,
+                    new Style(
+                        null,
+                        treeLine.Operation == selectedOperation ? Color.Gray : Color.Default
+                    )
+                )
+            );
+        }
+
+        content = new Rows(new Text($"Files:", new Style(Color.Yellow)), new Rows(items));
+
+        return content.Render(options, maxWidth);
+    }
+
+    private List<TreeLine> BuildTreeLines()
+    {
+        var treeLines = new List<TreeLine>();
 
         var paths = new List<(string Path, TagDataOperation? operation)>();
 
@@ -65,7 +113,7 @@ public class TreeFileListFactory
 
             var line = new TreeLine(text, operation);
 
-            _treeLines.Add(line);
+            treeLines.Add(line);
 
             var children = paths
                 .Where(x => string.Equals(Path.GetDirectoryName(x.Path), node.Path, _pathComparer))
@@ -85,55 +133,9 @@ public class TreeFileListFactory
         {
             AddNode(root);
         }
+
+        return treeLines;
     }
 
-    public IRenderable Render(
-        List<TagDataOperation> operations,
-        int selectedOperationIndex,
-        int windowSize,
-        bool filter
-    )
-    {
-        if (operations.Count == 0)
-        {
-            return Text.Empty;
-        }
-
-        var selectedOperation = operations[selectedOperationIndex];
-
-        // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var selectedIndexInTree = _treeLines.FindIndex(x => x.Operation == selectedOperation);
-        var windowStart = selectedIndexInTree - (windowSize / 2);
-
-        // clamp so we dont go before 0 or past the last possible full window start
-        var maxStart = Math.Max(0, _treeLines.Count - windowSize);
-        windowStart = Math.Clamp(windowStart, 0, maxStart);
-
-        var linesToPrint = Math.Min(windowSize, _treeLines.Count - windowStart);
-
-        var items = new List<IRenderable>();
-
-        for (var i = 0; i < linesToPrint; i++)
-        {
-            var itemIndex = windowStart + i;
-            var treeLine = _treeLines[itemIndex];
-            items.Add(
-                new Markup(
-                    treeLine.Markup,
-                    new Style(
-                        null,
-                        treeLine.Operation == selectedOperation ? Color.Gray : Color.Default
-                    )
-                )
-            );
-        }
-
-        return new Rows(
-            new Text(
-                $"Files ({operations.Count}{(filter ? ", filtered" : "")}):",
-                new Style(Color.Yellow)
-            ),
-            new Rows(items)
-        );
-    }
+    private record TreeLine(string Markup, TagDataOperation? Operation);
 }

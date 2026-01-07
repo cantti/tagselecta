@@ -8,7 +8,7 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         return true;
     }
 
-    public virtual Task<bool> BeforeProcessTagDataAsync(TSettings settings)
+    protected virtual Task<bool> BeforeProcessTagDataAsync(TSettings settings)
     {
         return Task.FromResult(BeforeProcessTagData(settings));
     }
@@ -19,7 +19,7 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         TSettings settings
     ) { }
 
-    public virtual Task ProcessTagDataAsync(
+    protected virtual Task ProcessTagDataAsync(
         IFileContext current,
         IEnumerable<IFileContext> files,
         TSettings settings

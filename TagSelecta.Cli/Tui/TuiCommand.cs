@@ -12,8 +12,8 @@ public class TuiCommand(
     ITagger tagger,
     HotkeyMap hotkeys,
     IUserActionReader userActionReader,
-    ActionDispatcher actionDispatcher,
-    IFileSystem fs
+    IFileSystem fs,
+    ITagDataActionDispatcher actionDispatcher
 ) : AsyncCommand<TuiSettings>
 {
     private Dictionary<string, Func<ValueTask>> _handlers = [];
@@ -26,7 +26,6 @@ public class TuiCommand(
     private bool _filterEnabled;
     private bool _treeEnabled;
     private bool _helpEnabled;
-    private readonly TreeFileListFactory _treeListFactory = new();
 
     private List<TagDataOperation> _operations = [];
     private List<TagDataOperation> _visibleOperations = [];
@@ -49,7 +48,7 @@ public class TuiCommand(
             return 1;
         }
 
-        AltScreen.Enter();
+        // AltScreen.Enter();
 
         _operations = _visibleOperations = audioFileScanner
             .ScanAndRead(settings.Path)
@@ -58,10 +57,9 @@ public class TuiCommand(
 
         console.WriteLine(_operations.Count + " files found");
 
-        UpdateTreeView();
-
         await AnsiConsole
             .Live(new Panel("Starting..."))
+            .Overflow(VerticalOverflow.Ellipsis)
             .AutoClear(true)
             .StartAsync(async ctx =>
             {
@@ -106,21 +104,15 @@ public class TuiCommand(
             Math.Max(0, _visibleOperations.Count - 1)
         );
 
-        var fileListContent =
-            _helpEnabled ? RenderHelp()
+        IRenderable fileListContent =
+            _helpEnabled ? new HelpWidget()
             : _treeEnabled
-                ? _treeListFactory.Render(
+                ? new TreeListWidget(
                     _visibleOperations,
                     _focusedOperationIndex,
-                    filesContentSize - 2,
-                    _filterEnabled
+                    filesContentSize - 2
                 )
-            : RenderFileList(
-                _visibleOperations,
-                _focusedOperationIndex,
-                filesContentSize - 2,
-                _filterEnabled
-            );
+            : new FileListWidget(_visibleOperations, _focusedOperationIndex, filesContentSize - 2);
 
         layout[FilesLayoutKey].Update(fileListContent);
 
@@ -150,61 +142,31 @@ public class TuiCommand(
             }
         }
         return layout;
-
-        // var segments = ((IRenderable)layout).Render(
-        //     new RenderOptions(
-        //         console.Profile.Capabilities,
-        //         new Size(console.Profile.Width, console.Profile.Height)
-        //     ),
-        //     80
-        // );
     }
 
     private void Undo()
     {
         FocusedOperation?.Undo();
-        UpdateTreeView();
     }
 
     private async Task DispatchAction(ActionRequest action)
     {
-        await actionDispatcher.Dispatch(action, null, null, DispatchType.BeforeProcess);
-
-        await console
-            .Progress()
-            .AutoClear(true)
-            .StartAsync(async ctx =>
+        await actionDispatcher.BeforeProcess(action);
+        await Parallel.ForEachAsync(
+            _visibleOperations.Where(x => x.IsSelected),
+            async (operation, _) =>
             {
-                var task = ctx.AddTask(
-                    "Processing metadata...",
-                    maxValue: _visibleOperations.Count
-                );
-                var progressLock = new object();
-                await Parallel.ForEachAsync(
-                    _visibleOperations.Where(x => x.IsSelected),
-                    async (operation, _) =>
-                    {
-                        try
-                        {
-                            await actionDispatcher.Dispatch(
-                                action,
-                                operation,
-                                _visibleOperations,
-                                DispatchType.Process
-                            );
-                            operation.CheckForChanges();
-                        }
-                        catch (Exception ex)
-                        {
-                            operation.MarkError(ex);
-                        }
-                        lock (progressLock)
-                        {
-                            task.Increment(1);
-                        }
-                    }
-                );
-            });
+                try
+                {
+                    await actionDispatcher.Process(action, operation, _visibleOperations);
+                    operation.CheckForChanges();
+                }
+                catch (Exception ex)
+                {
+                    operation.MarkError(ex);
+                }
+            }
+        );
     }
 
     private void Write()
@@ -225,57 +187,6 @@ public class TuiCommand(
                     task.Increment(1);
                 }
             });
-        UpdateTreeView();
-    }
-
-    private IRenderable RenderFileList(
-        List<TagDataOperation> operations,
-        int selectedIndex,
-        int windowSize,
-        bool filter
-    )
-    {
-        if (operations.Count == 0)
-        {
-            return Text.Empty;
-        }
-
-        // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var windowStart = selectedIndex - (windowSize / 2);
-
-        // clamp so we dont go before 0 or past the last possible full window start
-        var maxStart = Math.Max(0, operations.Count - windowSize);
-        windowStart = Math.Clamp(windowStart, 0, maxStart);
-
-        var linesToPrint = Math.Min(windowSize, operations.Count - windowStart);
-
-        var items = new List<IRenderable>();
-
-        for (var i = 0; i < linesToPrint; i++)
-        {
-            var itemIndex = windowStart + i;
-            var path = Path.GetRelativePath(
-                Environment.CurrentDirectory,
-                operations[itemIndex].OriginalPath
-            );
-            var selectedMarker = operations[itemIndex].IsSelected ? "[x]" : "[ ]";
-            var text = $"{selectedMarker} {path}";
-            text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
-                .PadRight(Console.WindowWidth);
-            var style = new Style(
-                operations[itemIndex].HasChanges ? Color.Red : Color.Default,
-                selectedIndex == itemIndex ? Color.Grey : Color.Default
-            );
-            items.Add(new Text(text, style));
-        }
-
-        return new Rows(
-            new Text(
-                $"Files ({operations.Count}{(filter ? ", filtered" : "")}):",
-                new Style(Color.Yellow)
-            ),
-            new Rows(items)
-        );
     }
 
     private bool ValidateOptions(CommandContext context)
@@ -296,16 +207,10 @@ public class TuiCommand(
         return true;
     }
 
-    private void UpdateTreeView()
-    {
-        _treeListFactory.BuildTreeLines(_visibleOperations);
-    }
-
     private void ToggleFilter()
     {
         _filterEnabled = !_filterEnabled;
         _visibleOperations = _operations.Where(x => !_filterEnabled || x.HasChanges).ToList();
-        UpdateTreeView();
         _focusedOperationIndex = 0;
     }
 
@@ -327,37 +232,6 @@ public class TuiCommand(
             new Text("Tagselecta:", new Style(Color.Yellow)),
             new Columns(cols1) { Padding = new Padding(2, 0, 2, 0), Expand = false }
         );
-    }
-
-    private static IRenderable RenderHelp()
-    {
-        var keys = new List<(string Key, string Action)>
-        {
-            ("t", "Toggle tree"),
-            ("f", "Toggle filter"),
-            ("j, move down", "Move down"),
-            ("k, move up", "Move up"),
-            ("u", "Undo. Only if not written!"),
-            (":w", "Write"),
-            (":wa", "Write all"),
-            (":s", "Set tags (artist=Bach title=\"The Goldberg Variations\" all)"),
-            (":at", "Auto track number"),
-            (":split", "Split artists"),
-            (":tc", "Title case conversion"),
-            (":tc", "Extract picture"),
-            (
-                ":discogs",
-                "release=https://www.discogs.com/master/163206-King-Tubby-Presents-The-Roots-Of-Dub"
-            ),
-        };
-        var grid = new Grid();
-        grid.AddColumn();
-        grid.AddColumn();
-        foreach (var key in keys)
-        {
-            grid.AddRow($"[bold blue]{key.Key}[/]", key.Action);
-        }
-        return new Rows(new Text("Help:", new Style(Color.Yellow)), grid);
     }
 
     private void SetUiHandlers()
