@@ -70,57 +70,71 @@ public class TuiApp(
 
         var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
 
-        _ = Task.Run(() => InputLoop(channel, _cts.Token), _cts.Token);
+        _ = StartInputLoop(channel);
+        try
+        {
+            await StartUiLoop(channel);
+        }
+        catch (OperationCanceledException) { }
 
-        await console
-            .Live(new Panel("Starting..."))
-            .AutoClear(true)
-            .StartAsync(async ctx =>
-            {
-                try
-                {
-                    while (!_cts.Token.IsCancellationRequested)
-                    {
-                        ctx.UpdateTarget(DrawLayout());
-                        while (channel.Reader.TryRead(out var key))
-                        {
-                            if (userActionReader.TryRead(key, out var request))
-                            {
-                                var command = commandFactory.Create(request.Name);
-                                if (command is null)
-                                {
-                                    continue;
-                                }
-                                if (!_uiBlocked || command.GetType() == typeof(CancelCommand))
-                                {
-                                    await commandDispatcher.DispatchAsync(
-                                        command,
-                                        this,
-                                        request,
-                                        _cts.Token
-                                    );
-                                }
-                            }
-                            ctx.UpdateTarget(DrawLayout());
-                        }
-                        await Task.Delay(33, _cts.Token);
-                    }
-                }
-                catch (OperationCanceledException) { }
-            });
-
-        // AltScreen.Exit();
+        AltScreen.Exit();
 
         return 0;
     }
 
-    static async Task InputLoop(Channel<ConsoleKeyInfo> channel, CancellationToken token)
+    private Task StartUiLoop(Channel<ConsoleKeyInfo> channel)
     {
-        while (!token.IsCancellationRequested)
+        return console
+            .Live(new Panel("Starting..."))
+            .AutoClear(true)
+            .StartAsync(async ctx =>
+            {
+                while (!_cts.Token.IsCancellationRequested)
+                {
+                    ctx.UpdateTarget(DrawLayout());
+                    while (channel.Reader.TryRead(out var key))
+                    {
+                        if (userActionReader.TryRead(key, out var request))
+                        {
+                            var command = commandFactory.Create(request.Name);
+                            if (command is null)
+                            {
+                                continue;
+                            }
+                            if (!_uiBlocked || command.GetType() == typeof(CancelCommand))
+                            {
+                                await commandDispatcher.DispatchAsync(
+                                    command,
+                                    this,
+                                    request,
+                                    _cts.Token
+                                );
+                            }
+                        }
+                        ctx.UpdateTarget(DrawLayout());
+                    }
+                    await Task.Delay(33, _cts.Token);
+                }
+            });
+    }
+
+    private Task StartInputLoop(Channel<ConsoleKeyInfo> channel)
+    {
+        return Task.Run(() =>
         {
-            var key = Console.ReadKey(intercept: true);
-            await channel.Writer.WriteAsync(key, token);
-        }
+            try
+            {
+                while (true)
+                {
+                    var key = Console.ReadKey(intercept: true);
+                    channel.Writer.TryWrite(key);
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        });
     }
 
     private IRenderable DrawLayout()
@@ -132,8 +146,8 @@ public class TuiApp(
             _visibleOperations.Count + 2
         );
 
-        // todo rewrite!!
-        IRenderable statusBar =
+        // todo rewrite to widget!!
+        IRenderable commandPrompt =
             userActionReader.Mode == InputMode.Command
                 ? new Columns(
                     new Text(":"),
@@ -148,7 +162,7 @@ public class TuiApp(
                                         : userActionReader.Buffer.ToString().Length
                                             == userActionReader.Cursor
                                         && i == userActionReader.Buffer.Length - 1
-                                            ? $"{x}[black on white] [/]"
+                                            ? $"{x}[invert] [/]"
                                         : x.ToString()
                                 )
                         )
@@ -164,8 +178,13 @@ public class TuiApp(
             new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
             new Layout(FilesLayoutKey).Size(filesContentSize).Update(Text.Empty),
             new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
-            new Layout("status").Size(1).Update(new Markup(_statusMessage ?? "")),
-            new Layout("footer").Size(1).Update(statusBar)
+            // todo rewrite
+            new Layout("status")
+                .Size(1)
+                .Update(
+                    new Markup($" {_statusMessage}{(_uiBlocked ? ". Press c to cancel." : "")}")
+                ),
+            new Layout("footer").Size(1).Update(commandPrompt)
         );
 
         FocusedOperationIndex = Math.Clamp(

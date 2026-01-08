@@ -46,9 +46,9 @@ public class TuiCommandDispatcher : ITuiCommandDispatcher
         {
             throw;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            // todo log
+            // todo log Exception
         }
         finally
         {
