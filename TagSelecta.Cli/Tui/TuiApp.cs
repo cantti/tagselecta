@@ -16,7 +16,8 @@ public class TuiApp(
     HotkeyMap hotkeys,
     IUserActionReader userActionReader,
     IFileSystem fs,
-    ITuiCommandDispatcher commandDispatcher
+    ITuiCommandDispatcher commandDispatcher,
+    ITuiCommandFactory commandFactory
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private Dictionary<string, Func<ValueTask>> _handlers = [];
@@ -28,6 +29,8 @@ public class TuiApp(
     private bool _filterEnabled;
     private bool _treeEnabled;
     private bool _helpEnabled;
+    private string _statusMessage = "";
+    private bool _uiBlocked = false;
 
     private List<TagDataOperation> _visibleOperations = [];
 
@@ -83,7 +86,20 @@ public class TuiApp(
                         {
                             if (userActionReader.TryRead(key, out var request))
                             {
-                                await commandDispatcher.DispatchAsync(this, request, _cts.Token);
+                                var command = commandFactory.Create(request.Name);
+                                if (command is null)
+                                {
+                                    continue;
+                                }
+                                if (!_uiBlocked || command.GetType() == typeof(CancelCommand))
+                                {
+                                    await commandDispatcher.DispatchAsync(
+                                        command,
+                                        this,
+                                        request,
+                                        _cts.Token
+                                    );
+                                }
                             }
                             ctx.UpdateTarget(DrawLayout());
                         }
@@ -148,6 +164,7 @@ public class TuiApp(
             new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
             new Layout(FilesLayoutKey).Size(filesContentSize).Update(Text.Empty),
             new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
+            new Layout("status").Size(1).Update(new Markup(_statusMessage ?? "")),
             new Layout("footer").Size(1).Update(statusBar)
         );
 
@@ -270,6 +287,26 @@ public class TuiApp(
     public void Quit()
     {
         _cts.Cancel();
+    }
+
+    private readonly Lock _printLock = new();
+
+    public void Print(string markupMessage)
+    {
+        lock (_printLock)
+        {
+            _statusMessage = markupMessage;
+        }
+    }
+
+    public void BlockUi()
+    {
+        _uiBlocked = true;
+    }
+
+    public void UnblockUi()
+    {
+        _uiBlocked = false;
     }
 
     private void SetUiHandlers()

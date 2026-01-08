@@ -9,17 +9,26 @@ public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
         CancellationToken token
     )
     {
+        context.BlockUi();
+
         await ActionBeforeProcess(request, token);
+
+        var total = context.Operations.Count(x => x.IsSelected);
+        int updated = 0;
+
         await Parallel.ForEachAsync(
             context.Operations.Where(x => x.IsSelected),
             token,
             async (operation, _) =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(3), token);
+
                 try
                 {
                     await ActionProcess(request, operation, context.Operations, token);
                     operation.CheckForChanges();
+                    var current = Interlocked.Increment(ref updated);
+                    context.Print($"Updated {current} of {total} files.");
                 }
                 catch (Exception ex)
                 {
