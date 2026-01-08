@@ -1,7 +1,7 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace TagSelecta.Cli.Tui;
+namespace TagSelecta.Cli.Tui.Widgets;
 
 public class FileListWidget(List<TagDataOperation> operations, int selectedIndex, int windowSize)
     : Renderable

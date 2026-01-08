@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using TagSelecta.Cli.Tui.TuiCommands;
 
 namespace TagSelecta.Cli.Tui;
 
@@ -8,10 +9,16 @@ public static class Registration
     {
         // action factory and dispatcher
         services.AddTransient<ITagDataActionFactory, TagDataActionFactory>();
-        services.AddSingleton<ITagDataActionDispatcher, TagDataActionDispatcher>();
 
         services.AddTransient<IUserActionReader, UserActionReader>();
         services.AddSingleton<HotkeyMap>();
         services.AddSingleton<CommandParser>();
+
+        services.AddTransient<ITuiCommand, MoveDownCommand>();
+        services.AddTransient<ITuiCommand, MoveUpCommand>();
+        services.AddTransient<ITuiCommand, TagDataCommand>();
+        services.AddTransient<ITuiCommand, SelectCommand>();
+        services.AddTransient<ITuiCommand, QuitCommand>();
+        services.AddTransient<ITuiCommandDispatcher, TuiCommandDispatcher>();
     }
 }

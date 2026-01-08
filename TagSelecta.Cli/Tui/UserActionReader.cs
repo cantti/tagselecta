@@ -1,5 +1,6 @@
 using System.Text;
 using Spectre.Console;
+using TagSelecta.Cli.Tui.TuiCommands;
 
 namespace TagSelecta.Cli.Tui;
 
@@ -11,11 +12,7 @@ public class UserActionReader : IUserActionReader
     private InputMode _mode = InputMode.Normal;
 
     private readonly StringBuilder _buffer = new();
-    private int _cursor = 0;
-
-    // ANSI color codes
-    private const string CmdStyle = "\x1b[30;43m"; // black on yellow
-    private const string ResetStyle = "\x1b[0m";
+    private int _cursor;
 
     public UserActionReader(HotkeyMap hotkeys, CommandParser parser)
     {
@@ -23,14 +20,14 @@ public class UserActionReader : IUserActionReader
         _parser = parser;
     }
 
-    public ActionRequest? Read(ConsoleKeyInfo key)
+    public Request? Read(ConsoleKeyInfo key)
     {
         if (_mode == InputMode.Normal)
             return HandleNormalMode(key);
         return HandleCommandMode(key);
     }
 
-    private ActionRequest? HandleNormalMode(ConsoleKeyInfo key)
+    private Request? HandleNormalMode(ConsoleKeyInfo key)
     {
         if (key.KeyChar == ':')
         {
@@ -41,10 +38,10 @@ public class UserActionReader : IUserActionReader
         }
 
         var action = _hotkeys.Resolve(key);
-        return action != null ? new ActionRequest(action, []) : null;
+        return action != null ? new Request(action, []) : null;
     }
 
-    private ActionRequest? HandleCommandMode(ConsoleKeyInfo key)
+    private Request? HandleCommandMode(ConsoleKeyInfo key)
     {
         switch (key.Key)
         {

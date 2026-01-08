@@ -3,19 +3,21 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
 using TagSelecta.Cli.IO;
+using TagSelecta.Cli.Tui.TuiCommands;
+using TagSelecta.Cli.Tui.Widgets;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tui;
 
-public class TuiCommand(
+public class TuiApp(
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
     ITagger tagger,
     HotkeyMap hotkeys,
     IUserActionReader userActionReader,
     IFileSystem fs,
-    ITagDataActionDispatcher actionDispatcher
-) : AsyncCommand<TuiSettings>
+    ITuiCommandDispatcher commandDispatcher
+) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private Dictionary<string, Func<ValueTask>> _handlers = [];
 
@@ -23,18 +25,20 @@ public class TuiCommand(
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
 
-    private CancellationTokenSource _cts = new();
+    private readonly CancellationTokenSource _cts = new();
 
     private bool _filterEnabled;
     private bool _treeEnabled;
     private bool _helpEnabled;
 
-    private List<TagDataOperation> _operations = [];
     private List<TagDataOperation> _visibleOperations = [];
 
-    private int _focusedOperationIndex;
-    private TagDataOperation? FocusedOperation =>
-        _visibleOperations.ElementAtOrDefault(_focusedOperationIndex);
+    public List<TagDataOperation> Operations { get; private set; } = [];
+
+    public int FocusedOperationIndex { get; set; }
+
+    public TagDataOperation? FocusedOperation =>
+        _visibleOperations.ElementAtOrDefault(FocusedOperationIndex);
 
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -52,18 +56,18 @@ public class TuiCommand(
 
         // AltScreen.Enter();
 
-        _operations = _visibleOperations = audioFileScanner
+        Operations = _visibleOperations = audioFileScanner
             .ScanAndRead(settings.Path)
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
 
-        console.WriteLine(_operations.Count + " files found");
+        console.WriteLine(Operations.Count + " files found");
 
         var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
 
         _ = Task.Run(() => InputLoop(channel, _cts.Token), _cts.Token);
 
-        await AnsiConsole
+        await console
             .Live(new Panel("Starting..."))
             .Overflow(VerticalOverflow.Ellipsis)
             .AutoClear(true)
@@ -79,16 +83,8 @@ public class TuiCommand(
                         var request = userActionReader.Read(key);
                         if (request is not null)
                         {
-                            if (_handlers.TryGetValue(request.ActionName, out var uiAction))
-                            {
-                                await uiAction();
-                            }
-                            else
-                            {
-                                await DispatchAction(request);
-                            }
+                            await commandDispatcher.DispatchAsync(this, request);
                         }
-
                         ctx.UpdateTarget(DrawLayout());
                         if (userActionReader.Mode == InputMode.Command)
                         {
@@ -141,8 +137,8 @@ public class TuiCommand(
             new Layout("footer").Size(1).Update(statusBar)
         );
 
-        _focusedOperationIndex = Math.Clamp(
-            _focusedOperationIndex,
+        FocusedOperationIndex = Math.Clamp(
+            FocusedOperationIndex,
             0,
             Math.Max(0, _visibleOperations.Count - 1)
         );
@@ -152,10 +148,10 @@ public class TuiCommand(
             : _treeEnabled
                 ? new TreeListWidget(
                     _visibleOperations,
-                    _focusedOperationIndex,
+                    FocusedOperationIndex,
                     filesContentSize - 2
                 )
-            : new FileListWidget(_visibleOperations, _focusedOperationIndex, filesContentSize - 2);
+            : new FileListWidget(_visibleOperations, FocusedOperationIndex, filesContentSize - 2);
 
         layout[FilesLayoutKey].Update(fileListContent);
 
@@ -190,26 +186,6 @@ public class TuiCommand(
     private void Undo()
     {
         FocusedOperation?.Undo();
-    }
-
-    private async Task DispatchAction(ActionRequest action)
-    {
-        await actionDispatcher.BeforeProcess(action);
-        await Parallel.ForEachAsync(
-            _visibleOperations.Where(x => x.IsSelected),
-            async (operation, _) =>
-            {
-                try
-                {
-                    await actionDispatcher.Process(action, operation, _visibleOperations);
-                    operation.CheckForChanges();
-                }
-                catch (Exception ex)
-                {
-                    operation.MarkError(ex);
-                }
-            }
-        );
     }
 
     private void Write()
@@ -253,8 +229,8 @@ public class TuiCommand(
     private void ToggleFilter()
     {
         _filterEnabled = !_filterEnabled;
-        _visibleOperations = _operations.Where(x => !_filterEnabled || x.HasChanges).ToList();
-        _focusedOperationIndex = 0;
+        _visibleOperations = Operations.Where(x => !_filterEnabled || x.HasChanges).ToList();
+        FocusedOperationIndex = 0;
     }
 
     private void ToggleTree()
@@ -283,12 +259,12 @@ public class TuiCommand(
         {
             [UiAction.MoveDown] = () =>
             {
-                _focusedOperationIndex++;
+                FocusedOperationIndex++;
                 return ValueTask.CompletedTask;
             },
             [UiAction.MoveUp] = () =>
             {
-                _focusedOperationIndex--;
+                FocusedOperationIndex--;
                 return ValueTask.CompletedTask;
             },
             [UiAction.ToggleTree] = () =>
@@ -357,7 +333,7 @@ public class TuiCommand(
 
     private void SelectAll()
     {
-        foreach (var operation in _operations)
+        foreach (var operation in Operations)
         {
             operation.IsSelected = true;
         }
@@ -365,7 +341,7 @@ public class TuiCommand(
 
     private void ClearSelection()
     {
-        foreach (var operation in _operations)
+        foreach (var operation in Operations)
         {
             operation.IsSelected = false;
         }
@@ -373,17 +349,17 @@ public class TuiCommand(
 
     private void Selection()
     {
-        _operations[_focusedOperationIndex].IsSelected = !_operations[
-            _focusedOperationIndex
+        Operations[FocusedOperationIndex].IsSelected = !Operations[
+            FocusedOperationIndex
         ].IsSelected;
-        _focusedOperationIndex++;
+        FocusedOperationIndex++;
     }
 
     private void BindHotkeys()
     {
-        hotkeys.Bind(ConsoleKey.J, UiAction.MoveDown);
-        hotkeys.Bind(ConsoleKey.K, UiAction.MoveUp);
-        hotkeys.Bind(ConsoleKey.Q, UiAction.Quit);
+        hotkeys.Bind(ConsoleKey.J, "movedown");
+        hotkeys.Bind(ConsoleKey.K, "moveup");
+        hotkeys.Bind(ConsoleKey.Q, "quit");
         hotkeys.Bind(ConsoleKey.T, UiAction.ToggleTree);
         hotkeys.Bind(ConsoleKey.F, UiAction.ToggleFilter);
         hotkeys.Bind(ConsoleKey.H, UiAction.ToggleHelp);

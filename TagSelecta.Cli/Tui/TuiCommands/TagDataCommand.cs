@@ -1,21 +1,41 @@
-namespace TagSelecta.Cli.Tui;
+namespace TagSelecta.Cli.Tui.TuiCommands;
 
-public class TagDataActionDispatcher(ITagDataActionFactory actionFactory) : ITagDataActionDispatcher
+public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
 {
-    public async Task BeforeProcess(ActionRequest request)
+    public async Task ExecuteAsync(ITuiCommandContext context, Request request)
     {
-        var action = actionFactory.Create(request.ActionName);
+        await ActionBeforeProcess(request);
+        await Parallel.ForEachAsync(
+            context.Operations.Where(x => x.IsSelected),
+            async (operation, _) =>
+            {
+                try
+                {
+                    await ActionProcess(request, operation, context.Operations);
+                    operation.CheckForChanges();
+                }
+                catch (Exception ex)
+                {
+                    operation.MarkError(ex);
+                }
+            }
+        );
+    }
+
+    private async Task ActionBeforeProcess(Request request)
+    {
+        var action = actionFactory.Create(request.Name);
         var baseSettings = CreateSettings(action, request.Args);
         await action.BeforeProcessTagDataAsync(baseSettings);
     }
 
-    public async Task Process(
-        ActionRequest request,
+    private async Task ActionProcess(
+        Request request,
         IFileContext current,
         IEnumerable<IFileContext> files
     )
     {
-        var action = actionFactory.Create(request.ActionName);
+        var action = actionFactory.Create(request.Name);
         var baseSettings = CreateSettings(action, request.Args);
         await action.ProcessTagDataAsync(current, files, baseSettings);
     }

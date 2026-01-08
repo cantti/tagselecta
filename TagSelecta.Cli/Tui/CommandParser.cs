@@ -1,10 +1,11 @@
 using System.Text;
+using TagSelecta.Cli.Tui.TuiCommands;
 
 namespace TagSelecta.Cli.Tui;
 
 public sealed class CommandParser
 {
-    public bool TryParse(string input, out ActionRequest request)
+    public bool TryParse(string input, out Request request)
     {
         request = null!;
 
@@ -37,7 +38,7 @@ public sealed class CommandParser
             }
         }
 
-        request = new ActionRequest(name, args);
+        request = new Request(name, args);
         return true;
     }
 
