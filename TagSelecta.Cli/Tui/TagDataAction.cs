@@ -8,7 +8,10 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         return true;
     }
 
-    protected virtual Task<bool> BeforeProcessTagDataAsync(TSettings settings)
+    protected virtual Task<bool> BeforeProcessTagDataAsync(
+        TSettings settings,
+        CancellationToken token
+    )
     {
         return Task.FromResult(BeforeProcessTagData(settings));
     }
@@ -22,7 +25,8 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     protected virtual Task ProcessTagDataAsync(
         IFileContext current,
         IEnumerable<IFileContext> files,
-        TSettings settings
+        TSettings settings,
+        CancellationToken token
     )
     {
         ProcessTagData(current, files, settings);
@@ -32,14 +36,18 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     Task ITagDataAction.ProcessTagDataAsync(
         IFileContext current,
         IEnumerable<IFileContext> files,
-        BaseSettings settings
+        BaseSettings settings,
+        CancellationToken token
     )
     {
-        return ProcessTagDataAsync(current, files, (TSettings)settings);
+        return ProcessTagDataAsync(current, files, (TSettings)settings, token);
     }
 
-    Task<bool> ITagDataAction.BeforeProcessTagDataAsync(BaseSettings settings)
+    Task<bool> ITagDataAction.BeforeProcessTagDataAsync(
+        BaseSettings settings,
+        CancellationToken token
+    )
     {
-        return BeforeProcessTagDataAsync((TSettings)settings);
+        return BeforeProcessTagDataAsync((TSettings)settings, token);
     }
 }

@@ -5,7 +5,7 @@ namespace TagSelecta.Cli.Tui;
 
 public interface IUserActionReader
 {
-    Request? Read(ConsoleKeyInfo key);
+    bool TryRead(ConsoleKeyInfo key, out Request request);
     StringBuilder Buffer { get; }
     int Cursor { get; }
     InputMode Mode { get; }

@@ -5,8 +5,9 @@ public interface ITagDataAction
     Task ProcessTagDataAsync(
         IFileContext current,
         IEnumerable<IFileContext> files,
-        BaseSettings settings
+        BaseSettings settings,
+        CancellationToken token
     );
 
-    Task<bool> BeforeProcessTagDataAsync(BaseSettings settings);
+    Task<bool> BeforeProcessTagDataAsync(BaseSettings settings, CancellationToken token);
 }

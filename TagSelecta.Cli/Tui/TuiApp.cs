@@ -25,8 +25,6 @@ public class TuiApp(
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
 
-    private readonly CancellationTokenSource _cts = new();
-
     private bool _filterEnabled;
     private bool _treeEnabled;
     private bool _helpEnabled;
@@ -40,12 +38,16 @@ public class TuiApp(
     public TagDataOperation? FocusedOperation =>
         _visibleOperations.ElementAtOrDefault(FocusedOperationIndex);
 
+    private CancellationTokenSource _cts = new();
+
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
         TuiSettings settings,
         CancellationToken ct
     )
     {
+        _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
         BindHotkeys();
         SetUiHandlers();
 
@@ -54,7 +56,7 @@ public class TuiApp(
             return 1;
         }
 
-        // AltScreen.Enter();
+        AltScreen.Enter();
 
         Operations = _visibleOperations = audioFileScanner
             .ScanAndRead(settings.Path)
@@ -69,36 +71,29 @@ public class TuiApp(
 
         await console
             .Live(new Panel("Starting..."))
-            .Overflow(VerticalOverflow.Ellipsis)
             .AutoClear(true)
             .StartAsync(async ctx =>
             {
-                AnsiConsole.Cursor.Show();
-                ctx.UpdateTarget(DrawLayout());
-
-                while (!_cts.Token.IsCancellationRequested)
+                try
                 {
-                    while (channel.Reader.TryRead(out var key))
+                    while (!_cts.Token.IsCancellationRequested)
                     {
-                        var request = userActionReader.Read(key);
-                        if (request is not null)
-                        {
-                            await commandDispatcher.DispatchAsync(this, request);
-                        }
                         ctx.UpdateTarget(DrawLayout());
-                        if (userActionReader.Mode == InputMode.Command)
+                        while (channel.Reader.TryRead(out var key))
                         {
-                            Console.SetCursorPosition(
-                                userActionReader.Cursor + 1,
-                                Console.WindowHeight - 1
-                            );
+                            if (userActionReader.TryRead(key, out var request))
+                            {
+                                await commandDispatcher.DispatchAsync(this, request, _cts.Token);
+                            }
+                            ctx.UpdateTarget(DrawLayout());
                         }
+                        await Task.Delay(33, _cts.Token);
                     }
-                    await Task.Delay(33, _cts.Token);
                 }
+                catch (OperationCanceledException) { }
             });
 
-        AltScreen.Exit();
+        // AltScreen.Exit();
 
         return 0;
     }
@@ -121,9 +116,28 @@ public class TuiApp(
             _visibleOperations.Count + 2
         );
 
+        // todo rewrite!!
         IRenderable statusBar =
             userActionReader.Mode == InputMode.Command
-                ? new Columns(new Text(":"), new Text(userActionReader.Buffer.ToString()))
+                ? new Columns(
+                    new Text(":"),
+                    new Markup(
+                        string.Join(
+                            "",
+                            userActionReader
+                                .Buffer.ToString()
+                                .Select(
+                                    (x, i) =>
+                                        i == userActionReader.Cursor ? $"[black on white]{x}[/]"
+                                        : userActionReader.Buffer.ToString().Length
+                                            == userActionReader.Cursor
+                                        && i == userActionReader.Buffer.Length - 1
+                                            ? $"{x}[black on white] [/]"
+                                        : x.ToString()
+                                )
+                        )
+                    )
+                )
                 {
                     Expand = false,
                     Padding = new Padding(0, 0, 0, 0),
@@ -253,6 +267,11 @@ public class TuiApp(
         );
     }
 
+    public void Quit()
+    {
+        _cts.Cancel();
+    }
+
     private void SetUiHandlers()
     {
         _handlers = new()
@@ -289,7 +308,6 @@ public class TuiApp(
             },
             [UiAction.Quit] = () =>
             {
-                _cts.Cancel();
                 return ValueTask.CompletedTask;
             },
             [UiAction.Write] = () =>
@@ -357,6 +375,7 @@ public class TuiApp(
 
     private void BindHotkeys()
     {
+        hotkeys.Bind(ConsoleKey.C, "cancel");
         hotkeys.Bind(ConsoleKey.J, "movedown");
         hotkeys.Bind(ConsoleKey.K, "moveup");
         hotkeys.Bind(ConsoleKey.Q, "quit");

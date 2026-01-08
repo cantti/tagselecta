@@ -1,17 +1,24 @@
 namespace TagSelecta.Cli.Tui.TuiCommands;
 
+[TuiCommand("execute")]
 public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
 {
-    public async Task ExecuteAsync(ITuiCommandContext context, Request request)
+    public async Task ExecuteAsync(
+        ITuiCommandContext context,
+        Request request,
+        CancellationToken token
+    )
     {
-        await ActionBeforeProcess(request);
+        await ActionBeforeProcess(request, token);
         await Parallel.ForEachAsync(
             context.Operations.Where(x => x.IsSelected),
+            token,
             async (operation, _) =>
             {
+                await Task.Delay(TimeSpan.FromSeconds(3), token);
                 try
                 {
-                    await ActionProcess(request, operation, context.Operations);
+                    await ActionProcess(request, operation, context.Operations, token);
                     operation.CheckForChanges();
                 }
                 catch (Exception ex)
@@ -22,22 +29,23 @@ public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
         );
     }
 
-    private async Task ActionBeforeProcess(Request request)
+    private async Task ActionBeforeProcess(Request request, CancellationToken token)
     {
         var action = actionFactory.Create(request.Name);
         var baseSettings = CreateSettings(action, request.Args);
-        await action.BeforeProcessTagDataAsync(baseSettings);
+        await action.BeforeProcessTagDataAsync(baseSettings, token);
     }
 
     private async Task ActionProcess(
         Request request,
         IFileContext current,
-        IEnumerable<IFileContext> files
+        IEnumerable<IFileContext> files,
+        CancellationToken token
     )
     {
         var action = actionFactory.Create(request.Name);
         var baseSettings = CreateSettings(action, request.Args);
-        await action.ProcessTagDataAsync(current, files, baseSettings);
+        await action.ProcessTagDataAsync(current, files, baseSettings, token);
     }
 
     private static BaseSettings CreateSettings(

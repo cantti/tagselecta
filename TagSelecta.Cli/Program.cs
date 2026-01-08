@@ -24,8 +24,9 @@ class Program
 {
     static int Main(string[] args)
     {
+        var cst = new CancellationTokenSource();
         SetAnsiSupport();
-        ConfigureCancel();
+        ConfigureCancel(cst);
         var services = ConfigureServices();
         var app = new CommandApp(new TypeRegistrar(services));
         app.Configure(config =>
@@ -35,14 +36,7 @@ class Program
             AddCommands(config, services);
             config.SetApplicationVersion(GetAppVersion());
         });
-        try
-        {
-            return app.Run(args);
-        }
-        finally
-        {
-            AltScreen.Exit();
-        }
+        return app.Run(args, cst.Token);
     }
 
     private static string GetAppVersion()
@@ -89,13 +83,13 @@ class Program
         return services;
     }
 
-    private static void ConfigureCancel()
+    private static void ConfigureCancel(CancellationTokenSource cst)
     {
         Console.CancelKeyPress += (_, e) =>
         {
             e.Cancel = true;
-            AltScreen.Exit();
-            Environment.Exit(130);
+            cst.Cancel();
+            Console.WriteLine("Cancellation requested...");
         };
     }
 }

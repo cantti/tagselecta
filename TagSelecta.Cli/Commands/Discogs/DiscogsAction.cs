@@ -10,7 +10,10 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
     private ReleaseFetcherResult? _release;
     private List<string> _fieldToWriteList = [];
 
-    protected override async Task<bool> BeforeProcessTagDataAsync(DiscogsSettings settings)
+    protected override async Task<bool> BeforeProcessTagDataAsync(
+        DiscogsSettings settings,
+        CancellationToken token
+    )
     {
         if (settings.Fields is not null)
         {

@@ -46,7 +46,7 @@ public class FileListWidget(List<TagDataOperation> operations, int selectedIndex
         }
 
         content = new Rows(
-            new Text($"Files ({operations.Count}:", new Style(Color.Yellow)),
+            new Text($"Files ({operations.Count}):", new Style(Color.Yellow)),
             new Rows(items)
         );
 

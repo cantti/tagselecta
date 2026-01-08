@@ -20,11 +20,17 @@ public class UserActionReader : IUserActionReader
         _parser = parser;
     }
 
-    public Request? Read(ConsoleKeyInfo key)
+    public bool TryRead(ConsoleKeyInfo key, out Request request)
     {
-        if (_mode == InputMode.Normal)
-            return HandleNormalMode(key);
-        return HandleCommandMode(key);
+        var handleResult =
+            _mode == InputMode.Normal ? HandleNormalMode(key) : HandleCommandMode(key);
+        if (handleResult != null)
+        {
+            request = handleResult;
+            return true;
+        }
+        request = new Request("", []);
+        return false;
     }
 
     private Request? HandleNormalMode(ConsoleKeyInfo key)
@@ -52,7 +58,7 @@ public class UserActionReader : IUserActionReader
             case ConsoleKey.Enter:
                 var text = _buffer.ToString();
                 ExitCommandMode();
-                return _parser.TryParse(text, out var request) ? request : null;
+                return _parser.TryParse(text, out var request) ? request : default;
 
             case ConsoleKey.LeftArrow:
                 if (_cursor > 0)
