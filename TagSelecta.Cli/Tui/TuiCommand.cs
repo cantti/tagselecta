@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
@@ -22,7 +23,8 @@ public class TuiCommand(
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
 
-    private bool _running = true;
+    private CancellationTokenSource _cts = new();
+
     private bool _filterEnabled;
     private bool _treeEnabled;
     private bool _helpEnabled;
@@ -57,24 +59,46 @@ public class TuiCommand(
 
         console.WriteLine(_operations.Count + " files found");
 
+        var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
+
+        _ = Task.Run(() => InputLoop(channel, _cts.Token), _cts.Token);
+
         await AnsiConsole
             .Live(new Panel("Starting..."))
             .Overflow(VerticalOverflow.Ellipsis)
             .AutoClear(true)
             .StartAsync(async ctx =>
             {
-                while (_running)
+                AnsiConsole.Cursor.Show();
+                ctx.UpdateTarget(DrawLayout());
+
+                while (!_cts.Token.IsCancellationRequested)
                 {
-                    ctx.UpdateTarget(Render());
-                    var request = userActionReader.Read();
-                    if (_handlers.TryGetValue(request.ActionName, out var uiAction))
+                    while (channel.Reader.TryRead(out var key))
                     {
-                        await uiAction();
+                        var request = userActionReader.Read(key);
+                        if (request is not null)
+                        {
+                            if (_handlers.TryGetValue(request.ActionName, out var uiAction))
+                            {
+                                await uiAction();
+                            }
+                            else
+                            {
+                                await DispatchAction(request);
+                            }
+                        }
+
+                        ctx.UpdateTarget(DrawLayout());
+                        if (userActionReader.Mode == InputMode.Command)
+                        {
+                            Console.SetCursorPosition(
+                                userActionReader.Cursor + 1,
+                                Console.WindowHeight - 1
+                            );
+                        }
                     }
-                    else
-                    {
-                        await DispatchAction(request);
-                    }
+                    await Task.Delay(33, _cts.Token);
                 }
             });
 
@@ -83,7 +107,16 @@ public class TuiCommand(
         return 0;
     }
 
-    private IRenderable Render()
+    static async Task InputLoop(Channel<ConsoleKeyInfo> channel, CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            var key = Console.ReadKey(intercept: true);
+            await channel.Writer.WriteAsync(key, token);
+        }
+    }
+
+    private IRenderable DrawLayout()
     {
         var navigationSize = 3;
 
@@ -92,10 +125,20 @@ public class TuiCommand(
             _visibleOperations.Count + 2
         );
 
+        IRenderable statusBar =
+            userActionReader.Mode == InputMode.Command
+                ? new Columns(new Text(":"), new Text(userActionReader.Buffer.ToString()))
+                {
+                    Expand = false,
+                    Padding = new Padding(0, 0, 0, 0),
+                }
+                : Text.Empty;
+
         var layout = new Layout("root").SplitRows(
             new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
             new Layout(FilesLayoutKey).Size(filesContentSize).Update(Text.Empty),
-            new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty)
+            new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
+            new Layout("footer").Size(1).Update(statusBar)
         );
 
         _focusedOperationIndex = Math.Clamp(
@@ -270,7 +313,7 @@ public class TuiCommand(
             },
             [UiAction.Quit] = () =>
             {
-                _running = false;
+                _cts.Cancel();
                 return ValueTask.CompletedTask;
             },
             [UiAction.Write] = () =>

@@ -23,25 +23,11 @@ public class UserActionReader : IUserActionReader
         _parser = parser;
     }
 
-    public ActionRequest Read()
+    public ActionRequest? Read(ConsoleKeyInfo key)
     {
-        while (true)
-        {
-            var key = Console.ReadKey(intercept: true);
-
-            if (_mode == InputMode.Normal)
-            {
-                var evt = HandleNormalMode(key);
-                if (evt != null)
-                    return evt;
-            }
-            else
-            {
-                var evt = HandleCommandMode(key);
-                if (evt != null)
-                    return evt;
-            }
-        }
+        if (_mode == InputMode.Normal)
+            return HandleNormalMode(key);
+        return HandleCommandMode(key);
     }
 
     private ActionRequest? HandleNormalMode(ConsoleKeyInfo key)
@@ -51,7 +37,6 @@ public class UserActionReader : IUserActionReader
             _mode = InputMode.Command;
             _buffer.Clear();
             _cursor = 0;
-            RenderCommandPrompt();
             return null;
         }
 
@@ -75,23 +60,19 @@ public class UserActionReader : IUserActionReader
             case ConsoleKey.LeftArrow:
                 if (_cursor > 0)
                     _cursor--;
-                UpdateCursor();
                 return null;
 
             case ConsoleKey.RightArrow:
                 if (_cursor < _buffer.Length)
                     _cursor++;
-                UpdateCursor();
                 return null;
 
             case ConsoleKey.Home:
                 _cursor = 0;
-                UpdateCursor();
                 return null;
 
             case ConsoleKey.End:
                 _cursor = _buffer.Length;
-                UpdateCursor();
                 return null;
 
             case ConsoleKey.Backspace:
@@ -99,7 +80,6 @@ public class UserActionReader : IUserActionReader
                 {
                     _buffer.Remove(_cursor - 1, 1);
                     _cursor--;
-                    RedrawCommandLine();
                 }
                 return null;
 
@@ -107,7 +87,6 @@ public class UserActionReader : IUserActionReader
                 if (_cursor < _buffer.Length)
                 {
                     _buffer.Remove(_cursor, 1);
-                    RedrawCommandLine();
                 }
                 return null;
         }
@@ -116,41 +95,9 @@ public class UserActionReader : IUserActionReader
         {
             _buffer.Insert(_cursor, key.KeyChar);
             _cursor++;
-            RedrawCommandLine();
         }
 
         return null;
-    }
-
-    private void RenderCommandPrompt()
-    {
-        PaintCommandBackground();
-
-        Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.Write($"{CmdStyle}:{ResetStyle}");
-
-        UpdateCursor();
-    }
-
-    private void RedrawCommandLine()
-    {
-        PaintCommandBackground();
-
-        Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.Write($"{CmdStyle}:{_buffer}{ResetStyle}");
-
-        UpdateCursor();
-    }
-
-    private void PaintCommandBackground()
-    {
-        Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.Write($"{CmdStyle}{new string(' ', Console.WindowWidth)}{ResetStyle}");
-    }
-
-    private void UpdateCursor()
-    {
-        Console.SetCursorPosition(1 + _cursor, Console.WindowHeight - 1);
     }
 
     private void ExitCommandMode()
@@ -158,13 +105,11 @@ public class UserActionReader : IUserActionReader
         _mode = InputMode.Normal;
         _buffer.Clear();
         _cursor = 0;
-
-        ClearCommandLine();
     }
 
-    private void ClearCommandLine()
-    {
-        Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.Write($"{ResetStyle}{new string(' ', Console.WindowWidth)}");
-    }
+    public StringBuilder Buffer => _buffer;
+
+    public int Cursor => _cursor;
+
+    public InputMode Mode => _mode;
 }

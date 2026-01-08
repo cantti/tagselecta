@@ -1,6 +1,6 @@
 namespace TagSelecta.Cli.Tui;
 
-enum InputMode
+public enum InputMode
 {
     Normal,
     Command,
