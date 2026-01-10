@@ -23,6 +23,7 @@ public class TuiApp(
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
     private const string CommandLayoutKey = "command";
+    private const string StatusLayoutKey = "status";
 
     private string _statusMessage = "";
     private bool _inputBlocked = false;
@@ -131,30 +132,9 @@ public class TuiApp(
 
     private IRenderable DrawLayout()
     {
-        var navigationSize = 3;
-
         var filesContentSize = Math.Min(
-            (Console.WindowHeight - navigationSize) / 2,
+            (Console.WindowHeight - 3 - 1 - 1 - 1) / 2,
             VisibleOperations.Count() + 2
-        );
-
-        var layout = new Layout("root").SplitRows(
-            new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
-            new Layout(FilesLayoutKey).Size(filesContentSize).Update(Text.Empty),
-            new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
-            // todo rewrite
-            new Layout("status")
-                .Size(1)
-                .Update(
-                    new Markup($" {_statusMessage}{(_inputBlocked ? ". Press c to cancel." : "")}")
-                ),
-            new Layout(CommandLayoutKey)
-                .Size(1)
-                .Update(
-                    userActionReader.Mode == InputMode.Command
-                        ? new CommandPromptWidget(userActionReader.Text, userActionReader.CursorPos)
-                        : Text.Empty
-                )
         );
 
         FocusedOperationIndex = Math.Clamp(
@@ -163,13 +143,36 @@ public class TuiApp(
             Math.Max(0, VisibleOperations.Count() - 1)
         );
 
-        IRenderable fileListContent =
-            HelpEnabled ? new HelpWidget()
-            : TreeEnabled
-                ? new TreeListWidget(VisibleOperations, FocusedOperation, filesContentSize - 2)
-            : new FileListWidget(VisibleOperations, FocusedOperationIndex, filesContentSize - 2);
-
-        layout[FilesLayoutKey].Update(fileListContent);
+        var layout = new Layout("root").SplitRows(
+            new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
+            new Layout(FilesLayoutKey)
+                .Size(filesContentSize)
+                .Update(
+                    HelpEnabled ? new HelpWidget()
+                    : TreeEnabled
+                        ? new TreeListWidget(
+                            VisibleOperations,
+                            FocusedOperation,
+                            filesContentSize - 2
+                        )
+                    : new FileListWidget(
+                        VisibleOperations,
+                        FocusedOperationIndex,
+                        filesContentSize - 2
+                    )
+                ),
+            new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
+            new Layout(StatusLayoutKey)
+                .Size(1)
+                .Update(new StatusWidget(_statusMessage, _inputBlocked)),
+            new Layout(CommandLayoutKey)
+                .Size(1)
+                .Update(
+                    userActionReader.Mode == InputMode.Command
+                        ? new CommandPromptWidget(userActionReader.Text, userActionReader.CursorPos)
+                        : Text.Empty
+                )
+        );
 
         if (FocusedOperation is not null)
         {
