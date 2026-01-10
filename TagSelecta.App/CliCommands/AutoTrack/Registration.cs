@@ -12,5 +12,6 @@ public static class Registration
         //     .AddTagDataAction<AutoTrackAction>(services, "autotrack")
         //     .WithDescription("Auto track.");
         services.AddTransient<ITagDataAction, AutoTrackAction>();
+        services.AddTransient<AutoTrackAction>();
     }
 }

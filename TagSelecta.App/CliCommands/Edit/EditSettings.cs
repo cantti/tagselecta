@@ -137,7 +137,7 @@ public class EditSettings : BaseSettings
         Track = args.FirstOrDefault(x => x.Key == Fields.Track || x.Key == "n")?.Value;
         TrackTotal = args.FirstOrDefault(x => x.Key == Fields.TrackTotal || x.Key == "N")?.Value;
         Set = args.Where(x => x.Key == "set").Select(x => x.Value).ToArray();
-        ClearCustom = args.Any(x => x.Key == "clearcustom");
+        ClearCustom = args.Any(x => x.Key.StartsWith("arg") && x.Value == "clearcustom");
         // todo
         // Picture =
         // PictureType =
