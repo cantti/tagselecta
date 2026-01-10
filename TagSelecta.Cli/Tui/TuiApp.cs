@@ -25,6 +25,7 @@ public class TuiApp(
     private const string HeaderLayoutKey = "navigation";
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
+    private const string CommandLayoutKey = "command";
 
     private bool _filterEnabled;
     private bool _treeEnabled;
@@ -146,34 +147,6 @@ public class TuiApp(
             _visibleOperations.Count + 2
         );
 
-        // todo rewrite to widget!!
-        IRenderable commandPrompt =
-            userActionReader.Mode == InputMode.Command
-                ? new Columns(
-                    new Text(":"),
-                    new Markup(
-                        string.Join(
-                            "",
-                            userActionReader
-                                .Buffer.ToString()
-                                .Select(
-                                    (x, i) =>
-                                        i == userActionReader.Cursor ? $"[black on white]{x}[/]"
-                                        : userActionReader.Buffer.ToString().Length
-                                            == userActionReader.Cursor
-                                        && i == userActionReader.Buffer.Length - 1
-                                            ? $"{x}[invert] [/]"
-                                        : x.ToString()
-                                )
-                        )
-                    )
-                )
-                {
-                    Expand = false,
-                    Padding = new Padding(0, 0, 0, 0),
-                }
-                : Text.Empty;
-
         var layout = new Layout("root").SplitRows(
             new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
             new Layout(FilesLayoutKey).Size(filesContentSize).Update(Text.Empty),
@@ -184,7 +157,13 @@ public class TuiApp(
                 .Update(
                     new Markup($" {_statusMessage}{(_uiBlocked ? ". Press c to cancel." : "")}")
                 ),
-            new Layout("footer").Size(1).Update(commandPrompt)
+            new Layout(CommandLayoutKey)
+                .Size(1)
+                .Update(
+                    userActionReader.Mode == InputMode.Command
+                        ? new CommandPromptWidget(userActionReader.Text, userActionReader.CursorPos)
+                        : Text.Empty
+                )
         );
 
         FocusedOperationIndex = Math.Clamp(

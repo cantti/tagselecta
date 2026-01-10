@@ -9,10 +9,7 @@ public class UserActionReader : IUserActionReader
     private readonly HotkeyMap _hotkeys;
     private readonly CommandParser _parser;
 
-    private InputMode _mode = InputMode.Normal;
-
     private readonly StringBuilder _buffer = new();
-    private int _cursor;
 
     public UserActionReader(HotkeyMap hotkeys, CommandParser parser)
     {
@@ -23,7 +20,7 @@ public class UserActionReader : IUserActionReader
     public bool TryRead(ConsoleKeyInfo key, out Request request)
     {
         var handleResult =
-            _mode == InputMode.Normal ? HandleNormalMode(key) : HandleCommandMode(key);
+            Mode == InputMode.Normal ? HandleNormalMode(key) : HandleCommandMode(key);
         if (handleResult != null)
         {
             request = handleResult;
@@ -37,9 +34,9 @@ public class UserActionReader : IUserActionReader
     {
         if (key.KeyChar == ':')
         {
-            _mode = InputMode.Command;
+            Mode = InputMode.Command;
             _buffer.Clear();
-            _cursor = 0;
+            CursorPos = 0;
             return null;
         }
 
@@ -61,43 +58,43 @@ public class UserActionReader : IUserActionReader
                 return _parser.TryParse(text, out var request) ? request : default;
 
             case ConsoleKey.LeftArrow:
-                if (_cursor > 0)
-                    _cursor--;
+                if (CursorPos > 0)
+                    CursorPos--;
                 return null;
 
             case ConsoleKey.RightArrow:
-                if (_cursor < _buffer.Length)
-                    _cursor++;
+                if (CursorPos < _buffer.Length)
+                    CursorPos++;
                 return null;
 
             case ConsoleKey.Home:
-                _cursor = 0;
+                CursorPos = 0;
                 return null;
 
             case ConsoleKey.End:
-                _cursor = _buffer.Length;
+                CursorPos = _buffer.Length;
                 return null;
 
             case ConsoleKey.Backspace:
-                if (_cursor > 0)
+                if (CursorPos > 0)
                 {
-                    _buffer.Remove(_cursor - 1, 1);
-                    _cursor--;
+                    _buffer.Remove(CursorPos - 1, 1);
+                    CursorPos--;
                 }
                 return null;
 
             case ConsoleKey.Delete:
-                if (_cursor < _buffer.Length)
+                if (CursorPos < _buffer.Length)
                 {
-                    _buffer.Remove(_cursor, 1);
+                    _buffer.Remove(CursorPos, 1);
                 }
                 return null;
         }
 
         if (!char.IsControl(key.KeyChar))
         {
-            _buffer.Insert(_cursor, key.KeyChar);
-            _cursor++;
+            _buffer.Insert(CursorPos, key.KeyChar);
+            CursorPos++;
         }
 
         return null;
@@ -105,14 +102,14 @@ public class UserActionReader : IUserActionReader
 
     private void ExitCommandMode()
     {
-        _mode = InputMode.Normal;
+        Mode = InputMode.Normal;
         _buffer.Clear();
-        _cursor = 0;
+        CursorPos = 0;
     }
 
-    public StringBuilder Buffer => _buffer;
+    public string Text => _buffer.ToString();
 
-    public int Cursor => _cursor;
+    public int CursorPos { get; private set; }
 
-    public InputMode Mode => _mode;
+    public InputMode Mode { get; private set; } = InputMode.Normal;
 }
