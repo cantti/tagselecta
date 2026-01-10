@@ -3,14 +3,20 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Cli.Tui.Widgets;
 
-public class FileListWidget(List<TagDataOperation> operations, int selectedIndex, int windowSize)
-    : Renderable
+public class FileListWidget(
+    IEnumerable<TagDataOperation> operations,
+    int selectedIndex,
+    int windowSize
+) : Renderable
 {
+    private readonly List<TagDataOperation> _operations = operations.ToList();
+
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         IRenderable content;
+        var operationList = _operations.ToList();
 
-        if (operations.Count == 0)
+        if (operationList.Count == 0)
         {
             content = Text.Empty;
             return content.Render(options, maxWidth);
@@ -20,10 +26,10 @@ public class FileListWidget(List<TagDataOperation> operations, int selectedIndex
         var windowStart = selectedIndex - (windowSize / 2);
 
         // clamp so we don't go before 0 or past the last possible full window start
-        var maxStart = Math.Max(0, operations.Count - windowSize);
+        var maxStart = Math.Max(0, operationList.Count - windowSize);
         windowStart = Math.Clamp(windowStart, 0, maxStart);
 
-        var linesToPrint = Math.Min(windowSize, operations.Count - windowStart);
+        var linesToPrint = Math.Min(windowSize, operationList.Count - windowStart);
 
         var items = new List<IRenderable>();
 
@@ -32,21 +38,21 @@ public class FileListWidget(List<TagDataOperation> operations, int selectedIndex
             var itemIndex = windowStart + i;
             var path = Path.GetRelativePath(
                 Environment.CurrentDirectory,
-                operations[itemIndex].OriginalPath
+                operationList[itemIndex].OriginalPath
             );
-            var selectedMarker = operations[itemIndex].IsSelected ? "[x]" : "[ ]";
+            var selectedMarker = operationList[itemIndex].IsSelected ? "[x]" : "[ ]";
             var text = $"{selectedMarker} {path}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
                 .PadRight(Console.WindowWidth);
             var style = new Style(
-                operations[itemIndex].HasChanges ? Color.Red : Color.Default,
+                operationList[itemIndex].HasChanges ? Color.Red : Color.Default,
                 selectedIndex == itemIndex ? Color.Grey : Color.Default
             );
             items.Add(new Text(text, style));
         }
 
         content = new Rows(
-            new Text($"Files ({operations.Count}):", new Style(Color.Yellow)),
+            new Text($"Files ({operationList.Count}):", new Style(Color.Yellow)),
             new Rows(items)
         );
 

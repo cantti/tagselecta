@@ -4,8 +4,8 @@ using Spectre.Console.Rendering;
 namespace TagSelecta.Cli.Tui.Widgets;
 
 public class TreeListWidget(
-    List<TagDataOperation> operations,
-    int selectedOperationIndex,
+    IEnumerable<TagDataOperation> operations,
+    TagDataOperation? focusedOperation,
     int windowSize
 ) : Renderable
 {
@@ -13,11 +13,13 @@ public class TreeListWidget(
         ? StringComparison.OrdinalIgnoreCase
         : StringComparison.Ordinal;
 
+    private readonly List<TagDataOperation> _operations = operations.ToList();
+
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         IRenderable content;
 
-        if (operations.Count == 0)
+        if (!_operations.Any())
         {
             content = Text.Empty;
             return content.Render(options, maxWidth);
@@ -25,10 +27,8 @@ public class TreeListWidget(
 
         var treeLines = BuildTreeLines();
 
-        var selectedOperation = operations[selectedOperationIndex];
-
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var selectedIndexInTree = treeLines.FindIndex(x => x.Operation == selectedOperation);
+        var selectedIndexInTree = treeLines.FindIndex(x => x.Operation == focusedOperation);
         var windowStart = selectedIndexInTree - (windowSize / 2);
 
         // clamp so we dont go before 0 or past the last possible full window start
@@ -48,13 +48,16 @@ public class TreeListWidget(
                     treeLine.Markup,
                     new Style(
                         null,
-                        treeLine.Operation == selectedOperation ? Color.Gray : Color.Default
+                        treeLine.Operation == focusedOperation ? Color.Gray : Color.Default
                     )
                 )
             );
         }
 
-        content = new Rows(new Text($"Files:", new Style(Color.Yellow)), new Rows(items));
+        content = new Rows(
+            new Text($"Files ({_operations.Count()}):", new Style(Color.Yellow)),
+            new Rows(items)
+        );
 
         return content.Render(options, maxWidth);
     }
@@ -65,7 +68,7 @@ public class TreeListWidget(
 
         var paths = new List<(string Path, TagDataOperation? operation)>();
 
-        foreach (var operation in operations)
+        foreach (var operation in _operations)
         {
             paths.Add((operation.OriginalPath, operation));
 
@@ -98,7 +101,7 @@ public class TreeListWidget(
                 ? root
                 : Path.GetFileName(node.Path);
 
-            var operation = operations.FirstOrDefault(x =>
+            var operation = _operations.FirstOrDefault(x =>
                 string.Equals(x.OriginalPath, node.Path, _pathComparer)
             );
 

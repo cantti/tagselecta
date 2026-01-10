@@ -16,33 +16,40 @@ public class TuiApp(
     HotkeyMap hotkeys,
     IUserActionReader userActionReader,
     IFileSystem fs,
-    ITuiCommandDispatcher commandDispatcher,
     ITuiCommandFactory commandFactory
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
-    private Dictionary<string, Func<ValueTask>> _handlers = [];
-
     private const string HeaderLayoutKey = "navigation";
     private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
     private const string CommandLayoutKey = "command";
 
-    private bool _filterEnabled;
-    private bool _treeEnabled;
-    private bool _helpEnabled;
     private string _statusMessage = "";
-    private bool _uiBlocked = false;
+    private bool _inputBlocked = false;
 
-    private List<TagDataOperation> _visibleOperations = [];
+    private List<TagDataOperation> _operations = [];
 
-    public List<TagDataOperation> Operations { get; private set; } = [];
+    public IEnumerable<TagDataOperation> VisibleOperations =>
+        _operations.Where(x => !FilterEnabled || x.HasChanges);
+
+    public IEnumerable<TagDataOperation> SelectedOperations =>
+        VisibleOperations.Count(x => x.IsSelected) > 0 ? VisibleOperations.Where(x => x.IsSelected)
+        : FocusedOperation is not null ? new[] { FocusedOperation }
+        : Enumerable.Empty<TagDataOperation>();
 
     public int FocusedOperationIndex { get; set; }
 
     public TagDataOperation? FocusedOperation =>
-        _visibleOperations.ElementAtOrDefault(FocusedOperationIndex);
+        VisibleOperations.ElementAtOrDefault(FocusedOperationIndex);
 
     private CancellationTokenSource _cts = new();
+
+    private CancellationTokenSource? _currentCommandCts;
+    private Task? _currentCommandTask;
+
+    public bool TreeEnabled { get; set; }
+    public bool FilterEnabled { get; set; }
+    public bool HelpEnabled { get; set; }
 
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -53,7 +60,6 @@ public class TuiApp(
         _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
         BindHotkeys();
-        SetUiHandlers();
 
         if (!ValidateOptions(context))
         {
@@ -62,12 +68,10 @@ public class TuiApp(
 
         AltScreen.Enter();
 
-        Operations = _visibleOperations = audioFileScanner
+        _operations = audioFileScanner
             .ScanAndRead(settings.Path)
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
-
-        console.WriteLine(Operations.Count + " files found");
 
         var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
 
@@ -97,20 +101,7 @@ public class TuiApp(
                     {
                         if (userActionReader.TryRead(key, out var request))
                         {
-                            var command = commandFactory.Create(request.Name);
-                            if (command is null)
-                            {
-                                continue;
-                            }
-                            if (!_uiBlocked || command.GetType() == typeof(CancelCommand))
-                            {
-                                await commandDispatcher.DispatchAsync(
-                                    command,
-                                    this,
-                                    request,
-                                    _cts.Token
-                                );
-                            }
+                            await DispatchCommand(request);
                         }
                         ctx.UpdateTarget(DrawLayout());
                     }
@@ -144,7 +135,7 @@ public class TuiApp(
 
         var filesContentSize = Math.Min(
             (Console.WindowHeight - navigationSize) / 2,
-            _visibleOperations.Count + 2
+            VisibleOperations.Count() + 2
         );
 
         var layout = new Layout("root").SplitRows(
@@ -155,7 +146,7 @@ public class TuiApp(
             new Layout("status")
                 .Size(1)
                 .Update(
-                    new Markup($" {_statusMessage}{(_uiBlocked ? ". Press c to cancel." : "")}")
+                    new Markup($" {_statusMessage}{(_inputBlocked ? ". Press c to cancel." : "")}")
                 ),
             new Layout(CommandLayoutKey)
                 .Size(1)
@@ -169,18 +160,14 @@ public class TuiApp(
         FocusedOperationIndex = Math.Clamp(
             FocusedOperationIndex,
             0,
-            Math.Max(0, _visibleOperations.Count - 1)
+            Math.Max(0, VisibleOperations.Count() - 1)
         );
 
         IRenderable fileListContent =
-            _helpEnabled ? new HelpWidget()
-            : _treeEnabled
-                ? new TreeListWidget(
-                    _visibleOperations,
-                    FocusedOperationIndex,
-                    filesContentSize - 2
-                )
-            : new FileListWidget(_visibleOperations, FocusedOperationIndex, filesContentSize - 2);
+            HelpEnabled ? new HelpWidget()
+            : TreeEnabled
+                ? new TreeListWidget(VisibleOperations, FocusedOperation, filesContentSize - 2)
+            : new FileListWidget(VisibleOperations, FocusedOperationIndex, filesContentSize - 2);
 
         layout[FilesLayoutKey].Update(fileListContent);
 
@@ -220,7 +207,7 @@ public class TuiApp(
     private void Write()
     {
         console.Clear();
-        var operationsToWrite = _visibleOperations.Where(x => x.HasChanges).ToList();
+        var operationsToWrite = VisibleOperations.Where(x => x.HasChanges).ToList();
         console
             .Progress()
             .Start(ctx =>
@@ -255,23 +242,6 @@ public class TuiApp(
         return true;
     }
 
-    private void ToggleFilter()
-    {
-        _filterEnabled = !_filterEnabled;
-        _visibleOperations = Operations.Where(x => !_filterEnabled || x.HasChanges).ToList();
-        FocusedOperationIndex = 0;
-    }
-
-    private void ToggleTree()
-    {
-        _treeEnabled = !_treeEnabled;
-    }
-
-    private void ToggleHelp()
-    {
-        _helpEnabled = !_helpEnabled;
-    }
-
     private IRenderable RenderHeader()
     {
         var keys = new List<(string Key, string Action)> { ("q", "Quit"), ("h", "Help") };
@@ -297,96 +267,9 @@ public class TuiApp(
         }
     }
 
-    public void BlockUi()
-    {
-        _uiBlocked = true;
-    }
-
-    public void UnblockUi()
-    {
-        _uiBlocked = false;
-    }
-
-    private void SetUiHandlers()
-    {
-        _handlers = new()
-        {
-            [UiAction.MoveDown] = () =>
-            {
-                FocusedOperationIndex++;
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.MoveUp] = () =>
-            {
-                FocusedOperationIndex--;
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.ToggleTree] = () =>
-            {
-                ToggleTree();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.ToggleFilter] = () =>
-            {
-                ToggleFilter();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.ToggleHelp] = () =>
-            {
-                ToggleHelp();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.Undo] = () =>
-            {
-                Undo();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.Quit] = () =>
-            {
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.Write] = () =>
-            {
-                Write();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.WriteAlias] = () =>
-            {
-                Write();
-                return ValueTask.CompletedTask;
-            },
-
-            [UiAction.WriteAll] = () =>
-            {
-                Write();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.WriteAllAlias] = () =>
-            {
-                Write();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.Select] = () =>
-            {
-                Selection();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.ClearSelection] = () =>
-            {
-                ClearSelection();
-                return ValueTask.CompletedTask;
-            },
-            [UiAction.SelectAll] = () =>
-            {
-                SelectAll();
-                return ValueTask.CompletedTask;
-            },
-        };
-    }
-
     private void SelectAll()
     {
-        foreach (var operation in Operations)
+        foreach (var operation in VisibleOperations)
         {
             operation.IsSelected = true;
         }
@@ -394,18 +277,10 @@ public class TuiApp(
 
     private void ClearSelection()
     {
-        foreach (var operation in Operations)
+        foreach (var operation in _operations)
         {
             operation.IsSelected = false;
         }
-    }
-
-    private void Selection()
-    {
-        Operations[FocusedOperationIndex].IsSelected = !Operations[
-            FocusedOperationIndex
-        ].IsSelected;
-        FocusedOperationIndex++;
     }
 
     private void BindHotkeys()
@@ -414,14 +289,88 @@ public class TuiApp(
         hotkeys.Bind(ConsoleKey.J, "movedown");
         hotkeys.Bind(ConsoleKey.K, "moveup");
         hotkeys.Bind(ConsoleKey.Q, "quit");
-        hotkeys.Bind(ConsoleKey.T, UiAction.ToggleTree);
-        hotkeys.Bind(ConsoleKey.F, UiAction.ToggleFilter);
-        hotkeys.Bind(ConsoleKey.H, UiAction.ToggleHelp);
+        hotkeys.Bind(ConsoleKey.T, "toggletree");
+        hotkeys.Bind(ConsoleKey.F, "togglefilter");
+        hotkeys.Bind(ConsoleKey.H, "togglehelp");
         hotkeys.Bind(ConsoleKey.U, UiAction.Undo);
         hotkeys.Bind(ConsoleKey.Tab, UiAction.Select);
         hotkeys.Bind(ConsoleKey.V, UiAction.Select);
         hotkeys.Bind(ConsoleKey.Escape, UiAction.ClearSelection);
         hotkeys.Bind(ConsoleKey.A, UiAction.SelectAll);
         hotkeys.Bind(ConsoleKey.W, UiAction.Write);
+    }
+
+    private async Task DispatchCommand(Request request)
+    {
+        if (_inputBlocked && request.Name != "cancel")
+        {
+            return;
+        }
+
+        if (_currentCommandCts != null)
+        {
+            if (request.Name == "cancel")
+            {
+                Print("Cancelling...");
+                await _currentCommandCts.CancelAsync();
+            }
+            try
+            {
+                await _currentCommandTask!;
+            }
+            catch (OperationCanceledException)
+            {
+                // expected
+            }
+            _currentCommandCts.Dispose();
+        }
+
+        _currentCommandCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
+
+        var command = commandFactory.Create(request.Name);
+
+        if (command is not null)
+        {
+            if (command.BlockInput)
+            {
+                _inputBlocked = true;
+            }
+
+            _currentCommandTask = SafeExecuteAsync(
+                command.ExecuteAsync(this, request, _currentCommandCts.Token)
+            );
+        }
+        else
+        {
+            if (request.Name == "cancel")
+            {
+                Print("Canceled.");
+            }
+            else
+            {
+                Print("Command not found.");
+            }
+            _currentCommandTask = Task.CompletedTask;
+        }
+    }
+
+    private async Task SafeExecuteAsync(Task task)
+    {
+        try
+        {
+            await task;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            // todo log Exception
+        }
+        finally
+        {
+            _inputBlocked = false;
+        }
     }
 }

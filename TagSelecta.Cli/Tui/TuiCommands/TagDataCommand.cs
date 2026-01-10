@@ -3,21 +3,21 @@ namespace TagSelecta.Cli.Tui.TuiCommands;
 [TuiCommand("execute")]
 public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
 {
+    public bool BlockInput => true;
+
     public async Task ExecuteAsync(
         ITuiCommandContext context,
         Request request,
         CancellationToken token
     )
     {
-        context.BlockUi();
-
         await ActionBeforeProcess(request, token);
 
-        var total = context.Operations.Count(x => x.IsSelected);
+        var total = context.SelectedOperations.Count();
         int updated = 0;
 
         await Parallel.ForEachAsync(
-            context.Operations.Where(x => x.IsSelected),
+            context.SelectedOperations,
             token,
             async (operation, _) =>
             {
@@ -25,7 +25,7 @@ public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
 
                 try
                 {
-                    await ActionProcess(request, operation, context.Operations, token);
+                    await ActionProcess(request, operation, context.SelectedOperations, token);
                     operation.CheckForChanges();
                     var current = Interlocked.Increment(ref updated);
                     context.Print($"Updated {current} of {total} files.");
