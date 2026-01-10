@@ -2,15 +2,15 @@ using TagSelecta.App.Tui;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 
-namespace TagSelecta.App.CliCommands.Set;
+namespace TagSelecta.App.CliCommands.Edit;
 
-[TagDataAction("set", "s")]
-public class SetAction : TagDataAction<SetSettings>
+[TagDataAction("edit", "e")]
+public class EditAction : TagDataAction<EditSettings>
 {
     protected override void ProcessTagData(
         IFileContext current,
         IEnumerable<IFileContext> files,
-        SetSettings settings
+        EditSettings settings
     )
     {
         var tagData = current.CurrentTagData;
@@ -82,7 +82,7 @@ public class SetAction : TagDataAction<SetSettings>
 
         return;
 
-        void Write(Func<SetSettings, string?> get, Action<string> set)
+        void Write(Func<EditSettings, string?> get, Action<string> set)
         {
             var value = get(settings);
             if (value is null)

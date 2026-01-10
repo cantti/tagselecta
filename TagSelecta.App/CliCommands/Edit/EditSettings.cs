@@ -2,9 +2,9 @@ using System.ComponentModel;
 using Spectre.Console.Cli;
 using TagSelecta.App.Tui.TuiCommands;
 
-namespace TagSelecta.App.CliCommands.Set;
+namespace TagSelecta.App.CliCommands.Edit;
 
-public class SetSettings : BaseSettings
+public class EditSettings : BaseSettings
 {
     [CommandOption($"--{Fields.Album}|-l")]
     [Description("Album name.")]
@@ -136,7 +136,7 @@ public class SetSettings : BaseSettings
         Title = args.FirstOrDefault(x => x.Key == Fields.Title || x.Key == "t")?.Value;
         Track = args.FirstOrDefault(x => x.Key == Fields.Track || x.Key == "n")?.Value;
         TrackTotal = args.FirstOrDefault(x => x.Key == Fields.TrackTotal || x.Key == "N")?.Value;
-        Set = args.Where(x => x.Key == "set").Select(x => $"{x.Key}={x.Value}").ToArray();
+        Set = args.Where(x => x.Key == "set").Select(x => x.Value).ToArray();
         ClearCustom = args.Any(x => x.Key == "clearcustom");
         // todo
         // Picture =

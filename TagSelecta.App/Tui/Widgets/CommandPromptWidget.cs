@@ -11,12 +11,17 @@ public class CommandPromptWidget(string text, int cursorPos) : Renderable
         cols.Add(new Text(":"));
         for (var i = 0; i < text.Length; i++)
         {
-            cols.Add(
-                new Text(
-                    text[i].ToString(),
-                    new Style(decoration: i == cursorPos ? Decoration.Invert : Decoration.None)
-                )
-            );
+            var characterString = text[i].ToString();
+            Style style = new Style();
+            if (i == cursorPos)
+            {
+                style = new Style(decoration: i == cursorPos ? Decoration.Invert : Decoration.None);
+            }
+            else if (characterString == "=")
+            {
+                style = new Style(Color.Blue);
+            }
+            cols.Add(new Text(characterString, style));
         }
         if (text.Length == cursorPos)
         {
