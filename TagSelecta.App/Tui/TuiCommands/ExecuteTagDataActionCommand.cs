@@ -23,18 +23,16 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         await ActionBeforeProcess(action, request, token);
 
-        var total = context.SelectedOperations.Count();
+        var selectedOperationsList = context.SelectedOperations.ToList();
 
-        for (int i = 0; i < context.SelectedOperations.Count(); i++)
+        for (int i = 0; i < selectedOperationsList.Count; i++)
         {
-            var operation = context.SelectedOperations.ElementAt(i);
-            // todo remove
-            // await Task.Delay(TimeSpan.FromSeconds(3), token);
+            var operation = selectedOperationsList[i];
             try
             {
-                await ActionProcess(action, request, operation, context.SelectedOperations, token);
+                await ActionProcess(action, request, operation, selectedOperationsList, token);
                 operation.CheckForChanges();
-                context.Print($"Updated {i + 1} of {total} files.");
+                context.Print($"Updated {i + 1} of {selectedOperationsList.Count} files.");
             }
             catch (Exception ex)
             {
