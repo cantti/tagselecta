@@ -1,4 +1,4 @@
-using TagSelecta.Cli.CliCommands.TitleCase;
+using TagSelecta.App.CliCommands.TitleCase;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;

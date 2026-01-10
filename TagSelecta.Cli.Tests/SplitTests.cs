@@ -1,4 +1,4 @@
-using TagSelecta.Cli.CliCommands.Split;
+using TagSelecta.App.CliCommands.Split;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;

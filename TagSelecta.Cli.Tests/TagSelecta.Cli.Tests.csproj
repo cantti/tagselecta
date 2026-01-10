@@ -27,6 +27,6 @@
     <RemoveDir Directories="$(OutDir)TestData" />
   </Target>
   <ItemGroup>
-    <ProjectReference Include="..\TagSelecta.Cli\TagSelecta.Cli.csproj" />
+    <ProjectReference Include="..\TagSelecta.App\TagSelecta.App.csproj" />
   </ItemGroup>
 </Project>

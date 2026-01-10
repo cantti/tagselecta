@@ -1,4 +1,4 @@
-using TagSelecta.Cli.CliCommands.AutoTrack;
+using TagSelecta.App.CliCommands.AutoTrack;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
