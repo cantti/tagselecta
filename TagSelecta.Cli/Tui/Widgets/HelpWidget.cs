@@ -11,10 +11,13 @@ public class HelpWidget : Renderable
 
         var keys = new List<(string Key, string Action)>
         {
-            ("t", "Toggle tree"),
-            ("f", "Toggle filter"),
+            ("space, tab", "Select"),
+            ("escape", "Clear selection"),
+            ("a, *", "Select All"),
             ("j, move down", "Move down"),
             ("k, move up", "Move up"),
+            ("t", "Toggle tree"),
+            ("f", "Toggle filter"),
             ("u", "Undo. Only if not written!"),
             (":w", "Write"),
             (":wa", "Write all"),

@@ -27,13 +27,13 @@ public class TuiApp(
 
     private string _statusMessage = "";
 
-    private List<TagDataOperation> _operations = [];
+    public IEnumerable<TagDataOperation> Operations { get; private set; } = [];
 
     public IEnumerable<TagDataOperation> VisibleOperations =>
-        _operations.Where(x => !FilterEnabled || x.HasChanges);
+        Operations.Where(x => !FilterEnabled || x.HasChanges);
 
     public IEnumerable<TagDataOperation> SelectedOperations =>
-        VisibleOperations.Count(x => x.IsSelected) > 0 ? VisibleOperations.Where(x => x.IsSelected)
+        VisibleOperations.Any(x => x.IsSelected) ? VisibleOperations.Where(x => x.IsSelected)
         : FocusedOperation is not null ? new[] { FocusedOperation }
         : Enumerable.Empty<TagDataOperation>();
 
@@ -68,7 +68,7 @@ public class TuiApp(
 
         AltScreen.Enter();
 
-        _operations = audioFileScanner
+        Operations = audioFileScanner
             .ScanAndRead(settings.Path)
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
@@ -274,16 +274,19 @@ public class TuiApp(
     {
         hotkeys.Bind(ConsoleKey.Escape, "clearselection");
         hotkeys.Bind(ConsoleKey.J, "movedown");
+        hotkeys.Bind(ConsoleKey.DownArrow, "movedown");
         hotkeys.Bind(ConsoleKey.K, "moveup");
+        hotkeys.Bind(ConsoleKey.UpArrow, "moveup");
         hotkeys.Bind(ConsoleKey.Q, "quit");
         hotkeys.Bind(ConsoleKey.T, "toggletree");
         hotkeys.Bind(ConsoleKey.F, "togglefilter");
         hotkeys.Bind(ConsoleKey.H, "togglehelp");
-        hotkeys.Bind(ConsoleKey.U, UiAction.Undo);
-        hotkeys.Bind(ConsoleKey.Tab, UiAction.Select);
-        hotkeys.Bind(ConsoleKey.V, UiAction.Select);
-        hotkeys.Bind(ConsoleKey.A, UiAction.SelectAll);
-        hotkeys.Bind(ConsoleKey.W, UiAction.Write);
+        hotkeys.Bind(ConsoleKey.U, "undo");
+        hotkeys.Bind(ConsoleKey.Tab, "select");
+        hotkeys.Bind(ConsoleKey.Spacebar, "select");
+        hotkeys.Bind(ConsoleKey.A, "selectall");
+        hotkeys.Bind(ConsoleKey.Multiply, "selectall");
+        hotkeys.Bind(ConsoleKey.W, "write");
     }
 
     private async Task WaitCurrentCommand(bool isCancelRequest)
