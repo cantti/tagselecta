@@ -24,7 +24,9 @@ public class TuiCommandFactory : ITuiCommandFactory
         var command = _commands.FirstOrDefault(c => c.Names.Contains(name));
         if (command == default)
         {
-            command = _commands.SingleOrDefault(c => c.command.GetType() == typeof(TagDataCommand));
+            command = _commands.SingleOrDefault(c =>
+                c.command.GetType() == typeof(ExecuteTagDataActionCommand)
+            );
         }
         return command.command;
     }

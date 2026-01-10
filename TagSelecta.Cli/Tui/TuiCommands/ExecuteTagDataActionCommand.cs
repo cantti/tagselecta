@@ -1,17 +1,25 @@
 namespace TagSelecta.Cli.Tui.TuiCommands;
 
 [TuiCommand("execute")]
-public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
+public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : ITuiCommand
 {
-    public bool BlockInput => true;
-
     public async Task ExecuteAsync(
         ITuiCommandContext context,
         Request request,
         CancellationToken token
     )
     {
-        await ActionBeforeProcess(request, token);
+        var action = actionFactory.Create(request.Name);
+
+        if (action is null)
+        {
+            context.Print($"No action found with name {request.Name}");
+            return;
+        }
+
+        context.Print($"Starting {request.Name} action..");
+
+        await ActionBeforeProcess(action, request, token);
 
         var total = context.SelectedOperations.Count();
         int updated = 0;
@@ -22,10 +30,16 @@ public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
             async (operation, _) =>
             {
                 // todo remove
-                // await Task.Delay(TimeSpan.FromSeconds(3), token);
+                await Task.Delay(TimeSpan.FromSeconds(3), token);
                 try
                 {
-                    await ActionProcess(request, operation, context.SelectedOperations, token);
+                    await ActionProcess(
+                        action,
+                        request,
+                        operation,
+                        context.SelectedOperations,
+                        token
+                    );
                     operation.CheckForChanges();
                     var current = Interlocked.Increment(ref updated);
                     context.Print($"Updated {current} of {total} files.");
@@ -38,21 +52,24 @@ public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
         );
     }
 
-    private async Task ActionBeforeProcess(Request request, CancellationToken token)
+    private async Task ActionBeforeProcess(
+        ITagDataAction action,
+        Request request,
+        CancellationToken token
+    )
     {
-        var action = actionFactory.Create(request.Name);
         var baseSettings = CreateSettings(action, request.Args);
         await action.BeforeProcessTagDataAsync(baseSettings, token);
     }
 
     private async Task ActionProcess(
+        ITagDataAction action,
         Request request,
         IFileContext current,
         IEnumerable<IFileContext> files,
         CancellationToken token
     )
     {
-        var action = actionFactory.Create(request.Name);
         var baseSettings = CreateSettings(action, request.Args);
         await action.ProcessTagDataAsync(current, files, baseSettings, token);
     }

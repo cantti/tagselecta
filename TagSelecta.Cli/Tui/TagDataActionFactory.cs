@@ -20,14 +20,9 @@ public sealed class TagDataActionFactory : ITagDataActionFactory
         }
     }
 
-    public ITagDataAction Create(string name)
+    public ITagDataAction? Create(string name)
     {
-        foreach (var (names, factory) in _factories)
-        {
-            if (names.Contains(name))
-                return factory();
-        }
-
-        throw new InvalidOperationException($"Unknown action '{name}'");
+        var factory = _factories.SingleOrDefault(f => f.Names.Contains(name));
+        return factory.Factory?.Invoke();
     }
 }

@@ -26,7 +26,6 @@ public class TuiApp(
     private const string StatusLayoutKey = "status";
 
     private string _statusMessage = "";
-    private bool _inputBlocked = false;
 
     private List<TagDataOperation> _operations = [];
 
@@ -46,7 +45,7 @@ public class TuiApp(
     private CancellationTokenSource _cts = new();
 
     private CancellationTokenSource? _currentCommandCts;
-    private Task? _currentCommandTask;
+    private Task _currentCommandTask = Task.CompletedTask;
 
     public bool TreeEnabled { get; set; }
     public bool FilterEnabled { get; set; }
@@ -120,7 +119,10 @@ public class TuiApp(
                 while (true)
                 {
                     var key = Console.ReadKey(intercept: true);
-                    channel.Writer.TryWrite(key);
+                    if (_currentCommandTask.IsCompleted || key.Key == ConsoleKey.Escape)
+                    {
+                        channel.Writer.TryWrite(key);
+                    }
                 }
             }
             catch
@@ -162,9 +164,7 @@ public class TuiApp(
                     )
                 ),
             new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
-            new Layout(StatusLayoutKey)
-                .Size(1)
-                .Update(new StatusWidget(_statusMessage, _inputBlocked)),
+            new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)),
             new Layout(CommandLayoutKey)
                 .Size(1)
                 .Update(
@@ -270,25 +270,9 @@ public class TuiApp(
         }
     }
 
-    private void SelectAll()
-    {
-        foreach (var operation in VisibleOperations)
-        {
-            operation.IsSelected = true;
-        }
-    }
-
-    private void ClearSelection()
-    {
-        foreach (var operation in _operations)
-        {
-            operation.IsSelected = false;
-        }
-    }
-
     private void BindHotkeys()
     {
-        hotkeys.Bind(ConsoleKey.C, "cancel");
+        hotkeys.Bind(ConsoleKey.Escape, "clearselection");
         hotkeys.Bind(ConsoleKey.J, "movedown");
         hotkeys.Bind(ConsoleKey.K, "moveup");
         hotkeys.Bind(ConsoleKey.Q, "quit");
@@ -298,34 +282,45 @@ public class TuiApp(
         hotkeys.Bind(ConsoleKey.U, UiAction.Undo);
         hotkeys.Bind(ConsoleKey.Tab, UiAction.Select);
         hotkeys.Bind(ConsoleKey.V, UiAction.Select);
-        hotkeys.Bind(ConsoleKey.Escape, UiAction.ClearSelection);
         hotkeys.Bind(ConsoleKey.A, UiAction.SelectAll);
         hotkeys.Bind(ConsoleKey.W, UiAction.Write);
     }
 
-    private async Task DispatchCommand(Request request)
+    private async Task WaitCurrentCommand(bool isCancelRequest)
     {
-        if (_inputBlocked && request.Name != "cancel")
+        if (_currentCommandCts is null)
         {
             return;
         }
-
-        if (_currentCommandCts != null)
+        if (isCancelRequest)
         {
-            if (request.Name == "cancel")
-            {
-                Print("Cancelling...");
-                await _currentCommandCts.CancelAsync();
-            }
-            try
-            {
-                await _currentCommandTask!;
-            }
-            catch (OperationCanceledException)
-            {
-                // expected
-            }
-            _currentCommandCts.Dispose();
+            Print("Cancelling...");
+            await _currentCommandCts.CancelAsync();
+        }
+        try
+        {
+            await _currentCommandTask;
+        }
+        catch (OperationCanceledException)
+        {
+            // expected
+        }
+        if (isCancelRequest)
+        {
+            Print("Cancelled.");
+        }
+        _currentCommandCts.Dispose();
+    }
+
+    private async Task DispatchCommand(Request request)
+    {
+        var isCancelRequest = request.Name == "cancel";
+
+        await WaitCurrentCommand(isCancelRequest);
+
+        if (isCancelRequest)
+        {
+            return;
         }
 
         _currentCommandCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
@@ -334,31 +329,15 @@ public class TuiApp(
 
         if (command is not null)
         {
-            if (command.BlockInput)
-            {
-                _inputBlocked = true;
-            }
-
-            _currentCommandTask = SafeExecuteAsync(
+            _currentCommandTask = ExecuteCommand(
                 command.ExecuteAsync(this, request, _currentCommandCts.Token)
             );
         }
-        else
-        {
-            if (request.Name == "cancel")
-            {
-                Print("Canceled.");
-            }
-            else
-            {
-                Print("Command not found.");
-            }
-            _currentCommandTask = Task.CompletedTask;
-        }
     }
 
-    private async Task SafeExecuteAsync(Task task)
+    private async Task ExecuteCommand(Task task)
     {
+        hotkeys.Bind(ConsoleKey.Escape, "cancel");
         try
         {
             await task;
@@ -373,7 +352,7 @@ public class TuiApp(
         }
         finally
         {
-            _inputBlocked = false;
+            hotkeys.Bind(ConsoleKey.Escape, "clearselection");
         }
     }
 }
