@@ -22,34 +22,23 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         await ActionBeforeProcess(action, request, token);
 
         var total = context.SelectedOperations.Count();
-        int updated = 0;
 
-        await Parallel.ForEachAsync(
-            context.SelectedOperations,
-            token,
-            async (operation, _) =>
+        for (int i = 0; i < context.SelectedOperations.Count(); i++)
+        {
+            var operation = context.SelectedOperations.ElementAt(i);
+            // todo remove
+            // await Task.Delay(TimeSpan.FromSeconds(3), token);
+            try
             {
-                // todo remove
-                await Task.Delay(TimeSpan.FromSeconds(3), token);
-                try
-                {
-                    await ActionProcess(
-                        action,
-                        request,
-                        operation,
-                        context.SelectedOperations,
-                        token
-                    );
-                    operation.CheckForChanges();
-                    var current = Interlocked.Increment(ref updated);
-                    context.Print($"Updated {current} of {total} files.");
-                }
-                catch (Exception ex)
-                {
-                    operation.MarkError(ex);
-                }
+                await ActionProcess(action, request, operation, context.SelectedOperations, token);
+                operation.CheckForChanges();
+                context.Print($"Updated {i} of {total} files.");
             }
-        );
+            catch (Exception ex)
+            {
+                operation.MarkError(ex);
+            }
+        }
     }
 
     private async Task ActionBeforeProcess(

@@ -1,4 +1,4 @@
-using TagSelecta.Cli.Commands.Set;
+using TagSelecta.Cli.CliCommands.Set;
 using TagSelecta.Shared;
 using TagSelecta.Tagging;
 

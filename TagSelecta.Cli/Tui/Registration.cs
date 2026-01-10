@@ -24,6 +24,8 @@ public static class Registration
         services.AddTransient<ITuiCommand, ToggleTreeCommand>();
         services.AddTransient<ITuiCommand, ToggleFilterCommand>();
         services.AddTransient<ITuiCommand, ToggleHelpCommand>();
+        services.AddTransient<ITuiCommand, WriteCommand>();
+        services.AddTransient<ITuiCommand, UndoCommand>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
     }
 }

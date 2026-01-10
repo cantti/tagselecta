@@ -12,10 +12,8 @@ namespace TagSelecta.Cli.Tui;
 public class TuiApp(
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITagger tagger,
     HotkeyMap hotkeys,
     IUserActionReader userActionReader,
-    IFileSystem fs,
     ITuiCommandFactory commandFactory
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
@@ -200,31 +198,6 @@ public class TuiApp(
             }
         }
         return layout;
-    }
-
-    private void Undo()
-    {
-        FocusedOperation?.Undo();
-    }
-
-    private void Write()
-    {
-        console.Clear();
-        var operationsToWrite = VisibleOperations.Where(x => x.HasChanges).ToList();
-        console
-            .Progress()
-            .Start(ctx =>
-            {
-                var task = ctx.AddTask("Writing metadata...", maxValue: operationsToWrite.Count);
-                for (var i = 0; i < operationsToWrite.Count; i++)
-                {
-                    var operation = operationsToWrite[i];
-                    operation.Write(tagger, fs);
-                    task.Description =
-                        $"Writing metadata {i + 1} of {operationsToWrite.Count}({operation.CurrentPath.EscapeMarkup()})";
-                    task.Increment(1);
-                }
-            });
     }
 
     private bool ValidateOptions(CommandContext context)
