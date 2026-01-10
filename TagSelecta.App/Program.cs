@@ -32,7 +32,7 @@ class Program
         app.Configure(config =>
         {
             config.PropagateExceptions();
-            config.AddCommand<TuiApp>("edit").WithAlias("e");
+            config.AddCommand<TuiApp>("ui");
             AddCommands(config, services);
             config.SetApplicationVersion(GetAppVersion());
         });

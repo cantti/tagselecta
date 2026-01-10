@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic.CompilerServices;
+
 namespace TagSelecta.App.Tui.TuiCommands;
 
 [TuiCommand("execute")]

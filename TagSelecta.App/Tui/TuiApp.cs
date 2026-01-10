@@ -322,9 +322,9 @@ public class TuiApp(
         {
             throw;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // todo log Exception
+            Print(ex.Message);
         }
         finally
         {
