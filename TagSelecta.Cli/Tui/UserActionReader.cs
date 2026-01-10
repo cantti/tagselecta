@@ -10,6 +10,10 @@ public class UserActionReader : IUserActionReader
     private readonly CommandParser _parser;
 
     private readonly StringBuilder _buffer = new();
+    private readonly List<string> _history = [];
+
+    // -1 = not navigating history
+    private int _historyIndex = -1;
 
     public UserActionReader(HotkeyMap hotkeys, CommandParser parser)
     {
@@ -21,11 +25,13 @@ public class UserActionReader : IUserActionReader
     {
         var handleResult =
             Mode == InputMode.Normal ? HandleNormalMode(key) : HandleCommandMode(key);
+
         if (handleResult != null)
         {
             request = handleResult;
             return true;
         }
+
         request = new Request("", []);
         return false;
     }
@@ -49,13 +55,13 @@ public class UserActionReader : IUserActionReader
         switch (key.Key)
         {
             case ConsoleKey.Escape:
-                ExitCommandMode();
+                ExitCommandMode(addToHistory: false);
                 return null;
 
             case ConsoleKey.Enter:
                 var text = _buffer.ToString();
-                ExitCommandMode();
-                return _parser.TryParse(text, out var request) ? request : default;
+                ExitCommandMode(addToHistory: true, text);
+                return _parser.TryParse(text, out var request) ? request : null;
 
             case ConsoleKey.LeftArrow:
                 if (CursorPos > 0)
@@ -85,14 +91,22 @@ public class UserActionReader : IUserActionReader
 
             case ConsoleKey.Delete:
                 if (CursorPos < _buffer.Length)
-                {
                     _buffer.Remove(CursorPos, 1);
-                }
+                return null;
+
+            case ConsoleKey.UpArrow:
+                NavigateHistoryUp();
+                return null;
+
+            case ConsoleKey.DownArrow:
+                NavigateHistoryDown();
                 return null;
         }
 
+        // typing resets history navigation
         if (!char.IsControl(key.KeyChar))
         {
+            _historyIndex = -1;
             _buffer.Insert(CursorPos, key.KeyChar);
             CursorPos++;
         }
@@ -100,16 +114,58 @@ public class UserActionReader : IUserActionReader
         return null;
     }
 
-    private void ExitCommandMode()
+    private void NavigateHistoryUp()
+    {
+        if (_history.Count == 0)
+            return;
+
+        if (_historyIndex == -1)
+            _historyIndex = _history.Count - 1;
+        else if (_historyIndex > 0)
+            _historyIndex--;
+
+        LoadHistoryEntry();
+    }
+
+    private void NavigateHistoryDown()
+    {
+        if (_historyIndex == -1)
+            return;
+
+        if (_historyIndex < _history.Count - 1)
+        {
+            _historyIndex++;
+            LoadHistoryEntry();
+        }
+        else
+        {
+            // past newest => empty input
+            _historyIndex = -1;
+            _buffer.Clear();
+            CursorPos = 0;
+        }
+    }
+
+    private void LoadHistoryEntry()
+    {
+        _buffer.Clear();
+        _buffer.Append(_history[_historyIndex]);
+        CursorPos = _buffer.Length;
+    }
+
+    private void ExitCommandMode(bool addToHistory, string? text = null)
     {
         Mode = InputMode.Normal;
+
+        if (addToHistory && !string.IsNullOrWhiteSpace(text))
+            _history.Add(text);
+
+        _historyIndex = -1;
         _buffer.Clear();
         CursorPos = 0;
     }
 
     public string Text => _buffer.ToString();
-
     public int CursorPos { get; private set; }
-
     public InputMode Mode { get; private set; } = InputMode.Normal;
 }

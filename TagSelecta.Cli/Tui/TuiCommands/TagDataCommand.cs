@@ -21,8 +21,8 @@ public class TagDataCommand(ITagDataActionFactory actionFactory) : ITuiCommand
             token,
             async (operation, _) =>
             {
-                await Task.Delay(TimeSpan.FromSeconds(3), token);
-
+                // todo remove
+                // await Task.Delay(TimeSpan.FromSeconds(3), token);
                 try
                 {
                     await ActionProcess(request, operation, context.SelectedOperations, token);
