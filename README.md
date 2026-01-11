@@ -2,7 +2,7 @@
 
 TagSelecta is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).
 
-https://github.com/user-attachments/assets/2b540004-5563-4b5c-ae78-f55f6508fda0
+https://github.com/user-attachments/assets/650ab503-4d2a-4dbb-9739-d78f781e2a61
 
 This tool is under active development and primarily built for personal use.
 However, if you need additional features - for example, support for new tag types - feel free to open an [open an issue](https://github.com/cantti/audio-tag-helper/issues).
