@@ -23,7 +23,11 @@ public class RenameFileSettings : TagDataActionSettings
     public override void ParseTuiArgs(IEnumerable<TagDataActionArg> args)
     {
         Template =
-            args.FirstOrDefault(x => x.Key == "template" || x.Key == "t" || x.Key == "arg0")?.Value
+            args.FirstOrDefault(x => x.Key is "template" or "t" or "0")?.Value
             ?? throw new InvalidOperationException("Template is required.");
+        if (string.IsNullOrWhiteSpace(Template))
+        {
+            throw new InvalidOperationException("Template is required.");
+        }
     }
 }

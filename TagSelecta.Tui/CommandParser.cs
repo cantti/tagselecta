@@ -31,11 +31,12 @@ public sealed class CommandParser
             {
                 var key = part[..eq];
                 var value = part[(eq + 1)..];
-                args.Add(new TagDataActionArg(key, value));
+                args.Add(new TagDataActionArg(key, value, false));
             }
             else
             {
-                args.Add(new TagDataActionArg($"arg{positionalIndex++}", part));
+                args.Add(new TagDataActionArg(positionalIndex.ToString(), part, true));
+                positionalIndex++;
             }
         }
 

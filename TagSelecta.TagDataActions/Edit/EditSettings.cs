@@ -114,33 +114,109 @@ public class EditSettings : TagDataActionSettings
     [Description("Clear all other pictures")]
     public bool ClearPicture { get; set; }
 
+    private static string NormalizeKey(string key) =>
+        key switch
+        {
+            "l" => Fields.Album,
+            "A" => Fields.AlbumArtist,
+            "a" => Fields.Artist,
+            "c" => Fields.Comment,
+            "y" => Fields.Date,
+            "d" => Fields.Disc,
+            "D" => Fields.DiscTotal,
+            "g" => Fields.Genre,
+            "t" => Fields.Title,
+            "n" => Fields.Track,
+            "N" => Fields.TrackTotal,
+            _ => key,
+        };
+
     public override void ParseTuiArgs(IEnumerable<TagDataActionArg> args)
     {
-        Album = args.FirstOrDefault(x => x.Key == Fields.Album || x.Key == "l")?.Value;
-        AlbumArtist = args.FirstOrDefault(x => x.Key == Fields.AlbumArtist || x.Key == "A")?.Value;
-        Artist = args.FirstOrDefault(x => x.Key == Fields.Artist || x.Key == "a")?.Value;
-        Bpm = args.FirstOrDefault(x => x.Key == Fields.Bpm)?.Value;
-        CatalogNumber = args.FirstOrDefault(x => x.Key == Fields.CatalogNumber)?.Value;
-        Comment = args.FirstOrDefault(x => x.Key == Fields.Comment || x.Key == "c")?.Value;
-        Composer = args.FirstOrDefault(x => x.Key == Fields.Composer || x.Key == "C")?.Value;
-        Conductor = args.FirstOrDefault(x => x.Key == Fields.Conductor)?.Value;
-        Copyright = args.FirstOrDefault(x => x.Key == Fields.Copyright)?.Value;
-        Date = args.FirstOrDefault(x => x.Key == Fields.Date || x.Key == "y")?.Value;
-        Disc = args.FirstOrDefault(x => x.Key == Fields.Disc || x.Key == "d")?.Value;
-        DiscTotal = args.FirstOrDefault(x => x.Key == Fields.DiscTotal || x.Key == "D")?.Value;
-        DiscogsReleaseId = args.FirstOrDefault(x => x.Key == Fields.DiscogsReleaseId)?.Value;
-        Genre = args.FirstOrDefault(x => x.Key == Fields.Genre || x.Key == "g")?.Value;
-        Isrc = args.FirstOrDefault(x => x.Key == Fields.Isrc)?.Value;
-        Label = args.FirstOrDefault(x => x.Key == Fields.Label)?.Value;
-        Publisher = args.FirstOrDefault(x => x.Key == Fields.Publisher)?.Value;
-        Title = args.FirstOrDefault(x => x.Key == Fields.Title || x.Key == "t")?.Value;
-        Track = args.FirstOrDefault(x => x.Key == Fields.Track || x.Key == "n")?.Value;
-        TrackTotal = args.FirstOrDefault(x => x.Key == Fields.TrackTotal || x.Key == "N")?.Value;
-        Set = args.Where(x => x.Key == "set").Select(x => x.Value).ToArray();
-        ClearCustom = args.Any(x => x.Key.StartsWith("arg") && x.Value == "clearcustom");
-        // todo
-        // Picture =
-        // PictureType =
-        // ClearPicture =
+        var argLookup = args.GroupBy(a => NormalizeKey(a.Key))
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        string? TakeSingle(string key)
+        {
+            if (!argLookup.TryGetValue(key, out var list) || list.Count == 0)
+            {
+                return null;
+            }
+
+            var value = list[0].Value;
+            list.RemoveAt(0);
+
+            if (list.Count == 0)
+            {
+                argLookup.Remove(key);
+            }
+
+            return value;
+        }
+
+        string[]? TakeAll(string key)
+        {
+            if (!argLookup.Remove(key, out var list))
+            {
+                return null;
+            }
+
+            return list.Select(x => x.Value).ToArray();
+        }
+
+        bool TakeAny(Func<TagDataActionArg, bool> predicate)
+        {
+            bool found = false;
+
+            foreach (var kvp in argLookup.ToList())
+            {
+                var matched = kvp.Value.Where(predicate).ToList();
+                if (matched.Count == 0)
+                    continue;
+
+                found = true;
+                foreach (var m in matched)
+                    kvp.Value.Remove(m);
+
+                if (kvp.Value.Count == 0)
+                    argLookup.Remove(kvp.Key);
+            }
+
+            return found;
+        }
+
+        // 3. Parse known arguments
+
+        Album = TakeSingle(Fields.Album);
+        AlbumArtist = TakeSingle(Fields.AlbumArtist);
+        Artist = TakeSingle(Fields.Artist);
+        Bpm = TakeSingle(Fields.Bpm);
+        CatalogNumber = TakeSingle(Fields.CatalogNumber);
+        Comment = TakeSingle(Fields.Comment);
+        Composer = TakeSingle(Fields.Composer);
+        Conductor = TakeSingle(Fields.Conductor);
+        Copyright = TakeSingle(Fields.Copyright);
+        Date = TakeSingle(Fields.Date);
+        Disc = TakeSingle(Fields.Disc);
+        DiscTotal = TakeSingle(Fields.DiscTotal);
+        DiscogsReleaseId = TakeSingle(Fields.DiscogsReleaseId);
+        Genre = TakeSingle(Fields.Genre);
+        Isrc = TakeSingle(Fields.Isrc);
+        Label = TakeSingle(Fields.Label);
+        Publisher = TakeSingle(Fields.Publisher);
+        Title = TakeSingle(Fields.Title);
+        Track = TakeSingle(Fields.Track);
+        TrackTotal = TakeSingle(Fields.TrackTotal);
+
+        Set = TakeAll("set");
+
+        ClearCustom = TakeSingle("clearcustom") == "true";
+
+        var unmappedArgs = argLookup.SelectMany(kvp => kvp.Value).ToList();
+
+        if (unmappedArgs.Count > 0)
+        {
+            throw new InvalidOperationException("Unknown arguments");
+        }
     }
 }
