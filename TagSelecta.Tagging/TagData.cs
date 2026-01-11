@@ -1,5 +1,3 @@
-using TagSelecta.Shared;
-
 namespace TagSelecta.Tagging;
 
 public class TagData

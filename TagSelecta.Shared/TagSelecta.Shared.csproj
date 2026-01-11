@@ -5,4 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
+  </ItemGroup>
 </Project>

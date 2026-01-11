@@ -1,8 +1,8 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-using TagSelecta.App.CliCommands.ExecuteTagDataAction;
-using TagSelecta.App.Shared;
-using TagSelecta.App.Tui;
+using TagSelecta.CliCommands.ExecuteTagDataAction;
+using TagSelecta.Shared.TagDataActions;
 
 namespace TagSelecta.App;
 
@@ -10,11 +10,15 @@ public static class CommandConfiguratorExtensions
 {
     public static ICommandConfigurator AddTagDataAction<TAction>(
         this IConfigurator configurator,
-        IServiceCollection services,
-        string name
+        IServiceCollection services
     )
         where TAction : ITagDataAction
     {
+        // find TagDataActionAttribute
+        var attr =
+            typeof(TAction).GetCustomAttribute<TagDataActionNameAttribute>()
+            ?? throw new InvalidOperationException("TagDataActionAttribute not found");
+
         // extract TSettings from TAction
         var settingsType = GetSettingsTypeFromAction(typeof(TAction));
 
@@ -39,8 +43,16 @@ public static class CommandConfiguratorExtensions
             );
 
         // call
-        return (ICommandConfigurator)
-            addCommandMethod.MakeGenericMethod(commandType).Invoke(configurator, [name])!;
+        var commandConfigurator = (ICommandConfigurator)
+            addCommandMethod.MakeGenericMethod(commandType).Invoke(configurator, [attr.Name])!;
+
+        // add alias
+        if (!string.IsNullOrWhiteSpace(attr.Alias))
+        {
+            commandConfigurator.WithAlias(attr.Alias);
+        }
+
+        return commandConfigurator;
     }
 
     private static Type GetSettingsTypeFromAction(Type? actionType)

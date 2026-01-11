@@ -1,5 +1,5 @@
-using TagSelecta.App.TagDataActions.Edit;
-using TagSelecta.Shared;
+using TagSelecta.Shared.TagDataActions;
+using TagSelecta.TagDataActions.Edit;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
@@ -65,10 +65,10 @@ public class EditTests
 
         tagData.SetCustomField("original_field", "original_value");
 
-        var item = new IFileContext("file.mp3", tagData);
+        var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
-        await action.ProcessTagDataAsync(item, [item], settings);
+        await action.ProcessTagDataAsync(item, [item], settings, CancellationToken.None);
 
         // Assert
         Assert.Equal(settings.Album, tagData.Album);

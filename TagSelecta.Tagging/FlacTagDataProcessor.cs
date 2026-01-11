@@ -1,6 +1,5 @@
 using TagLib.Flac;
 using TagLib.Ogg;
-using TagSelecta.Shared;
 
 namespace TagSelecta.Tagging;
 
