@@ -155,11 +155,7 @@ public class TuiApp(
                             FocusedOperation,
                             filesContentSize - 2
                         )
-                    : new FileListWidget(
-                        VisibleOperations,
-                        FocusedOperationIndex,
-                        filesContentSize - 2
-                    )
+                    : new FileListWidget(VisibleOperations, FocusedOperation, filesContentSize - 2)
                 ),
             new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
             new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)),

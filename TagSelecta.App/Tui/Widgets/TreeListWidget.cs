@@ -28,8 +28,8 @@ public class TreeListWidget(
         var treeLines = BuildTreeLines();
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var selectedIndexInTree = treeLines.FindIndex(x => x.Operation == focusedOperation);
-        var windowStart = selectedIndexInTree - (windowSize / 2);
+        var focusedIndex = treeLines.FindIndex(x => x.Operation == focusedOperation);
+        var windowStart = focusedIndex - (windowSize / 2);
 
         // clamp so we dont go before 0 or past the last possible full window start
         var maxStart = Math.Max(0, treeLines.Count - windowSize);
@@ -43,15 +43,7 @@ public class TreeListWidget(
         {
             var itemIndex = windowStart + i;
             var treeLine = treeLines[itemIndex];
-            items.Add(
-                new Markup(
-                    treeLine.Markup,
-                    new Style(
-                        null,
-                        treeLine.Operation == focusedOperation ? Color.Gray : Color.Default
-                    )
-                )
-            );
+            items.Add(treeLine.Line);
         }
 
         content = new Rows(
@@ -105,16 +97,21 @@ public class TreeListWidget(
                 string.Equals(x.OriginalPath, node.Path, _pathComparer)
             );
 
+            var selectedMarker = operation is not null
+                ? operation.IsSelected
+                    ? "[x]"
+                    : "[ ]"
+                : "   ";
             var indent = new string(' ', depth * 2);
-            var prefix =
-                node.operation is null ? "[bold]▸[/] "
-                : operation is { HasChanges: true } ? "* "
-                : "  ";
-            var text = $"{indent}{prefix}{name.EscapeMarkup()}";
+            var prefix = node.operation is null ? "▸ " : "  ";
+            var text = $"{selectedMarker}{indent}{prefix}{name}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
                 .PadRight(Console.WindowWidth);
-
-            var line = new TreeLine(text, operation);
+            var style = new Style(
+                operation is not null && operation.HasChanges ? Color.Red : Color.Default,
+                operation is not null && operation == focusedOperation ? Color.Gray : Color.Default
+            );
+            var line = new TreeLine(new Text(text, style), operation);
 
             treeLines.Add(line);
 
@@ -140,5 +137,5 @@ public class TreeListWidget(
         return treeLines;
     }
 
-    private record TreeLine(string Markup, TagDataOperation? Operation);
+    private record TreeLine(IRenderable Line, TagDataOperation? Operation);
 }

@@ -14,10 +14,9 @@ public class WriteCommand(ITagger tagger, IFileSystem fs) : ITuiCommand
             var operation = operationsToWrite[i];
             operation.Write(tagger, fs);
             context.Print(
-                $"Writing metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"
+                $"Wrote metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"
             );
         }
-        context.Print("Done.");
         return Task.CompletedTask;
     }
 }

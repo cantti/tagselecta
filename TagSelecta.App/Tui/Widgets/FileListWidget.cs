@@ -5,7 +5,7 @@ namespace TagSelecta.App.Tui.Widgets;
 
 public class FileListWidget(
     IEnumerable<TagDataOperation> operations,
-    int focusedIndex,
+    TagDataOperation? focusedOperation,
     int windowSize
 ) : Renderable
 {
@@ -23,6 +23,7 @@ public class FileListWidget(
         }
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
+        var focusedIndex = operationList.FindIndex(x => x == focusedOperation);
         var windowStart = focusedIndex - (windowSize / 2);
 
         // clamp so we don't go before 0 or past the last possible full window start

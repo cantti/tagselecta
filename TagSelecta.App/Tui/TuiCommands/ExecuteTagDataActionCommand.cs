@@ -30,7 +30,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             var operation = selectedOperationsList[i];
             try
             {
-                await ActionProcess(action, request, operation, selectedOperationsList, token);
+                await ActionProcess(action, request, operation, context.Operations, token);
                 operation.CheckForChanges();
                 context.Print($"Updated {i + 1} of {selectedOperationsList.Count} files.");
             }
