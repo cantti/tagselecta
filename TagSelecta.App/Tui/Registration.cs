@@ -20,6 +20,7 @@ public static class Registration
         services.AddTransient<ITuiCommand, SelectCommand>();
         services.AddTransient<ITuiCommand, SelectAllCommand>();
         services.AddTransient<ITuiCommand, ClearSelectionCommand>();
+        services.AddTransient<ITuiCommand, SelectDirCommand>();
         services.AddTransient<ITuiCommand, QuitCommand>();
         services.AddTransient<ITuiCommand, ToggleTreeCommand>();
         services.AddTransient<ITuiCommand, ToggleFilterCommand>();
