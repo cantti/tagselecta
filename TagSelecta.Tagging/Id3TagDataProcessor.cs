@@ -1,5 +1,4 @@
 using TagLib.Id3v2;
-using TagSelecta.Shared;
 
 namespace TagSelecta.Tagging;
 

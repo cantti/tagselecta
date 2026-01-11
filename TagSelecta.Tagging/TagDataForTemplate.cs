@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using TagSelecta.Shared;
 
 namespace TagSelecta.Tagging;
 

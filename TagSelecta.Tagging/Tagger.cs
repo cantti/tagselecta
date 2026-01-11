@@ -1,5 +1,4 @@
 using TagLib;
-using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Tagging;
 
@@ -42,6 +41,6 @@ public class Tagger : ITagger
             var flac = (TagLib.Flac.Metadata)tfile.GetTag(TagTypes.FlacMetadata, true);
             return new FlacTagDataProcessor(xiph, flac);
         }
-        throw new TagSelectaException($"Unsupported format: {mime}");
+        throw new InvalidOperationException($"Unsupported format: {mime}");
     }
 }
