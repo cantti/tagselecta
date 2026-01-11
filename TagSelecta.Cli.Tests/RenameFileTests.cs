@@ -1,8 +1,8 @@
 using NSubstitute;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.App.CliCommands.RenameFile;
 using TagSelecta.App.IO;
+using TagSelecta.App.TagDataActions.RenameFile;
 using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;

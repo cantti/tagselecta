@@ -18,4 +18,7 @@
     <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj" />
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CliCommands\" />
+  </ItemGroup>
 </Project>

@@ -1,3 +1,5 @@
+using TagSelecta.App.Shared;
+
 namespace TagSelecta.App.Tui.TuiCommands;
 
 public interface ITuiCommandContext

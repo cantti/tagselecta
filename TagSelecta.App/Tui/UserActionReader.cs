@@ -1,5 +1,4 @@
 using System.Text;
-using Spectre.Console;
 using TagSelecta.App.Tui.TuiCommands;
 
 namespace TagSelecta.App.Tui;

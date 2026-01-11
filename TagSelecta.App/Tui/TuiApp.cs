@@ -3,6 +3,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
 using TagSelecta.App.IO;
+using TagSelecta.App.Shared;
 using TagSelecta.App.Tui.TuiCommands;
 using TagSelecta.App.Tui.Widgets;
 using TagSelecta.Tagging;

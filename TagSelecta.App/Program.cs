@@ -2,18 +2,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagSelecta.App.CliCommands.AutoTrack;
-using TagSelecta.App.CliCommands.Discogs;
-using TagSelecta.App.CliCommands.Edit;
-using TagSelecta.App.CliCommands.ExtractPicture;
 using TagSelecta.App.CliCommands.Find;
-using TagSelecta.App.CliCommands.FixAlbum;
-using TagSelecta.App.CliCommands.HelpFormatting;
-using TagSelecta.App.CliCommands.RenameFile;
-using TagSelecta.App.CliCommands.Split;
-using TagSelecta.App.CliCommands.TitleCase;
 using TagSelecta.App.Discogs;
 using TagSelecta.App.IO;
+using TagSelecta.App.TagDataActions.AutoTrack;
+using TagSelecta.App.TagDataActions.Discogs;
+using TagSelecta.App.TagDataActions.Edit;
+using TagSelecta.App.TagDataActions.ExtractPicture;
+using TagSelecta.App.TagDataActions.FixAlbum;
+using TagSelecta.App.TagDataActions.HelpFormatting;
+using TagSelecta.App.TagDataActions.RenameFile;
+using TagSelecta.App.TagDataActions.Split;
+using TagSelecta.App.TagDataActions.TitleCase;
 using TagSelecta.App.Tui;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Tagging;
@@ -32,7 +32,7 @@ class Program
         app.Configure(config =>
         {
             config.PropagateExceptions();
-            config.AddCommand<TuiApp>("ui");
+            config.AddCommand<TuiApp>("ui").WithDescription("Interactive UI (TUI)");
             AddCommands(config, services);
             config.SetApplicationVersion(GetAppVersion());
         });

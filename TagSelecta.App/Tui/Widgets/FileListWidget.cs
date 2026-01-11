@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using TagSelecta.App.Shared;
 
 namespace TagSelecta.App.Tui.Widgets;
 

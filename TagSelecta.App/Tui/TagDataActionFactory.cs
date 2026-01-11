@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using TagSelecta.App.Shared;
 
 namespace TagSelecta.App.Tui;
 
@@ -12,11 +13,16 @@ public sealed class TagDataActionFactory : ITagDataActionFactory
         foreach (var action in actions)
         {
             var type = action.GetType();
-            var attr = type.GetCustomAttribute<TagDataActionAttribute>();
+            var attr = type.GetCustomAttribute<TuiTagDataAction>();
             if (attr is null || attr.Names.Length == 0)
                 continue;
 
-            _factories.Add((attr.Names, () => (ITagDataAction)provider.GetRequiredService(type)));
+            _factories.Add(
+                (
+                    attr.Names,
+                    () => provider.GetServices<ITagDataAction>().Single(x => x.GetType() == type)
+                )
+            );
         }
     }
 
