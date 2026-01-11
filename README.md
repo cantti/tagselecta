@@ -69,13 +69,10 @@ USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -s 
-description=test
+    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -s description=test
     tagselecta edit song.mp3 -c 'url=https://github.com'
-    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
-Artists" "-i" }}'
-    tagselecta discogs path-to-album -r 
-https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}'
+    tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 OPTIONS:
@@ -83,81 +80,62 @@ OPTIONS:
     -v, --version    Prints version information
 
 COMMANDS:
-    edit <path>              Edit (read and write) tags. Unrecognized options   
-                             are saved as custom fields. Another way to edit    
-                             custom fields is to use --custom option            
-    extractpicture <path>    Extract pictures to files                          
-    titlecase <path>         Convert all fields to title case                   
-    split <path>             Split artists, album artists and composers         
-    discogs <path>           Update album from discogs. You can pass discogs    
-                             release id (not master) or query to search         
-    autotrack <path>         Auto track                                         
-    fixalbum <path>          Set album name, date and album artists to the same 
-                             value to all files in the same directory           
-    renamefile <path>        Rename files                                       
-    find <path>              Find files by metadata                             
-    helpformatting           Show help information about built-in formatting    
-                             functions and field references
+    ui <path>                Interactive UI (TUI)                                                                                                                    
+    edit <path>              Edit (read and write) tags. Unrecognized options are saved as custom fields. Another way to edit custom fields is to use --custom option
+    extractpicture <path>    Extract pictures to files                                                                                                               
+    titlecase <path>         Convert all fields to title case                                                                                                        
+    split <path>             Split artists, album artists and composers                                                                                              
+    discogs <path>           Update album from discogs. You can pass discogs release id (not master) or query to search                                              
+    autotrack <path>         Auto track                                                                                                                              
+    fixalbum <path>          Set album name, date and album artists to the same value to all files in the same directory                                             
+    rename <path>            Rename files based on tag data                                                                                                          
+    find <path>              Find files by metadata
 ```
 
 ### Edit command
 
 ```
 DESCRIPTION:
-Edit (read and write) tags. Unrecognized options are saved as custom fields. 
-Another way to edit custom fields is to use --custom option
+Edit (read and write) tags. Unrecognized options are saved as custom fields. Another way to edit custom fields is to use --custom option
 
 USAGE:
     tagselecta edit <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -s 
-description=test
+    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -s description=test
     tagselecta edit song.mp3 -c 'url=https://github.com'
-    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
-Artists" "-i" }}'
+    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}'
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help                Prints help information                           
-        --yes                                                                   
-    -l, --album               Album name                                        
-    -A, --albumartist         One or more album artists. Multiple values can be 
-                              provided using a ';' separator                    
-    -a, --artist              One or more artists. Multiple values can be       
-                              provided using a ';' separator                    
-        --Bpm                 Beat per minutes                                  
-        --catalognumber       Catalog number                                    
-    -c, --comment             Comment or notes                                  
-    -C, --composer            Composer                                          
-        --conductor           Conductor                                         
-        --copyright           Copyright                                         
-    -y, --date                Release date                                      
-    -d, --disc                Disc number                                       
-    -D, --disctotal           Total number of discs                             
-        --discogsreleaseid    Discogs release id                                
-    -g, --genre               One or more genres. Multiple values can be        
-                              provided using a ';' separator                    
-        --isrc                International standard recording code             
-        --label               Record label                                      
-        --publisher           Publisher                                         
-    -t, --title               Track title                                       
-    -n, --track               Track number                                      
-    -N, --tracktotal          Total number of tracks                            
-    -s, --set                 Custom fields in key=value format. Use this option
-                              multiple times to include multiple fields (e.g.,  
-                              -c key1=value1 -c key2=value2)                    
-        --clearcustom         Clear all other custom fields                     
-    -p, --picture             Path to a picture file. Use this option multiple  
-                              times to include multiple images (e.g., -p path1  
-                              -p path2)                                         
-        --picturetype         Type of each picture provided. Specify multiple   
-                              times to match the order of the pictures. This    
-                              option is optional.                               
-                              Common values: FrontCover, BackCover, Artist,     
-                              Other                                             
+    -h, --help                Prints help information                                                                                                           
+    -l, --album               Album name                                                                                                                        
+    -A, --albumartist         One or more album artists. Multiple values can be provided using a ';' separator                                                  
+    -a, --artist              One or more artists. Multiple values can be provided using a ';' separator                                                        
+        --Bpm                 Beat per minutes                                                                                                                  
+        --catalognumber       Catalog number                                                                                                                    
+    -c, --comment             Comment or notes                                                                                                                  
+    -C, --composer            Composer                                                                                                                          
+        --conductor           Conductor                                                                                                                         
+        --copyright           Copyright                                                                                                                         
+    -y, --date                Release date                                                                                                                      
+    -d, --disc                Disc number                                                                                                                       
+    -D, --disctotal           Total number of discs                                                                                                             
+        --discogsreleaseid    Discogs release id                                                                                                                
+    -g, --genre               One or more genres. Multiple values can be provided using a ';' separator                                                         
+        --isrc                International standard recording code                                                                                             
+        --label               Record label                                                                                                                      
+        --publisher           Publisher                                                                                                                         
+    -t, --title               Track title                                                                                                                       
+    -n, --track               Track number                                                                                                                      
+    -N, --tracktotal          Total number of tracks                                                                                                            
+    -s, --set                 Custom fields in key=value format. Use this option multiple times to include multiple fields (e.g., -c key1=value1 -c key2=value2)
+        --clearcustom         Clear all other custom fields                                                                                                     
+    -p, --picture             Path to a picture file. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)                       
+        --picturetype         Type of each picture provided. Specify multiple times to match the order of the pictures. This option is optional.                
+                              Common values: FrontCover, BackCover, Artist, Other                                                                               
         --clearpicture        Clear all other pictures
 ```
 
@@ -174,31 +152,28 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help        Prints help information                                   
-        --yes                                                                   
-    -t, --type        Types of pictures to extract. Multiple entries can be     
-                      provided using a ';' separator.                           
-                      Common types: FrontCover, BackCover, Artist, Other        
-    -o, --output      Output file name                                          
-        --override    Override files                                            
+    -h, --help        Prints help information                                                              
+    -t, --type        Types of pictures to extract. Multiple entries can be provided using a ';' separator.
+                      Common types: FrontCover, BackCover, Artist, Other                                   
+    -o, --output      Output file name                                                                     
+        --override    Override files                                                                       
     -l, --limit       Limit number of files to be extracted
 ```
 
-### Rename File command
+### Rename command
 
 ```
 DESCRIPTION:
-Rename files
+Rename files based on tag data
 
 USAGE:
-    tagselecta renamefile <path> [OPTIONS]
+    tagselecta rename <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
     -h, --help        Prints help information                        
-        --yes                                                        
     -t, --template    Template. For example: {{ date }} - {{ album }}
 ```
 
@@ -216,7 +191,6 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help         Prints help information       
-        --yes                                        
     -s, --separator    Default values are: , ; feat.
 ```
 
@@ -234,7 +208,6 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
-        --yes
 ```
 
 ### Auto Track command
@@ -251,7 +224,6 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help        Prints help information  
-        --yes                                  
         --keepdisk    Remove Disc and DiscTotal
 ```
 
@@ -259,8 +231,7 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Set album name, date and album artists to the same value to all files in the 
-same directory
+Set album name, date and album artists to the same value to all files in the same directory
 
 USAGE:
     tagselecta fixalbum <path> [OPTIONS]
@@ -270,33 +241,28 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
-        --yes
 ```
 
 ### Discogs command
 
 ```
 DESCRIPTION:
-Update album from discogs. You can pass discogs release id (not master) or query
-to search
+Update album from discogs. You can pass discogs release id (not master) or query to search
 
 USAGE:
     tagselecta discogs <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta discogs path-to-album -r 
-https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta discogs path-to-album -r https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help       Prints help information                                    
-        --yes                                                                   
-    -r, --release                                                               
-    -f, --fields     Fields to update from Discogs release. If not specified,   
-                     all values will be updated
+    -h, --help       Prints help information                                                            
+    -r, --release                                                                                       
+    -f, --fields     Fields to update from Discogs release. If not specified, all values will be updated
 ```
 
 ### Find command
@@ -316,7 +282,6 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help     Prints help information
-        --yes                             
     -q, --query    Find query
 ```
 

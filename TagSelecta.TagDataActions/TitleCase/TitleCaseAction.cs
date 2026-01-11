@@ -4,7 +4,7 @@ using TagSelecta.Tagging;
 
 namespace TagSelecta.TagDataActions.TitleCase;
 
-[TagDataActionName("titlecase", "tc")]
+[TagDataActionName("titlecase")]
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
     protected override void ProcessTagData(

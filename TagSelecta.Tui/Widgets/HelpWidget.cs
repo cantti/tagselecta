@@ -19,17 +19,18 @@ public class HelpWidget : Renderable
             ("t", "Toggle tree"),
             ("f", "Toggle filter"),
             ("u", "Undo. Only if not written!"),
-            (":w", "Write"),
-            (":wa", "Write all"),
-            (":s", "Set tags (artist=Bach title=\"The Goldberg Variations\" all)"),
-            (":at", "Auto track number"),
+            (":selectdir", "Select all files in dir"),
+            (":write, :w", "Write"),
+            (":edit, :e", "Edit tags (artist=Bach title=\"The Goldberg Variations\" all)"),
+            (":autotrack", "Auto track number"),
             (":split", "Split artists"),
-            (":tc", "Title case conversion"),
-            (":tc", "Extract picture"),
+            (":titlecase", "Title case conversion"),
+            (":extractpicture", "Extract picture"),
             (
                 ":discogs",
                 "release=https://www.discogs.com/master/163206-King-Tubby-Presents-The-Roots-Of-Dub"
             ),
+            ("https://github.com/cantti/tagselecta", "Read more"),
         };
         var grid = new Grid();
         grid.AddColumn();

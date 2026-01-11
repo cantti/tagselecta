@@ -10,7 +10,6 @@ internal class Program
         const string readmePath = "README.md";
         string readme = File.ReadAllText(readmePath);
         readme = UpdateHelp(readme);
-        readme = UpdateFormatting(readme);
         File.WriteAllText(readmePath, readme);
     }
 
@@ -24,16 +23,16 @@ internal class Program
         // Define all CLI commands to document
         var commands = new (string DisplayName, string CommandLine)[]
         {
-            ("Help", "run --project ./TagSelecta.Cli -- --help"),
-            ("Edit", "run --project ./TagSelecta.Cli -- edit --help"),
-            ("Extract Picture", "run --project ./TagSelecta.Cli -- extractpicture --help"),
-            ("Rename File", "run --project ./TagSelecta.Cli -- renamefile --help"),
-            ("Split", "run --project ./TagSelecta.Cli -- split --help"),
-            ("Title case", "run --project ./TagSelecta.Cli -- titlecase --help"),
-            ("Auto Track", "run --project ./TagSelecta.Cli -- autotrack --help"),
-            ("Fix Album", "run --project ./TagSelecta.Cli -- fixalbum --help"),
-            ("Discogs", "run --project ./TagSelecta.Cli -- discogs --help"),
-            ("Find", "run --project ./TagSelecta.Cli -- find --help"),
+            ("Help", "run --project ./TagSelecta.App -- --help"),
+            ("Edit", "run --project ./TagSelecta.App -- edit --help"),
+            ("Extract Picture", "run --project ./TagSelecta.App -- extractpicture --help"),
+            ("Rename", "run --project ./TagSelecta.App -- rename --help"),
+            ("Split", "run --project ./TagSelecta.App -- split --help"),
+            ("Title case", "run --project ./TagSelecta.App -- titlecase --help"),
+            ("Auto Track", "run --project ./TagSelecta.App -- autotrack --help"),
+            ("Fix Album", "run --project ./TagSelecta.App -- fixalbum --help"),
+            ("Discogs", "run --project ./TagSelecta.App -- discogs --help"),
+            ("Find", "run --project ./TagSelecta.App -- find --help"),
         };
 
         // Generate new content for README
@@ -69,22 +68,6 @@ internal class Program
 
         Console.WriteLine("README.md updated successfully!");
 
-        return updated;
-    }
-
-    static string UpdateFormatting(string readme)
-    {
-        Console.WriteLine("Updating README.md formatting section...\n");
-
-        const string start = "<!-- start:formatting -->";
-        const string end = "<!-- end:formatting -->";
-        string output = Run("dotnet", "run --project ./TagSelecta.Cli -- helpformatting");
-        string updated = Regex.Replace(
-            readme,
-            $"{Regex.Escape(start)}.*?{Regex.Escape(end)}",
-            $"{start}\n```\n{output}\n```\n{end}",
-            RegexOptions.Singleline
-        );
         return updated;
     }
 
