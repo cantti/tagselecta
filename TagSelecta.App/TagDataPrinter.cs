@@ -47,10 +47,7 @@ public static class TagDataPrinter
                 AddField(table, picture.Type.ToString(), PictureToStr(picture));
             }
         }
-        return new Rows(
-            new Text("Metadata:", new Style(Color.Yellow, Color.Default, Decoration.Bold)),
-            table
-        );
+        return table;
     }
 
     public static IRenderable PrintComparison(TagDataOperation f)
@@ -138,7 +135,7 @@ public static class TagDataPrinter
                 }
             }
         }
-        return new Rows(new Text("Metadata:", new Style(Color.Yellow)), table);
+        return table;
     }
 
     private static void AddField(Table table, string label, string value)

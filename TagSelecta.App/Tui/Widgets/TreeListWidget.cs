@@ -15,17 +15,16 @@ public class TreeListWidget(
 
     private readonly List<TagDataOperation> _operations = operations.ToList();
 
+    private static readonly List<TreeLine>? CachedTreeLines = null;
+
+    private List<TreeLine> GetTreeLines() =>
+        CachedTreeLines is not null && CachedTreeLines.Count == _operations.Count
+            ? CachedTreeLines
+            : BuildTreeLines();
+
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        IRenderable content;
-
-        if (!_operations.Any())
-        {
-            content = Text.Empty;
-            return content.Render(options, maxWidth);
-        }
-
-        var treeLines = BuildTreeLines();
+        var treeLines = GetTreeLines();
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
         var focusedIndex = treeLines.FindIndex(x => x.Operation == focusedOperation);
@@ -43,10 +42,29 @@ public class TreeListWidget(
         {
             var itemIndex = windowStart + i;
             var treeLine = treeLines[itemIndex];
-            items.Add(treeLine.Line);
+            var selectedMarker = treeLine.Operation is not null
+                ? treeLine.Operation.IsSelected
+                    ? "[x]"
+                    : "[ ]"
+                : "   ";
+            var indent = new string(' ', treeLine.Depth * 2);
+            var prefix = treeLine.Operation is null ? "▸ " : "  ";
+            var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
+            text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
+                .PadRight(Console.WindowWidth);
+
+            var style = new Style(
+                treeLine.Operation is not null && treeLine.Operation.HasChanges
+                    ? Color.Red
+                    : Color.Default,
+                treeLine.Operation is not null && treeLine.Operation == focusedOperation
+                    ? Color.Gray
+                    : Color.Default
+            );
+            items.Add(new Text(text, style));
         }
 
-        content = new Rows(
+        IRenderable content = new Rows(
             new Text($"Files ({_operations.Count()}):", new Style(Color.Yellow)),
             new Rows(items)
         );
@@ -107,11 +125,7 @@ public class TreeListWidget(
             var text = $"{selectedMarker}{indent}{prefix}{name}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
                 .PadRight(Console.WindowWidth);
-            var style = new Style(
-                operation is not null && operation.HasChanges ? Color.Red : Color.Default,
-                operation is not null && operation == focusedOperation ? Color.Gray : Color.Default
-            );
-            var line = new TreeLine(new Text(text, style), operation);
+            var line = new TreeLine(name!, depth, operation);
 
             treeLines.Add(line);
 
@@ -137,5 +151,5 @@ public class TreeListWidget(
         return treeLines;
     }
 
-    private record TreeLine(IRenderable Line, TagDataOperation? Operation);
+    private record TreeLine(string Name, int Depth, TagDataOperation? Operation);
 }

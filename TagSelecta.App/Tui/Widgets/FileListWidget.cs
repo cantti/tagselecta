@@ -13,14 +13,7 @@ public class FileListWidget(
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        IRenderable content;
         var operationList = _operations.ToList();
-
-        if (operationList.Count == 0)
-        {
-            content = Text.Empty;
-            return content.Render(options, maxWidth);
-        }
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
         var focusedIndex = operationList.FindIndex(x => x == focusedOperation);
@@ -52,7 +45,7 @@ public class FileListWidget(
             items.Add(new Text(text, style));
         }
 
-        content = new Rows(
+        IRenderable content = new Rows(
             new Text($"Files ({operationList.Count}):", new Style(Color.Yellow)),
             new Rows(items)
         );

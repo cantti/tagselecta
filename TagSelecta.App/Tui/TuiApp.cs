@@ -94,6 +94,11 @@ public class TuiApp(
             {
                 while (!_cts.Token.IsCancellationRequested)
                 {
+                    FocusedOperationIndex = Math.Clamp(
+                        FocusedOperationIndex,
+                        0,
+                        Math.Max(0, VisibleOperations.Count() - 1)
+                    );
                     ctx.UpdateTarget(DrawLayout());
                     while (channel.Reader.TryRead(out var key))
                     {
@@ -137,12 +142,6 @@ public class TuiApp(
             VisibleOperations.Count() + 2
         );
 
-        FocusedOperationIndex = Math.Clamp(
-            FocusedOperationIndex,
-            0,
-            Math.Max(0, VisibleOperations.Count() - 1)
-        );
-
         var layout = new Layout("root").SplitRows(
             new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
             new Layout(FilesLayoutKey)
@@ -157,7 +156,7 @@ public class TuiApp(
                         )
                     : new FileListWidget(VisibleOperations, FocusedOperation, filesContentSize - 2)
                 ),
-            new Layout(TagDataLayoutKey).Ratio(1).Update(Text.Empty),
+            new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedOperation)),
             new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)),
             new Layout(CommandLayoutKey)
                 .Size(1)
@@ -167,32 +166,6 @@ public class TuiApp(
                         : Text.Empty
                 )
         );
-
-        if (FocusedOperation is not null)
-        {
-            var tagDataRenderable = FocusedOperation.HasChanges
-                ? TagDataPrinter.PrintComparison(FocusedOperation)
-                : TagDataPrinter.PrintTagData(FocusedOperation);
-
-            if (FocusedOperation.Exception is null)
-            {
-                layout[TagDataLayoutKey].Update(tagDataRenderable);
-            }
-            else
-            {
-                layout[TagDataLayoutKey]
-                    .Update(
-                        new Rows(
-                            tagDataRenderable,
-                            Text.NewLine,
-                            new Text(
-                                $"Error: {FocusedOperation.Exception.Message}",
-                                new Style(Color.Red)
-                            )
-                        )
-                    );
-            }
-        }
         return layout;
     }
 
