@@ -7,31 +7,25 @@ Set Width 1000
 Set Height 800
 Set Shell bash
 
-Type './tagselecta e ./Album'
-Enter
-Sleep 2s
-Type j
-Sleep 2s
-Type j
-Sleep 2s
-Type j
-Sleep 5s
-Type q
+Type './tagselecta ui ./Album'
 
-Type './tagselecta e ./Album -g "Reggae; Dub" -N 5 -y 2024 -s "URL=https://cantti.bandcamp.com"'
 Enter
 Sleep 2s
-Type j
-Sleep 2s
-Type j
-Sleep 2s
-Type j
-Sleep 2s
-Type w
-Sleep 5s
-Type q
 
-Type './tagselecta discogs ./Album -r https://www.discogs.com/master/186940-King-Tubby-Dub-From-The-Roots'
+Tab
+Sleep 2s
+
+Type k
+Sleep 2s
+
+Type ":edit artist=Cantti genre=Reggae"
+Sleep 4s
+
 Enter
-Sleep 10s
-Type q
+Sleep 4s
+
+Type ":write"
+Sleep 2s
+
+Enter
+Sleep 4s

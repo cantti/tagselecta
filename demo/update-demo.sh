@@ -8,7 +8,7 @@ TMPDIR=$(mktemp -d)
 dotnet publish -c Release --self-contained true \
   -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true \
   -p:DebugType=None -p:DebugSymbols=false \
-  -o "$TMPDIR" ../TagSelecta.Cli
+  -o "$TMPDIR" ../TagSelecta.App
 
 # Copy additional assets
 cp -r Album "$TMPDIR"
