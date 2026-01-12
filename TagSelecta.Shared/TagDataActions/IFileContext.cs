@@ -5,7 +5,7 @@ namespace TagSelecta.Shared.TagDataActions;
 public interface IFileContext
 {
     public string CurrentPath { get; set; }
-    public TagData CurrentTagData { get; }
     string OriginalPath { get; }
+    public TagData CurrentTagData { get; }
     TagData OriginalTagData { get; }
 }

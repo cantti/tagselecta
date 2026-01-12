@@ -30,7 +30,6 @@ internal class Program
             ("Split", "run --project ./TagSelecta.App -- split --help"),
             ("Title case", "run --project ./TagSelecta.App -- titlecase --help"),
             ("Auto Track", "run --project ./TagSelecta.App -- autotrack --help"),
-            ("Fix Album", "run --project ./TagSelecta.App -- fixalbum --help"),
             ("Discogs", "run --project ./TagSelecta.App -- discogs --help"),
             ("Find", "run --project ./TagSelecta.App -- find --help"),
         };

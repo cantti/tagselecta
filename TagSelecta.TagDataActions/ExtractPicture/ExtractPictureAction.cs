@@ -30,7 +30,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         ExtractPictureSettings settings
     )
     {
-        var dir = Path.GetDirectoryName(current.CurrentPath)!;
+        var dir = Path.GetDirectoryName(current.OriginalPath)!;
         var pictures = current
             .CurrentTagData.Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
             .OrderBy(x =>

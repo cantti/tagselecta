@@ -11,13 +11,12 @@ public class AutoTrackAction : TagDataAction<AutoTrackSettings>
         AutoTrackSettings settings
     )
     {
-        var dir = Directory.GetParent(current.CurrentPath)?.FullName;
+        var dir = Path.GetDirectoryName(current.OriginalPath);
         var filesInDir = files
-            .Select(x => x.CurrentPath)
-            .Where(x => Directory.GetParent(x)?.FullName == dir)
-            .Order()
+            .Where(x => Path.GetDirectoryName(x.OriginalPath) == dir)
+            .OrderBy(x => x.OriginalPath)
             .ToList();
-        current.CurrentTagData.Track = (filesInDir.IndexOf(current.CurrentPath) + 1).ToString();
+        current.CurrentTagData.Track = (filesInDir.IndexOf(current) + 1).ToString();
         current.CurrentTagData.TrackTotal = filesInDir.Count.ToString();
         if (!settings.KeepDisk)
         {

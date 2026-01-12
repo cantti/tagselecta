@@ -31,12 +31,19 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
         DiscogsSettings settings
     )
     {
-        var filesList = files.ToList();
-
         if (_release is null)
+        {
             throw new InvalidOperationException("Release not set");
+        }
 
-        var index = filesList.FindIndex(x => x.CurrentPath == current.CurrentPath);
+        var dir = Path.GetDirectoryName(current.OriginalPath);
+
+        var index = files
+            .Where(x => Path.GetDirectoryName(x.OriginalPath) == dir)
+            .OrderBy(x => x.OriginalPath)
+            .ToList()
+            .IndexOf(current);
+
         var track = _release.Release.TrackList[index];
 
         var albumArtists = _release

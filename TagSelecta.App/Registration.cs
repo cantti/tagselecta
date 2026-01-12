@@ -8,7 +8,6 @@ using TagSelecta.TagDataActions.Discogs;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;
 using TagSelecta.TagDataActions.Edit;
 using TagSelecta.TagDataActions.ExtractPicture;
-using TagSelecta.TagDataActions.FixAlbum;
 using TagSelecta.TagDataActions.Move;
 using TagSelecta.TagDataActions.Split;
 using TagSelecta.TagDataActions.TitleCase;
@@ -90,15 +89,6 @@ public static class Registration
         configurator
             .AddTagDataAction<ExtractPictureAction>(services)
             .WithDescription("Extract pictures to files.");
-    }
-
-    public static void AddFixAlbum(this IConfigurator configurator, IServiceCollection services)
-    {
-        configurator
-            .AddTagDataAction<FixAlbumAction>(services)
-            .WithDescription(
-                "Set album name, date and album artists to the same value to all files in the same directory."
-            );
     }
 
     public static void AddRenameFile(this IConfigurator configurator, IServiceCollection services)
