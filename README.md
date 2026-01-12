@@ -93,9 +93,7 @@ COMMANDS:
     discogs <path>           Update album from discogs. You can pass discogs    
                              release id (not master) or query to search         
     autotrack <path>         Auto track                                         
-    fixalbum <path>          Set album name, date and album artists to the same 
-                             value to all files in the same directory           
-    move <path>              Rename files based on tag data                     
+    move <path>              Move (rename) files to another directory           
     find <path>              Find files by metadata
 ```
 
@@ -120,43 +118,41 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help                Prints help information                           
-    -l, --album               Album name                                        
-    -A, --albumartist         One or more album artists. Multiple values can be 
-                              provided using a ';' separator                    
-    -a, --artist              One or more artists. Multiple values can be       
-                              provided using a ';' separator                    
-        --Bpm                 Beat per minutes                                  
-        --catalognumber       Catalog number                                    
-    -c, --comment             Comment or notes                                  
-    -C, --composer            Composer                                          
-        --conductor           Conductor                                         
-        --copyright           Copyright                                         
-    -y, --date                Release date                                      
-    -d, --disc                Disc number                                       
-    -D, --disctotal           Total number of discs                             
-        --discogsreleaseid    Discogs release id                                
-    -g, --genre               One or more genres. Multiple values can be        
-                              provided using a ';' separator                    
-        --isrc                International standard recording code             
-        --label               Record label                                      
-        --publisher           Publisher                                         
-    -t, --title               Track title                                       
-    -n, --track               Track number                                      
-    -N, --tracktotal          Total number of tracks                            
-    -s, --set                 Custom fields in key=value format. Use this option
-                              multiple times to include multiple fields (e.g.,  
-                              -c key1=value1 -c key2=value2)                    
-        --clearcustom         Clear all other custom fields                     
-    -p, --picture             Path to a picture file. Use this option multiple  
-                              times to include multiple images (e.g., -p path1  
-                              -p path2)                                         
-        --picturetype         Type of each picture provided. Specify multiple   
-                              times to match the order of the pictures. This    
-                              option is optional.                               
-                              Common values: FrontCover, BackCover, Artist,     
-                              Other                                             
-        --clearpicture        Clear all other pictures
+    -h, --help             Prints help information                              
+    -l, --album            Album name                                           
+    -A, --albumartist      One or more album artists. Multiple values can be    
+                           provided using a ';' separator                       
+    -a, --artist           One or more artists. Multiple values can be provided 
+                           using a ';' separator                                
+        --Bpm              Beat per minutes                                     
+        --catalognumber    Catalog number                                       
+    -c, --comment          Comment or notes                                     
+    -C, --composer         Composer                                             
+        --conductor        Conductor                                            
+        --copyright        Copyright                                            
+    -y, --date             Release date                                         
+    -d, --disc             Disc number                                          
+    -D, --disctotal        Total number of discs                                
+    -g, --genre            One or more genres. Multiple values can be provided  
+                           using a ';' separator                                
+        --isrc             International standard recording code                
+        --label            Record label                                         
+        --publisher        Publisher                                            
+    -t, --title            Track title                                          
+    -n, --track            Track number                                         
+    -N, --tracktotal       Total number of tracks                               
+    -s, --set              Custom fields in key=value format. Use this option   
+                           multiple times to include multiple fields (e.g., -c  
+                           key1=value1 -c key2=value2)                          
+        --clearcustom      Clear all other custom fields                        
+    -p, --picture          Path to a picture file. Use this option multiple     
+                           times to include multiple images (e.g., -p path1 -p  
+                           path2)                                               
+        --picturetype      Type of each picture provided. Specify multiple times
+                           to match the order of the pictures. This option is   
+                           optional.                                            
+                           Common values: FrontCover, BackCover, Artist, Other  
+        --clearpicture     Clear all other pictures
 ```
 
 ### Extract Picture command
@@ -185,7 +181,7 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Rename files based on tag data
+Move (rename) files to another directory
 
 USAGE:
     tagselecta move <path> [OPTIONS]
@@ -194,8 +190,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help        Prints help information                        
-    -t, --template    Template. For example: {{ date }} - {{ album }}
+    -h, --help        Prints help information                                  
+    -t, --template    Template. For example: {{ date }} - {{ album }}. Required
 ```
 
 ### Split command
@@ -268,7 +264,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help       Prints help information                                    
-    -r, --release                                                               
+    -r, --release    Required                                                   
     -f, --fields     Fields to update from Discogs release. If not specified,   
                      all values will be updated
 ```
