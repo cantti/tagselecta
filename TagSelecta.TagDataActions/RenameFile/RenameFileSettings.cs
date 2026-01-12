@@ -19,15 +19,4 @@ public class RenameFileSettings : TagDataActionSettings
         }
         return base.Validate();
     }
-
-    public override void ParseTuiArgs(IEnumerable<TagDataActionArg> args)
-    {
-        Template =
-            args.FirstOrDefault(x => x.Key is "template" or "t" or "0")?.Value
-            ?? throw new InvalidOperationException("Template is required.");
-        if (string.IsNullOrWhiteSpace(Template))
-        {
-            throw new InvalidOperationException("Template is required.");
-        }
-    }
 }

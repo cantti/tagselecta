@@ -10,6 +10,4 @@ public class SplitSettings : TagDataActionSettings
     // last space is reauired otherwise . deleted
     [Description("Default values are: , ; feat. ")]
     public string[]? Separator { get; set; }
-
-    public override void ParseTuiArgs(IEnumerable<TagDataActionArg> args) { }
 }

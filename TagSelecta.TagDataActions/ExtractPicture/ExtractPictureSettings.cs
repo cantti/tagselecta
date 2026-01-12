@@ -23,6 +23,4 @@ public class ExtractPictureSettings : TagDataActionSettings
     [CommandOption("--limit|-l")]
     [Description("Limit number of files to be extracted")]
     public int? Limit { get; set; }
-
-    public override void ParseTuiArgs(IEnumerable<TagDataActionArg> args) { }
 }

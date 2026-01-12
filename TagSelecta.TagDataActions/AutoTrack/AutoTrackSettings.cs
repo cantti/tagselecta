@@ -9,6 +9,4 @@ public class AutoTrackSettings : TagDataActionSettings
     [CommandOption("--keepdisk")]
     [Description("Remove Disc and DiscTotal")]
     public bool KeepDisk { get; set; }
-
-    public override void ParseTuiArgs(IEnumerable<TagDataActionArg> args) { }
 }

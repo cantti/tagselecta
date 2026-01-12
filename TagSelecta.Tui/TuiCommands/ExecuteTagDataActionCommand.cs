@@ -1,3 +1,5 @@
+using System.Reflection;
+using Spectre.Console.Cli;
 using TagSelecta.Shared.TagDataActions;
 
 namespace TagSelecta.Tui.TuiCommands;
@@ -27,15 +29,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         for (int i = 0; i < selectedOperationsList.Count; i++)
         {
-            try
-            {
-                token.ThrowIfCancellationRequested();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
+            token.ThrowIfCancellationRequested();
             var operation = selectedOperationsList[i];
             try
             {
@@ -82,7 +76,54 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             Activator.CreateInstance(settingsType)
             ?? throw new InvalidOperationException("Failed to create settings instance")
         );
-        baseSettings.ParseTuiArgs(args);
+
+        var argList = args.ToList();
+
+        var props = settingsType.GetProperties();
+
+        foreach (var prop in props)
+        {
+            var attr = prop.GetCustomAttribute<CommandOptionAttribute>();
+            if (attr is null)
+            {
+                continue;
+            }
+            var matchedValues = argList
+                .Where(x => attr.LongNames.Contains(x.Key) || attr.ShortNames.Contains(x.Key))
+                .Select(x => x.Value)
+                .ToArray();
+            if (matchedValues.Length == 0)
+            {
+                continue;
+            }
+            if (prop.PropertyType == typeof(string))
+            {
+                prop.SetValue(baseSettings, matchedValues.First());
+            }
+            else if (prop.PropertyType == typeof(string[]))
+            {
+                prop.SetValue(baseSettings, matchedValues);
+            }
+            else if (prop.PropertyType == typeof(bool))
+            {
+                prop.SetValue(baseSettings, true);
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Unsupported property type: {prop.PropertyType}"
+                );
+            }
+            argList.RemoveAll(x => matchedValues.Contains(x.Value));
+        }
+
+        if (argList.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Unknown arguments: {string.Join(", ", argList.Select(x => x.Key))}"
+            );
+        }
+
         return baseSettings;
     }
 

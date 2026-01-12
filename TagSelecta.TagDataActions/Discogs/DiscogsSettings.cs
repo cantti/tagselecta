@@ -14,6 +14,4 @@ public class DiscogsSettings : TagDataActionSettings
         "Fields to update from Discogs release. If not specified, all values will be updated"
     )]
     public string? Fields { get; set; }
-
-    public override void ParseTuiArgs(IEnumerable<TagDataActionArg> args) { }
 }

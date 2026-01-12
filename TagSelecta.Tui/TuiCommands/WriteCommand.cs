@@ -15,7 +15,9 @@ public class WriteCommand(ITagger tagger, IFileSystem fs) : ITuiCommand
             var operation = operationsToWrite[i];
             operation.Write(tagger, fs);
             context.Print(
-                $"Wrote metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"
+                operation.Exception is null
+                    ? $"Wrote metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"
+                    : $"Failed to write metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath}): {operation.Exception.Message}"
             );
         }
         return Task.CompletedTask;

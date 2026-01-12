@@ -90,7 +90,9 @@ public class TreeListWidget(
             {
                 var parent = Path.GetDirectoryName(current);
                 if (parent == null)
+                {
                     break;
+                }
 
                 if (!paths.Any(x => string.Equals(x.Path, parent, _pathComparer)))
                 {
@@ -98,7 +100,9 @@ public class TreeListWidget(
                 }
 
                 if (string.Equals(parent, root, _pathComparer))
+                {
                     break;
+                }
 
                 current = parent;
             }

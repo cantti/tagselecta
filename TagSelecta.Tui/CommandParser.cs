@@ -20,8 +20,6 @@ public sealed class CommandParser
         var name = parts[0];
         var args = new List<TagDataActionArg>();
 
-        int positionalIndex = 0;
-
         for (int i = 1; i < parts.Count; i++)
         {
             var part = parts[i];
@@ -31,12 +29,11 @@ public sealed class CommandParser
             {
                 var key = part[..eq];
                 var value = part[(eq + 1)..];
-                args.Add(new TagDataActionArg(key, value, false));
+                args.Add(new TagDataActionArg(key, value));
             }
             else
             {
-                args.Add(new TagDataActionArg(positionalIndex.ToString(), part, true));
-                positionalIndex++;
+                args.Add(new TagDataActionArg(part, ""));
             }
         }
 

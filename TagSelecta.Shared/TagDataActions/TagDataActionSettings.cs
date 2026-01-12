@@ -6,6 +6,4 @@ public abstract class TagDataActionSettings : CommandSettings
 {
     [CommandArgument(0, "<path>")]
     public string[] Path { get; set; } = [];
-
-    public abstract void ParseTuiArgs(IEnumerable<TagDataActionArg> args);
 }
