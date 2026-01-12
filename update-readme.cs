@@ -26,7 +26,7 @@ internal class Program
             ("Help", "run --project ./TagSelecta.App -- --help"),
             ("Edit", "run --project ./TagSelecta.App -- edit --help"),
             ("Extract Picture", "run --project ./TagSelecta.App -- extractpicture --help"),
-            ("Rename", "run --project ./TagSelecta.App -- rename --help"),
+            ("Move", "run --project ./TagSelecta.App -- move --help"),
             ("Split", "run --project ./TagSelecta.App -- split --help"),
             ("Title case", "run --project ./TagSelecta.App -- titlecase --help"),
             ("Auto Track", "run --project ./TagSelecta.App -- autotrack --help"),
