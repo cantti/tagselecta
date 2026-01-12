@@ -233,37 +233,17 @@ public class TuiApp(
         hotkeys.Bind(ConsoleKey.W, "write");
     }
 
-    private async Task WaitCurrentCommand(bool isCancelRequest)
-    {
-        if (_currentCommandCts is null)
-        {
-            return;
-        }
-        if (isCancelRequest)
-        {
-            Print("Cancelling...");
-            await _currentCommandCts.CancelAsync();
-        }
-        try
-        {
-            await _currentCommandTask;
-        }
-        catch (OperationCanceledException)
-        {
-            // expected
-        }
-        if (isCancelRequest)
-        {
-            Print("Cancelled.");
-        }
-        _currentCommandCts.Dispose();
-    }
-
     private async Task DispatchCommand(Request request)
     {
         var isCancelRequest = request.Name == "cancel";
 
-        await WaitCurrentCommand(isCancelRequest);
+        if (isCancelRequest && _currentCommandCts is not null)
+        {
+            await _currentCommandCts.CancelAsync();
+            _currentCommandCts.Dispose();
+        }
+
+        await _currentCommandTask;
 
         if (isCancelRequest)
         {
@@ -274,32 +254,23 @@ public class TuiApp(
 
         var command = commandFactory.Create(request.Name);
 
-        if (command is not null)
-        {
-            _currentCommandTask = ExecuteCommand(
-                command.ExecuteAsync(this, request, _currentCommandCts.Token)
-            );
-        }
-    }
-
-    private async Task ExecuteCommand(Task task)
-    {
         hotkeys.Bind(ConsoleKey.Escape, "cancel");
-        try
+
+        _currentCommandTask = Task.Run(async () =>
         {
-            await task;
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Print(ex.Message);
-        }
-        finally
-        {
+            try
+            {
+                await command.ExecuteAsync(this, request, _currentCommandCts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Print("Cancelled.");
+            }
+            catch (Exception ex)
+            {
+                Print(ex.Message);
+            }
             hotkeys.Bind(ConsoleKey.Escape, "clearselection");
-        }
+        });
     }
 }

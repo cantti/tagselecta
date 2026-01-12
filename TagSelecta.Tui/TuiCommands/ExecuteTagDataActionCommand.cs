@@ -27,6 +27,15 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         for (int i = 0; i < selectedOperationsList.Count; i++)
         {
+            try
+            {
+                token.ThrowIfCancellationRequested();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
             var operation = selectedOperationsList[i];
             try
             {

@@ -19,12 +19,12 @@ public class TuiCommandFactory : ITuiCommandFactory
         }
     }
 
-    public ITuiCommand? Create(string name)
+    public ITuiCommand Create(string name)
     {
-        var command = _commands.FirstOrDefault(c => c.Names.Contains(name));
+        var command = _commands.SingleOrDefault(c => c.Names.Contains(name));
         if (command == default)
         {
-            command = _commands.SingleOrDefault(c =>
+            command = _commands.Single(c =>
                 c.command.GetType() == typeof(ExecuteTagDataActionCommand)
             );
         }

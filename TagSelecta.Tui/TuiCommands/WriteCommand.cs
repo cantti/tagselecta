@@ -11,6 +11,7 @@ public class WriteCommand(ITagger tagger, IFileSystem fs) : ITuiCommand
         var operationsToWrite = context.Operations.Where(x => x.HasChanges).ToList();
         for (var i = 0; i < operationsToWrite.Count; i++)
         {
+            token.ThrowIfCancellationRequested();
             var operation = operationsToWrite[i];
             operation.Write(tagger, fs);
             context.Print(
