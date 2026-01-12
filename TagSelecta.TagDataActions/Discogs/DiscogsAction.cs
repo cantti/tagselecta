@@ -45,6 +45,11 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             .ToList()
             .IndexOf(current);
 
+        if (index > _release.Release.TrackList.Count - 1)
+        {
+            return;
+        }
+
         var track = _release.Release.TrackList[index];
 
         var albumArtists = _release
