@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Tagging;
 
@@ -33,7 +34,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
     {
         if (_release is null)
         {
-            throw new InvalidOperationException("Release not set");
+            throw new TagSelectaException("Release not set");
         }
 
         var dir = Path.GetDirectoryName(current.OriginalPath);

@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using TagSelecta.CliCommands.ExecuteTagDataAction;
+using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
 
 namespace TagSelecta.App;
@@ -17,7 +18,7 @@ public static class CommandConfiguratorExtensions
         // find TagDataActionAttribute
         var attr =
             typeof(TAction).GetCustomAttribute<TagDataActionNameAttribute>()
-            ?? throw new InvalidOperationException("TagDataActionAttribute not found");
+            ?? throw new TagSelectaException("TagDataActionAttribute not found");
 
         // extract TSettings from TAction
         var settingsType = GetSettingsTypeFromAction(typeof(TAction));

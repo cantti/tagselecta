@@ -1,65 +1,19 @@
 using System.Text.RegularExpressions;
-using Spectre.Console;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.TagDataActions.Discogs;
 
-public class ReleaseFetcher(
-    IDiscogsApi discogsApi,
-    IAnsiConsole console,
-    DiscogsImageDownloader discogsImageDownloader
-) : IReleaseFetcher
+public class ReleaseFetcher(IDiscogsApi discogsApi, DiscogsImageDownloader discogsImageDownloader)
+    : IReleaseFetcher
 {
     public async Task<ReleaseFetcherResult?> Fetch(DiscogsSettings settings)
     {
-        Release? result;
-
-        if (settings.Release.StartsWith("http"))
-        {
-            var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Release);
-            var releaseId =
-                urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
-            result = await discogsApi.GetRelease(releaseId);
-            result.TrackList = result.TrackList.Where(x => x.Type == "track").ToList();
-        }
-        else
-        {
-            var search = await discogsApi.Search("master", settings.Release);
-            search.Results = search.Results.Take(5).ToList();
-            var releases = new List<Release>();
-            var index = -1;
-            console.MarkupLineInterpolated($"[green]Discogs releases:[/]");
-            console.WriteLine();
-            foreach (var searchItem in search.Results)
-            {
-                index++;
-                var master = await discogsApi.GetMaster(searchItem.Id);
-                var release = await discogsApi.GetRelease(master.MainRelease);
-                release.TrackList = release.TrackList.Where(x => x.Type == "track").ToList();
-                releases.Add(release);
-                console.MarkupLineInterpolated($"[blue]Option[/] [yellow]{index + 1}[/]");
-                console.MarkupLineInterpolated($"  [blue]Url[/]: [link]{release.Uri}[/]");
-                console.MarkupLineInterpolated(
-                    $"  [blue]Release[/]: {release.Artists.Select(x => x.Name).ToJoined()} - {release.Title} ({release.Year})"
-                );
-                console.MarkupLineInterpolated(
-                    $"  [blue]Tracks[/]: {release.TrackList.Select((x, i) => $"{i + 1}. {x.Title}").ToJoined()}"
-                );
-                console.MarkupLineInterpolated($"  [blue]TrackTotal[/]: {release.TrackList.Count}");
-                console.WriteLine();
-            }
-            var promptResult = console.Prompt(
-                new TextPrompt<int>("Which to choose? (select 0 to exit)")
-            );
-            if (promptResult == 0)
-            {
-                return null;
-            }
-            result = releases[promptResult - 1];
-        }
-
+        var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Release);
+        var releaseId =
+            urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
+        var result = await discogsApi.GetRelease(releaseId);
+        result.TrackList = result.TrackList.Where(x => x.Type == "track").ToList();
         var image = result.Images.FirstOrDefault();
         byte[]? resultImage = null;
         if (image is not null)
@@ -67,9 +21,6 @@ public class ReleaseFetcher(
             var bytes = await discogsImageDownloader.DownloadAsync(image.Uri);
             resultImage = bytes;
         }
-
-        console.WriteLine();
-
         return new ReleaseFetcherResult { Release = result, Image = resultImage };
     }
 

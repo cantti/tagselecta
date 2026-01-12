@@ -1,5 +1,6 @@
 using System.Reflection;
 using Spectre.Console.Cli;
+using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
 
 namespace TagSelecta.Tui.TuiCommands;
@@ -74,7 +75,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         var settingsType = GetSettingsTypeFromAction(action.GetType());
         var baseSettings = (TagDataActionSettings)(
             Activator.CreateInstance(settingsType)
-            ?? throw new InvalidOperationException("Failed to create settings instance")
+            ?? throw new TagSelectaException("Failed to create settings instance")
         );
 
         var argList = args.ToList();
@@ -94,7 +95,16 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
                 .ToArray();
             if (matchedValues.Length == 0)
             {
-                continue;
+                if (attr.IsRequired)
+                {
+                    throw new InvalidOperationException(
+                        $"Command is missing required argument '{attr.LongNames[0]}'"
+                    );
+                }
+                else
+                {
+                    continue;
+                }
             }
             if (prop.PropertyType == typeof(string))
             {

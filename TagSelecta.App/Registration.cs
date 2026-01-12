@@ -64,7 +64,6 @@ public static class Registration
             .AddHttpMessageHandler<DiscogsAuthHeaderHandler>();
 
         services.AddTransient<IReleaseFetcher, ReleaseFetcher>();
-        services.AddTransient<ITagDataAction, DiscogsAction>();
         configurator
             .AddTagDataAction<DiscogsAction>(services)
             .WithDescription(

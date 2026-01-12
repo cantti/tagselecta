@@ -6,8 +6,8 @@ namespace TagSelecta.TagDataActions.Discogs;
 
 public class DiscogsSettings : TagDataActionSettings
 {
-    [CommandOption("--release|-r")]
-    public string Release { get; set; } = "";
+    [CommandOption("--release|-r", isRequired: true)]
+    public required string Release { get; set; }
 
     [CommandOption("--fields|-f")]
     [Description(
