@@ -23,66 +23,23 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
             .AutoClear(true)
             .Start(ctx =>
             {
-                var progressLock = new object();
-                var consoleLock = new object();
                 var task = ctx.AddTask("Reading metadata...", maxValue: files.Count);
-                Parallel.ForEach(
-                    files,
-                    file =>
+                foreach (var file in files)
+                {
+                    try
                     {
-                        try
-                        {
-                            var tagData = tagger.ReadTags(file);
-                            result.Add(new FileWithTagData(file, tagData));
-                        }
-                        catch (Exception ex)
-                        {
-                            lock (consoleLock)
-                            {
-                                console.WriteException(ex);
-                            }
-                        }
-                        lock (progressLock)
-                        {
-                            task.Increment(1);
-                        }
+                        var tagData = tagger.ReadTags(file);
+                        result.Add(new FileWithTagData(file, tagData));
                     }
-                );
+                    catch (Exception ex)
+                    {
+                        console.WriteException(ex);
+                    }
+                    task.Increment(1);
+                }
             });
         return result.ToList().OrderBy(x => x.Path).ToList();
     }
-
-    // public List<FileWithTagData> ScanAndRead(IEnumerable<string> path)
-    // {
-    //     var files = Scan(path, true);
-    //     var result = console
-    //         .Progress()
-    //         .Start(ctx =>
-    //         {
-    //             var task = ctx.AddTask("Reading metadata...", maxValue: files.Count);
-    //             var result = new List<FileWithTagData>();
-    //             for (var i = 0; i < files.Count; i++)
-    //             {
-    //                 var file = files[i];
-    //                 try
-    //                 {
-    //                     var tagData = tagger.ReadTags(file);
-    //                     result.Add(new FileWithTagData { Path = file, TagData = tagData });
-    //                 }
-    //                 catch (Exception ex)
-    //                 {
-    //                     console.WriteException(ex);
-    //                 }
-    //
-    //                 task.Description = $"Reading metadata for {i + 1} of {files.Count}";
-    //
-    //                 task.Increment(1);
-    //             }
-    //
-    //             return result;
-    //         });
-    //     return result;
-    // }
 
     private List<string> Search(IEnumerable<string> paths, bool recursive = false)
     {
