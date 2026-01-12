@@ -17,7 +17,7 @@ public class SplitTests
         var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
-        await action.ProcessTagDataAsync(item, [item], settings, CancellationToken.None);
+        await action.ExecuteAsync(item, [item], settings, CancellationToken.None);
 
         // Assert
         Assert.Equal("Artist1", tagData.Artist[0]);

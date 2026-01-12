@@ -2,12 +2,12 @@ namespace TagSelecta.Shared.TagDataActions;
 
 public interface ITagDataAction
 {
-    Task ProcessTagDataAsync(
+    Task ExecuteAsync(
         IFileContext current,
         IEnumerable<IFileContext> files,
         TagDataActionSettings settings,
         CancellationToken token
     );
 
-    Task<bool> BeforeProcessTagDataAsync(TagDataActionSettings settings, CancellationToken token);
+    Task<bool> BeforeExecuteAsync(TagDataActionSettings settings, CancellationToken token);
 }

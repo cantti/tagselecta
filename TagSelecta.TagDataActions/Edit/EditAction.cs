@@ -6,7 +6,7 @@ namespace TagSelecta.TagDataActions.Edit;
 [TagDataActionName("edit", "e")]
 public class EditAction : TagDataAction<EditSettings>
 {
-    protected override void ProcessTagData(
+    protected override void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         EditSettings settings

@@ -68,7 +68,7 @@ public class EditTests
         var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
-        await action.ProcessTagDataAsync(item, [item], settings, CancellationToken.None);
+        await action.ExecuteAsync(item, [item], settings, CancellationToken.None);
 
         // Assert
         Assert.Equal(settings.Album, tagData.Album);

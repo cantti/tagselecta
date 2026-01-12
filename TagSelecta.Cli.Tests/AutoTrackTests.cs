@@ -38,8 +38,8 @@ public class AutoTrackTests
         );
 
         // Act
-        await action.ProcessTagDataAsync(item1, [item1, item2], settings, CancellationToken.None);
-        await action.ProcessTagDataAsync(item2, [item1, item2], settings, CancellationToken.None);
+        await action.ExecuteAsync(item1, [item1, item2], settings, CancellationToken.None);
+        await action.ExecuteAsync(item2, [item1, item2], settings, CancellationToken.None);
 
         // Assert
         Assert.Equal("1", item1.CurrentTagData.Track);

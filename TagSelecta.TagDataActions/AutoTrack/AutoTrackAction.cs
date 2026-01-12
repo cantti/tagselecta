@@ -5,7 +5,7 @@ namespace TagSelecta.TagDataActions.AutoTrack;
 [TagDataActionName("autotrack")]
 public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
-    protected override void ProcessTagData(
+    protected override void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         AutoTrackSettings settings

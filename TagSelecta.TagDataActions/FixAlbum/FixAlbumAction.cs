@@ -10,7 +10,7 @@ public class FixAlbumAction(IAnsiConsole console) : TagDataAction<FixAlbumSettin
 {
     private readonly List<Album> _albums = [];
 
-    protected override void ProcessTagData(
+    protected override void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         FixAlbumSettings settings

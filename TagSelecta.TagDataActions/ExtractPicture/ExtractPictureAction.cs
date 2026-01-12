@@ -8,7 +8,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 {
     private readonly List<TagLib.PictureType> _types = [];
 
-    protected override bool BeforeProcessTagData(ExtractPictureSettings settings)
+    protected override bool BeforeExecute(ExtractPictureSettings settings)
     {
         if (settings.Type is not null)
         {
@@ -24,7 +24,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         return true;
     }
 
-    protected override void ProcessTagData(
+    protected override void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         ExtractPictureSettings settings

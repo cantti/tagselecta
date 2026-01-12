@@ -7,7 +7,7 @@ public class SplitAction : TagDataAction<SplitSettings>
 {
     private string[] _separators = [",", ";", "feat."];
 
-    protected override bool BeforeProcessTagData(SplitSettings settings)
+    protected override bool BeforeExecute(SplitSettings settings)
     {
         if (settings.Separator is not null)
         {
@@ -16,7 +16,7 @@ public class SplitAction : TagDataAction<SplitSettings>
         return true;
     }
 
-    protected override void ProcessTagData(
+    protected override void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         SplitSettings settings

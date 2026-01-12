@@ -6,7 +6,7 @@ namespace TagSelecta.TagDataActions.Move;
 [TagDataActionName("move", "mv")]
 public class MoveAction : TagDataAction<MoveSettings>
 {
-    protected override void ProcessTagData(
+    protected override void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         MoveSettings settings

@@ -7,7 +7,7 @@ namespace TagSelecta.TagDataActions.TitleCase;
 [TagDataActionName("titlecase")]
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
-    protected override void ProcessTagData(
+    protected override void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         TitleCaseSettings settings

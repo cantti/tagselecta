@@ -23,7 +23,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
             return 1;
         }
 
-        if (!await action.BeforeProcessTagDataAsync(settings, ct))
+        if (!await action.BeforeExecuteAsync(settings, ct))
         {
             return 0;
         }
@@ -66,7 +66,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                     {
                         try
                         {
-                            await action.ProcessTagDataAsync(operation, operations, settings, ct);
+                            await action.ExecuteAsync(operation, operations, settings, ct);
                             operation.CheckForChanges();
                         }
                         catch (Exception ex)

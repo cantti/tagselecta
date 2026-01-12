@@ -3,48 +3,48 @@ namespace TagSelecta.Shared.TagDataActions;
 public abstract class TagDataAction<TSettings> : ITagDataAction
     where TSettings : TagDataActionSettings
 {
-    protected virtual bool BeforeProcessTagData(TSettings settings)
+    protected virtual bool BeforeExecute(TSettings settings)
     {
         return true;
     }
 
-    public virtual Task<bool> BeforeProcessTagDataAsync(TSettings settings, CancellationToken token)
+    public virtual Task<bool> BeforeExecuteAsync(TSettings settings, CancellationToken token)
     {
-        return Task.FromResult(BeforeProcessTagData(settings));
+        return Task.FromResult(BeforeExecute(settings));
     }
 
-    protected virtual void ProcessTagData(
+    protected virtual void Execute(
         IFileContext current,
         IEnumerable<IFileContext> files,
         TSettings settings
     ) { }
 
-    public virtual Task ProcessTagDataAsync(
+    public virtual Task ExecuteAsync(
         IFileContext current,
         IEnumerable<IFileContext> files,
         TSettings settings,
         CancellationToken token
     )
     {
-        ProcessTagData(current, files, settings);
+        Execute(current, files, settings);
         return Task.CompletedTask;
     }
 
-    Task ITagDataAction.ProcessTagDataAsync(
+    Task ITagDataAction.ExecuteAsync(
         IFileContext current,
         IEnumerable<IFileContext> files,
         TagDataActionSettings settings,
         CancellationToken token
     )
     {
-        return ProcessTagDataAsync(current, files, (TSettings)settings, token);
+        return ExecuteAsync(current, files, (TSettings)settings, token);
     }
 
-    Task<bool> ITagDataAction.BeforeProcessTagDataAsync(
+    Task<bool> ITagDataAction.BeforeExecuteAsync(
         TagDataActionSettings settings,
         CancellationToken token
     )
     {
-        return BeforeProcessTagDataAsync((TSettings)settings, token);
+        return BeforeExecuteAsync((TSettings)settings, token);
     }
 }

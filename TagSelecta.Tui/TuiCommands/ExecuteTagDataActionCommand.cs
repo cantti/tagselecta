@@ -51,7 +51,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
     )
     {
         var baseSettings = CreateSettings(action, request.Args);
-        await action.BeforeProcessTagDataAsync(baseSettings, token);
+        await action.BeforeExecuteAsync(baseSettings, token);
     }
 
     private async Task ActionProcess(
@@ -63,7 +63,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
     )
     {
         var baseSettings = CreateSettings(action, request.Args);
-        await action.ProcessTagDataAsync(current, files, baseSettings, token);
+        await action.ExecuteAsync(current, files, baseSettings, token);
     }
 
     private static TagDataActionSettings CreateSettings(
