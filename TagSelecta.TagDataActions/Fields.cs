@@ -16,7 +16,6 @@ public static class Fields
     public const string Date = "date";
     public const string Disc = "disc";
     public const string DiscTotal = "disctotal";
-    public const string DiscogsReleaseId = "discogsreleaseid";
     public const string Genre = "genre";
     public const string Isrc = "isrc";
     public const string Label = "label";

@@ -26,8 +26,6 @@ public class TagData
 
     public string DiscTotal { get; set; } = "";
 
-    public string DiscogsReleaseId { get; set; } = "";
-
     public List<string> Genre { get; set; } = [];
 
     public string Isrc { get; set; } = "";

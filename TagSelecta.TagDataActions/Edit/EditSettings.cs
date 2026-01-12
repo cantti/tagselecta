@@ -56,10 +56,6 @@ public class EditSettings : TagDataActionSettings
     [Description("Total number of discs.")]
     public string? DiscTotal { get; set; }
 
-    [CommandOption($"--{Fields.DiscogsReleaseId}")]
-    [Description("Discogs release id.")]
-    public string? DiscogsReleaseId { get; set; }
-
     [CommandOption($"--{Fields.Genre}|-g")]
     [Description("One or more genres. Multiple values can be provided using a ';' separator")]
     public string? Genre { get; set; }

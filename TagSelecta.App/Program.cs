@@ -62,8 +62,7 @@ class Program
         config.AddSplit(services);
         config.AddDiscogs(services);
         config.AddAutoTrack(services);
-        config.AddFixAlbum(services);
-        config.AddRenameFile(services);
+        config.AddMove(services);
         config.AddFind(services);
     }
 

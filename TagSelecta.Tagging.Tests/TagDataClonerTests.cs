@@ -23,7 +23,6 @@ public class TagDataClonerTests
             Date = "2022",
             Label = "Test Label",
             CatalogNumber = "12345",
-            DiscogsReleaseId = "67890",
             Picture =
             [
                 new Picture

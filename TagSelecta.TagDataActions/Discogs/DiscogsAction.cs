@@ -81,7 +81,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             Fields.CatalogNumber,
             () => current.CurrentTagData.CatalogNumber = label?.CatNo ?? ""
         );
-        current.CurrentTagData.DiscogsReleaseId = _release.Release.Id.ToString();
+        current.CurrentTagData.SetCustomField("discogs_release_id", _release.Release.Id.ToString());
     }
 
     private void Write(string field, Action write)

@@ -55,9 +55,6 @@ public class TagDataForTemplate(TagData tagData, string path)
     [Description("Total number of discs.")]
     public string DiscTotal { get; } = tagData.DiscTotal;
 
-    [Description("Discogs release ID.")]
-    public string DiscogsReleaseId { get; } = tagData.DiscogsReleaseId;
-
     [Description("Genres as a single string.")]
     public string Genre { get; } = tagData.Genre.ToJoined();
 

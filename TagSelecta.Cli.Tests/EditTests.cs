@@ -27,7 +27,6 @@ public class EditTests
             Date = "2025",
             Disc = "1",
             DiscTotal = "2",
-            DiscogsReleaseId = "123456",
             Genre = "Test Genre",
             Isrc = "TESTISRC123",
             Label = "Test Label",
@@ -52,7 +51,6 @@ public class EditTests
             Date = "2000",
             Disc = "1",
             DiscTotal = "1",
-            DiscogsReleaseId = "000000",
             Genre = ["Original Genre"],
             Isrc = "ORIGINALISRC",
             Label = "Original Label",
@@ -83,7 +81,6 @@ public class EditTests
         Assert.Equal(settings.Date, tagData.Date);
         Assert.Equal(settings.Disc, tagData.Disc);
         Assert.Equal(settings.DiscTotal, tagData.DiscTotal);
-        Assert.Equal(settings.DiscogsReleaseId, tagData.DiscogsReleaseId);
         Assert.Equal(settings.Genre.ToMulti(), tagData.Genre);
         Assert.Equal(settings.Isrc, tagData.Isrc);
         Assert.Equal(settings.Label, tagData.Label);

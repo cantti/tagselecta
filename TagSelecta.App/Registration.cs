@@ -91,11 +91,11 @@ public static class Registration
             .WithDescription("Extract pictures to files.");
     }
 
-    public static void AddRenameFile(this IConfigurator configurator, IServiceCollection services)
+    public static void AddMove(this IConfigurator configurator, IServiceCollection services)
     {
         configurator
             .AddTagDataAction<MoveAction>(services)
-            .WithDescription("Rename files based on tag data.");
+            .WithDescription("Move (rename) files to another directory.");
     }
 
     public static void AddSplit(this IConfigurator configurator, IServiceCollection services)

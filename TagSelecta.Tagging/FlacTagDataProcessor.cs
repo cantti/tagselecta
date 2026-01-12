@@ -22,7 +22,6 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         "date",
         "discnumber",
         "disctotal",
-        "discogs_release_id",
         "genre",
         "isrc",
         "label",
@@ -48,7 +47,6 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             Date = ReadField("date"),
             Disc = ReadField("discnumber"),
             DiscTotal = ReadField("disctotal"),
-            DiscogsReleaseId = ReadField("discogs_release_id"),
             Genre = ReadFieldMulti("genre"),
             Isrc = ReadField("isrc"),
             Label = ReadField("label"),
@@ -76,7 +74,6 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         WriteField("date", data.Date);
         WriteField("discnumber", data.Disc);
         WriteField("disctotal", data.DiscTotal);
-        WriteField("discogs_release_id", data.DiscogsReleaseId);
         WriteFieldMulti("genre", data.Genre);
         WriteField("isrc", data.Isrc);
         WriteField("label", data.Label);

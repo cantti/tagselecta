@@ -27,7 +27,6 @@ public class EditAction : TagDataAction<EditSettings>
         Write(s => s.Date, v => tagData.Date = v);
         Write(s => s.Disc, v => tagData.Disc = v);
         Write(s => s.DiscTotal, v => tagData.DiscTotal = v);
-        Write(s => s.DiscogsReleaseId, v => tagData.DiscogsReleaseId = v);
         Write(s => s.Genre, v => tagData.Genre = v.ToMulti());
         Write(s => s.Isrc, v => tagData.Isrc = v);
         Write(s => s.Label, v => tagData.Label = v);

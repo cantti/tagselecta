@@ -12,7 +12,6 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
     {
         "label",
         "catalognumber",
-        "discogs_release_id",
     };
 
     public override TagData Read()
@@ -31,7 +30,6 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             Date = GetText("TDRC"),
             Disc = GetTextValueAndTotal("TPOS").Value,
             DiscTotal = GetTextValueAndTotal("TPOS").Total,
-            DiscogsReleaseId = GetUserTextAsString("discogs_release_id"),
             Genre = id3v2.Genres.ToList(),
             Isrc = id3v2.ISRC ?? "",
             Label = GetUserTextAsString("label"),
@@ -59,7 +57,6 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.Copyright = data.Copyright;
         WriteText("TDRC", data.Date);
         WriteTextValueAndTotal("TPOS", data.Disc, data.DiscTotal);
-        WriteUserText("discogs_release_id", data.DiscogsReleaseId);
         id3v2.Genres = data.Genre.ToArray();
         id3v2.ISRC = data.Isrc;
         WriteUserText("label", data.Label);

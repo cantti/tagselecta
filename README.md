@@ -248,23 +248,6 @@ OPTIONS:
         --keepdisk    Remove Disc and DiscTotal
 ```
 
-### Fix Album command
-
-```
-DESCRIPTION:
-Set album name, date and album artists to the same value to all files in the 
-same directory
-
-USAGE:
-    tagselecta fixalbum <path> [OPTIONS]
-
-ARGUMENTS:
-    <path>     
-
-OPTIONS:
-    -h, --help    Prints help information
-```
-
 ### Discogs command
 
 ```
