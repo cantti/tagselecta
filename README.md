@@ -95,7 +95,7 @@ COMMANDS:
     autotrack <path>         Auto track                                         
     fixalbum <path>          Set album name, date and album artists to the same 
                              value to all files in the same directory           
-    rename <path>            Rename files based on tag data                     
+    move <path>              Rename files based on tag data                     
     find <path>              Find files by metadata
 ```
 
@@ -181,14 +181,14 @@ OPTIONS:
     -l, --limit       Limit number of files to be extracted
 ```
 
-### Rename command
+### Move command
 
 ```
 DESCRIPTION:
 Rename files based on tag data
 
 USAGE:
-    tagselecta rename <path> [OPTIONS]
+    tagselecta move <path> [OPTIONS]
 
 ARGUMENTS:
     <path>     
