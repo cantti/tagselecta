@@ -124,6 +124,13 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             );
         }
 
+        var validationResult = baseSettings.Validate();
+
+        if (!validationResult.Successful)
+        {
+            throw new InvalidOperationException(validationResult.Message);
+        }
+
         return baseSettings;
     }
 
