@@ -5,25 +5,29 @@ namespace TagSelecta.Shared.TagDataActions;
 
 public class TagDataOperation : IFileContext
 {
-    public TagDataOperation(string currentPath, Tagging.TagData currentTagData)
+    private TagData _originalTagData;
+
+    public TagDataOperation(string currentPath, TagData currentTagData)
     {
         CurrentPath = currentPath;
         CurrentTagData = currentTagData;
-        OriginalTagData = currentTagData.Clone();
+        _originalTagData = currentTagData.Clone();
         OriginalPath = currentPath;
     }
 
     public string CurrentPath { get; set; }
     public string OriginalPath { get; private set; }
     public TagData CurrentTagData { get; private set; }
-    public TagData OriginalTagData { get; private set; }
+
+    // expose TagData as read-only
+    public TagData OriginalTagData => _originalTagData.Clone();
     public Exception? Exception { get; private set; }
     public bool HasChanges { get; private set; }
     public bool IsSelected { get; set; }
 
     public void Undo()
     {
-        CurrentTagData = OriginalTagData.Clone();
+        CurrentTagData = _originalTagData.Clone();
         HasChanges = false;
         Exception = null;
     }
@@ -31,7 +35,7 @@ public class TagDataOperation : IFileContext
     public void CheckForChanges()
     {
         HasChanges =
-            !TagDataComparer.AreEqual(CurrentTagData, OriginalTagData)
+            !TagDataComparer.AreEqual(CurrentTagData, _originalTagData)
             || CurrentPath != OriginalPath;
     }
 
@@ -39,15 +43,23 @@ public class TagDataOperation : IFileContext
     {
         try
         {
-            if (!TagDataComparer.AreEqual(CurrentTagData, OriginalTagData))
+            if (!TagDataComparer.AreEqual(CurrentTagData, _originalTagData))
             {
                 tagger.WriteTags(OriginalPath, CurrentTagData);
-                OriginalTagData = CurrentTagData.Clone();
+                _originalTagData = CurrentTagData.Clone();
             }
             if (CurrentPath != OriginalPath)
             {
-                fs.Move(OriginalPath, CurrentPath);
-                OriginalPath = CurrentPath;
+                if (!fs.Exists(CurrentPath))
+                {
+                    fs.CreateDirectory(Path.GetDirectoryName(CurrentPath)!);
+                    fs.Move(OriginalPath, CurrentPath);
+                    OriginalPath = CurrentPath;
+                }
+                else
+                {
+                    //todo throw exception
+                }
             }
             HasChanges = false;
         }

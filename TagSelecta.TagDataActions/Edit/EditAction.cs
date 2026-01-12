@@ -13,7 +13,7 @@ public class EditAction : TagDataAction<EditSettings>
     )
     {
         var tagData = current.CurrentTagData;
-        var formatter = new TagDataFormatter(tagData, current.CurrentPath);
+        var formatter = new TagDataFormatter(current.OriginalTagData, current.OriginalPath);
 
         Write(s => s.Album, v => tagData.Album = v);
         Write(s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti());

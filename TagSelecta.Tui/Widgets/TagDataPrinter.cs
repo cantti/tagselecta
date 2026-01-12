@@ -14,7 +14,7 @@ public static class TagDataPrinter
         table.AddColumn("", c => c.Width(20));
         table.AddColumn("");
         table.HideHeaders();
-        AddField(table, "Filename", Path.GetFileName(f.CurrentPath));
+        AddField(table, "Path", f.CurrentPath);
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -57,12 +57,7 @@ public static class TagDataPrinter
         table.AddColumn("");
         table.HideHeaders();
 
-        AddFieldComparison(
-            table,
-            "Filename",
-            Path.GetFileName(f.OriginalPath),
-            Path.GetFileName(f.CurrentPath)
-        );
+        AddFieldComparison(table, "Path", f.OriginalPath, f.CurrentPath);
 
         foreach (
             var prop in typeof(TagData)

@@ -27,7 +27,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         var selectedOperationsList = context.SelectedOperations.ToList();
 
-        for (int i = 0; i < selectedOperationsList.Count; i++)
+        for (var i = 0; i < selectedOperationsList.Count; i++)
         {
             token.ThrowIfCancellationRequested();
             var operation = selectedOperationsList[i];

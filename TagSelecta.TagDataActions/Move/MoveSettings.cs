@@ -3,9 +3,9 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.TagDataActions;
 
-namespace TagSelecta.TagDataActions.RenameFile;
+namespace TagSelecta.TagDataActions.Move;
 
-public class RenameFileSettings : TagDataActionSettings
+public class MoveSettings : TagDataActionSettings
 {
     [CommandOption("--template|-t")]
     [Description("Template. For example: {{ date }} - {{ album }}")]

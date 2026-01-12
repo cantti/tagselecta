@@ -26,7 +26,7 @@ class Program
         var app = new CommandApp(new TypeRegistrar(services));
         app.Configure(config =>
         {
-            config.PropagateExceptions();
+            // config.PropagateExceptions();
 
             // add tui command
             config.AddCommand<TuiApp>("ui").WithDescription("Interactive UI (TUI)");

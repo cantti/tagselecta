@@ -139,10 +139,7 @@ public class TuiApp(
             Math.Max(0, VisibleOperations.Count() - 1)
         );
 
-        var filesContentSize = Math.Min(
-            (Console.WindowHeight - 3 - 1 - 1 - 1) / 2,
-            VisibleOperations.Count() + 2
-        );
+        var filesContentSize = (Console.WindowHeight - 3 - 1 - 1 - 1) / 2;
 
         var layout = new Layout("root").SplitRows(
             new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),

@@ -6,4 +6,14 @@ public class FileSystem : IFileSystem
     {
         File.Move(sourceFileName, destFileName);
     }
+
+    public void CreateDirectory(string getDirectoryName)
+    {
+        Directory.CreateDirectory(getDirectoryName);
+    }
+
+    public bool Exists(string path)
+    {
+        return Path.Exists(path);
+    }
 }

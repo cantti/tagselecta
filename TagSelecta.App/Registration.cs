@@ -9,7 +9,7 @@ using TagSelecta.TagDataActions.Discogs.DiscogsApi;
 using TagSelecta.TagDataActions.Edit;
 using TagSelecta.TagDataActions.ExtractPicture;
 using TagSelecta.TagDataActions.FixAlbum;
-using TagSelecta.TagDataActions.RenameFile;
+using TagSelecta.TagDataActions.Move;
 using TagSelecta.TagDataActions.Split;
 using TagSelecta.TagDataActions.TitleCase;
 
@@ -104,7 +104,7 @@ public static class Registration
     public static void AddRenameFile(this IConfigurator configurator, IServiceCollection services)
     {
         configurator
-            .AddTagDataAction<RenameFileAction>(services)
+            .AddTagDataAction<MoveAction>(services)
             .WithDescription("Rename files based on tag data.");
     }
 

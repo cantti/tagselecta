@@ -6,4 +6,6 @@ public interface IFileContext
 {
     public string CurrentPath { get; set; }
     public TagData CurrentTagData { get; }
+    string OriginalPath { get; }
+    TagData OriginalTagData { get; }
 }
