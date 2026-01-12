@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using Spectre.Console;
-using TagSelecta.Tagging;
+using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Shared.IO;
 

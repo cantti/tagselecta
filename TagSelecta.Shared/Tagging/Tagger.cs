@@ -1,6 +1,6 @@
 using TagLib;
 
-namespace TagSelecta.Tagging;
+namespace TagSelecta.Shared.Tagging;
 
 public class Tagger : ITagger
 {

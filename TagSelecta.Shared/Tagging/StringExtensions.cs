@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace TagSelecta.Tagging;
+namespace TagSelecta.Shared.Tagging;
 
 public static class StringListExtensions
 {

@@ -1,6 +1,7 @@
 using TagLib;
+using TagSelecta.Shared.Tagging;
 
-namespace TagSelecta.Tagging.Tests;
+namespace TagSelecta.Shared.Tests;
 
 public class TagDataClonerTests
 {

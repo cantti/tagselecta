@@ -10,6 +10,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
-    <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj" />
   </ItemGroup>
 </Project>

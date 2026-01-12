@@ -1,6 +1,6 @@
 using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.TitleCase;
-using TagSelecta.Tagging;
 
 namespace TagSelecta.Cli.Tests;
 

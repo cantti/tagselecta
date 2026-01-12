@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.CliCommands\TagSelecta.CliCommands.csproj" />
     <ProjectReference Include="..\TagSelecta.TagDataActions\TagSelecta.TagDataActions.csproj" />
-    <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj" />
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
     <ProjectReference Include="..\TagSelecta.Tui\TagSelecta.Tui.csproj" />
   </ItemGroup>

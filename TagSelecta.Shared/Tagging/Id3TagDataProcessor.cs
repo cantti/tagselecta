@@ -1,6 +1,6 @@
 using TagLib.Id3v2;
 
-namespace TagSelecta.Tagging;
+namespace TagSelecta.Shared.Tagging;
 
 public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
 {

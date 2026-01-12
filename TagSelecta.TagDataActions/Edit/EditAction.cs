@@ -1,5 +1,5 @@
 using TagSelecta.Shared.TagDataActions;
-using TagSelecta.Tagging;
+using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.TagDataActions.Edit;
 

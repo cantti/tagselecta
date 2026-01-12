@@ -7,11 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.App", "TagSelect
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Cli.Tests", "TagSelecta.Cli.Tests\TagSelecta.Cli.Tests.csproj", "{F2769266-9C8D-46B5-8E52-6A9C218F689F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Tagging", "TagSelecta.Tagging\TagSelecta.Tagging.csproj", "{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Shared", "TagSelecta.Shared\TagSelecta.Shared.csproj", "{75A747AB-0E3D-469B-8BFA-F10F12EDBA24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Tagging.Tests", "TagSelecta.Tagging.Tests\TagSelecta.Tagging.Tests.csproj", "{F9732944-A295-4E68-B656-DAD7B46B3CA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Shared.Tests", "TagSelecta.Shared.Tests\TagSelecta.Shared.Tests.csproj", "{F9732944-A295-4E68-B656-DAD7B46B3CA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagSelecta.Tui", "TagSelecta.Tui\TagSelecta.Tui.csproj", "{B315FE22-6DC1-4D5C-AA68-8F73CBD39FF5}"
 EndProject
@@ -53,18 +51,6 @@ Global
 		{F2769266-9C8D-46B5-8E52-6A9C218F689F}.Release|x64.Build.0 = Release|Any CPU
 		{F2769266-9C8D-46B5-8E52-6A9C218F689F}.Release|x86.ActiveCfg = Release|Any CPU
 		{F2769266-9C8D-46B5-8E52-6A9C218F689F}.Release|x86.Build.0 = Release|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Debug|x64.Build.0 = Debug|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Debug|x86.Build.0 = Debug|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Release|x64.ActiveCfg = Release|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Release|x64.Build.0 = Release|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Release|x86.ActiveCfg = Release|Any CPU
-		{E8B4F5E1-B7D9-4590-A933-E988C4F58ECE}.Release|x86.Build.0 = Release|Any CPU
 		{75A747AB-0E3D-469B-8BFA-F10F12EDBA24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75A747AB-0E3D-469B-8BFA-F10F12EDBA24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75A747AB-0E3D-469B-8BFA-F10F12EDBA24}.Debug|x64.ActiveCfg = Debug|Any CPU

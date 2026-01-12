@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
-using TagSelecta.Tagging;
+using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.TagDataActions.Discogs;
 

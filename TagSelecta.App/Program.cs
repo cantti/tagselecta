@@ -4,7 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Shared.IO;
-using TagSelecta.Tagging;
+using TagSelecta.Shared.Tagging;
 using TagSelecta.Tui;
 
 namespace TagSelecta.App;

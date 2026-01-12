@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace TagSelecta.Tagging;
+namespace TagSelecta.Shared.Tagging;
 
 public class TagDataForTemplate(TagData tagData, string path)
 {

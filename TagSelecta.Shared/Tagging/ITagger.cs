@@ -1,4 +1,4 @@
-namespace TagSelecta.Tagging;
+namespace TagSelecta.Shared.Tagging;
 
 public interface ITagger
 {

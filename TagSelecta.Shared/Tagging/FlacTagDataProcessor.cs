@@ -1,7 +1,7 @@
 using TagLib.Flac;
 using TagLib.Ogg;
 
-namespace TagSelecta.Tagging;
+namespace TagSelecta.Shared.Tagging;
 
 public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProcessor
 {

@@ -6,9 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TagSelecta.Tagging\TagSelecta.Tagging.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+    <PackageReference Include="Scriban" Version="6.5.0" />
   </ItemGroup>
 </Project>

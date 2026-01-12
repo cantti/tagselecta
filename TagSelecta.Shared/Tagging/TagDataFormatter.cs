@@ -1,6 +1,6 @@
 using Scriban;
 
-namespace TagSelecta.Tagging;
+namespace TagSelecta.Shared.Tagging;
 
 public class TagDataFormatter
 {
