@@ -71,7 +71,7 @@ public static class CommandConfiguratorExtensions
             actionType = actionType.BaseType!;
         }
 
-        throw new InvalidOperationException(
+        throw new TagSelectaException(
             $"{actionType} does not inherit from TagDataAction<TSettings>"
         );
     }

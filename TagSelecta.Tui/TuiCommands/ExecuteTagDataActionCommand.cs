@@ -97,14 +97,11 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             {
                 if (attr.IsRequired)
                 {
-                    throw new InvalidOperationException(
+                    throw new TagSelectaException(
                         $"Command is missing required argument '{attr.LongNames[0]}'"
                     );
                 }
-                else
-                {
-                    continue;
-                }
+                continue;
             }
             if (prop.PropertyType == typeof(string))
             {
@@ -120,16 +117,14 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             }
             else
             {
-                throw new InvalidOperationException(
-                    $"Unsupported property type: {prop.PropertyType}"
-                );
+                throw new TagSelectaException($"Unsupported property type: {prop.PropertyType}");
             }
             argList.RemoveAll(x => matchedValues.Contains(x.Value));
         }
 
         if (argList.Count > 0)
         {
-            throw new InvalidOperationException(
+            throw new TagSelectaException(
                 $"Unknown arguments: {string.Join(", ", argList.Select(x => x.Key))}"
             );
         }
@@ -138,7 +133,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         if (!validationResult.Successful)
         {
-            throw new InvalidOperationException(validationResult.Message);
+            throw new TagSelectaException(validationResult.Message);
         }
 
         return baseSettings;
@@ -159,7 +154,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             actionType = actionType.BaseType!;
         }
 
-        throw new InvalidOperationException(
+        throw new TagSelectaException(
             $"{actionType} does not inherit from TagDataAction<TSettings>"
         );
     }

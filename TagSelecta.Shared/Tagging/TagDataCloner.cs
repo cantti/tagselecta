@@ -1,3 +1,5 @@
+using TagSelecta.Shared.Exceptions;
+
 namespace TagSelecta.Shared.Tagging;
 
 public static class TagDataCloner
@@ -23,9 +25,7 @@ public static class TagDataCloner
             }
             else
             {
-                throw new InvalidOperationException(
-                    $"Unsupported property type: {prop.PropertyType}"
-                );
+                throw new TagSelectaException($"Unsupported property type: {prop.PropertyType}");
             }
         }
         return clone;

@@ -1,3 +1,4 @@
+using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 
@@ -12,8 +13,7 @@ public class MoveAction : TagDataAction<MoveSettings>
         MoveSettings settings
     )
     {
-        var dir =
-            Path.GetDirectoryName(current.OriginalPath) ?? throw new InvalidOperationException();
+        var dir = Path.GetDirectoryName(current.OriginalPath)!;
         var formatter = new TagDataFormatter(current.OriginalTagData, current.OriginalPath);
         var newName = formatter.Format(settings.Template);
         // if user missed extension, add it

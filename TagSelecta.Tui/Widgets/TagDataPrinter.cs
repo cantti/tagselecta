@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 
@@ -200,6 +201,6 @@ public static class TagDataPrinter
         if (type == typeof(List<string>))
             return ListToStr((List<string>)value);
 
-        throw new InvalidOperationException($"Unsupported property type: {type}");
+        throw new TagSelectaException($"Unsupported property type: {type}");
     }
 }
