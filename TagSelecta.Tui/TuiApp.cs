@@ -132,13 +132,6 @@ public class TuiApp(
 
     private IRenderable DrawLayout()
     {
-        // todo find better place for this
-        FocusedOperationIndex = Math.Clamp(
-            FocusedOperationIndex,
-            0,
-            Math.Max(0, VisibleOperations.Count() - 1)
-        );
-
         var filesContentSize = (Console.WindowHeight - 3 - 1 - 1 - 1) / 2;
 
         var layout = new Layout("root").SplitRows(

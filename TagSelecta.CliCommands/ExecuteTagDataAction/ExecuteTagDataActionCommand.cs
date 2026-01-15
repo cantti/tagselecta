@@ -2,13 +2,16 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.CliCommands.ExecuteTagDataAction;
 
 public class ExecuteTagDataActionCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
-    IAudioFileScanner audioFileScanner
+    IAudioFileScanner audioFileScanner,
+    ITagger tagger,
+    IFileSystem fs
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -33,11 +36,21 @@ public class ExecuteTagDataActionCommand<TSettings>(
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
 
-        console.WriteLine(operations.Count + " files found");
+        console.WriteLine($"Total {operations.Count} files found");
 
-        await ProcessTagData(settings, operations, ct);
+        await ExecuteAction(settings, operations, ct);
 
-        // write here
+        if (
+            !await console.ConfirmAsync(
+                $"Continue with writing {operations.Count(x => x.HasChanges)}?",
+                cancellationToken: ct
+            )
+        )
+        {
+            return 0;
+        }
+
+        Write(operations, ct);
 
         console.MarkupLineInterpolated(
             $"{operations.Count(x => x.Exception is null)}/{operations.Count} files written"
@@ -46,7 +59,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
         return 0;
     }
 
-    private async Task ProcessTagData(
+    private async Task ExecuteAction(
         TSettings settings,
         List<TagDataOperation> operations,
         CancellationToken ct
@@ -58,27 +71,38 @@ public class ExecuteTagDataActionCommand<TSettings>(
             .StartAsync(async ctx =>
             {
                 var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
-                var progressLock = new object();
-                await Parallel.ForEachAsync(
-                    operations,
-                    ct,
-                    async (operation, _) =>
+                foreach (var operation in operations)
+                {
+                    try
                     {
-                        try
-                        {
-                            await action.ExecuteAsync(operation, operations, settings, ct);
-                            operation.CheckForChanges();
-                        }
-                        catch (Exception ex)
-                        {
-                            operation.MarkError(ex);
-                        }
-                        lock (progressLock)
-                        {
-                            task.Increment(1);
-                        }
+                        await action.ExecuteAsync(operation, operations, settings, ct);
+                        operation.CheckForChanges();
                     }
-                );
+                    catch (Exception ex)
+                    {
+                        operation.MarkError(ex);
+                    }
+                    task.Increment(1);
+                }
+            });
+    }
+
+    private void Write(List<TagDataOperation> operations, CancellationToken ct)
+    {
+        console
+            .Progress()
+            .AutoClear(true)
+            .Start(ctx =>
+            {
+                var operationsToWrite = operations.Where(x => x.HasChanges).ToList();
+                var task = ctx.AddTask("Writing files...", maxValue: operationsToWrite.Count);
+                foreach (var operation in operationsToWrite)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(0.3));
+                    ct.ThrowIfCancellationRequested();
+                    operation.Write(tagger, fs);
+                    task.Increment(1);
+                }
             });
     }
 

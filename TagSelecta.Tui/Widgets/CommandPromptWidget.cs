@@ -27,8 +27,9 @@ public class CommandPromptWidget(string text, int cursorPos) : Renderable
         {
             cols.Add(new Text(" ", new Style(decoration: Decoration.Invert)));
         }
-        return (
-            (IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0, 0, 0, 0) }
-        ).Render(options, maxWidth);
+        return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
+            options,
+            maxWidth
+        );
     }
 }
