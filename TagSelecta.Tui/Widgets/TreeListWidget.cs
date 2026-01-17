@@ -16,7 +16,7 @@ public class TreeListWidget(
 
     private readonly List<TagDataOperation> _operations = operations.ToList();
 
-    private static List<TreeLine>? _cachedTreeLines = null;
+    private static List<TreeLine>? _cachedTreeLines;
 
     // todo find better approach
     private List<TreeLine> GetTreeLines()
@@ -83,9 +83,9 @@ public class TreeListWidget(
 
         foreach (var operation in _operations)
         {
-            paths.Add((operation.OriginalPath, operation));
+            paths.Add((operation.BackupPath, operation));
 
-            var current = operation.OriginalPath;
+            var current = operation.BackupPath;
             var root = Path.GetPathRoot(current);
 
             while (true)
@@ -110,6 +110,17 @@ public class TreeListWidget(
             }
         }
 
+        var roots = paths
+            .Where(x => string.Equals(x.Path, Path.GetPathRoot(x.Path), _pathComparer))
+            .ToList();
+
+        foreach (var root in roots)
+        {
+            AddNode(root);
+        }
+
+        return treeLines;
+
         void AddNode((string Path, TagDataOperation? operation) node, int depth = 0)
         {
             var root = Path.GetPathRoot(node.Path);
@@ -119,19 +130,9 @@ public class TreeListWidget(
                 : Path.GetFileName(node.Path);
 
             var operation = _operations.FirstOrDefault(x =>
-                string.Equals(x.OriginalPath, node.Path, _pathComparer)
+                string.Equals(x.BackupPath, node.Path, _pathComparer)
             );
 
-            var selectedMarker = operation is not null
-                ? operation.IsSelected
-                    ? "[x]"
-                    : "[ ]"
-                : "   ";
-            var indent = new string(' ', depth * 2);
-            var prefix = node.operation is null ? "▸ " : "  ";
-            var text = $"{selectedMarker}{indent}{prefix}{name}";
-            text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
-                .PadRight(Console.WindowWidth);
             var line = new TreeLine(name!, depth, operation);
 
             treeLines.Add(line);
@@ -145,17 +146,6 @@ public class TreeListWidget(
                 AddNode(child, depth + 1);
             }
         }
-
-        var roots = paths
-            .Where(x => string.Equals(x.Path, Path.GetPathRoot(x.Path), _pathComparer))
-            .ToList();
-
-        foreach (var root in roots)
-        {
-            AddNode(root);
-        }
-
-        return treeLines;
     }
 
     private record TreeLine(string Name, int Depth, TagDataOperation? Operation);

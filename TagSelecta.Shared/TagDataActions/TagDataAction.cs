@@ -14,14 +14,14 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     }
 
     protected virtual void Execute(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         TSettings settings
     ) { }
 
     public virtual Task ExecuteAsync(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         TSettings settings,
         CancellationToken token
     )
@@ -31,8 +31,8 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     }
 
     Task ITagDataAction.ExecuteAsync(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         TagDataActionSettings settings,
         CancellationToken token
     )

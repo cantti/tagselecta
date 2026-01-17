@@ -58,7 +58,7 @@ public static class TagDataPrinter
         table.AddColumn("");
         table.HideHeaders();
 
-        AddFieldComparison(table, "Path", f.OriginalPath, f.CurrentPath);
+        AddFieldComparison(table, "Path", f.BackupPath, f.CurrentPath);
 
         foreach (
             var prop in typeof(TagData)
@@ -70,12 +70,12 @@ public static class TagDataPrinter
             AddFieldComparison(
                 table,
                 prop.Name,
-                ConvertValue(prop.GetValue(f.OriginalTagData), prop.PropertyType),
+                ConvertValue(prop.GetValue(f.BackupTagData), prop.PropertyType),
                 ConvertValue(prop.GetValue(f.CurrentTagData), prop.PropertyType)
             );
         }
         var customKeys = f
-            .OriginalTagData.Custom.Select(x => x.Key)
+            .BackupTagData.Custom.Select(x => x.Key)
             .Union(f.CurrentTagData.Custom.Select(x => x.Key))
             .ToList();
         if (customKeys.Count > 0)
@@ -84,32 +84,31 @@ public static class TagDataPrinter
             table.AddRow("[i]Custom:[/]");
             foreach (
                 var key in f
-                    .OriginalTagData.Custom.Select(x => x.Key)
+                    .BackupTagData.Custom.Select(x => x.Key)
                     .Union(f.CurrentTagData.Custom.Select(x => x.Key))
             )
             {
-                var value1 =
-                    f.OriginalTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
+                var value1 = f.BackupTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
                 var value2 = f.CurrentTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
                 AddFieldComparison(table, key, value1, value2);
             }
         }
 
-        if (f.OriginalTagData.Picture.Count > 0 || f.CurrentTagData.Picture.Count > 0)
+        if (f.BackupTagData.Picture.Count > 0 || f.CurrentTagData.Picture.Count > 0)
         {
             table.AddEmptyRow();
             table.AddRow("[i]Pictures:[/]");
 
             // collect unique picture types
             var types = f
-                .OriginalTagData.Picture.Select(p => p.Type)
+                .BackupTagData.Picture.Select(p => p.Type)
                 .Union(f.CurrentTagData.Picture.Select(p => p.Type))
                 .OrderBy(t => t.ToString())
                 .ToList();
 
             foreach (var type in types)
             {
-                var list1 = f.OriginalTagData.Picture.Where(p => p.Type == type).ToList();
+                var list1 = f.BackupTagData.Picture.Where(p => p.Type == type).ToList();
                 var list2 = f.CurrentTagData.Picture.Where(p => p.Type == type).ToList();
 
                 int max = Math.Max(list1.Count, list2.Count);

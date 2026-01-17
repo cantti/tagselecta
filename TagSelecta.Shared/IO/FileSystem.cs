@@ -16,4 +16,24 @@ public class FileSystem : IFileSystem
     {
         return Path.Exists(path);
     }
+
+    public bool IsDirectoryEmpty(string path)
+    {
+        return !Directory.EnumerateFileSystemEntries(path).Any();
+    }
+
+    public void DeleteDirectory(string path)
+    {
+        Directory.Delete(path);
+    }
+
+    public string[] GetFiles(string path)
+    {
+        return Directory.GetFiles(path);
+    }
+
+    public void Copy(string sourceFileName, string destFileName)
+    {
+        File.Copy(sourceFileName, destFileName);
+    }
 }

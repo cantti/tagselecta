@@ -1,4 +1,3 @@
-using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 
@@ -8,20 +7,24 @@ namespace TagSelecta.TagDataActions.Move;
 public class MoveAction : TagDataAction<MoveSettings>
 {
     protected override void Execute(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         MoveSettings settings
     )
     {
-        var dir = Path.GetDirectoryName(current.OriginalPath)!;
-        var formatter = new TagDataFormatter(current.OriginalTagData, current.OriginalPath);
+        var dir = Path.GetDirectoryName(current.BackupPath)!;
+        var formatter = new TagDataFormatter(current.BackupTagData, current.BackupPath);
         var newName = formatter.Format(settings.Template);
-        // if user missed extension, add it
-        if (string.IsNullOrEmpty(Path.GetExtension(newName)))
-        {
-            newName = $"{newName}{Path.GetExtension(current.OriginalPath)}";
-        }
         var newPath = Path.GetFullPath(newName, dir);
-        current.CurrentPath = newPath;
+        MoveOptions moveOptions = MoveOptions.None;
+        if (settings.KeepEmptyDirectories)
+        {
+            moveOptions |= MoveOptions.KeepEmptyDirectories;
+        }
+        if (settings.DoNotMoveOtherFiles)
+        {
+            moveOptions |= MoveOptions.DoNotMoveOtherFiles;
+        }
+        current.SetCurrentPath(newPath, moveOptions);
     }
 }

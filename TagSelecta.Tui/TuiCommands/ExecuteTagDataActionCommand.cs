@@ -60,8 +60,8 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
     private async Task ActionProcess(
         ITagDataAction action,
         Request request,
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         CancellationToken token
     )
     {

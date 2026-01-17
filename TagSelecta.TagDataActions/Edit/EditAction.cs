@@ -7,13 +7,13 @@ namespace TagSelecta.TagDataActions.Edit;
 public class EditAction : TagDataAction<EditSettings>
 {
     protected override void Execute(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         EditSettings settings
     )
     {
         var tagData = current.CurrentTagData;
-        var formatter = new TagDataFormatter(current.OriginalTagData, current.OriginalPath);
+        var formatter = new TagDataFormatter(current.BackupTagData, current.BackupPath);
 
         Write(s => s.Album, v => tagData.Album = v);
         Write(s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti());

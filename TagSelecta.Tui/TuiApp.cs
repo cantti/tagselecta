@@ -14,7 +14,8 @@ public class TuiApp(
     IAudioFileScanner audioFileScanner,
     HotkeyMap hotkeys,
     IRequestReader requestReader,
-    ITuiCommandFactory commandFactory
+    ITuiCommandFactory commandFactory,
+    IFileSystem fs
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private const string HeaderLayoutKey = "navigation";

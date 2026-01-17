@@ -6,7 +6,7 @@ namespace TagSelecta.Shared.IO;
 
 public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFileScanner
 {
-    private static readonly HashSet<string> AllowedExtensions = [".mp3", ".flac", ".wav"];
+    public static HashSet<string> AllowedExtensions => [".mp3", ".flac", ".wav"];
 
     public List<string> Scan(IEnumerable<string> path, bool recursively)
     {

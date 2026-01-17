@@ -4,6 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Shared.IO;
+using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.Tui;
 
@@ -26,7 +27,7 @@ class Program
         var app = new CommandApp(new TypeRegistrar(services));
         app.Configure(config =>
         {
-            // config.PropagateExceptions();
+            config.PropagateExceptions();
 
             // add tui command
             config.AddCommand<TuiApp>("ui").WithDescription("Interactive UI (TUI)");
@@ -72,6 +73,7 @@ class Program
         services.AddTransient<IFileSystem, FileSystem>();
         services.AddTransient<ITagger, Tagger>();
         services.AddTransient<IAudioFileScanner, AudioFileScanner>();
+        services.AddTransient<ITagDataOperationWriter, TagDataOperationWriter>();
     }
 
     private static void ConfigureCancel(CancellationTokenSource cst)

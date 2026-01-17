@@ -31,10 +31,7 @@ public class FileListWidget(
         for (var i = 0; i < linesToPrint; i++)
         {
             var itemIndex = windowStart + i;
-            var path = Path.GetRelativePath(
-                Environment.CurrentDirectory,
-                operationList[itemIndex].OriginalPath
-            );
+            var path = operationList[itemIndex].BackupPath;
             var selectedMarker = operationList[itemIndex].IsSelected ? "[x]" : "[ ]";
             var text = $"{selectedMarker} {path}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))

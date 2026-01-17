@@ -17,8 +17,8 @@ public class SplitAction : TagDataAction<SplitSettings>
     }
 
     protected override void Execute(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         SplitSettings settings
     )
     {

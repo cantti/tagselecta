@@ -1,33 +1,40 @@
-using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Shared.TagDataActions;
 
-public class TagDataOperation : IFileContext
+public class TagDataOperation : ITagDataActionContext
 {
-    private TagData _originalTagData;
+    private TagData _backupTagData = null!;
 
     public TagDataOperation(string currentPath, TagData currentTagData)
     {
-        CurrentPath = currentPath;
         CurrentTagData = currentTagData;
-        _originalTagData = currentTagData.Clone();
-        OriginalPath = currentPath;
+        SetCurrentPath(currentPath, MoveOptions.None);
+        UpdateBackup();
     }
 
-    public string CurrentPath { get; set; }
-    public string OriginalPath { get; private set; }
+    public string CurrentPath { get; private set; } = null!;
+    public string BackupPath { get; private set; } = null!;
     public TagData CurrentTagData { get; private set; }
 
     // expose TagData as read-only
-    public TagData OriginalTagData => _originalTagData.Clone();
+    public TagData BackupTagData => _backupTagData.Clone();
     public Exception? Exception { get; private set; }
     public bool HasChanges { get; private set; }
     public bool IsSelected { get; set; }
 
+    public MoveOptions MoveOptions { get; private set; }
+
+    public void SetCurrentPath(string path, MoveOptions moveOptions)
+    {
+        CurrentPath = path;
+        MoveOptions = moveOptions;
+    }
+
     public void Undo()
     {
-        CurrentTagData = _originalTagData.Clone();
+        CurrentTagData = _backupTagData.Clone();
+        SetCurrentPath(BackupPath, MoveOptions.None);
         HasChanges = false;
         Exception = null;
     }
@@ -35,38 +42,15 @@ public class TagDataOperation : IFileContext
     public void CheckForChanges()
     {
         HasChanges =
-            !TagDataComparer.AreEqual(CurrentTagData, _originalTagData)
-            || CurrentPath != OriginalPath;
+            !TagDataComparer.AreEqual(CurrentTagData, _backupTagData) || CurrentPath != BackupPath;
     }
 
-    public void Write(ITagger tagger, IFileSystem fs)
+    public void UpdateBackup()
     {
-        try
-        {
-            if (!TagDataComparer.AreEqual(CurrentTagData, _originalTagData))
-            {
-                tagger.WriteTags(OriginalPath, CurrentTagData);
-                _originalTagData = CurrentTagData.Clone();
-            }
-            if (CurrentPath != OriginalPath)
-            {
-                if (!fs.Exists(CurrentPath))
-                {
-                    fs.CreateDirectory(Path.GetDirectoryName(CurrentPath)!);
-                    fs.Move(OriginalPath, CurrentPath);
-                    OriginalPath = CurrentPath;
-                }
-                else
-                {
-                    //todo throw exception
-                }
-            }
-            HasChanges = false;
-        }
-        catch (Exception ex)
-        {
-            MarkError(ex);
-        }
+        _backupTagData = CurrentTagData.Clone();
+        BackupPath = CurrentPath;
+        MoveOptions = MoveOptions.None;
+        HasChanges = false;
     }
 
     public void MarkError(Exception ex)

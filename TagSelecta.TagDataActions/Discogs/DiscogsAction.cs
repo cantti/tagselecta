@@ -27,8 +27,8 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
     }
 
     protected override void Execute(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         DiscogsSettings settings
     )
     {
@@ -37,11 +37,11 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             throw new TagSelectaException("Release not set");
         }
 
-        var dir = Path.GetDirectoryName(current.OriginalPath);
+        var dir = Path.GetDirectoryName(current.BackupPath);
 
         var index = files
-            .Where(x => Path.GetDirectoryName(x.OriginalPath) == dir)
-            .OrderBy(x => x.OriginalPath)
+            .Where(x => Path.GetDirectoryName(x.BackupPath) == dir)
+            .OrderBy(x => x.BackupPath)
             .ToList()
             .IndexOf(current);
 

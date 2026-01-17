@@ -8,8 +8,8 @@ namespace TagSelecta.TagDataActions.TitleCase;
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
     protected override void Execute(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         TitleCaseSettings settings
     )
     {

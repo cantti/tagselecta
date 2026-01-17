@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Refit;
 using Spectre.Console.Cli;
 using TagSelecta.CliCommands.Find;
-using TagSelecta.Shared.TagDataActions;
 using TagSelecta.TagDataActions.AutoTrack;
 using TagSelecta.TagDataActions.Discogs;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;

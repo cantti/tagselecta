@@ -1,10 +1,9 @@
-using TagSelecta.Shared.IO;
-using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TagDataActions;
 
 namespace TagSelecta.Tui.TuiCommands;
 
 [TuiCommand("write", "w")]
-public class WriteCommand(ITagger tagger, IFileSystem fs) : ITuiCommand
+public class WriteCommand(ITagDataOperationWriter writer) : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
@@ -13,10 +12,10 @@ public class WriteCommand(ITagger tagger, IFileSystem fs) : ITuiCommand
         {
             token.ThrowIfCancellationRequested();
             var operation = operationsToWrite[i];
-            operation.Write(tagger, fs);
+            writer.Write(operation);
             context.Print(
                 operation.Exception is null
-                    ? $"Wrote metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"
+                    ? $"Wrote changes {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"
                     : $"Failed to write metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath}): {operation.Exception.Message}"
             );
         }

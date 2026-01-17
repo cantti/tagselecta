@@ -3,8 +3,8 @@ namespace TagSelecta.Shared.TagDataActions;
 public interface ITagDataAction
 {
     Task ExecuteAsync(
-        IFileContext current,
-        IEnumerable<IFileContext> files,
+        ITagDataActionContext current,
+        IEnumerable<ITagDataActionContext> files,
         TagDataActionSettings settings,
         CancellationToken token
     );

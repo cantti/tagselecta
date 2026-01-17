@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Globalization;
 
 namespace TagSelecta.Shared.Tagging;
 
@@ -7,8 +8,11 @@ public class TagDataForTemplate(TagData tagData, string path)
     [Description("Full file path.")]
     public string Path { get; } = path;
 
-    [Description("File name without extension.")]
-    public string FileName { get; } = System.IO.Path.GetFileNameWithoutExtension(path);
+    [Description("File name with extension.")]
+    public string FileName { get; } = System.IO.Path.GetFileName(path);
+
+    [Description("File extension")]
+    public string Ext { get; } = System.IO.Path.GetExtension(path).TrimStart('.');
 
     [Description("Album name.")]
     public string Album { get; } = tagData.Album;
@@ -81,7 +85,15 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     [Description("Year extracted from the Date field.")]
     public string Year { get; } =
-        DateTime.TryParse(tagData.Date, out var d) ? d.Year.ToString() : "";
+        DateTime.TryParseExact(
+            tagData.Date,
+            ["yyyy", "yyyy-MM-dd", "yyyy/MM/dd"],
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var d
+        )
+            ? d.Year.ToString()
+            : "";
 
     [Description("Custom fields. Usage example: custom.url")]
     public Dictionary<string, string> Custom { get; } =

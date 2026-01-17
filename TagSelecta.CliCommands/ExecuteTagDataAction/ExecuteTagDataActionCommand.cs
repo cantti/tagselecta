@@ -2,7 +2,6 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.TagDataActions;
-using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.CliCommands.ExecuteTagDataAction;
 
@@ -10,8 +9,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITagger tagger,
-    IFileSystem fs
+    ITagDataOperationWriter writer
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -100,7 +98,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(0.3));
                     ct.ThrowIfCancellationRequested();
-                    operation.Write(tagger, fs);
+                    writer.Write(operation);
                     task.Increment(1);
                 }
             });
