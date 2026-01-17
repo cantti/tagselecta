@@ -45,7 +45,12 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             .ToList()
             .IndexOf(current);
 
-        if (index > _release.Release.TrackList.Count - 1)
+        if (index > _release.Release.TrackList?.Count - 1)
+        {
+            return;
+        }
+
+        if (_release.Release.TrackList is null)
         {
             return;
         }
@@ -53,12 +58,12 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
         var track = _release.Release.TrackList[index];
 
         var albumArtists = _release
-            .Release.Artists.Select(a => RemoveTrailingNumberParentheses(a.Name))
-            .ToList();
+            .Release.Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "")
+            .ToList() ?? [];
         var trackArtists = track
-            .Artists.Select(a => RemoveTrailingNumberParentheses(a.Name))
-            .ToList();
-        var label = _release.Release.Labels.FirstOrDefault();
+            .Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "")
+            .ToList() ?? [];
+        var label = _release.Release.Labels?.FirstOrDefault();
 
         Write(Fields.AlbumArtist, () => current.CurrentTagData.AlbumArtist = albumArtists);
         Write(
@@ -67,16 +72,16 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
                 current.CurrentTagData.Artist =
                     trackArtists.Count != 0 ? trackArtists : albumArtists
         );
-        Write(Fields.Album, () => current.CurrentTagData.Album = _release.Release.Title);
-        Write(Fields.Title, () => current.CurrentTagData.Title = track.Title);
-        Write(Fields.Track, () => current.CurrentTagData.Track = track.Position);
+        Write(Fields.Album, () => current.CurrentTagData.Album = _release.Release.Title ?? "");
+        Write(Fields.Title, () => current.CurrentTagData.Title = track.Title ?? "");
+        Write(Fields.Track, () => current.CurrentTagData.Track = track.Position ?? "");
         Write(
             Fields.TrackTotal,
             () => current.CurrentTagData.TrackTotal = _release.Release.TrackList.Count.ToString()
         );
         Write(Fields.Disc, () => current.CurrentTagData.Disc = "");
         Write(Fields.DiscTotal, () => current.CurrentTagData.DiscTotal = "");
-        Write(Fields.Genre, () => current.CurrentTagData.Genre = _release.Release.Styles);
+        Write(Fields.Genre, () => current.CurrentTagData.Genre = _release.Release.Styles ?? []);
         Write(Fields.Label, () => current.CurrentTagData.Label = label?.Name ?? "");
         Write(Fields.Date, () => current.CurrentTagData.Date = _release.Release.Year.ToString());
         Write(
@@ -104,13 +109,15 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             || _fieldToWriteList.Contains(fieldName.ToLowerInvariant());
     }
 
-    private static string RemoveTrailingNumberParentheses(string input)
+    private static string? RemoveTrailingNumberParentheses(string? input)
     {
         if (string.IsNullOrWhiteSpace(input))
+        {
             return input;
+        }
 
         // Remove "(digits)" if it's at the end, possibly with spaces before or after
-        string result = Regex.Replace(input, @"\s*\(\d+\)\s*$", "");
+        var result = Regex.Replace(input, @"\s*\(\d+\)\s*$", "");
 
         return result.TrimEnd();
     }

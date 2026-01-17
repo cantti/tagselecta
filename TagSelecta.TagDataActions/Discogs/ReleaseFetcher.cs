@@ -13,8 +13,8 @@ public class ReleaseFetcher(IDiscogsApi discogsApi, DiscogsImageDownloader disco
         var releaseId =
             urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
         var result = await discogsApi.GetRelease(releaseId);
-        result.TrackList = result.TrackList.Where(x => x.Type == "track").ToList();
-        var image = result.Images.FirstOrDefault();
+        result.TrackList = result.TrackList?.Where(x => x.Type == "track").ToList();
+        var image = result.Images?.FirstOrDefault();
         byte[]? resultImage = null;
         if (image is not null)
         {
