@@ -55,19 +55,19 @@ public class TuiApp(
         CancellationToken ct
     )
     {
-        _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-
-        BindHotkeys();
-
-        if (!ValidateOptions(context))
-        {
-            return 1;
-        }
-
-        AltScreen.Enter();
-
         try
         {
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+            BindHotkeys();
+
+            if (!ValidateOptions(context))
+            {
+                return 1;
+            }
+
+            AltScreen.Enter();
+
             Operations = audioFileScanner
                 .ScanAndRead(settings.Path, ct)
                 .Select(x => new TagDataOperation(x.Path, x.TagData))

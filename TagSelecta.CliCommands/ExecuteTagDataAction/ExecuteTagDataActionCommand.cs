@@ -19,40 +19,44 @@ public class ExecuteTagDataActionCommand<TSettings>(
         CancellationToken ct
     )
     {
-        if (!ValidateOptions(context))
+        try
         {
-            return 1;
-        }
+            if (!ValidateOptions(context))
+            {
+                return 1;
+            }
 
-        if (!await action.BeforeExecuteAsync(settings, ct))
-        {
-            return 0;
-        }
+            if (!await action.BeforeExecuteAsync(settings, ct))
+            {
+                return 0;
+            }
 
-        var operations = audioFileScanner
-            .ScanAndRead(settings.Path, ct)
-            .Select(x => new TagDataOperation(x.Path, x.TagData))
-            .ToList();
+            var operations = audioFileScanner
+                .ScanAndRead(settings.Path, ct)
+                .Select(x => new TagDataOperation(x.Path, x.TagData))
+                .ToList();
 
-        console.WriteLine($"Total {operations.Count} files found");
+            console.WriteLine($"Total {operations.Count} files found");
 
-        await ExecuteAction(settings, operations, ct);
+            await ExecuteAction(settings, operations, ct);
 
-        if (
-            !await console.ConfirmAsync(
-                $"Continue with writing {operations.Count(x => x.HasChanges)}?",
-                cancellationToken: ct
+            if (
+                !await console.ConfirmAsync(
+                    $"{operations.Count(x => x.HasChanges)} pending files. Continue?",
+                    cancellationToken: ct
+                )
             )
-        )
-        {
-            return 0;
+            {
+                return 0;
+            }
+
+            Write(operations, ct);
+
+            console.MarkupLineInterpolated(
+                $"Completed. {operations.Count(x => x.Exception is not null)} errors."
+            );
         }
-
-        Write(operations, ct);
-
-        console.MarkupLineInterpolated(
-            $"{operations.Count(x => x.Exception is null)}/{operations.Count} files written"
-        );
+        catch (OperationCanceledException) { }
 
         return 0;
     }
@@ -96,7 +100,6 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 var task = ctx.AddTask("Writing files...", maxValue: operationsToWrite.Count);
                 foreach (var operation in operationsToWrite)
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(0.3));
                     ct.ThrowIfCancellationRequested();
                     writer.Write(operation);
                     task.Increment(1);
