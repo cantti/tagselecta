@@ -36,7 +36,9 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             {
                 await ActionProcess(action, request, operation, context.Operations, token);
                 operation.CheckForChanges();
-                context.Print($"Updated {i + 1} of {selectedOperationsList.Count} files.");
+                context.Print(
+                    $"Processed {i + 1} of {selectedOperationsList.Count} files. Type :w to write changes."
+                );
             }
             catch (Exception ex)
             {
