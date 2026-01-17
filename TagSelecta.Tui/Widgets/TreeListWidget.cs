@@ -21,7 +21,13 @@ public class TreeListWidget(
     // todo find better approach
     private List<TreeLine> GetTreeLines()
     {
-        _cachedTreeLines ??= BuildTreeLines();
+        if (
+            _cachedTreeLines is null
+            || _cachedTreeLines.Count(x => x.Operation is not null) != _operations.Count
+        )
+        {
+            _cachedTreeLines = BuildTreeLines();
+        }
         return _cachedTreeLines;
     }
 
