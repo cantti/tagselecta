@@ -5,10 +5,10 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="TagSelecta.App/TagSelecta.App.csproj" />
-  <Project Path="TagSelecta.Cli.Tests/TagSelecta.Cli.Tests.csproj" />
   <Project Path="TagSelecta.CliCommands/TagSelecta.CliCommands.csproj" />
   <Project Path="TagSelecta.Shared.Tests/TagSelecta.Shared.Tests.csproj" />
   <Project Path="TagSelecta.Shared/TagSelecta.Shared.csproj" />
+  <Project Path="TagSelecta.TagDataActions.Tests\TagSelecta.TagDataActions.Tests.csproj" />
   <Project Path="TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj" />
   <Project Path="TagSelecta.Tui/TagSelecta.Tui.csproj" />
 </Solution>

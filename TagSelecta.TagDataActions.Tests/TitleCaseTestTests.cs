@@ -2,9 +2,8 @@ using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.TitleCase;
 
-namespace TagSelecta.Cli.Tests;
+namespace TagSelecta.TagDataActions.Tests;
 
-[Collection("Console")]
 public class TitleCaseTests
 {
     [Fact]
