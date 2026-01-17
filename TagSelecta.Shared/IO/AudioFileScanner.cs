@@ -14,7 +14,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
         return result;
     }
 
-    public List<FileWithTagData> ScanAndRead(IEnumerable<string> path)
+    public List<FileWithTagData> ScanAndRead(IEnumerable<string> path, CancellationToken ct)
     {
         var files = Scan(path, true);
         var result = new ConcurrentBag<FileWithTagData>();
@@ -26,6 +26,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                 var task = ctx.AddTask("Reading metadata...", maxValue: files.Count);
                 foreach (var file in files)
                 {
+                    ct.ThrowIfCancellationRequested();
                     try
                     {
                         var tagData = tagger.ReadTags(file);

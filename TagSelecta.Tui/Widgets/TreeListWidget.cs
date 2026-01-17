@@ -16,12 +16,14 @@ public class TreeListWidget(
 
     private readonly List<TagDataOperation> _operations = operations.ToList();
 
-    private static readonly List<TreeLine>? CachedTreeLines = null;
+    private static List<TreeLine>? _cachedTreeLines = null;
 
-    private List<TreeLine> GetTreeLines() =>
-        CachedTreeLines is not null && CachedTreeLines.Count == _operations.Count
-            ? CachedTreeLines
-            : BuildTreeLines();
+    // todo find better approach
+    private List<TreeLine> GetTreeLines()
+    {
+        _cachedTreeLines ??= BuildTreeLines();
+        return _cachedTreeLines;
+    }
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {

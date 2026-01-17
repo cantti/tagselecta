@@ -66,21 +66,25 @@ public class TuiApp(
 
         AltScreen.Enter();
 
-        Operations = audioFileScanner
-            .ScanAndRead(settings.Path)
-            .Select(x => new TagDataOperation(x.Path, x.TagData))
-            .ToList();
-
-        var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
-
-        _ = StartInputLoop(channel);
         try
         {
+            Operations = audioFileScanner
+                .ScanAndRead(settings.Path, ct)
+                .Select(x => new TagDataOperation(x.Path, x.TagData))
+                .ToList();
+
+            var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
+            _ = StartInputLoop(channel);
             await StartUiLoop(channel);
         }
-        catch (OperationCanceledException) { }
-
-        AltScreen.Exit();
+        catch (OperationCanceledException)
+        {
+            // expected
+        }
+        finally
+        {
+            AltScreen.Exit();
+        }
 
         return 0;
     }

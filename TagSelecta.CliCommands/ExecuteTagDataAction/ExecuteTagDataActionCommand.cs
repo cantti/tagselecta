@@ -32,7 +32,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
         }
 
         var operations = audioFileScanner
-            .ScanAndRead(settings.Path)
+            .ScanAndRead(settings.Path, ct)
             .Select(x => new TagDataOperation(x.Path, x.TagData))
             .ToList();
 
