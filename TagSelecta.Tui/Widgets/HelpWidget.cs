@@ -20,15 +20,16 @@ public class HelpWidget : Renderable
             ("f", "Toggle filter"),
             ("u", "Undo. Only if not written!"),
             (":selectdir", "Select all files in dir"),
-            (":write, :w", "Write"),
-            (":edit, :e", "Edit tags (artist=Bach title=\"The Goldberg Variations\" all)"),
+            (":write", "Write"),
+            (":edit artist=Bach title=\"The Goldberg Variations\"", "Edit tags"),
             (":autotrack", "Auto track number"),
             (":split", "Split artists"),
             (":titlecase", "Title case conversion"),
+            (":mv t=\"{{ year }} - {{ album }}/{{ filename }}\"", "Move file using template"),
             (":extractpicture", "Extract picture"),
             (
-                ":discogs",
-                "release=https://www.discogs.com/master/163206-King-Tubby-Presents-The-Roots-Of-Dub"
+                ":discogs u=https://www.discogs.com/master/163206-King-Tubby-Presents-The-Roots-Of-Dub",
+                "Discogs"
             ),
             ("https://github.com/cantti/tagselecta", "Read more"),
         };

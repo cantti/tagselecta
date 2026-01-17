@@ -9,7 +9,7 @@ public class ReleaseFetcher(IDiscogsApi discogsApi, DiscogsImageDownloader disco
 {
     public async Task<ReleaseFetcherResult?> Fetch(DiscogsSettings settings)
     {
-        var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Release);
+        var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Url);
         var releaseId =
             urlType == "master" ? (await discogsApi.GetMaster(urlId)).MainRelease : urlId;
         var result = await discogsApi.GetRelease(releaseId);

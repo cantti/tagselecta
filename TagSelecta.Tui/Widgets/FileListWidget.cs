@@ -32,19 +32,27 @@ public class FileListWidget(
         {
             var itemIndex = windowStart + i;
             var path = operationList[itemIndex].BackupPath;
-            var selectedMarker = operationList[itemIndex].IsSelected ? "[x]" : "[ ]";
-            var text = $"{selectedMarker} {path}";
-            text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
-                .PadRight(Console.WindowWidth);
-            var style = new Style(
-                operationList[itemIndex].HasChanges ? Color.Red : Color.Default,
-                focusedIndex == itemIndex ? Color.Grey : Color.Default
-            );
-            items.Add(new Text(text, style));
+
+            var cols = new List<IRenderable>();
+            var fg = operationList[itemIndex].HasChanges ? Color.Red : Color.Default;
+            var bg = focusedIndex == itemIndex ? Color.Grey : Color.Default;
+            var selectedMarker = operationList[itemIndex].IsSelected ? "[x] " : "[ ] ";
+            cols.Add(new Text(selectedMarker, new Style(fg, bg)));
+            if (path.Length + selectedMarker.Length > maxWidth)
+            {
+                var start = path.Length + selectedMarker.Length + 3 - maxWidth;
+                cols.Add(new Text("...", new Style(fg, bg)));
+                path = path.Substring(start);
+            }
+            cols.Add(new Text(path, new Style(fg, bg)));
+            items.Add(new Columns(cols) { Expand = false, Padding = new Padding(0) });
         }
 
         IRenderable content = new Rows(
-            new Text($"Files ({operationList.Count}):", new Style(Color.Yellow)),
+            new Text($"Files ({operationList.Count}):", new Style(Color.Yellow))
+            {
+                Overflow = Overflow.Ellipsis,
+            },
             new Rows(items)
         );
 
