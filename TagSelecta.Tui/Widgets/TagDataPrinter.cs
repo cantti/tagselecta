@@ -52,6 +52,9 @@ public static class TagDataPrinter
 
     public static IRenderable PrintComparison(TagDataOperation f)
     {
+        // cache backup value
+        var backupTagData = f.BackupTagData;
+
         var table = new Table();
         table.Border(TableBorder.None);
         table.AddColumn("", c => c.Width(20));
@@ -70,7 +73,7 @@ public static class TagDataPrinter
             AddFieldComparison(
                 table,
                 prop.Name,
-                ConvertValue(prop.GetValue(f.BackupTagData), prop.PropertyType),
+                ConvertValue(prop.GetValue(backupTagData), prop.PropertyType),
                 ConvertValue(prop.GetValue(f.CurrentTagData), prop.PropertyType)
             );
         }
@@ -88,13 +91,13 @@ public static class TagDataPrinter
                     .Union(f.CurrentTagData.Custom.Select(x => x.Key))
             )
             {
-                var value1 = f.BackupTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
+                var value1 = backupTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
                 var value2 = f.CurrentTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
                 AddFieldComparison(table, key, value1, value2);
             }
         }
 
-        if (f.BackupTagData.Picture.Count > 0 || f.CurrentTagData.Picture.Count > 0)
+        if (backupTagData.Picture.Count > 0 || f.CurrentTagData.Picture.Count > 0)
         {
             table.AddEmptyRow();
             table.AddRow("[i]Pictures:[/]");
@@ -108,7 +111,7 @@ public static class TagDataPrinter
 
             foreach (var type in types)
             {
-                var list1 = f.BackupTagData.Picture.Where(p => p.Type == type).ToList();
+                var list1 = backupTagData.Picture.Where(p => p.Type == type).ToList();
                 var list2 = f.CurrentTagData.Picture.Where(p => p.Type == type).ToList();
 
                 int max = Math.Max(list1.Count, list2.Count);
