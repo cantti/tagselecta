@@ -74,6 +74,7 @@ class Program
         services.AddTransient<ITagger, Tagger>();
         services.AddTransient<IAudioFileScanner, AudioFileScanner>();
         services.AddTransient<ITagDataOperationWriter, TagDataOperationWriter>();
+        services.AddTransient<ITagDataActionExecutor, TagDataActionExecutor>();
     }
 
     private static void ConfigureCancel(CancellationTokenSource cst)

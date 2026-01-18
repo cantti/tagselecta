@@ -7,28 +7,45 @@ public class TagDataOperationWriter(ITagger tagger, IFileSystem fs) : ITagDataOp
 {
     public void Write(TagDataOperation operation)
     {
-        if (!TagDataComparer.AreEqual(operation.CurrentTagData, operation.BackupTagData))
+        operation.ResetError();
+        try
         {
-            tagger.WriteTags(operation.BackupPath, operation.CurrentTagData);
+            PerformWrite(operation);
+            operation.UpdateBackup();
+        }
+        catch (Exception ex)
+        {
+            operation.MarkError(ex);
+        }
+    }
+
+    private void PerformWrite(TagDataOperation operation)
+    {
+        if (!TagDataComparer.AreEqual(operation.GetCurrentTagData(), operation.GetBackupTagData()))
+        {
+            tagger.WriteTags(operation.GetBackupPath(), operation.GetCurrentTagData());
         }
 
-        if (operation.CurrentPath == operation.BackupPath || fs.Exists(operation.CurrentPath))
+        if (
+            operation.GetCurrentPath() == operation.GetBackupPath()
+            || fs.Exists(operation.GetCurrentPath())
+        )
         {
             return;
         }
 
-        var destDir = Path.GetDirectoryName(operation.CurrentPath)!;
+        var destDir = Path.GetDirectoryName(operation.GetCurrentPath())!;
 
         // create directory with subdirectories
         fs.CreateDirectory(destDir);
 
         // move audio file
-        fs.Move(operation.BackupPath, operation.CurrentPath);
+        fs.Move(operation.GetBackupPath(), operation.GetCurrentPath());
 
         // move other files
-        if (!operation.MoveOptions.HasFlag(MoveOptions.DoNotMoveOtherFiles))
+        if (!operation.GetMoveOptions().HasFlag(MoveOptions.DoNotMoveOtherFiles))
         {
-            var otherFiles = fs.GetFiles(Path.GetDirectoryName(operation.BackupPath)!)
+            var otherFiles = fs.GetFiles(Path.GetDirectoryName(operation.GetBackupPath())!)
                 .Where(f =>
                     !AudioFileScanner.AllowedExtensions.Contains(Path.GetExtension(f).ToLower())
                 );
@@ -43,11 +60,11 @@ public class TagDataOperationWriter(ITagger tagger, IFileSystem fs) : ITagDataOp
         }
         // delete empty directories
         if (
-            !operation.MoveOptions.HasFlag(MoveOptions.KeepEmptyDirectories)
-            && fs.IsDirectoryEmpty(Path.GetDirectoryName(operation.BackupPath)!)
+            !operation.GetMoveOptions().HasFlag(MoveOptions.KeepEmptyDirectories)
+            && fs.IsDirectoryEmpty(Path.GetDirectoryName(operation.GetBackupPath())!)
         )
         {
-            fs.DeleteDirectory(Path.GetDirectoryName(operation.BackupPath)!);
+            fs.DeleteDirectory(Path.GetDirectoryName(operation.GetBackupPath())!);
         }
     }
 }

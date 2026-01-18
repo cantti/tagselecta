@@ -9,10 +9,10 @@ public class SelectDirCommand : ITuiCommand
         {
             return Task.CompletedTask;
         }
-        var dir = Path.GetDirectoryName(context.FocusedOperation.CurrentPath);
+        var dir = Path.GetDirectoryName(context.FocusedOperation.GetCurrentPath());
         foreach (
             var operation in context
-                .Operations.Where(x => Path.GetDirectoryName(x.CurrentPath) == dir)
+                .Operations.Where(x => Path.GetDirectoryName(x.GetCurrentPath()) == dir)
                 .ToList()
         )
         {

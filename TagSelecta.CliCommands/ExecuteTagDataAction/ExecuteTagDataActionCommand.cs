@@ -9,7 +9,8 @@ public class ExecuteTagDataActionCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITagDataOperationWriter writer
+    ITagDataOperationWriter writer,
+    ITagDataActionExecutor executor
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -75,15 +76,15 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
                 foreach (var operation in operations)
                 {
-                    try
-                    {
-                        await action.ExecuteAsync(operation, operations, settings, ct);
-                        operation.CheckForChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        operation.MarkError(ex);
-                    }
+                    ct.ThrowIfCancellationRequested();
+                    await executor.Execute(
+                        operation,
+                        operations.IndexOf(operation),
+                        action,
+                        settings,
+                        operations,
+                        ct
+                    );
                     task.Increment(1);
                 }
             });
@@ -101,15 +102,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var operation in operationsToWrite)
                 {
                     ct.ThrowIfCancellationRequested();
-                    operation.ResetError();
-                    try
-                    {
-                        writer.Write(operation);
-                    }
-                    catch (Exception ex)
-                    {
-                        operation.MarkError(ex);
-                    }
+                    writer.Write(operation);
                     task.Increment(1);
                 }
             });

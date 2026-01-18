@@ -31,7 +31,7 @@ public class FileListWidget(
         for (var i = 0; i < linesToPrint; i++)
         {
             var itemIndex = windowStart + i;
-            var path = operationList[itemIndex].BackupPath;
+            var path = operationList[itemIndex].GetBackupPath();
 
             var cols = new List<IRenderable>();
             var fg = operationList[itemIndex].HasChanges ? Color.Red : Color.Default;

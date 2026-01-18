@@ -12,20 +12,11 @@ public class WriteCommand(ITagDataOperationWriter writer) : ITuiCommand
         {
             token.ThrowIfCancellationRequested();
             var operation = operationsToWrite[i];
-            operation.ResetError();
-            try
-            {
-                writer.Write(operation);
-                operation.UpdateBackup();
-            }
-            catch (Exception ex)
-            {
-                operation.MarkError(ex);
-            }
+            writer.Write(operation);
             context.Print(
                 operation.Exception is null
-                    ? $"Wrote changes {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"
-                    : $"Failed to write metadata {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath}): {operation.Exception.Message}"
+                    ? $"Wrote changes {i + 1} of {operationsToWrite.Count} ({operation.GetCurrentPath()})"
+                    : $"Failed to write metadata {i + 1} of {operationsToWrite.Count} ({operation.GetCurrentPath()}): {operation.Exception.Message}"
             );
         }
         return Task.CompletedTask;

@@ -2,64 +2,95 @@ using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Shared.TagDataActions;
 
-public class TagDataOperation : ITagDataActionContext
+public class TagDataOperation : ITagDataActionTarget, ITagDataActionSnapshot
 {
     private TagData _backupTagData = null!;
+    private TagData _currentTagData;
+    private string _currentPath = null!;
+    private string _backupPath = null!;
+    private MoveOptions _moveOptions;
+
+    public Exception? Exception { get; private set; }
+
+    public bool HasChanges { get; private set; }
+
+    public bool IsSelected { get; set; }
 
     public TagDataOperation(string currentPath, TagData currentTagData)
     {
-        CurrentTagData = currentTagData;
+        _currentTagData = currentTagData;
         SetCurrentPath(currentPath, MoveOptions.None);
         UpdateBackup();
     }
 
-    public string CurrentPath { get; private set; } = null!;
-    public string BackupPath { get; private set; } = null!;
-    public TagData CurrentTagData { get; private set; }
+    public string GetCurrentPath()
+    {
+        return _currentPath;
+    }
 
-    // expose TagData as read-only
-    public TagData BackupTagData => _backupTagData.Clone();
-    public Exception? Exception { get; private set; }
-    public bool HasChanges { get; private set; }
-    public bool IsSelected { get; set; }
+    public string GetBackupPath()
+    {
+        return _backupPath;
+    }
 
-    public MoveOptions MoveOptions { get; private set; }
+    public TagData GetCurrentTagData()
+    {
+        return _currentTagData.Clone();
+    }
+
+    public TagData GetBackupTagData()
+    {
+        return _backupTagData.Clone();
+    }
+
+    public MoveOptions GetMoveOptions()
+    {
+        return _moveOptions;
+    }
 
     public void SetCurrentPath(string path, MoveOptions moveOptions)
     {
-        CurrentPath = path;
-        MoveOptions = moveOptions;
+        _currentPath = path;
+        _moveOptions = moveOptions;
+        CheckForChanges();
+    }
+
+    public void SetCurrentTagData(TagData tagData)
+    {
+        _currentTagData = tagData.Clone();
+        CheckForChanges();
     }
 
     public void Undo()
     {
-        CurrentTagData = _backupTagData.Clone();
-        SetCurrentPath(BackupPath, MoveOptions.None);
+        _currentTagData = _backupTagData.Clone();
+        SetCurrentPath(_backupPath, MoveOptions.None);
         HasChanges = false;
         Exception = null;
     }
 
-    public void CheckForChanges()
+    internal void UpdateBackup()
     {
-        HasChanges =
-            !TagDataComparer.AreEqual(CurrentTagData, _backupTagData) || CurrentPath != BackupPath;
-    }
-
-    public void UpdateBackup()
-    {
-        _backupTagData = CurrentTagData.Clone();
-        BackupPath = CurrentPath;
-        MoveOptions = MoveOptions.None;
+        _backupTagData = _currentTagData.Clone();
+        _backupPath = _currentPath;
+        _moveOptions = MoveOptions.None;
         HasChanges = false;
     }
 
-    public void MarkError(Exception ex)
+    internal void MarkError(Exception ex)
     {
         Exception = ex;
     }
 
-    public void ResetError()
+    internal void ResetError()
     {
         Exception = null;
+    }
+
+    private void CheckForChanges()
+    {
+        HasChanges =
+            !TagDataComparer.AreEqual(_currentTagData, _backupTagData)
+            || _currentPath != _backupPath;
     }
 }

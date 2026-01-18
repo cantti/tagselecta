@@ -6,7 +6,10 @@ using TagSelecta.Shared.TagDataActions;
 namespace TagSelecta.Tui.TuiCommands;
 
 [TuiCommand("execute")]
-public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : ITuiCommand
+public class ExecuteTagDataActionCommand(
+    ITagDataActionFactory actionFactory,
+    ITagDataActionExecutor executor
+) : ITuiCommand
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
@@ -24,7 +27,9 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         context.Print($"Starting {request.Name} action..");
 
-        await ActionBeforeProcess(action, request, token);
+        var settings = CreateSettings(action, request.Args);
+
+        await action.BeforeExecuteAsync(settings, token);
 
         var selectedOperationsList = context.SelectedOperations.ToList();
 
@@ -32,42 +37,18 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         {
             token.ThrowIfCancellationRequested();
             var operation = selectedOperationsList[i];
-            operation.ResetError();
-            try
-            {
-                await ActionProcess(action, request, operation, context.Operations, token);
-                operation.CheckForChanges();
-            }
-            catch (Exception ex)
-            {
-                operation.MarkError(ex);
-            }
+            await executor.Execute(
+                operation,
+                context.Operations.ToList().IndexOf(operation),
+                action,
+                settings,
+                selectedOperationsList,
+                token
+            );
             context.Print(
                 $"Processed {i + 1} of {selectedOperationsList.Count} files. Type :w to write changes."
             );
         }
-    }
-
-    private async Task ActionBeforeProcess(
-        ITagDataAction action,
-        Request request,
-        CancellationToken token
-    )
-    {
-        var baseSettings = CreateSettings(action, request.Args);
-        await action.BeforeExecuteAsync(baseSettings, token);
-    }
-
-    private async Task ActionProcess(
-        ITagDataAction action,
-        Request request,
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        CancellationToken token
-    )
-    {
-        var baseSettings = CreateSettings(action, request.Args);
-        await action.ExecuteAsync(current, files, baseSettings, token);
     }
 
     private static TagDataActionSettings CreateSettings(

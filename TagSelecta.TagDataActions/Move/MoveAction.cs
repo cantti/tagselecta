@@ -6,25 +6,24 @@ namespace TagSelecta.TagDataActions.Move;
 [TagDataActionName("move", "mv")]
 public class MoveAction : TagDataAction<MoveSettings>
 {
-    protected override void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        MoveSettings settings
-    )
+    protected override void Execute(TagDataActionExecuteContext<MoveSettings> context)
     {
-        var dir = Path.GetDirectoryName(current.BackupPath)!;
-        var formatter = new TagDataFormatter(current.BackupTagData, current.BackupPath);
-        var newName = formatter.Format(settings.Template);
+        var dir = Path.GetDirectoryName(context.Target.GetBackupPath())!;
+        var formatter = new TagDataFormatter(
+            context.Target.GetBackupTagData(),
+            context.Target.GetBackupPath()
+        );
+        var newName = formatter.Format(context.Settings.Template);
         var newPath = Path.GetFullPath(newName, dir);
         MoveOptions moveOptions = MoveOptions.None;
-        if (settings.KeepEmptyDirectories)
+        if (context.Settings.KeepEmptyDirectories)
         {
             moveOptions |= MoveOptions.KeepEmptyDirectories;
         }
-        if (settings.DoNotMoveOtherFiles)
+        if (context.Settings.DoNotMoveOtherFiles)
         {
             moveOptions |= MoveOptions.DoNotMoveOtherFiles;
         }
-        current.SetCurrentPath(newPath, moveOptions);
+        context.Target.SetCurrentPath(newPath, moveOptions);
     }
 }

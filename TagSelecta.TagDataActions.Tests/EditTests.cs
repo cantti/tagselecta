@@ -65,34 +65,43 @@ public class EditTests
         var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(item, [item], settings, CancellationToken.None);
+        await action.ExecuteAsync(
+            new TagDataActionExecuteContext()
+            {
+                Files = [item],
+                Settings = settings,
+                Target = item,
+            },
+            CancellationToken.None
+        );
 
         // Assert
-        Assert.Equal(settings.Album, tagData.Album);
-        Assert.Equal(settings.AlbumArtist.ToMulti(), tagData.AlbumArtist);
-        Assert.Equal(settings.Artist.ToMulti(), tagData.Artist);
-        Assert.Equal(settings.Bpm, tagData.Bpm);
-        Assert.Equal(settings.CatalogNumber, tagData.CatalogNumber);
-        Assert.Equal(settings.Comment, tagData.Comment);
-        Assert.Equal(settings.Composer.ToMulti(), tagData.Composer);
-        Assert.Equal(settings.Conductor, tagData.Conductor);
-        Assert.Equal(settings.Copyright, tagData.Copyright);
-        Assert.Equal(settings.Date, tagData.Date);
-        Assert.Equal(settings.Disc, tagData.Disc);
-        Assert.Equal(settings.DiscTotal, tagData.DiscTotal);
-        Assert.Equal(settings.Genre.ToMulti(), tagData.Genre);
-        Assert.Equal(settings.Isrc, tagData.Isrc);
-        Assert.Equal(settings.Label, tagData.Label);
-        Assert.Equal(settings.Publisher, tagData.Publisher);
-        Assert.Equal(settings.Title, tagData.Title);
-        Assert.Equal(settings.Track, tagData.Track);
-        Assert.Equal(settings.TrackTotal, tagData.TrackTotal);
+        var currentTagData = item.GetCurrentTagData();
+        Assert.Equal(settings.Album, currentTagData.Album);
+        Assert.Equal(settings.AlbumArtist.ToMulti(), currentTagData.AlbumArtist);
+        Assert.Equal(settings.Artist.ToMulti(), currentTagData.Artist);
+        Assert.Equal(settings.Bpm, currentTagData.Bpm);
+        Assert.Equal(settings.CatalogNumber, currentTagData.CatalogNumber);
+        Assert.Equal(settings.Comment, currentTagData.Comment);
+        Assert.Equal(settings.Composer.ToMulti(), currentTagData.Composer);
+        Assert.Equal(settings.Conductor, currentTagData.Conductor);
+        Assert.Equal(settings.Copyright, currentTagData.Copyright);
+        Assert.Equal(settings.Date, currentTagData.Date);
+        Assert.Equal(settings.Disc, currentTagData.Disc);
+        Assert.Equal(settings.DiscTotal, currentTagData.DiscTotal);
+        Assert.Equal(settings.Genre.ToMulti(), currentTagData.Genre);
+        Assert.Equal(settings.Isrc, currentTagData.Isrc);
+        Assert.Equal(settings.Label, currentTagData.Label);
+        Assert.Equal(settings.Publisher, currentTagData.Publisher);
+        Assert.Equal(settings.Title, currentTagData.Title);
+        Assert.Equal(settings.Track, currentTagData.Track);
+        Assert.Equal(settings.TrackTotal, currentTagData.TrackTotal);
 
         // assert custom
-        Assert.Equal(2, tagData.Custom.Count);
-        Assert.Equal("original_field", tagData.Custom[0].Key);
-        Assert.Equal("original_value", tagData.Custom[0].Text);
-        Assert.Equal("test_field", tagData.Custom[1].Key);
-        Assert.Equal("test_value", tagData.Custom[1].Text);
+        Assert.Equal(2, currentTagData.Custom.Count);
+        Assert.Equal("original_field", currentTagData.Custom[0].Key);
+        Assert.Equal("original_value", currentTagData.Custom[0].Text);
+        Assert.Equal("test_field", currentTagData.Custom[1].Key);
+        Assert.Equal("test_value", currentTagData.Custom[1].Text);
     }
 }

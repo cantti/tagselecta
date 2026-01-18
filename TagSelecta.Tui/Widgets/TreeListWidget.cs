@@ -89,9 +89,9 @@ public class TreeListWidget(
 
         foreach (var operation in _operations)
         {
-            paths.Add((operation.BackupPath, operation));
+            paths.Add((operation.GetBackupPath(), operation));
 
-            var current = operation.BackupPath;
+            var current = operation.GetBackupPath();
             var root = Path.GetPathRoot(current);
 
             while (true)
@@ -136,7 +136,7 @@ public class TreeListWidget(
                 : Path.GetFileName(node.Path);
 
             var operation = _operations.FirstOrDefault(x =>
-                string.Equals(x.BackupPath, node.Path, _pathComparer)
+                string.Equals(x.GetBackupPath(), node.Path, _pathComparer)
             );
 
             var line = new TreeLine(name!, depth, operation);

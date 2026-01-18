@@ -7,12 +7,9 @@ namespace TagSelecta.TagDataActions.TitleCase;
 [TagDataActionName("titlecase")]
 public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
-    protected override void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        TitleCaseSettings settings
-    )
+    protected override void Execute(TagDataActionExecuteContext<TitleCaseSettings> context)
     {
+        var tagData = context.Target.GetCurrentTagData();
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -20,18 +17,19 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
                 .Where(p => p.Name != nameof(TagData.Custom))
         )
         {
-            var value = prop.GetValue(current.CurrentTagData)!;
+            var value = prop.GetValue(tagData)!;
             if (prop.PropertyType == typeof(string))
             {
                 var str = (string)value;
-                prop.SetValue(current.CurrentTagData, ToTitleCase(str));
+                prop.SetValue(tagData, ToTitleCase(str));
             }
             if (prop.PropertyType == typeof(List<string>))
             {
                 var list = (List<string>)value;
-                prop.SetValue(current.CurrentTagData, list.Select(ToTitleCase).ToList());
+                prop.SetValue(tagData, list.Select(ToTitleCase).ToList());
             }
         }
+        context.Target.SetCurrentTagData(tagData);
     }
 
     private static string ToTitleCase(string input)

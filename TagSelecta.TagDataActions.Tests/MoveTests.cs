@@ -12,41 +12,35 @@ public class MoveTests
         // Arrange
         var action = new MoveAction();
 
-        var settings = new MoveSettings
-        {
-            Template = "{{ year }} - {{album}}/{{filename}}"
-        };
+        var settings = new MoveSettings { Template = "{{ year }} - {{album}}/{{filename}}" };
 
-        var tagData = new TagData() { Date = "1990", Album = "Test Album"};
+        var tagData = new TagData() { Date = "1990", Album = "Test Album" };
 
         var item = new TagDataOperation("/file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(item, [item], settings, CancellationToken.None);
+        await action.ExecuteAsync(TODO, CancellationToken.None);
 
         // Assert
-        Assert.Equal("/1990 - Test Album/file.mp3", item.CurrentPath);
+        Assert.Equal("/1990 - Test Album/file.mp3", item.GetCurrentPath());
     }
-    
+
     [Fact]
     public async Task MoveTest_Relative()
     {
         // Arrange
         var action = new MoveAction();
 
-        var settings = new MoveSettings
-        {
-            Template = "../{{ year }} - {{album}}/{{filename}}"
-        };
+        var settings = new MoveSettings { Template = "../{{ year }} - {{album}}/{{filename}}" };
 
-        var tagData = new TagData() { Date = "1990", Album = "Test Album"};
+        var tagData = new TagData() { Date = "1990", Album = "Test Album" };
 
         var item = new TagDataOperation("/dir/file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(item, [item], settings, CancellationToken.None);
+        await action.ExecuteAsync(TODO, CancellationToken.None);
 
         // Assert
-        Assert.Equal("/1990 - Test Album/file.mp3", item.CurrentPath);
+        Assert.Equal("/1990 - Test Album/file.mp3", item.GetCurrentPath());
     }
 }

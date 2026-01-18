@@ -19,10 +19,11 @@ public class TitleCaseTests
         var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(item, [item], settings, CancellationToken.None);
+        await action.ExecuteAsync(TODO, CancellationToken.None);
 
         // Assert
-        Assert.Equal("Test Title", tagData.Title);
-        Assert.Equal("Test Artist", tagData.Artist[0]);
+        var newTagData = item.GetCurrentTagData();
+        Assert.Equal("Test Title", newTagData.Title);
+        Assert.Equal("Test Artist", newTagData.Artist[0]);
     }
 }
