@@ -12,7 +12,16 @@ public class WriteCommand(ITagDataOperationWriter writer) : ITuiCommand
         {
             token.ThrowIfCancellationRequested();
             var operation = operationsToWrite[i];
-            writer.Write(operation);
+            operation.ResetError();
+            try
+            {
+                writer.Write(operation);
+                operation.UpdateBackup();
+            }
+            catch (Exception ex)
+            {
+                operation.MarkError(ex);
+            }
             context.Print(
                 operation.Exception is null
                     ? $"Wrote changes {i + 1} of {operationsToWrite.Count} ({operation.CurrentPath})"

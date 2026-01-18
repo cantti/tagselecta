@@ -57,4 +57,9 @@ public class TagDataOperation : ITagDataActionContext
     {
         Exception = ex;
     }
+
+    public void ResetError()
+    {
+        Exception = null;
+    }
 }

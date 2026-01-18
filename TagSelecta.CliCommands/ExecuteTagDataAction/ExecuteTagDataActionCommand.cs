@@ -42,7 +42,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 
             if (
                 !await console.ConfirmAsync(
-                    $"{operations.Count(x => x.HasChanges)} pending files. Continue?",
+                    $"{operations.Count(x => x.HasChanges)} pending files. {operations.Count(x => x.Exception is not null)} errors. Continue?",
                     cancellationToken: ct
                 )
             )
@@ -101,7 +101,15 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var operation in operationsToWrite)
                 {
                     ct.ThrowIfCancellationRequested();
-                    writer.Write(operation);
+                    operation.ResetError();
+                    try
+                    {
+                        writer.Write(operation);
+                    }
+                    catch (Exception ex)
+                    {
+                        operation.MarkError(ex);
+                    }
                     task.Increment(1);
                 }
             });

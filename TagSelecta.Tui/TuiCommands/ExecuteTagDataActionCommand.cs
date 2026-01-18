@@ -32,18 +32,19 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         {
             token.ThrowIfCancellationRequested();
             var operation = selectedOperationsList[i];
+            operation.ResetError();
             try
             {
                 await ActionProcess(action, request, operation, context.Operations, token);
                 operation.CheckForChanges();
-                context.Print(
-                    $"Processed {i + 1} of {selectedOperationsList.Count} files. Type :w to write changes."
-                );
             }
             catch (Exception ex)
             {
                 operation.MarkError(ex);
             }
+            context.Print(
+                $"Processed {i + 1} of {selectedOperationsList.Count} files. Type :w to write changes."
+            );
         }
     }
 
