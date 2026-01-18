@@ -79,10 +79,13 @@ public class ExecuteTagDataActionCommand<TSettings>(
                     ct.ThrowIfCancellationRequested();
                     await executor.Execute(
                         operation,
-                        operations.IndexOf(operation),
                         action,
-                        settings,
-                        operations,
+                        new TagDataActionExecuteContext<TagDataActionSettings>
+                        {
+                            Files = operations,
+                            Settings = settings,
+                            Target = operation,
+                        },
                         ct
                     );
                     task.Increment(1);

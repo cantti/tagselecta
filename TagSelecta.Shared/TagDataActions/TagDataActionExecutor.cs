@@ -4,26 +4,15 @@ public class TagDataActionExecutor : ITagDataActionExecutor
 {
     public async Task Execute(
         TagDataOperation operation,
-        int operationIndex,
         ITagDataAction action,
-        TagDataActionSettings settings,
-        IEnumerable<TagDataOperation> files,
+        ITagDataActionExecuteContext context,
         CancellationToken token
     )
     {
         operation.ResetError();
         try
         {
-            await action.ExecuteAsync(
-                new TagDataActionExecuteContext<TagDataActionSettings>()
-                {
-                    TargetIndex = operationIndex,
-                    Files = files,
-                    Settings = settings,
-                    Target = operation,
-                },
-                token
-            );
+            await action.ExecuteAsync(context, token);
         }
         catch (Exception ex)
         {

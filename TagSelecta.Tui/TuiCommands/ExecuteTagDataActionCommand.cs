@@ -39,10 +39,13 @@ public class ExecuteTagDataActionCommand(
             var operation = selectedOperationsList[i];
             await executor.Execute(
                 operation,
-                context.Operations.ToList().IndexOf(operation),
                 action,
-                settings,
-                selectedOperationsList,
+                new TagDataActionExecuteContext<TagDataActionSettings>()
+                {
+                    Files = context.Operations,
+                    Settings = settings,
+                    Target = operation,
+                },
                 token
             );
             context.Print(

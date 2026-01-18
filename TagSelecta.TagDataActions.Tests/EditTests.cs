@@ -66,7 +66,7 @@ public class EditTests
 
         // Act
         await action.ExecuteAsync(
-            new TagDataActionExecuteContext()
+            new TagDataActionExecuteContext<EditSettings>
             {
                 Files = [item],
                 Settings = settings,

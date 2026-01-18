@@ -37,7 +37,13 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
 
         var dir = Path.GetDirectoryName(context.Target.GetBackupPath());
 
-        if (context.TargetIndex > _release.Release.TrackList?.Count - 1)
+        var trackNumber = context
+            .Files.Where(x => Path.GetDirectoryName(x.GetBackupPath()) == dir)
+            .OrderBy(x => x.GetBackupPath())
+            .ToList()
+            .FindIndex(x => x.GetBackupPath() == context.Target.GetBackupPath());
+
+        if (trackNumber > _release.Release.TrackList?.Count - 1)
         {
             return;
         }
@@ -47,7 +53,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             return;
         }
 
-        var track = _release.Release.TrackList[context.TargetIndex];
+        var track = _release.Release.TrackList[trackNumber];
 
         var albumArtists =
             _release

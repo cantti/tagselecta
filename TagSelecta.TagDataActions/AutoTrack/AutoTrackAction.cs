@@ -13,7 +13,9 @@ public class AutoTrackAction : TagDataAction<AutoTrackSettings>
             .Files.Where(x => Path.GetDirectoryName(x.GetBackupPath()) == dir)
             .OrderBy(x => x.GetBackupPath())
             .ToList();
-        tagData.Track = context.TargetIndex.ToString();
+        tagData.Track = (
+            filesInDir.FindIndex(x => x.GetBackupPath() == context.Target.GetBackupPath()) + 1
+        ).ToString();
         tagData.TrackTotal = filesInDir.Count.ToString();
         if (!context.Settings.KeepDisk)
         {

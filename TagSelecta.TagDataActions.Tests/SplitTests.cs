@@ -16,7 +16,15 @@ public class SplitTests
         var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(TODO, CancellationToken.None);
+        await action.ExecuteAsync(
+            new TagDataActionExecuteContext<SplitSettings>()
+            {
+                Files = [item],
+                Settings = settings,
+                Target = item,
+            },
+            CancellationToken.None
+        );
 
         // Assert
         var newTagData = item.GetCurrentTagData();

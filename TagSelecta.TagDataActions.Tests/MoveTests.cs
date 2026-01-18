@@ -19,7 +19,15 @@ public class MoveTests
         var item = new TagDataOperation("/file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(TODO, CancellationToken.None);
+        await action.ExecuteAsync(
+            new TagDataActionExecuteContext<MoveSettings>
+            {
+                Files = [item],
+                Target = item,
+                Settings = settings,
+            },
+            CancellationToken.None
+        );
 
         // Assert
         Assert.Equal("/1990 - Test Album/file.mp3", item.GetCurrentPath());
@@ -38,7 +46,15 @@ public class MoveTests
         var item = new TagDataOperation("/dir/file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(TODO, CancellationToken.None);
+        await action.ExecuteAsync(
+            new TagDataActionExecuteContext<MoveSettings>
+            {
+                Files = [item],
+                Target = item,
+                Settings = settings,
+            },
+            CancellationToken.None
+        );
 
         // Assert
         Assert.Equal("/1990 - Test Album/file.mp3", item.GetCurrentPath());

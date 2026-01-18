@@ -32,7 +32,6 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
                 Files = context.Files,
                 Settings = (TSettings)context.Settings,
                 Target = context.Target,
-                TargetIndex = context.TargetIndex,
             },
             token
         );

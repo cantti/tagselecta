@@ -4,10 +4,8 @@ public interface ITagDataActionExecutor
 {
     Task Execute(
         TagDataOperation operation,
-        int operationIndex,
         ITagDataAction action,
-        TagDataActionSettings settings,
-        IEnumerable<TagDataOperation> files,
+        ITagDataActionExecuteContext context,
         CancellationToken token
     );
 }

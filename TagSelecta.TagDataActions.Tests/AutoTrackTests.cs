@@ -38,7 +38,7 @@ public class AutoTrackTests
 
         // Act
         await action.ExecuteAsync(
-            new TagDataActionExecuteContext()
+            new TagDataActionExecuteContext<AutoTrackSettings>
             {
                 Files = [item1, item2],
                 Settings = settings,
@@ -47,7 +47,7 @@ public class AutoTrackTests
             CancellationToken.None
         );
         await action.ExecuteAsync(
-            new TagDataActionExecuteContext()
+            new TagDataActionExecuteContext<AutoTrackSettings>
             {
                 Files = [item1, item2],
                 Settings = settings,

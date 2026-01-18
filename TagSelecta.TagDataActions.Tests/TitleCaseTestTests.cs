@@ -19,7 +19,15 @@ public class TitleCaseTests
         var item = new TagDataOperation("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(TODO, CancellationToken.None);
+        await action.ExecuteAsync(
+            new TagDataActionExecuteContext<TitleCaseSettings>
+            {
+                Files = [item],
+                Settings = settings,
+                Target = item,
+            },
+            CancellationToken.None
+        );
 
         // Assert
         var newTagData = item.GetCurrentTagData();
