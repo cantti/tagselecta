@@ -5,18 +5,18 @@ public class SelectDirCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
-        if (context.FocusedOperation is null)
+        if (context.FocusedFile is null)
         {
             return Task.CompletedTask;
         }
-        var dir = Path.GetDirectoryName(context.FocusedOperation.CurrentPath);
+        var dir = Path.GetDirectoryName(context.FocusedFile.GetCurrentPath());
         foreach (
-            var operation in context
-                .Operations.Where(x => Path.GetDirectoryName(x.CurrentPath) == dir)
+            var file in context
+                .Files.Where(x => Path.GetDirectoryName(x.GetCurrentPath()) == dir)
                 .ToList()
         )
         {
-            operation.IsSelected = true;
+            file.IsSelected = true;
         }
         return Task.CompletedTask;
     }

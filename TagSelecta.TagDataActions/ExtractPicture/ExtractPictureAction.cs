@@ -24,15 +24,12 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         return true;
     }
 
-    protected override void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        ExtractPictureSettings settings
-    )
+    protected override void Execute(TagDataActionExecuteContext<ExtractPictureSettings> context)
     {
-        var dir = Path.GetDirectoryName(current.BackupPath)!;
-        var pictures = current
-            .CurrentTagData.Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
+        var tagData = context.Target.GetCurrentTagData();
+        var dir = Path.GetDirectoryName(context.Target.GetBackupPath())!;
+        var pictures = tagData
+            .Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
             .OrderBy(x =>
             {
                 return x.Type switch
@@ -45,7 +42,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             .ToList();
         for (int i = 0; i < pictures.Count; i++)
         {
-            if (settings.Limit.HasValue && i >= settings.Limit.Value)
+            if (context.Settings.Limit.HasValue && i >= context.Settings.Limit.Value)
             {
                 break;
             }
@@ -53,7 +50,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             var picture = pictures[i];
             var ext = TagLib.Picture.GetExtensionFromData(picture.Data);
 
-            var output = settings.Output;
+            var output = context.Settings.Output;
 
             string baseName;
             string finalExt;
@@ -83,7 +80,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             var fileName = baseName + finalExt;
             var filePath = Path.Combine(dir, fileName);
 
-            if (!settings.Override)
+            if (!context.Settings.Override)
             {
                 int counter = 1;
                 while (File.Exists(filePath))

@@ -2,11 +2,15 @@ using System.Reflection;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.TuiCommands;
 
 [TuiCommand("execute")]
-public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : ITuiCommand
+public class ExecuteTagDataActionCommand(
+    ITagDataActionFactory actionFactory,
+    ITrackedFileExecutor executor
+) : ITuiCommand
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
@@ -24,50 +28,31 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         context.Print($"Starting {request.Name} action..");
 
-        await ActionBeforeProcess(action, request, token);
+        var settings = CreateSettings(action, request.Args);
 
-        var selectedOperationsList = context.SelectedOperations.ToList();
+        await action.BeforeExecute(settings, token);
 
-        for (var i = 0; i < selectedOperationsList.Count; i++)
+        var selectedFilesList = context.SelectedFiles.ToList();
+
+        for (var i = 0; i < selectedFilesList.Count; i++)
         {
             token.ThrowIfCancellationRequested();
-            var operation = selectedOperationsList[i];
-            operation.ResetError();
-            try
-            {
-                await ActionProcess(action, request, operation, context.Operations, token);
-                operation.CheckForChanges();
-            }
-            catch (Exception ex)
-            {
-                operation.MarkError(ex);
-            }
+            var file = selectedFilesList[i];
+            await executor.Execute(
+                file,
+                action,
+                new TagDataActionExecuteContext<TagDataActionSettings>()
+                {
+                    Files = context.Files,
+                    Settings = settings,
+                    Target = file,
+                },
+                token
+            );
             context.Print(
-                $"Processed {i + 1} of {selectedOperationsList.Count} files. Type :w to write changes."
+                $"Processed {i + 1} of {selectedFilesList.Count} files. Type :w to write changes."
             );
         }
-    }
-
-    private async Task ActionBeforeProcess(
-        ITagDataAction action,
-        Request request,
-        CancellationToken token
-    )
-    {
-        var baseSettings = CreateSettings(action, request.Args);
-        await action.BeforeExecuteAsync(baseSettings, token);
-    }
-
-    private async Task ActionProcess(
-        ITagDataAction action,
-        Request request,
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        CancellationToken token
-    )
-    {
-        var baseSettings = CreateSettings(action, request.Args);
-        await action.ExecuteAsync(current, files, baseSettings, token);
     }
 
     private static TagDataActionSettings CreateSettings(

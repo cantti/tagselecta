@@ -2,6 +2,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.CliCommands.ExecuteTagDataAction;
 
@@ -9,7 +10,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITagDataOperationWriter writer
+    ITrackedFileExecutor executor
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -31,18 +32,18 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 return 0;
             }
 
-            var operations = audioFileScanner
+            var files = audioFileScanner
                 .ScanAndRead(settings.Path, ct)
-                .Select(x => new TagDataOperation(x.Path, x.TagData))
+                .Select(x => new TrackedFile(x.Path, x.TagData))
                 .ToList();
 
-            console.WriteLine($"Total {operations.Count} files found");
+            console.WriteLine($"Total {files.Count} files found");
 
-            await ExecuteAction(settings, operations, ct);
+            await ExecuteAction(settings, files, ct);
 
             if (
                 !await console.ConfirmAsync(
-                    $"{operations.Count(x => x.HasChanges)} pending files. {operations.Count(x => x.Exception is not null)} errors. Continue?",
+                    $"{files.Count(x => x.HasChanges)} pending files. {files.Count(x => x.Exception is not null)} errors. Continue?",
                     cancellationToken: ct
                 )
             )
@@ -50,10 +51,10 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 return 0;
             }
 
-            Write(operations, ct);
+            Write(files, ct);
 
             console.MarkupLineInterpolated(
-                $"Completed. {operations.Count(x => x.Exception is not null)} errors."
+                $"Completed. {files.Count(x => x.Exception is not null)} errors."
             );
         }
         catch (OperationCanceledException) { }
@@ -63,7 +64,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 
     private async Task ExecuteAction(
         TSettings settings,
-        List<TagDataOperation> operations,
+        List<TrackedFile> files,
         CancellationToken ct
     )
     {
@@ -72,44 +73,39 @@ public class ExecuteTagDataActionCommand<TSettings>(
             .AutoClear(true)
             .StartAsync(async ctx =>
             {
-                var task = ctx.AddTask("Processing metadata...", maxValue: operations.Count);
-                foreach (var operation in operations)
+                var task = ctx.AddTask("Processing metadata...", maxValue: files.Count);
+                foreach (var file in files)
                 {
-                    try
-                    {
-                        await action.ExecuteAsync(operation, operations, settings, ct);
-                        operation.CheckForChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        operation.MarkError(ex);
-                    }
+                    ct.ThrowIfCancellationRequested();
+                    await executor.Execute(
+                        file,
+                        action,
+                        new TagDataActionExecuteContext<TagDataActionSettings>
+                        {
+                            Files = files,
+                            Settings = settings,
+                            Target = file,
+                        },
+                        ct
+                    );
                     task.Increment(1);
                 }
             });
     }
 
-    private void Write(List<TagDataOperation> operations, CancellationToken ct)
+    private void Write(List<TrackedFile> files, CancellationToken ct)
     {
         console
             .Progress()
             .AutoClear(true)
             .Start(ctx =>
             {
-                var operationsToWrite = operations.Where(x => x.HasChanges).ToList();
-                var task = ctx.AddTask("Writing files...", maxValue: operationsToWrite.Count);
-                foreach (var operation in operationsToWrite)
+                var filesToWrite = files.Where(x => x.HasChanges).ToList();
+                var task = ctx.AddTask("Writing files...", maxValue: filesToWrite.Count);
+                foreach (var file in filesToWrite)
                 {
                     ct.ThrowIfCancellationRequested();
-                    operation.ResetError();
-                    try
-                    {
-                        writer.Write(operation);
-                    }
-                    catch (Exception ex)
-                    {
-                        operation.MarkError(ex);
-                    }
+                    executor.Write(file);
                     task.Increment(1);
                 }
             });

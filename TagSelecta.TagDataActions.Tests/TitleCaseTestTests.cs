@@ -1,5 +1,6 @@
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.TagDataActions.TitleCase;
 
 namespace TagSelecta.TagDataActions.Tests;
@@ -16,13 +17,22 @@ public class TitleCaseTests
 
         var tagData = new TagData() { Title = "test title", Artist = ["test artist"] };
 
-        var item = new TagDataOperation("file.mp3", tagData);
+        var item = new TrackedFile("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(item, [item], settings, CancellationToken.None);
+        await action.ExecuteAsync(
+            new TagDataActionExecuteContext<TitleCaseSettings>
+            {
+                Files = [item],
+                Settings = settings,
+                Target = item,
+            },
+            CancellationToken.None
+        );
 
         // Assert
-        Assert.Equal("Test Title", tagData.Title);
-        Assert.Equal("Test Artist", tagData.Artist[0]);
+        var newTagData = item.GetCurrentTagData();
+        Assert.Equal("Test Title", newTagData.Title);
+        Assert.Equal("Test Artist", newTagData.Artist[0]);
     }
 }

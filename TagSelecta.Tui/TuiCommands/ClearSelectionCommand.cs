@@ -5,9 +5,9 @@ public class ClearSelectionCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
-        foreach (var operation in context.SelectedOperations)
+        foreach (var file in context.SelectedFiles)
         {
-            operation.IsSelected = false;
+            file.IsSelected = false;
         }
         return Task.CompletedTask;
     }

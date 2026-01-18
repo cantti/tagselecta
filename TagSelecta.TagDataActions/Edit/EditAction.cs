@@ -6,14 +6,13 @@ namespace TagSelecta.TagDataActions.Edit;
 [TagDataActionName("edit", "e")]
 public class EditAction : TagDataAction<EditSettings>
 {
-    protected override void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        EditSettings settings
-    )
+    protected override void Execute(TagDataActionExecuteContext<EditSettings> context)
     {
-        var tagData = current.CurrentTagData;
-        var formatter = new TagDataFormatter(current.BackupTagData, current.BackupPath);
+        var tagData = context.Target.GetCurrentTagData();
+        var formatter = new TagDataFormatter(
+            context.Target.GetBackupTagData(),
+            context.Target.GetBackupPath()
+        );
 
         Write(s => s.Album, v => tagData.Album = v);
         Write(s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti());
@@ -35,14 +34,14 @@ public class EditAction : TagDataAction<EditSettings>
         Write(s => s.Track, v => tagData.Track = v);
         Write(s => s.TrackTotal, v => tagData.TrackTotal = v);
 
-        if (settings.ClearCustom)
+        if (context.Settings.ClearCustom)
         {
             tagData.ClearCustomFields();
         }
 
-        if (settings.Set is not null)
+        if (context.Settings.Set is not null)
         {
-            foreach (var entry in settings.Set)
+            foreach (var entry in context.Settings.Set)
             {
                 var parts = entry.Split('=', 2);
                 var key = parts[0].NormalizeKey();
@@ -52,20 +51,20 @@ public class EditAction : TagDataAction<EditSettings>
             }
         }
 
-        if (settings.ClearPicture)
+        if (context.Settings.ClearPicture)
         {
             tagData.Picture = [];
         }
 
-        if (settings.Picture is not null)
+        if (context.Settings.Picture is not null)
         {
-            for (int i = 0; i < settings.Picture.Length; i++)
+            for (int i = 0; i < context.Settings.Picture.Length; i++)
             {
-                var path = settings.Picture[i];
+                var path = context.Settings.Picture[i];
                 // try to find a corresponding picture type, or use first
                 var typeStr =
-                    settings.PictureType?.ElementAtOrDefault(i)
-                    ?? settings.PictureType?.FirstOrDefault();
+                    context.Settings.PictureType?.ElementAtOrDefault(i)
+                    ?? context.Settings.PictureType?.FirstOrDefault();
                 var picture = new TagLib.Picture(path)
                 {
                     Type =
@@ -78,11 +77,13 @@ public class EditAction : TagDataAction<EditSettings>
             }
         }
 
+        context.Target.SetCurrentTagData(tagData);
+
         return;
 
         void Write(Func<EditSettings, string?> get, Action<string> set)
         {
-            var value = get(settings);
+            var value = get(context.Settings);
             if (value is null)
             {
                 return;

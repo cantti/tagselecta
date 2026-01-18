@@ -5,23 +5,23 @@ namespace TagSelecta.TagDataActions.AutoTrack;
 [TagDataActionName("autotrack")]
 public class AutoTrackAction : TagDataAction<AutoTrackSettings>
 {
-    protected override void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        AutoTrackSettings settings
-    )
+    protected override void Execute(TagDataActionExecuteContext<AutoTrackSettings> context)
     {
-        var dir = Path.GetDirectoryName(current.BackupPath);
-        var filesInDir = files
-            .Where(x => Path.GetDirectoryName(x.BackupPath) == dir)
-            .OrderBy(x => x.BackupPath)
+        var tagData = context.Target.GetCurrentTagData();
+        var dir = Path.GetDirectoryName(context.Target.GetBackupPath());
+        var filesInDir = context
+            .Files.Where(x => Path.GetDirectoryName(x.GetBackupPath()) == dir)
+            .OrderBy(x => x.GetBackupPath())
             .ToList();
-        current.CurrentTagData.Track = (filesInDir.IndexOf(current) + 1).ToString();
-        current.CurrentTagData.TrackTotal = filesInDir.Count.ToString();
-        if (!settings.KeepDisk)
+        tagData.Track = (
+            filesInDir.FindIndex(x => x.GetBackupPath() == context.Target.GetBackupPath()) + 1
+        ).ToString();
+        tagData.TrackTotal = filesInDir.Count.ToString();
+        if (!context.Settings.KeepDisk)
         {
-            current.CurrentTagData.Disc = "";
-            current.CurrentTagData.DiscTotal = "";
+            tagData.Disc = "";
+            tagData.DiscTotal = "";
         }
+        context.Target.SetCurrentTagData(tagData);
     }
 }

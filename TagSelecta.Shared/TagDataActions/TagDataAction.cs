@@ -13,37 +13,31 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         return Task.FromResult(BeforeExecute(settings));
     }
 
-    protected virtual void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        TSettings settings
-    ) { }
+    protected virtual void Execute(TagDataActionExecuteContext<TSettings> context) { }
 
     public virtual Task ExecuteAsync(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        TSettings settings,
+        TagDataActionExecuteContext<TSettings> context,
         CancellationToken token
     )
     {
-        Execute(current, files, settings);
+        Execute(context);
         return Task.CompletedTask;
     }
 
-    Task ITagDataAction.ExecuteAsync(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        TagDataActionSettings settings,
-        CancellationToken token
-    )
+    Task ITagDataAction.Execute(ITagDataActionExecuteContext context, CancellationToken token)
     {
-        return ExecuteAsync(current, files, (TSettings)settings, token);
+        return ExecuteAsync(
+            new TagDataActionExecuteContext<TSettings>
+            {
+                Files = context.Files,
+                Settings = (TSettings)context.Settings,
+                Target = context.Target,
+            },
+            token
+        );
     }
 
-    Task<bool> ITagDataAction.BeforeExecuteAsync(
-        TagDataActionSettings settings,
-        CancellationToken token
-    )
+    Task<bool> ITagDataAction.BeforeExecute(TagDataActionSettings settings, CancellationToken token)
     {
         return BeforeExecuteAsync((TSettings)settings, token);
     }

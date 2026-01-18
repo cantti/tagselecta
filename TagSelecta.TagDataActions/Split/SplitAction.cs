@@ -16,23 +16,17 @@ public class SplitAction : TagDataAction<SplitSettings>
         return true;
     }
 
-    protected override void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        SplitSettings settings
-    )
+    protected override void Execute(TagDataActionExecuteContext<SplitSettings> context)
     {
-        var artists = current.CurrentTagData.Artist.SelectMany(Split).Distinct().ToList();
-        var albumArtists = current.CurrentTagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
-        var composers = current
-            .CurrentTagData.Composer.Select(Split)
-            .SelectMany(x => x)
-            .Distinct()
-            .ToList();
+        var tagData = context.Target.GetCurrentTagData();
+        var artists = tagData.Artist.SelectMany(Split).Distinct().ToList();
+        var albumArtists = tagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
+        var composers = tagData.Composer.Select(Split).SelectMany(x => x).Distinct().ToList();
 
-        current.CurrentTagData.Artist = artists;
-        current.CurrentTagData.AlbumArtist = albumArtists;
-        current.CurrentTagData.Composer = composers;
+        tagData.Artist = artists;
+        tagData.AlbumArtist = albumArtists;
+        tagData.Composer = composers;
+        context.Target.SetCurrentTagData(tagData);
     }
 
     private List<string> Split(string input)

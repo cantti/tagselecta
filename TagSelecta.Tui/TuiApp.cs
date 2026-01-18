@@ -3,7 +3,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
 using TagSelecta.Shared.IO;
-using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.Tui.TuiCommands;
 using TagSelecta.Tui.Widgets;
 
@@ -25,20 +25,19 @@ public class TuiApp(
 
     private string _statusMessage = "";
 
-    public IEnumerable<TagDataOperation> Operations { get; private set; } = [];
+    public IEnumerable<TrackedFile> Files { get; private set; } = [];
 
-    public IEnumerable<TagDataOperation> VisibleOperations =>
-        Operations.Where(x => !FilterEnabled || x.HasChanges);
+    public IEnumerable<TrackedFile> VisibleFiles =>
+        Files.Where(x => !FilterEnabled || x.HasChanges);
 
-    public IEnumerable<TagDataOperation> SelectedOperations =>
-        VisibleOperations.Any(x => x.IsSelected) ? VisibleOperations.Where(x => x.IsSelected)
-        : FocusedOperation is not null ? new[] { FocusedOperation }
-        : Enumerable.Empty<TagDataOperation>();
+    public IEnumerable<TrackedFile> SelectedFiles =>
+        VisibleFiles.Any(x => x.IsSelected) ? VisibleFiles.Where(x => x.IsSelected)
+        : FocusedFile is not null ? new[] { FocusedFile }
+        : Enumerable.Empty<TrackedFile>();
 
-    public int FocusedOperationIndex { get; set; }
+    public int FocusedFileIndex { get; set; }
 
-    public TagDataOperation? FocusedOperation =>
-        VisibleOperations.ElementAtOrDefault(FocusedOperationIndex);
+    public TrackedFile? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
 
     private CancellationTokenSource _cts = new();
 
@@ -68,9 +67,9 @@ public class TuiApp(
 
             AltScreen.Enter();
 
-            Operations = audioFileScanner
+            Files = audioFileScanner
                 .ScanAndRead(settings.Path, ct)
-                .Select(x => new TagDataOperation(x.Path, x.TagData))
+                .Select(x => new TrackedFile(x.Path, x.TagData))
                 .ToList();
 
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
@@ -145,14 +144,10 @@ public class TuiApp(
                 .Update(
                     HelpEnabled ? new HelpWidget()
                     : TreeEnabled
-                        ? new TreeListWidget(
-                            VisibleOperations,
-                            FocusedOperation,
-                            filesContentSize - 2
-                        )
-                    : new FileListWidget(VisibleOperations, FocusedOperation, filesContentSize - 2)
+                        ? new TreeListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
+                    : new FileListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
                 ),
-            new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedOperation)),
+            new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile)),
             new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)),
             new Layout(CommandLayoutKey)
                 .Size(1)

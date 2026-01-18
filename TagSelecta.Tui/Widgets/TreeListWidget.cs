@@ -1,12 +1,12 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
-using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.Widgets;
 
 public class TreeListWidget(
-    IEnumerable<TagDataOperation> operations,
-    TagDataOperation? focusedOperation,
+    IEnumerable<TrackedFile> files,
+    TrackedFile? focusedFile,
     int windowSize
 ) : Renderable
 {
@@ -14,7 +14,7 @@ public class TreeListWidget(
         ? StringComparison.OrdinalIgnoreCase
         : StringComparison.Ordinal;
 
-    private readonly List<TagDataOperation> _operations = operations.ToList();
+    private readonly List<TrackedFile> _files = files.ToList();
 
     private static List<TreeLine>? _cachedTreeLines;
 
@@ -23,7 +23,7 @@ public class TreeListWidget(
     {
         if (
             _cachedTreeLines is null
-            || _cachedTreeLines.Count(x => x.Operation is not null) != _operations.Count
+            || _cachedTreeLines.Count(x => x.File is not null) != _files.Count
         )
         {
             _cachedTreeLines = BuildTreeLines();
@@ -36,7 +36,7 @@ public class TreeListWidget(
         var treeLines = GetTreeLines();
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var focusedIndex = treeLines.FindIndex(x => x.Operation == focusedOperation);
+        var focusedIndex = treeLines.FindIndex(x => x.File == focusedFile);
         var windowStart = focusedIndex - (windowSize / 2);
 
         // clamp so we dont go before 0 or past the last possible full window start
@@ -51,22 +51,20 @@ public class TreeListWidget(
         {
             var itemIndex = windowStart + i;
             var treeLine = treeLines[itemIndex];
-            var selectedMarker = treeLine.Operation is not null
-                ? treeLine.Operation.IsSelected
+            var selectedMarker = treeLine.File is not null
+                ? treeLine.File.IsSelected
                     ? "[x]"
                     : "[ ]"
                 : "   ";
             var indent = new string(' ', treeLine.Depth * 2);
-            var prefix = treeLine.Operation is null ? "▸ " : "  ";
+            var prefix = treeLine.File is null ? "▸ " : "  ";
             var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
             text = text.Substring(0, Math.Min(text.Length, Console.WindowWidth))
                 .PadRight(Console.WindowWidth);
 
             var style = new Style(
-                treeLine.Operation is not null && treeLine.Operation.HasChanges
-                    ? Color.Red
-                    : Color.Default,
-                treeLine.Operation is not null && treeLine.Operation == focusedOperation
+                treeLine.File is not null && treeLine.File.HasChanges ? Color.Red : Color.Default,
+                treeLine.File is not null && treeLine.File == focusedFile
                     ? Color.Gray
                     : Color.Default
             );
@@ -74,7 +72,7 @@ public class TreeListWidget(
         }
 
         IRenderable content = new Rows(
-            new Text($"Files ({_operations.Count()}):", new Style(Color.Yellow)),
+            new Text($"Files ({_files.Count()}):", new Style(Color.Yellow)),
             new Rows(items)
         );
 
@@ -85,13 +83,13 @@ public class TreeListWidget(
     {
         var treeLines = new List<TreeLine>();
 
-        var paths = new List<(string Path, TagDataOperation? operation)>();
+        var paths = new List<(string Path, TrackedFile? file)>();
 
-        foreach (var operation in _operations)
+        foreach (var file in _files)
         {
-            paths.Add((operation.BackupPath, operation));
+            paths.Add((file.GetBackupPath(), file));
 
-            var current = operation.BackupPath;
+            var current = file.GetBackupPath();
             var root = Path.GetPathRoot(current);
 
             while (true)
@@ -127,7 +125,7 @@ public class TreeListWidget(
 
         return treeLines;
 
-        void AddNode((string Path, TagDataOperation? operation) node, int depth = 0)
+        void AddNode((string Path, TrackedFile? file) node, int depth = 0)
         {
             var root = Path.GetPathRoot(node.Path);
 
@@ -135,11 +133,11 @@ public class TreeListWidget(
                 ? root
                 : Path.GetFileName(node.Path);
 
-            var operation = _operations.FirstOrDefault(x =>
-                string.Equals(x.BackupPath, node.Path, _pathComparer)
+            var file = _files.FirstOrDefault(x =>
+                string.Equals(x.GetBackupPath(), node.Path, _pathComparer)
             );
 
-            var line = new TreeLine(name!, depth, operation);
+            var line = new TreeLine(name!, depth, file);
 
             treeLines.Add(line);
 
@@ -154,5 +152,5 @@ public class TreeListWidget(
         }
     }
 
-    private record TreeLine(string Name, int Depth, TagDataOperation? Operation);
+    private record TreeLine(string Name, int Depth, TrackedFile? File);
 }

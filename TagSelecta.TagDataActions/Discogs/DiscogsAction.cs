@@ -26,26 +26,24 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
         return _release is not null;
     }
 
-    protected override void Execute(
-        ITagDataActionContext current,
-        IEnumerable<ITagDataActionContext> files,
-        DiscogsSettings settings
-    )
+    protected override void Execute(TagDataActionExecuteContext<DiscogsSettings> context)
     {
+        var tagData = context.Target.GetCurrentTagData();
+
         if (_release is null)
         {
             throw new TagSelectaException("Release not set");
         }
 
-        var dir = Path.GetDirectoryName(current.BackupPath);
+        var dir = Path.GetDirectoryName(context.Target.GetBackupPath());
 
-        var index = files
-            .Where(x => Path.GetDirectoryName(x.BackupPath) == dir)
-            .OrderBy(x => x.BackupPath)
+        var trackNumber = context
+            .Files.Where(x => Path.GetDirectoryName(x.GetBackupPath()) == dir)
+            .OrderBy(x => x.GetBackupPath())
             .ToList()
-            .IndexOf(current);
+            .FindIndex(x => x.GetBackupPath() == context.Target.GetBackupPath());
 
-        if (index > _release.Release.TrackList?.Count - 1)
+        if (trackNumber > _release.Release.TrackList?.Count - 1)
         {
             return;
         }
@@ -55,44 +53,38 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             return;
         }
 
-        var track = _release.Release.TrackList[index];
+        var track = _release.Release.TrackList[trackNumber];
 
-        var albumArtists = _release
-            .Release.Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "")
-            .ToList() ?? [];
-        var trackArtists = track
-            .Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "")
-            .ToList() ?? [];
+        var albumArtists =
+            _release
+                .Release.Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "")
+                .ToList() ?? [];
+        var trackArtists =
+            track.Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "").ToList()
+            ?? [];
         var label = _release.Release.Labels?.FirstOrDefault();
 
-        Write(Fields.AlbumArtist, () => current.CurrentTagData.AlbumArtist = albumArtists);
+        Write(Fields.AlbumArtist, () => tagData.AlbumArtist = albumArtists);
         Write(
             Fields.Artist,
-            () =>
-                current.CurrentTagData.Artist =
-                    trackArtists.Count != 0 ? trackArtists : albumArtists
+            () => tagData.Artist = trackArtists.Count != 0 ? trackArtists : albumArtists
         );
-        Write(Fields.Album, () => current.CurrentTagData.Album = _release.Release.Title ?? "");
-        Write(Fields.Title, () => current.CurrentTagData.Title = track.Title ?? "");
-        Write(Fields.Track, () => current.CurrentTagData.Track = track.Position ?? "");
+        Write(Fields.Album, () => tagData.Album = _release.Release.Title ?? "");
+        Write(Fields.Title, () => tagData.Title = track.Title ?? "");
+        Write(Fields.Track, () => tagData.Track = track.Position ?? "");
         Write(
             Fields.TrackTotal,
-            () => current.CurrentTagData.TrackTotal = _release.Release.TrackList.Count.ToString()
+            () => tagData.TrackTotal = _release.Release.TrackList.Count.ToString()
         );
-        Write(Fields.Disc, () => current.CurrentTagData.Disc = "");
-        Write(Fields.DiscTotal, () => current.CurrentTagData.DiscTotal = "");
-        Write(Fields.Genre, () => current.CurrentTagData.Genre = _release.Release.Styles ?? []);
-        Write(Fields.Label, () => current.CurrentTagData.Label = label?.Name ?? "");
-        Write(Fields.Date, () => current.CurrentTagData.Date = _release.Release.Year.ToString());
-        Write(
-            Fields.Picture,
-            () => current.CurrentTagData.Picture = [new TagLib.Picture(_release.Image)]
-        );
-        Write(
-            Fields.CatalogNumber,
-            () => current.CurrentTagData.CatalogNumber = label?.CatNo ?? ""
-        );
-        current.CurrentTagData.SetCustomField("discogs_release_id", _release.Release.Id.ToString());
+        Write(Fields.Disc, () => tagData.Disc = "");
+        Write(Fields.DiscTotal, () => tagData.DiscTotal = "");
+        Write(Fields.Genre, () => tagData.Genre = _release.Release.Styles ?? []);
+        Write(Fields.Label, () => tagData.Label = label?.Name ?? "");
+        Write(Fields.Date, () => tagData.Date = _release.Release.Year.ToString());
+        Write(Fields.Picture, () => tagData.Picture = [new TagLib.Picture(_release.Image)]);
+        Write(Fields.CatalogNumber, () => tagData.CatalogNumber = label?.CatNo ?? "");
+        tagData.SetCustomField("discogs_release_id", _release.Release.Id.ToString());
+        context.Target.SetCurrentTagData(tagData);
     }
 
     private void Write(string field, Action write)
