@@ -65,7 +65,6 @@ The program support multiple commands:
 ### Help command
 
 ```
-/home/runner/work/tagselecta/tagselecta/TagSelecta.Tui/TuiApp.cs(18,17): warning CS9113: Parameter 'fs' is unread. [/home/runner/work/tagselecta/tagselecta/TagSelecta.Tui/TagSelecta.Tui.csproj]
 USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
@@ -267,10 +266,10 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help       Prints help information                                    
-    -r, --release    Required                                                   
-    -f, --fields     Fields to update from Discogs release. If not specified,   
-                     all values will be updated
+    -h, --help      Prints help information                                     
+    -u, --url       Discogs release URL. Required                               
+    -f, --fields    Fields to update from Discogs release. If not specified, all
+                    values will be updated
 ```
 
 ### Find command
