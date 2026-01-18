@@ -1,5 +1,6 @@
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.TagDataActions.Move;
 
 namespace TagSelecta.TagDataActions.Tests;
@@ -16,7 +17,7 @@ public class MoveTests
 
         var tagData = new TagData() { Date = "1990", Album = "Test Album" };
 
-        var item = new TagDataOperation("/file.mp3", tagData);
+        var item = new TrackedFile("/file.mp3", tagData);
 
         // Act
         await action.ExecuteAsync(
@@ -43,7 +44,7 @@ public class MoveTests
 
         var tagData = new TagData() { Date = "1990", Album = "Test Album" };
 
-        var item = new TagDataOperation("/dir/file.mp3", tagData);
+        var item = new TrackedFile("/dir/file.mp3", tagData);
 
         // Act
         await action.ExecuteAsync(

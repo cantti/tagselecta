@@ -1,5 +1,6 @@
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.TagDataActions.Split;
 
 namespace TagSelecta.TagDataActions.Tests;
@@ -13,7 +14,7 @@ public class SplitTests
         var action = new SplitAction();
         var settings = new SplitSettings();
         var tagData = new TagData() { Artist = ["Artist1; Artist2"] };
-        var item = new TagDataOperation("file.mp3", tagData);
+        var item = new TrackedFile("file.mp3", tagData);
 
         // Act
         await action.ExecuteAsync(

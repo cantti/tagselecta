@@ -6,7 +6,7 @@ public class ToggleFilterCommand : ITuiCommand
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
         context.FilterEnabled = !context.FilterEnabled;
-        context.FocusedOperationIndex = 0;
+        context.FocusedFileIndex = 0;
         return Task.CompletedTask;
     }
 }

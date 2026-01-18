@@ -4,8 +4,8 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Configuration;
 using TagSelecta.Shared.IO;
-using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.Tui;
 
 namespace TagSelecta.App;
@@ -73,7 +73,7 @@ class Program
         services.AddTransient<IFileSystem, FileSystem>();
         services.AddTransient<ITagger, Tagger>();
         services.AddTransient<IAudioFileScanner, AudioFileScanner>();
-        services.AddTransient<ITagDataOperationExecutor, TagDataOperationExecutor>();
+        services.AddTransient<ITrackedFileExecutor, TrackedFileExecutor>();
     }
 
     private static void ConfigureCancel(CancellationTokenSource cst)

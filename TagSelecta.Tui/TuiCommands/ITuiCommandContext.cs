@@ -1,17 +1,17 @@
-using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.TuiCommands;
 
 public interface ITuiCommandContext
 {
-    int FocusedOperationIndex { get; set; }
-    IEnumerable<TagDataOperation> Operations { get; }
-    IEnumerable<TagDataOperation> SelectedOperations { get; }
-    TagDataOperation? FocusedOperation { get; }
+    int FocusedFileIndex { get; set; }
+    IEnumerable<TrackedFile> Files { get; }
+    IEnumerable<TrackedFile> SelectedFiles { get; }
+    TrackedFile? FocusedFile { get; }
     bool TreeEnabled { get; set; }
     bool FilterEnabled { get; set; }
     bool HelpEnabled { get; set; }
-    IEnumerable<TagDataOperation> VisibleOperations { get; }
+    IEnumerable<TrackedFile> VisibleFiles { get; }
     void Quit();
     void Print(string markupMessage);
 }

@@ -2,13 +2,14 @@ using System.Reflection;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.TuiCommands;
 
 [TuiCommand("execute")]
 public class ExecuteTagDataActionCommand(
     ITagDataActionFactory actionFactory,
-    ITagDataOperationExecutor executor
+    ITrackedFileExecutor executor
 ) : ITuiCommand
 {
     public async Task ExecuteAsync(
@@ -29,27 +30,27 @@ public class ExecuteTagDataActionCommand(
 
         var settings = CreateSettings(action, request.Args);
 
-        await action.BeforeExecuteAsync(settings, token);
+        await action.BeforeExecute(settings, token);
 
-        var selectedOperationsList = context.SelectedOperations.ToList();
+        var selectedFilesList = context.SelectedFiles.ToList();
 
-        for (var i = 0; i < selectedOperationsList.Count; i++)
+        for (var i = 0; i < selectedFilesList.Count; i++)
         {
             token.ThrowIfCancellationRequested();
-            var operation = selectedOperationsList[i];
+            var file = selectedFilesList[i];
             await executor.Execute(
-                operation,
+                file,
                 action,
                 new TagDataActionExecuteContext<TagDataActionSettings>()
                 {
-                    Files = context.Operations,
+                    Files = context.Files,
                     Settings = settings,
-                    Target = operation,
+                    Target = file,
                 },
                 token
             );
             context.Print(
-                $"Processed {i + 1} of {selectedOperationsList.Count} files. Type :w to write changes."
+                $"Processed {i + 1} of {selectedFilesList.Count} files. Type :w to write changes."
             );
         }
     }

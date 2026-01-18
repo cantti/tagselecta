@@ -2,7 +2,7 @@ namespace TagSelecta.Shared.TagDataActions;
 
 public interface ITagDataAction
 {
-    Task ExecuteAsync(ITagDataActionExecuteContext context, CancellationToken token);
+    Task Execute(ITagDataActionExecuteContext context, CancellationToken token);
 
-    Task<bool> BeforeExecuteAsync(TagDataActionSettings settings, CancellationToken token);
+    Task<bool> BeforeExecute(TagDataActionSettings settings, CancellationToken token);
 }

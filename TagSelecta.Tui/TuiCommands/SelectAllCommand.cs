@@ -5,9 +5,9 @@ public class SelectAllCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
-        foreach (var operation in context.VisibleOperations)
+        foreach (var file in context.VisibleFiles)
         {
-            operation.IsSelected = true;
+            file.IsSelected = true;
         }
         return Task.CompletedTask;
     }

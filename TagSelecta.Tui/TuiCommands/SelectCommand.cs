@@ -5,12 +5,12 @@ public class SelectCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
-        if (context.FocusedOperation is null)
+        if (context.FocusedFile is null)
         {
             return Task.CompletedTask;
         }
-        context.FocusedOperation.IsSelected = !context.FocusedOperation.IsSelected;
-        context.FocusedOperationIndex++;
+        context.FocusedFile.IsSelected = !context.FocusedFile.IsSelected;
+        context.FocusedFileIndex++;
         return Task.CompletedTask;
     }
 }

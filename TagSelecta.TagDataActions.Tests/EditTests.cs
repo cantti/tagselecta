@@ -1,5 +1,6 @@
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.TagDataActions.Edit;
 
 namespace TagSelecta.TagDataActions.Tests;
@@ -62,7 +63,7 @@ public class EditTests
 
         tagData.SetCustomField("original_field", "original_value");
 
-        var item = new TagDataOperation("file.mp3", tagData);
+        var item = new TrackedFile("file.mp3", tagData);
 
         // Act
         await action.ExecuteAsync(

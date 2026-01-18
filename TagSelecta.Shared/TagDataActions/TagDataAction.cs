@@ -24,7 +24,7 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         return Task.CompletedTask;
     }
 
-    Task ITagDataAction.ExecuteAsync(ITagDataActionExecuteContext context, CancellationToken token)
+    Task ITagDataAction.Execute(ITagDataActionExecuteContext context, CancellationToken token)
     {
         return ExecuteAsync(
             new TagDataActionExecuteContext<TSettings>
@@ -37,10 +37,7 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         );
     }
 
-    Task<bool> ITagDataAction.BeforeExecuteAsync(
-        TagDataActionSettings settings,
-        CancellationToken token
-    )
+    Task<bool> ITagDataAction.BeforeExecute(TagDataActionSettings settings, CancellationToken token)
     {
         return BeforeExecuteAsync((TSettings)settings, token);
     }

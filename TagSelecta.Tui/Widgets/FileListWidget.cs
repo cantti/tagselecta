@@ -1,42 +1,42 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
-using TagSelecta.Shared.TagDataActions;
+using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.Widgets;
 
 public class FileListWidget(
-    IEnumerable<TagDataOperation> operations,
-    TagDataOperation? focusedOperation,
+    IEnumerable<TrackedFile> files,
+    TrackedFile? focusedFile,
     int windowSize
 ) : Renderable
 {
-    private readonly List<TagDataOperation> _operations = operations.ToList();
+    private readonly List<TrackedFile> _files = files.ToList();
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        var operationList = _operations.ToList();
+        var filesList = _files.ToList();
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
-        var focusedIndex = operationList.FindIndex(x => x == focusedOperation);
+        var focusedIndex = filesList.FindIndex(x => x == focusedFile);
         var windowStart = focusedIndex - (windowSize / 2);
 
         // clamp so we don't go before 0 or past the last possible full window start
-        var maxStart = Math.Max(0, operationList.Count - windowSize);
+        var maxStart = Math.Max(0, filesList.Count - windowSize);
         windowStart = Math.Clamp(windowStart, 0, maxStart);
 
-        var linesToPrint = Math.Min(windowSize, operationList.Count - windowStart);
+        var linesToPrint = Math.Min(windowSize, filesList.Count - windowStart);
 
         var items = new List<IRenderable>();
 
         for (var i = 0; i < linesToPrint; i++)
         {
             var itemIndex = windowStart + i;
-            var path = operationList[itemIndex].GetBackupPath();
+            var path = filesList[itemIndex].GetBackupPath();
 
             var cols = new List<IRenderable>();
-            var fg = operationList[itemIndex].HasChanges ? Color.Red : Color.Default;
+            var fg = filesList[itemIndex].HasChanges ? Color.Red : Color.Default;
             var bg = focusedIndex == itemIndex ? Color.Grey : Color.Default;
-            var selectedMarker = operationList[itemIndex].IsSelected ? "[x] " : "[ ] ";
+            var selectedMarker = filesList[itemIndex].IsSelected ? "[x] " : "[ ] ";
             cols.Add(new Text(selectedMarker, new Style(fg, bg)));
             if (path.Length + selectedMarker.Length > maxWidth)
             {
@@ -49,7 +49,7 @@ public class FileListWidget(
         }
 
         IRenderable content = new Rows(
-            new Text($"Files ({operationList.Count}):", new Style(Color.Yellow))
+            new Text($"Files ({filesList.Count}):", new Style(Color.Yellow))
             {
                 Overflow = Overflow.Ellipsis,
             },

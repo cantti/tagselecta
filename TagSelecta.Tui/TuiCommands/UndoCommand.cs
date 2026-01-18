@@ -5,9 +5,10 @@ public class UndoCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
-        foreach (var operation in context.SelectedOperations.Where(x => x.HasChanges).ToList())
+        foreach (var file in context.SelectedFiles.Where(x => x.HasChanges).ToList())
         {
-            operation.Undo();
+            token.ThrowIfCancellationRequested();
+            file.Undo();
         }
         return Task.CompletedTask;
     }

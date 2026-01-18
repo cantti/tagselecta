@@ -1,14 +1,14 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using TagSelecta.Shared.Exceptions;
-using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.Widgets;
 
 public static class TagDataPrinter
 {
-    public static IRenderable PrintTagData(TagDataOperation f)
+    public static IRenderable PrintTagData(TrackedFile f)
     {
         var tagData = f.GetCurrentTagData();
         var table = new Table();
@@ -47,7 +47,7 @@ public static class TagDataPrinter
         return table;
     }
 
-    public static IRenderable PrintComparison(TagDataOperation f)
+    public static IRenderable PrintComparison(TrackedFile f)
     {
         var tagData = f.GetCurrentTagData();
         var backupTagData = f.GetBackupTagData();

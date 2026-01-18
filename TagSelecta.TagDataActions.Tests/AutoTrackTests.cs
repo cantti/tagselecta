@@ -1,5 +1,6 @@
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.TagDataActions.AutoTrack;
 
 namespace TagSelecta.TagDataActions.Tests;
@@ -14,7 +15,7 @@ public class AutoTrackTests
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
-        var item1 = new TagDataOperation(
+        var item1 = new TrackedFile(
             "file1.mp3",
             new TagData()
             {
@@ -25,7 +26,7 @@ public class AutoTrackTests
             }
         );
 
-        var item2 = new TagDataOperation(
+        var item2 = new TrackedFile(
             "file2.mp3",
             new TagData
             {

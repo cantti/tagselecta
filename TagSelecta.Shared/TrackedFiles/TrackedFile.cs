@@ -1,8 +1,9 @@
+using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 
-namespace TagSelecta.Shared.TagDataActions;
+namespace TagSelecta.Shared.TrackedFiles;
 
-public class TagDataOperation : ITagDataActionTarget, ITagDataActionFileInfo
+public class TrackedFile : ITagDataActionTarget
 {
     private TagData _backupTagData = null!;
     private TagData _currentTagData;
@@ -16,7 +17,7 @@ public class TagDataOperation : ITagDataActionTarget, ITagDataActionFileInfo
 
     public bool IsSelected { get; set; }
 
-    public TagDataOperation(string currentPath, TagData currentTagData)
+    public TrackedFile(string currentPath, TagData currentTagData)
     {
         _currentTagData = currentTagData;
         SetCurrentPath(currentPath, MoveOptions.None);
