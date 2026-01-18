@@ -8,7 +8,7 @@ namespace TagSelecta.Tui.TuiCommands;
 [TuiCommand("execute")]
 public class ExecuteTagDataActionCommand(
     ITagDataActionFactory actionFactory,
-    ITagDataActionExecutor executor
+    ITagDataOperationExecutor executor
 ) : ITuiCommand
 {
     public async Task ExecuteAsync(

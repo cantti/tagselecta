@@ -2,7 +2,7 @@ using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Shared.TagDataActions;
 
-public class TagDataOperation : ITagDataActionTarget, ITagDataActionSnapshot
+public class TagDataOperation : ITagDataActionTarget, ITagDataActionFileInfo
 {
     private TagData _backupTagData = null!;
     private TagData _currentTagData;

@@ -3,7 +3,7 @@ using TagSelecta.Shared.TagDataActions;
 namespace TagSelecta.Tui.TuiCommands;
 
 [TuiCommand("write", "w")]
-public class WriteCommand(ITagDataOperationWriter writer) : ITuiCommand
+public class WriteCommand(ITagDataOperationExecutor executor) : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
@@ -12,7 +12,7 @@ public class WriteCommand(ITagDataOperationWriter writer) : ITuiCommand
         {
             token.ThrowIfCancellationRequested();
             var operation = operationsToWrite[i];
-            writer.Write(operation);
+            executor.Write(operation);
             context.Print(
                 operation.Exception is null
                     ? $"Wrote changes {i + 1} of {operationsToWrite.Count} ({operation.GetCurrentPath()})"

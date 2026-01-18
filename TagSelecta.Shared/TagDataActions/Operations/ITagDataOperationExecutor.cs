@@ -1,7 +1,8 @@
 namespace TagSelecta.Shared.TagDataActions;
 
-public interface ITagDataActionExecutor
+public interface ITagDataOperationExecutor
 {
+    void Write(TagDataOperation operation);
     Task Execute(
         TagDataOperation operation,
         ITagDataAction action,

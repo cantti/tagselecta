@@ -3,7 +3,7 @@ using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Shared.TagDataActions;
 
-public class TagDataOperationWriter(ITagger tagger, IFileSystem fs) : ITagDataOperationWriter
+public class TagDataOperationExecutor(ITagger tagger, IFileSystem fs) : ITagDataOperationExecutor
 {
     public void Write(TagDataOperation operation)
     {
@@ -12,6 +12,24 @@ public class TagDataOperationWriter(ITagger tagger, IFileSystem fs) : ITagDataOp
         {
             PerformWrite(operation);
             operation.UpdateBackup();
+        }
+        catch (Exception ex)
+        {
+            operation.MarkError(ex);
+        }
+    }
+
+    public async Task Execute(
+        TagDataOperation operation,
+        ITagDataAction action,
+        ITagDataActionExecuteContext context,
+        CancellationToken token
+    )
+    {
+        operation.ResetError();
+        try
+        {
+            await action.ExecuteAsync(context, token);
         }
         catch (Exception ex)
         {

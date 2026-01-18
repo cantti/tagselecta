@@ -9,8 +9,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITagDataOperationWriter writer,
-    ITagDataActionExecutor executor
+    ITagDataOperationExecutor executor
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -105,7 +104,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var operation in operationsToWrite)
                 {
                     ct.ThrowIfCancellationRequested();
-                    writer.Write(operation);
+                    executor.Write(operation);
                     task.Increment(1);
                 }
             });
