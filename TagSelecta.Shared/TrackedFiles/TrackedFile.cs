@@ -3,7 +3,7 @@ using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Shared.TrackedFiles;
 
-public class TrackedFile : ITagDataActionTarget
+public class TrackedFile : ITagDataActionTarget, ITagDataActionFileInfo
 {
     private TagData _backupTagData = null!;
     private TagData _currentTagData;
