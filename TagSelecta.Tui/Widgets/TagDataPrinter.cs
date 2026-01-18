@@ -77,8 +77,8 @@ public static class TagDataPrinter
                 ConvertValue(prop.GetValue(f.CurrentTagData), prop.PropertyType)
             );
         }
-        var customKeys = f
-            .BackupTagData.Custom.Select(x => x.Key)
+        var customKeys = backupTagData
+            .Custom.Select(x => x.Key)
             .Union(f.CurrentTagData.Custom.Select(x => x.Key))
             .ToList();
         if (customKeys.Count > 0)
@@ -86,8 +86,8 @@ public static class TagDataPrinter
             table.AddEmptyRow();
             table.AddRow("[i]Custom:[/]");
             foreach (
-                var key in f
-                    .BackupTagData.Custom.Select(x => x.Key)
+                var key in backupTagData
+                    .Custom.Select(x => x.Key)
                     .Union(f.CurrentTagData.Custom.Select(x => x.Key))
             )
             {
@@ -103,8 +103,8 @@ public static class TagDataPrinter
             table.AddRow("[i]Pictures:[/]");
 
             // collect unique picture types
-            var types = f
-                .BackupTagData.Picture.Select(p => p.Type)
+            var types = backupTagData
+                .Picture.Select(p => p.Type)
                 .Union(f.CurrentTagData.Picture.Select(p => p.Type))
                 .OrderBy(t => t.ToString())
                 .ToList();
