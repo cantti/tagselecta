@@ -18,7 +18,7 @@ public class SplitAction : TagDataAction<SplitSettings>
 
     protected override void Execute(TagDataActionExecuteContext<SplitSettings> context)
     {
-        var tagData = context.Target.GetCurrentTagData();
+        var tagData = context.Target.CurrentTagData;
         var artists = tagData.Artist.SelectMany(Split).Distinct().ToList();
         var albumArtists = tagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
         var composers = tagData.Composer.Select(Split).SelectMany(x => x).Distinct().ToList();
@@ -26,7 +26,7 @@ public class SplitAction : TagDataAction<SplitSettings>
         tagData.Artist = artists;
         tagData.AlbumArtist = albumArtists;
         tagData.Composer = composers;
-        context.Target.SetCurrentTagData(tagData);
+        context.Target.UpdateTagData(tagData);
     }
 
     private List<string> Split(string input)

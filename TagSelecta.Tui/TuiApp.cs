@@ -3,7 +3,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
 using TagSelecta.Shared.IO;
-using TagSelecta.Shared.TrackedFiles;
+using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Tui.TuiCommands;
 using TagSelecta.Tui.Widgets;
 
@@ -25,19 +25,19 @@ public class TuiApp(
 
     private string _statusMessage = "";
 
-    public IEnumerable<TrackedFile> Files { get; private set; } = [];
+    public IEnumerable<TagDataActionTarget> Files { get; private set; } = [];
 
-    public IEnumerable<TrackedFile> VisibleFiles =>
+    public IEnumerable<TagDataActionTarget> VisibleFiles =>
         Files.Where(x => !FilterEnabled || x.HasChanges);
 
-    public IEnumerable<TrackedFile> SelectedFiles =>
+    public IEnumerable<TagDataActionTarget> SelectedFiles =>
         VisibleFiles.Any(x => x.IsSelected) ? VisibleFiles.Where(x => x.IsSelected)
         : FocusedFile is not null ? new[] { FocusedFile }
-        : Enumerable.Empty<TrackedFile>();
+        : Enumerable.Empty<TagDataActionTarget>();
 
     public int FocusedFileIndex { get; set; }
 
-    public TrackedFile? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
+    public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
 
     private CancellationTokenSource _cts = new();
 
@@ -69,7 +69,7 @@ public class TuiApp(
 
             Files = audioFileScanner
                 .ScanAndRead(settings.Path, ct)
-                .Select(x => new TrackedFile(x.Path, x.TagData))
+                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();

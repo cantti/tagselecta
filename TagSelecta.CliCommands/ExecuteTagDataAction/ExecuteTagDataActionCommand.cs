@@ -2,7 +2,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.TagDataActions;
-using TagSelecta.Shared.TrackedFiles;
+using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.CliCommands.ExecuteTagDataAction;
 
@@ -10,7 +10,8 @@ public class ExecuteTagDataActionCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITrackedFileExecutor executor
+    ITagger tagger,
+    IFileSystem fs
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -34,7 +35,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 
             var files = audioFileScanner
                 .ScanAndRead(settings.Path, ct)
-                .Select(x => new TrackedFile(x.Path, x.TagData))
+                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
             console.WriteLine($"Total {files.Count} files found");
@@ -64,7 +65,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 
     private async Task ExecuteAction(
         TSettings settings,
-        List<TrackedFile> files,
+        List<TagDataActionTarget> files,
         CancellationToken ct
     )
     {
@@ -77,12 +78,16 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var file in files)
                 {
                     ct.ThrowIfCancellationRequested();
-                    await executor.Execute(
-                        file,
+                    await file.ExecuteTagDataAction(
                         action,
                         new TagDataActionExecuteContext<TagDataActionSettings>
                         {
-                            Files = files,
+                            DirectoryFiles = files
+                                .Where(x =>
+                                    Path.GetDirectoryName(x.BackupPath)
+                                    == Path.GetDirectoryName(file.BackupPath)
+                                )
+                                .Select(x => new TagDataActionFileInfo(x.BackupPath)),
                             Settings = settings,
                             Target = file,
                         },
@@ -93,7 +98,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
             });
     }
 
-    private void Write(List<TrackedFile> files, CancellationToken ct)
+    private void Write(List<TagDataActionTarget> files, CancellationToken ct)
     {
         console
             .Progress()
@@ -105,7 +110,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var file in filesToWrite)
                 {
                     ct.ThrowIfCancellationRequested();
-                    executor.Write(file);
+                    file.Write(tagger, fs);
                     task.Increment(1);
                 }
             });

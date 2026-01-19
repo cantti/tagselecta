@@ -8,10 +8,10 @@ public class MoveAction : TagDataAction<MoveSettings>
 {
     protected override void Execute(TagDataActionExecuteContext<MoveSettings> context)
     {
-        var dir = Path.GetDirectoryName(context.Target.GetBackupPath())!;
+        var dir = Path.GetDirectoryName(context.Target.BackupPath)!;
         var formatter = new TagDataFormatter(
-            context.Target.GetBackupTagData(),
-            context.Target.GetBackupPath()
+            context.Target.BackupTagData,
+            context.Target.BackupPath
         );
         var newName = formatter.Format(context.Settings.Template);
         var newPath = Path.GetFullPath(newName, dir);
@@ -24,6 +24,6 @@ public class MoveAction : TagDataAction<MoveSettings>
         {
             moveOptions |= MoveOptions.DoNotMoveOtherFiles;
         }
-        context.Target.SetCurrentPath(newPath, moveOptions);
+        context.Target.UpdatePath(newPath, moveOptions);
     }
 }

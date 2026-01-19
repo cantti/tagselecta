@@ -1,12 +1,12 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
-using TagSelecta.Shared.TrackedFiles;
+using TagSelecta.Shared.TagDataActions;
 
 namespace TagSelecta.Tui.Widgets;
 
 public class TreeListWidget(
-    IEnumerable<TrackedFile> files,
-    TrackedFile? focusedFile,
+    IEnumerable<TagDataActionTarget> files,
+    TagDataActionTarget? focusedFile,
     int windowSize
 ) : Renderable
 {
@@ -14,7 +14,7 @@ public class TreeListWidget(
         ? StringComparison.OrdinalIgnoreCase
         : StringComparison.Ordinal;
 
-    private readonly List<TrackedFile> _files = files.ToList();
+    private readonly List<TagDataActionTarget> _files = files.ToList();
 
     private static List<TreeLine>? _cachedTreeLines;
 
@@ -83,13 +83,13 @@ public class TreeListWidget(
     {
         var treeLines = new List<TreeLine>();
 
-        var paths = new List<(string Path, TrackedFile? file)>();
+        var paths = new List<(string Path, TagDataActionTarget? file)>();
 
         foreach (var file in _files)
         {
-            paths.Add((file.GetBackupPath(), file));
+            paths.Add((file.BackupPath, file));
 
-            var current = file.GetBackupPath();
+            var current = file.BackupPath;
             var root = Path.GetPathRoot(current);
 
             while (true)
@@ -125,7 +125,7 @@ public class TreeListWidget(
 
         return treeLines;
 
-        void AddNode((string Path, TrackedFile? file) node, int depth = 0)
+        void AddNode((string Path, TagDataActionTarget? file) node, int depth = 0)
         {
             var root = Path.GetPathRoot(node.Path);
 
@@ -134,7 +134,7 @@ public class TreeListWidget(
                 : Path.GetFileName(node.Path);
 
             var file = _files.FirstOrDefault(x =>
-                string.Equals(x.GetBackupPath(), node.Path, _pathComparer)
+                string.Equals(x.BackupPath, node.Path, _pathComparer)
             );
 
             var line = new TreeLine(name!, depth, file);
@@ -152,5 +152,5 @@ public class TreeListWidget(
         }
     }
 
-    private record TreeLine(string Name, int Depth, TrackedFile? File);
+    private record TreeLine(string Name, int Depth, TagDataActionTarget? File);
 }

@@ -1,11 +1,11 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
-using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.Widgets;
 
-public class TagDataWidget(TrackedFile? focusedFile) : Renderable
+public class TagDataWidget(TagDataActionTarget? focusedFile) : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
@@ -16,7 +16,7 @@ public class TagDataWidget(TrackedFile? focusedFile) : Renderable
             ? focusedFile.HasChanges
                 ? TagDataPrinter.PrintComparison(focusedFile)
                 : TagDataPrinter.PrintTagData(focusedFile)
-            : TagDataPrinter.PrintTagData(new TrackedFile("", new TagData()));
+            : TagDataPrinter.PrintTagData(new TagDataActionTarget("", new TagData()));
 
         rows.Add(tagDataRenderable);
 

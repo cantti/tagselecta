@@ -8,10 +8,10 @@ public class EditAction : TagDataAction<EditSettings>
 {
     protected override void Execute(TagDataActionExecuteContext<EditSettings> context)
     {
-        var tagData = context.Target.GetCurrentTagData();
+        var tagData = context.Target.CurrentTagData;
         var formatter = new TagDataFormatter(
-            context.Target.GetBackupTagData(),
-            context.Target.GetBackupPath()
+            context.Target.BackupTagData,
+            context.Target.BackupPath
         );
 
         Write(s => s.Album, v => tagData.Album = v);
@@ -77,7 +77,7 @@ public class EditAction : TagDataAction<EditSettings>
             }
         }
 
-        context.Target.SetCurrentTagData(tagData);
+        context.Target.UpdateTagData(tagData);
 
         return;
 

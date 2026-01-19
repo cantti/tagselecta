@@ -9,7 +9,7 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
 {
     protected override void Execute(TagDataActionExecuteContext<TitleCaseSettings> context)
     {
-        var tagData = context.Target.GetCurrentTagData();
+        var tagData = context.Target.CurrentTagData;
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -29,7 +29,7 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
                 prop.SetValue(tagData, list.Select(ToTitleCase).ToList());
             }
         }
-        context.Target.SetCurrentTagData(tagData);
+        context.Target.UpdateTagData(tagData);
     }
 
     private static string ToTitleCase(string input)

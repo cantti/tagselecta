@@ -1,16 +1,16 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
-using TagSelecta.Shared.TrackedFiles;
+using TagSelecta.Shared.TagDataActions;
 
 namespace TagSelecta.Tui.Widgets;
 
 public class FileListWidget(
-    IEnumerable<TrackedFile> files,
-    TrackedFile? focusedFile,
+    IEnumerable<TagDataActionTarget> files,
+    TagDataActionTarget? focusedFile,
     int windowSize
 ) : Renderable
 {
-    private readonly List<TrackedFile> _files = files.ToList();
+    private readonly List<TagDataActionTarget> _files = files.ToList();
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
@@ -31,7 +31,7 @@ public class FileListWidget(
         for (var i = 0; i < linesToPrint; i++)
         {
             var itemIndex = windowStart + i;
-            var path = filesList[itemIndex].GetBackupPath();
+            var path = filesList[itemIndex].BackupPath;
 
             var cols = new List<IRenderable>();
             var fg = filesList[itemIndex].HasChanges ? Color.Red : Color.Default;

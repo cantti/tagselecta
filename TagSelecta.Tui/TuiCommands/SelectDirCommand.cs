@@ -9,10 +9,10 @@ public class SelectDirCommand : ITuiCommand
         {
             return Task.CompletedTask;
         }
-        var dir = Path.GetDirectoryName(context.FocusedFile.GetCurrentPath());
+        var dir = Path.GetDirectoryName(context.FocusedFile.BackupPath);
         foreach (
             var file in context
-                .Files.Where(x => Path.GetDirectoryName(x.GetCurrentPath()) == dir)
+                .Files.Where(x => Path.GetDirectoryName(x.BackupPath) == dir)
                 .ToList()
         )
         {

@@ -1,22 +1,22 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using TagSelecta.Shared.Exceptions;
+using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
-using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.Widgets;
 
 public static class TagDataPrinter
 {
-    public static IRenderable PrintTagData(TrackedFile f)
+    public static IRenderable PrintTagData(TagDataActionTarget f)
     {
-        var tagData = f.GetCurrentTagData();
+        var tagData = f.CurrentTagData;
         var table = new Table();
         table.Border(TableBorder.None);
         table.AddColumn("", c => c.Width(20));
         table.AddColumn("");
         table.HideHeaders();
-        AddField(table, "Path", f.GetCurrentPath());
+        AddField(table, "Path", f.CurrentPath);
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -47,10 +47,10 @@ public static class TagDataPrinter
         return table;
     }
 
-    public static IRenderable PrintComparison(TrackedFile f)
+    public static IRenderable PrintComparison(TagDataActionTarget f)
     {
-        var tagData = f.GetCurrentTagData();
-        var backupTagData = f.GetBackupTagData();
+        var tagData = f.CurrentTagData;
+        var backupTagData = f.BackupTagData;
 
         var table = new Table();
         table.Border(TableBorder.None);
@@ -58,7 +58,7 @@ public static class TagDataPrinter
         table.AddColumn("");
         table.HideHeaders();
 
-        AddFieldComparison(table, "Path", f.GetBackupPath(), f.GetCurrentPath());
+        AddFieldComparison(table, "Path", f.BackupPath, f.CurrentPath);
 
         foreach (
             var prop in typeof(TagData)

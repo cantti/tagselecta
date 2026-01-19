@@ -4,10 +4,9 @@ namespace TagSelecta.Shared.TagDataActions;
 
 public interface ITagDataActionTarget
 {
-    string GetCurrentPath();
-    TagData GetCurrentTagData();
-    void SetCurrentPath(string path, MoveOptions moveOptions);
-    void SetCurrentTagData(TagData tagData);
-    string GetBackupPath();
-    TagData GetBackupTagData();
+    TagData CurrentTagData { get; }
+    TagData BackupTagData { get; }
+    string BackupPath { get; }
+    void UpdatePath(string path, MoveOptions moveOptions);
+    void UpdateTagData(TagData tagData);
 }

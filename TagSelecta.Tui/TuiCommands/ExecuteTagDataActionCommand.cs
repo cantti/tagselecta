@@ -2,15 +2,11 @@ using System.Reflection;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.TagDataActions;
-using TagSelecta.Shared.TrackedFiles;
 
 namespace TagSelecta.Tui.TuiCommands;
 
 [TuiCommand("execute")]
-public class ExecuteTagDataActionCommand(
-    ITagDataActionFactory actionFactory,
-    ITrackedFileExecutor executor
-) : ITuiCommand
+public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : ITuiCommand
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
@@ -38,12 +34,16 @@ public class ExecuteTagDataActionCommand(
         {
             token.ThrowIfCancellationRequested();
             var file = selectedFilesList[i];
-            await executor.Execute(
-                file,
+            await file.ExecuteTagDataAction(
                 action,
                 new TagDataActionExecuteContext<TagDataActionSettings>()
                 {
-                    Files = context.Files,
+                    DirectoryFiles = context
+                        .Files.Where(x =>
+                            Path.GetDirectoryName(x.BackupPath)
+                            == Path.GetDirectoryName(file.BackupPath)
+                        )
+                        .Select(x => new TagDataActionFileInfo(x.BackupPath)),
                     Settings = settings,
                     Target = file,
                 },

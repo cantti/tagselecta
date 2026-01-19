@@ -1,6 +1,5 @@
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
-using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.TagDataActions.Edit;
 
 namespace TagSelecta.TagDataActions.Tests;
@@ -63,13 +62,13 @@ public class EditTests
 
         tagData.SetCustomField("original_field", "original_value");
 
-        var item = new TrackedFile("file.mp3", tagData);
+        var item = new TagDataActionTarget("file.mp3", tagData);
 
         // Act
         await action.ExecuteAsync(
             new TagDataActionExecuteContext<EditSettings>
             {
-                Files = [item],
+                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
                 Settings = settings,
                 Target = item,
             },
@@ -77,7 +76,7 @@ public class EditTests
         );
 
         // Assert
-        var currentTagData = item.GetCurrentTagData();
+        var currentTagData = item.CurrentTagData;
         Assert.Equal(settings.Album, currentTagData.Album);
         Assert.Equal(settings.AlbumArtist.ToMulti(), currentTagData.AlbumArtist);
         Assert.Equal(settings.Artist.ToMulti(), currentTagData.Artist);

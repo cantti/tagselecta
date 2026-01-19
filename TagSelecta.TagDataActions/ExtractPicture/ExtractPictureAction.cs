@@ -26,8 +26,8 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 
     protected override void Execute(TagDataActionExecuteContext<ExtractPictureSettings> context)
     {
-        var tagData = context.Target.GetCurrentTagData();
-        var dir = Path.GetDirectoryName(context.Target.GetBackupPath())!;
+        var tagData = context.Target.CurrentTagData;
+        var dir = Path.GetDirectoryName(context.Target.BackupPath)!;
         var pictures = tagData
             .Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
             .OrderBy(x =>

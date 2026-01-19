@@ -28,20 +28,19 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
 
     protected override void Execute(TagDataActionExecuteContext<DiscogsSettings> context)
     {
-        var tagData = context.Target.GetCurrentTagData();
+        var tagData = context.Target.CurrentTagData;
 
         if (_release is null)
         {
             throw new TagSelectaException("Release not set");
         }
 
-        var dir = Path.GetDirectoryName(context.Target.GetBackupPath());
+        var dir = Path.GetDirectoryName(context.Target.BackupPath);
 
         var trackNumber = context
-            .Files.Where(x => Path.GetDirectoryName(x.GetBackupPath()) == dir)
-            .OrderBy(x => x.GetBackupPath())
+            .DirectoryFiles.OrderBy(x => x.Path)
             .ToList()
-            .FindIndex(x => x.GetBackupPath() == context.Target.GetBackupPath());
+            .FindIndex(x => x.Path == context.Target.BackupPath);
 
         if (trackNumber > _release.Release.TrackList?.Count - 1)
         {
@@ -84,7 +83,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
         Write(Fields.Picture, () => tagData.Picture = [new TagLib.Picture(_release.Image)]);
         Write(Fields.CatalogNumber, () => tagData.CatalogNumber = label?.CatNo ?? "");
         tagData.SetCustomField("discogs_release_id", _release.Release.Id.ToString());
-        context.Target.SetCurrentTagData(tagData);
+        context.Target.UpdateTagData(tagData);
     }
 
     private void Write(string field, Action write)

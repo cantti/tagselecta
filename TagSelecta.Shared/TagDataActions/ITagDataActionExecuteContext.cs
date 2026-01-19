@@ -4,7 +4,7 @@ public interface ITagDataActionExecuteContext
 {
     ITagDataActionTarget Target { get; }
 
-    IEnumerable<ITagDataActionFileInfo> Files { get; }
+    IEnumerable<ITagDataActionFileInfo> DirectoryFiles { get; }
 
     TagDataActionSettings Settings { get; }
 }

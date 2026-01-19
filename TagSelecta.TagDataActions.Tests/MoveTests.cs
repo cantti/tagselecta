@@ -1,6 +1,5 @@
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
-using TagSelecta.Shared.TrackedFiles;
 using TagSelecta.TagDataActions.Move;
 
 namespace TagSelecta.TagDataActions.Tests;
@@ -17,13 +16,13 @@ public class MoveTests
 
         var tagData = new TagData() { Date = "1990", Album = "Test Album" };
 
-        var item = new TrackedFile("/file.mp3", tagData);
+        var item = new TagDataActionTarget("/file.mp3", tagData);
 
         // Act
         await action.ExecuteAsync(
             new TagDataActionExecuteContext<MoveSettings>
             {
-                Files = [item],
+                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
                 Target = item,
                 Settings = settings,
             },
@@ -31,7 +30,7 @@ public class MoveTests
         );
 
         // Assert
-        Assert.Equal("/1990 - Test Album/file.mp3", item.GetCurrentPath());
+        Assert.Equal("/1990 - Test Album/file.mp3", item.CurrentPath);
     }
 
     [Fact]
@@ -44,13 +43,13 @@ public class MoveTests
 
         var tagData = new TagData() { Date = "1990", Album = "Test Album" };
 
-        var item = new TrackedFile("/dir/file.mp3", tagData);
+        var item = new TagDataActionTarget("/dir/file.mp3", tagData);
 
         // Act
         await action.ExecuteAsync(
             new TagDataActionExecuteContext<MoveSettings>
             {
-                Files = [item],
+                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
                 Target = item,
                 Settings = settings,
             },
@@ -58,6 +57,6 @@ public class MoveTests
         );
 
         // Assert
-        Assert.Equal("/1990 - Test Album/file.mp3", item.GetCurrentPath());
+        Assert.Equal("/1990 - Test Album/file.mp3", item.CurrentPath);
     }
 }
