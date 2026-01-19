@@ -4,7 +4,6 @@ public class TagDataActionExecuteContext<TSettings> : ITagDataActionExecuteConte
     where TSettings : TagDataActionSettings
 {
     public required ITagDataActionTarget Target { get; init; }
-    public required IEnumerable<ITagDataActionFileInfo> DirectoryFiles { get; init; }
     public required TSettings Settings { get; init; }
     TagDataActionSettings ITagDataActionExecuteContext.Settings => Settings;
 }

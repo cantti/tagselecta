@@ -20,12 +20,7 @@ public class MoveTests
 
         // Act
         await action.ExecuteAsync(
-            new TagDataActionExecuteContext<MoveSettings>
-            {
-                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
-                Target = item,
-                Settings = settings,
-            },
+            new TagDataActionExecuteContext<MoveSettings> { Target = item, Settings = settings },
             CancellationToken.None
         );
 
@@ -47,12 +42,7 @@ public class MoveTests
 
         // Act
         await action.ExecuteAsync(
-            new TagDataActionExecuteContext<MoveSettings>
-            {
-                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
-                Target = item,
-                Settings = settings,
-            },
+            new TagDataActionExecuteContext<MoveSettings> { Target = item, Settings = settings },
             CancellationToken.None
         );
 

@@ -1,3 +1,5 @@
+using NSubstitute;
+using TagSelecta.Shared.IO;
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.AutoTrack;
@@ -10,7 +12,10 @@ public class AutoTrackTests
     public async Task AutoTrackTest()
     {
         // Arrange
-        var action = new AutoTrackAction();
+        var audioFileScanner = Substitute.For<IAudioFileScanner>();
+        audioFileScanner.Search(new List<string>()).ReturnsForAnyArgs(["file1.mp3", "file2.mp3"]);
+
+        var action = new AutoTrackAction(audioFileScanner);
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
@@ -40,11 +45,6 @@ public class AutoTrackTests
         await action.ExecuteAsync(
             new TagDataActionExecuteContext<AutoTrackSettings>
             {
-                DirectoryFiles =
-                [
-                    new TagDataActionFileInfo(item1.BackupPath),
-                    new TagDataActionFileInfo(item2.BackupPath),
-                ],
                 Settings = settings,
                 Target = item1,
             },
@@ -53,11 +53,6 @@ public class AutoTrackTests
         await action.ExecuteAsync(
             new TagDataActionExecuteContext<AutoTrackSettings>
             {
-                DirectoryFiles =
-                [
-                    new TagDataActionFileInfo(item1.BackupPath),
-                    new TagDataActionFileInfo(item2.BackupPath),
-                ],
                 Settings = settings,
                 Target = item2,
             },

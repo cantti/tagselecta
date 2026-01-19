@@ -68,7 +68,7 @@ public class TuiApp(
             AltScreen.Enter();
 
             Files = audioFileScanner
-                .ScanAndRead(settings.Path, ct)
+                .SearchAndRead(settings.Path, ct)
                 .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 

@@ -38,12 +38,6 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
                 action,
                 new TagDataActionExecuteContext<TagDataActionSettings>()
                 {
-                    DirectoryFiles = context
-                        .Files.Where(x =>
-                            Path.GetDirectoryName(x.BackupPath)
-                            == Path.GetDirectoryName(file.BackupPath)
-                        )
-                        .Select(x => new TagDataActionFileInfo(x.BackupPath)),
                     Settings = settings,
                     Target = file,
                 },

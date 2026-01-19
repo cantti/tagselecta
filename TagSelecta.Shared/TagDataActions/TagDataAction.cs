@@ -29,7 +29,6 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
         return ExecuteAsync(
             new TagDataActionExecuteContext<TSettings>
             {
-                DirectoryFiles = context.DirectoryFiles,
                 Settings = (TSettings)context.Settings,
                 Target = context.Target,
             },

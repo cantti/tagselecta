@@ -17,12 +17,7 @@ public class SplitTests
 
         // Act
         await action.ExecuteAsync(
-            new TagDataActionExecuteContext<SplitSettings>()
-            {
-                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
-                Settings = settings,
-                Target = item,
-            },
+            new TagDataActionExecuteContext<SplitSettings>() { Settings = settings, Target = item },
             CancellationToken.None
         );
 

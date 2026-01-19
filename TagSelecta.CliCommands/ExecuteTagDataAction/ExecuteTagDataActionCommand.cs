@@ -34,7 +34,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
             }
 
             var files = audioFileScanner
-                .ScanAndRead(settings.Path, ct)
+                .SearchAndRead(settings.Path, ct)
                 .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
@@ -82,12 +82,6 @@ public class ExecuteTagDataActionCommand<TSettings>(
                         action,
                         new TagDataActionExecuteContext<TagDataActionSettings>
                         {
-                            DirectoryFiles = files
-                                .Where(x =>
-                                    Path.GetDirectoryName(x.BackupPath)
-                                    == Path.GetDirectoryName(file.BackupPath)
-                                )
-                                .Select(x => new TagDataActionFileInfo(x.BackupPath)),
                             Settings = settings,
                             Target = file,
                         },

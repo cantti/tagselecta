@@ -66,12 +66,7 @@ public class EditTests
 
         // Act
         await action.ExecuteAsync(
-            new TagDataActionExecuteContext<EditSettings>
-            {
-                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
-                Settings = settings,
-                Target = item,
-            },
+            new TagDataActionExecuteContext<EditSettings> { Settings = settings, Target = item },
             CancellationToken.None
         );
 

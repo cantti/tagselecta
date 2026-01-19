@@ -8,15 +8,9 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
 {
     public static HashSet<string> AllowedExtensions => [".mp3", ".flac", ".wav"];
 
-    public List<string> Scan(IEnumerable<string> path, bool recursively)
+    public List<FileWithTagData> SearchAndRead(IEnumerable<string> path, CancellationToken ct)
     {
-        var result = AnsiConsole.Status().Start("Searching for files...", _ => Search(path, true));
-        return result;
-    }
-
-    public List<FileWithTagData> ScanAndRead(IEnumerable<string> path, CancellationToken ct)
-    {
-        var files = Scan(path, true);
+        var files = AnsiConsole.Status().Start("Searching for files...", _ => Search(path, true));
         var result = new ConcurrentBag<FileWithTagData>();
         console
             .Progress()
@@ -42,7 +36,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
         return result.ToList().OrderBy(x => x.Path).ToList();
     }
 
-    private List<string> Search(IEnumerable<string> paths, bool recursive = false)
+    public List<string> Search(IEnumerable<string> paths, bool recursive = false)
     {
         var files = new List<string>();
         foreach (var path in paths)
@@ -82,6 +76,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                 );
             }
         }
+        files.Sort();
         return files;
     }
 }

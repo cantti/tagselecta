@@ -14,7 +14,7 @@ public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanne
         CancellationToken ct
     )
     {
-        var files = audioFileScanner.ScanAndRead(settings.Path, ct);
+        var files = audioFileScanner.SearchAndRead(settings.Path, ct);
         foreach (var file in files)
         {
             var formatter = new TagDataFormatter(file.TagData, file.Path);

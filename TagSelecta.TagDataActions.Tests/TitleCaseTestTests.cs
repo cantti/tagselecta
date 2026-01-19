@@ -22,7 +22,6 @@ public class TitleCaseTests
         await action.ExecuteAsync(
             new TagDataActionExecuteContext<TitleCaseSettings>
             {
-                DirectoryFiles = [new TagDataActionFileInfo(item.BackupPath)],
                 Settings = settings,
                 Target = item,
             },

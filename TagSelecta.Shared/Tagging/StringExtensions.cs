@@ -35,4 +35,12 @@ public static class StringListExtensions
 
         return value.Length <= length ? value : value.Substring(value.Length - length, length);
     }
+
+    public static string DirectoryName(this string path)
+    {
+        return Path.GetDirectoryName(path)
+            ?? throw new InvalidOperationException(
+                "Unable to determine the directory name for the provided path."
+            );
+    }
 }

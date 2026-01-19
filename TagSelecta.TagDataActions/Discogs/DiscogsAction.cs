@@ -1,12 +1,14 @@
 using System.Text.RegularExpressions;
 using TagSelecta.Shared.Exceptions;
+using TagSelecta.Shared.IO;
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.TagDataActions.Discogs;
 
 [TagDataActionName("discogs")]
-public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<DiscogsSettings>
+public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fileScanner)
+    : TagDataAction<DiscogsSettings>
 {
     private ReleaseFetcherResult? _release;
     private List<string> _fieldToWriteList = [];
@@ -35,12 +37,12 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher) : TagDataAction<Disco
             throw new TagSelectaException("Release not set");
         }
 
-        var dir = Path.GetDirectoryName(context.Target.BackupPath);
+        var directoryFiles = fileScanner
+            .Search([context.Target.BackupPath.DirectoryName()])
+            .Order()
+            .ToList();
 
-        var trackNumber = context
-            .DirectoryFiles.OrderBy(x => x.Path)
-            .ToList()
-            .FindIndex(x => x.Path == context.Target.BackupPath);
+        var trackNumber = directoryFiles.ToList().FindIndex(x => x == context.Target.BackupPath);
 
         if (trackNumber > _release.Release.TrackList?.Count - 1)
         {
