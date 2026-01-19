@@ -101,7 +101,10 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             }
             else if (prop.PropertyType == typeof(bool))
             {
-                prop.SetValue(baseSettings, true);
+                prop.SetValue(
+                    baseSettings,
+                    matchedValues[0] == "true" || matchedValues[0] == "1" || matchedValues[0] == ""
+                );
             }
             else
             {
