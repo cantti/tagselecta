@@ -83,7 +83,6 @@ OPTIONS:
     -v, --version    Prints version information
 
 COMMANDS:
-    ui <path>                Interactive UI (TUI)                               
     edit <path>              Edit (read and write) tags. Unrecognized options   
                              are saved as custom fields. Another way to edit    
                              custom fields is to use --custom option            
@@ -94,7 +93,8 @@ COMMANDS:
                              release id (not master) or query to search         
     autotrack <path>         Auto track                                         
     move <path>              Move (rename) files to another directory           
-    find <path>              Find files by metadata
+    find <path>              Find files by metadata                             
+    ui <path>                Interactive UI (TUI)
 ```
 
 ### Edit command
