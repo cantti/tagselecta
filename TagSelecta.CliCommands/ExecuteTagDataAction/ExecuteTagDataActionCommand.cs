@@ -11,7 +11,8 @@ public class ExecuteTagDataActionCommand<TSettings>(
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
     ITagger tagger,
-    IFileSystem fs
+    IFileSystem fs,
+    ITagDataActionTargetFactory targetFactory
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -35,7 +36,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 
             var files = audioFileScanner
                 .SearchAndRead(settings.Path, ct)
-                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
+                .Select(x => targetFactory.Create(x.Path, x.TagData))
                 .ToList();
 
             console.WriteLine($"Total {files.Count} files found");
@@ -104,7 +105,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var file in filesToWrite)
                 {
                     ct.ThrowIfCancellationRequested();
-                    file.Write(tagger, fs);
+                    file.Write();
                     task.Increment(1);
                 }
             });

@@ -3,6 +3,7 @@ using TagSelecta.Shared.IO;
 using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.AutoTrack;
+using TagSelecta.TagDataActions.Tests.Utils;
 
 namespace TagSelecta.TagDataActions.Tests;
 
@@ -19,7 +20,7 @@ public class AutoTrackTests
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
-        var item1 = new TagDataActionTarget(
+        var item1 = new TestTarget(
             "file1.mp3",
             new TagData()
             {
@@ -30,7 +31,7 @@ public class AutoTrackTests
             }
         );
 
-        var item2 = new TagDataActionTarget(
+        var item2 = new TestTarget(
             "file2.mp3",
             new TagData
             {

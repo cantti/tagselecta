@@ -16,7 +16,7 @@ public class TagDataWidget(TagDataActionTarget? focusedFile) : Renderable
             ? focusedFile.HasChanges
                 ? TagDataPrinter.PrintComparison(focusedFile)
                 : TagDataPrinter.PrintTagData(focusedFile)
-            : TagDataPrinter.PrintTagData(new TagDataActionTarget("", new TagData()));
+            : Text.Empty;
 
         rows.Add(tagDataRenderable);
 

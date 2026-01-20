@@ -19,4 +19,8 @@
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
     <ProjectReference Include="..\TagSelecta.Tui\TagSelecta.Tui.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cli\" />
+    <Folder Include="Tui\" />
+  </ItemGroup>
 </Project>

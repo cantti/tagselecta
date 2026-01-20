@@ -1,10 +1,7 @@
-using TagSelecta.Shared.IO;
-using TagSelecta.Shared.Tagging;
-
 namespace TagSelecta.Tui.TuiCommands;
 
 [TuiCommand("write", "w")]
-public class WriteCommand(ITagger tagger, IFileSystem fileSystem) : ITuiCommand
+public class WriteCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
@@ -13,7 +10,7 @@ public class WriteCommand(ITagger tagger, IFileSystem fileSystem) : ITuiCommand
         {
             token.ThrowIfCancellationRequested();
             var file = filesToWrite[i];
-            file.Write(tagger, fileSystem);
+            file.Write();
             context.Print(
                 file.Exception is null
                     ? $"Wrote changes {i + 1} of {filesToWrite.Count} ({file.CurrentPath})"

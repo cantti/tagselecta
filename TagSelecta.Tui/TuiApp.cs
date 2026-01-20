@@ -14,7 +14,8 @@ public class TuiApp(
     IAudioFileScanner audioFileScanner,
     HotkeyMap hotkeys,
     IRequestReader requestReader,
-    ITuiCommandFactory commandFactory
+    ITuiCommandFactory commandFactory,
+    ITagDataActionTargetFactory tagDataActionTargetFactory
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private const string HeaderLayoutKey = "navigation";
@@ -69,7 +70,7 @@ public class TuiApp(
 
             Files = audioFileScanner
                 .SearchAndRead(settings.Path, ct)
-                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
+                .Select(x => tagDataActionTargetFactory.Create(x.Path, x.TagData))
                 .ToList();
 
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
