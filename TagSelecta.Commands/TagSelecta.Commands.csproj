@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference
+      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+      Version="10.0.2"
+    />
+    <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
+    <ProjectReference Include="..\TagSelecta.TagDataActions.Abstractions\TagSelecta.TagDataActions.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

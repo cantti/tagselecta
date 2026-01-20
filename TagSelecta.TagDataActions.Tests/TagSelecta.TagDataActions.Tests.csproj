@@ -11,7 +11,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
-    <PackageReference Include="Spectre.Console.Testing" Version="0.53.0" />
     <PackageReference Include="xunit.v3" Version="3.2.0" />
   </ItemGroup>
   <ItemGroup>
@@ -23,10 +22,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TagSelecta.TagDataActions\TagSelecta.TagDataActions.csproj" />
+  </ItemGroup>
   <Target Name="CleanTestData" BeforeTargets="BeforeBuild">
     <RemoveDir Directories="$(OutDir)TestData" />
   </Target>
-  <ItemGroup>
-    <ProjectReference Include="..\TagSelecta.App\TagSelecta.App.csproj" />
-  </ItemGroup>
 </Project>

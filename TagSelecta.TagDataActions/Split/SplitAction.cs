@@ -1,4 +1,4 @@
-using TagSelecta.Shared.TagDataActions;
+using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Split;
 

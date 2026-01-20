@@ -1,7 +1,7 @@
 using NSubstitute;
 using TagSelecta.Shared.IO;
-using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.AutoTrack;
 using TagSelecta.TagDataActions.Tests.Utils;
 

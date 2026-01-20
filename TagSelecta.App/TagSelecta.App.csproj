@@ -10,17 +10,11 @@
     <Version>0.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
     <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TagSelecta.CliCommands\TagSelecta.CliCommands.csproj" />
+    <ProjectReference Include="..\TagSelecta.Commands\TagSelecta.Commands.csproj" />
     <ProjectReference Include="..\TagSelecta.TagDataActions\TagSelecta.TagDataActions.csproj" />
-    <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
-    <ProjectReference Include="..\TagSelecta.Tui\TagSelecta.Tui.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Cli\" />
-    <Folder Include="Tui\" />
   </ItemGroup>
 </Project>

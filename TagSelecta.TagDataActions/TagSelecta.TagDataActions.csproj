@@ -6,13 +6,14 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
+    <ProjectReference Include="..\TagSelecta.TagDataActions.Abstractions\TagSelecta.TagDataActions.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="9.0.10"
+      Version="10.0.2"
     />
     <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="9.0.2" />
   </ItemGroup>
 </Project>

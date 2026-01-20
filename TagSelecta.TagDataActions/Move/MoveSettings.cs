@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
-using TagSelecta.Shared.TagDataActions;
+using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Move;
 

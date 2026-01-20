@@ -1,5 +1,5 @@
-using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.Tests.Utils;
 using TagSelecta.TagDataActions.TitleCase;
 

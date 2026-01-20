@@ -1,5 +1,5 @@
-using TagSelecta.Shared.TagDataActions;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.Move;
 using TagSelecta.TagDataActions.Tests.Utils;
 
