@@ -78,11 +78,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                     ct.ThrowIfCancellationRequested();
                     await file.ExecuteTagDataAction(
                         action,
-                        new TagDataActionExecuteContext<TagDataActionSettings>
-                        {
-                            Settings = settings,
-                            Target = file,
-                        },
+                        new TagDataActionExecuteContext { Settings = settings, Target = file },
                         ct
                     );
                     task.Increment(1);

@@ -11,7 +11,7 @@ public class EditTests
     public async Task EditTest()
     {
         // Arrange
-        var action = new EditAction();
+        ITagDataAction action = new EditAction();
 
         var settings = new EditSettings
         {
@@ -66,8 +66,8 @@ public class EditTests
         var item = new TestTarget("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(
-            new TagDataActionExecuteContext<EditSettings> { Settings = settings, Target = item },
+        await action.Execute(
+            new TagDataActionExecuteContext { Settings = settings, Target = item },
             CancellationToken.None
         );
 

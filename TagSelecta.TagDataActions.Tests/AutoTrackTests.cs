@@ -16,7 +16,7 @@ public class AutoTrackTests
         var audioFileScanner = Substitute.For<IAudioFileScanner>();
         audioFileScanner.Search(new List<string>()).ReturnsForAnyArgs(["file1.mp3", "file2.mp3"]);
 
-        var action = new AutoTrackAction(audioFileScanner);
+        ITagDataAction action = new AutoTrackAction(audioFileScanner);
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
@@ -43,20 +43,12 @@ public class AutoTrackTests
         );
 
         // Act
-        await action.ExecuteAsync(
-            new TagDataActionExecuteContext<AutoTrackSettings>
-            {
-                Settings = settings,
-                Target = item1,
-            },
+        await action.Execute(
+            new TagDataActionExecuteContext { Settings = settings, Target = item1 },
             CancellationToken.None
         );
-        await action.ExecuteAsync(
-            new TagDataActionExecuteContext<AutoTrackSettings>
-            {
-                Settings = settings,
-                Target = item2,
-            },
+        await action.Execute(
+            new TagDataActionExecuteContext { Settings = settings, Target = item2 },
             CancellationToken.None
         );
 

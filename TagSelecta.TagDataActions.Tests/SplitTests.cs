@@ -11,14 +11,14 @@ public class SplitTests
     public async Task SplitTest()
     {
         // Arrange
-        var action = new SplitAction();
+        ITagDataAction action = new SplitAction();
         var settings = new SplitSettings();
         var tagData = new TagData() { Artist = ["Artist1; Artist2"] };
         var item = new TestTarget("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(
-            new TagDataActionExecuteContext<SplitSettings>() { Settings = settings, Target = item },
+        await action.Execute(
+            new TagDataActionExecuteContext { Settings = settings, Target = item },
             CancellationToken.None
         );
 

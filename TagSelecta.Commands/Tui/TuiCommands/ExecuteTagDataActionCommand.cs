@@ -36,11 +36,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             var file = selectedFilesList[i];
             await file.ExecuteTagDataAction(
                 action,
-                new TagDataActionExecuteContext<TagDataActionSettings>()
-                {
-                    Settings = settings,
-                    Target = file,
-                },
+                new TagDataActionExecuteContext { Settings = settings, Target = file },
                 token
             );
             context.Print(

@@ -11,7 +11,7 @@ public class TitleCaseTests
     public async Task TitleCaseTest()
     {
         // Arrange
-        var action = new TitleCaseAction();
+        ITagDataAction action = new TitleCaseAction();
 
         var settings = new TitleCaseSettings();
 
@@ -20,12 +20,8 @@ public class TitleCaseTests
         var item = new TestTarget("file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(
-            new TagDataActionExecuteContext<TitleCaseSettings>
-            {
-                Settings = settings,
-                Target = item,
-            },
+        await action.Execute(
+            new TagDataActionExecuteContext { Settings = settings, Target = item },
             CancellationToken.None
         );
 

@@ -11,7 +11,7 @@ public class MoveTests
     public async Task MoveTest()
     {
         // Arrange
-        var action = new MoveAction();
+        ITagDataAction action = new MoveAction();
 
         var settings = new MoveSettings { Template = "{{ year }} - {{album}}/{{filename}}" };
 
@@ -20,8 +20,8 @@ public class MoveTests
         var item = new TestTarget("/file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(
-            new TagDataActionExecuteContext<MoveSettings> { Target = item, Settings = settings },
+        await action.Execute(
+            new TagDataActionExecuteContext { Target = item, Settings = settings },
             CancellationToken.None
         );
 
@@ -33,7 +33,7 @@ public class MoveTests
     public async Task MoveTest_Relative()
     {
         // Arrange
-        var action = new MoveAction();
+        ITagDataAction action = new MoveAction();
 
         var settings = new MoveSettings { Template = "../{{ year }} - {{album}}/{{filename}}" };
 
@@ -42,8 +42,8 @@ public class MoveTests
         var item = new TestTarget("/dir/file.mp3", tagData);
 
         // Act
-        await action.ExecuteAsync(
-            new TagDataActionExecuteContext<MoveSettings> { Target = item, Settings = settings },
+        await action.Execute(
+            new TagDataActionExecuteContext { Target = item, Settings = settings },
             CancellationToken.None
         );
 
