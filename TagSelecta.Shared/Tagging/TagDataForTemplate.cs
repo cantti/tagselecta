@@ -56,6 +56,10 @@ public class TagDataForTemplate(TagData tagData, string path)
     [Description("Disc number.")]
     public string Disc { get; } = tagData.Disc;
 
+    [Description("Disc number padded with zeros (e.g. 01, 02, 03, etc.)")]
+    public string Disc00 { get; } =
+        int.TryParse(tagData.Disc, out var disc) ? disc.ToString("D2") : tagData.Disc;
+
     [Description("Total number of discs.")]
     public string DiscTotal { get; } = tagData.DiscTotal;
 
@@ -79,6 +83,10 @@ public class TagDataForTemplate(TagData tagData, string path)
 
     [Description("Track number.")]
     public string Track { get; } = tagData.Track;
+
+    [Description("Track number padded with zeros (e.g. 01, 02, 03, etc.)")]
+    public string Track00 { get; } =
+        int.TryParse(tagData.Track, out var track) ? track.ToString("D2") : tagData.Track;
 
     [Description("Total number of tracks.")]
     public string TrackTotal { get; } = tagData.TrackTotal;
