@@ -16,6 +16,8 @@ public static class DependencyInjection
 
         services.AddTransient<ITuiCommand, MoveDownCommand>();
         services.AddTransient<ITuiCommand, MoveUpCommand>();
+        services.AddTransient<ITuiCommand, MoveStartCommand>();
+        services.AddTransient<ITuiCommand, MoveEndCommand>();
         services.AddTransient<ITuiCommand, ExecuteTagDataActionCommand>();
         services.AddTransient<ITuiCommand, SelectCommand>();
         services.AddTransient<ITuiCommand, SelectAllCommand>();

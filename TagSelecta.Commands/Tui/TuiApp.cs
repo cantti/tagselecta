@@ -205,21 +205,23 @@ public class TuiApp(
 
     private void BindHotkeys()
     {
-        hotkeys.Bind(ConsoleKey.Escape, "clearselection");
-        hotkeys.Bind(ConsoleKey.J, "movedown");
-        hotkeys.Bind(ConsoleKey.DownArrow, "movedown");
-        hotkeys.Bind(ConsoleKey.K, "moveup");
-        hotkeys.Bind(ConsoleKey.UpArrow, "moveup");
-        hotkeys.Bind(ConsoleKey.Q, "quit");
-        hotkeys.Bind(ConsoleKey.T, "toggletree");
-        hotkeys.Bind(ConsoleKey.F, "togglefilter");
-        hotkeys.Bind(ConsoleKey.H, "togglehelp");
-        hotkeys.Bind(ConsoleKey.U, "undo");
-        hotkeys.Bind(ConsoleKey.Tab, "select");
-        hotkeys.Bind(ConsoleKey.Spacebar, "select");
-        hotkeys.Bind(ConsoleKey.A, "selectall");
-        hotkeys.Bind(ConsoleKey.Multiply, "selectall");
-        hotkeys.Bind(ConsoleKey.W, "write");
+        hotkeys.Bind("esc", "clearselection");
+        hotkeys.Bind("down", "movedown");
+        hotkeys.Bind("up", "moveup");
+        hotkeys.Bind("j", "movedown");
+        hotkeys.Bind("k", "moveup");
+        hotkeys.Bind("g", "movestart");
+        hotkeys.Bind("G", "moveend");
+        hotkeys.Bind("q", "quit");
+        hotkeys.Bind("t", "toggletree");
+        hotkeys.Bind("f", "togglefilter");
+        hotkeys.Bind("h", "togglehelp");
+        hotkeys.Bind("u", "undo");
+        hotkeys.Bind("tab", "select");
+        hotkeys.Bind("space", "select");
+        hotkeys.Bind("a", "selectall");
+        hotkeys.Bind("*", "selectall");
+        hotkeys.Bind("w", "write");
     }
 
     private async Task DispatchCommand(Request request)
@@ -243,7 +245,7 @@ public class TuiApp(
 
         var command = commandFactory.Create(request.Name);
 
-        hotkeys.Bind(ConsoleKey.Escape, "cancel");
+        hotkeys.Bind("esc", "cancel");
 
         _currentCommandTask = Task.Run(async () =>
         {
@@ -259,7 +261,7 @@ public class TuiApp(
             {
                 Print(ex.Message);
             }
-            hotkeys.Bind(ConsoleKey.Escape, "clearselection");
+            hotkeys.Bind("esc", "clearselection");
         });
     }
 }
