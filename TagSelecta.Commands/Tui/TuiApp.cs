@@ -205,9 +205,9 @@ public class TuiApp(
 
     private void BindHotkeys()
     {
-        hotkeys.Bind("esc", "clearselection");
-        hotkeys.Bind("down", "movedown");
-        hotkeys.Bind("up", "moveup");
+        hotkeys.Bind(HotkeyTokens.Esc, "clearselection");
+        hotkeys.Bind(HotkeyTokens.Down, "movedown");
+        hotkeys.Bind(HotkeyTokens.Up, "moveup");
         hotkeys.Bind("j", "movedown");
         hotkeys.Bind("k", "moveup");
         hotkeys.Bind("g", "movestart");
@@ -217,8 +217,8 @@ public class TuiApp(
         hotkeys.Bind("f", "togglefilter");
         hotkeys.Bind("h", "togglehelp");
         hotkeys.Bind("u", "undo");
-        hotkeys.Bind("tab", "select");
-        hotkeys.Bind("space", "select");
+        hotkeys.Bind(HotkeyTokens.Tab, "select");
+        hotkeys.Bind(HotkeyTokens.Space, "select");
         hotkeys.Bind("a", "selectall");
         hotkeys.Bind("*", "selectall");
         hotkeys.Bind("w", "write");
