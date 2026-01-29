@@ -5,9 +5,8 @@ namespace TagSelecta.App.Config;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddConfig(this IServiceCollection services)
+    public static IServiceCollection AddSettings(this IServiceCollection services, AppConfig config)
     {
-        var config = ConfigReader.Read();
         services.AddSingleton(new MacroSettings() { Macros = config.Macro });
         return services;
     }

@@ -2,5 +2,5 @@ namespace TagSelecta.App.Config;
 
 public class GeneralConfig
 {
-    public string? DiscogsApiKey { get; set; }
+    public bool Debug { get; set; }
 }

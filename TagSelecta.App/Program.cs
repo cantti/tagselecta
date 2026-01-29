@@ -18,13 +18,18 @@ class Program
 
         var services = new ServiceCollection();
 
-        services.AddConfig();
+        var appConfig = AppConfigReader.Read();
+        services.AddSettings(appConfig);
+
         services.AddCommandServices().AddSharedServices();
 
         var app = new CommandApp(new TypeRegistrar(services));
         app.Configure(config =>
         {
-            config.PropagateExceptions();
+            if (appConfig.General.Debug)
+            {
+                config.PropagateExceptions();
+            }
             config.AddCommands(services);
             config.SetApplicationVersion(GetAppVersion());
         });

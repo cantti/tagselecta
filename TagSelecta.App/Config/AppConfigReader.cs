@@ -2,7 +2,7 @@ using Tomlyn;
 
 namespace TagSelecta.App.Config;
 
-public static class ConfigReader
+public static class AppConfigReader
 {
     public static AppConfig Read()
     {
