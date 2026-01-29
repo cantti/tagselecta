@@ -8,8 +8,9 @@ public sealed class TagDataActionFactory : ITagDataActionFactory
 {
     private readonly List<(string[] Names, Func<ITagDataAction> Factory)> _factories = [];
 
-    public TagDataActionFactory(IEnumerable<ITagDataAction> actions, IServiceProvider provider)
+    public TagDataActionFactory(IServiceProvider provider)
     {
+        var actions = provider.GetServices<ITagDataAction>();
         foreach (var action in actions)
         {
             var type = action.GetType();

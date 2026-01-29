@@ -1,13 +1,19 @@
 using System.Reflection;
+using System.Text.Json.Serialization.Metadata;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
 public class TuiCommandFactory : ITuiCommandFactory
 {
+    private readonly IServiceProvider _provider;
     private readonly List<(string[] Names, ITuiCommand command)> _commands = [];
 
-    public TuiCommandFactory(IEnumerable<ITuiCommand> commands)
+    public TuiCommandFactory(IServiceProvider provider)
     {
+        _provider = provider;
+        var commands = provider.GetServices<ITuiCommand>();
+        commands = commands.Append(CreateMacroCommand());
         foreach (var command in commands)
         {
             var type = command.GetType();
@@ -29,5 +35,11 @@ public class TuiCommandFactory : ITuiCommandFactory
             );
         }
         return command.command;
+    }
+
+    private ITuiCommand CreateMacroCommand()
+    {
+        var commandParser = _provider.GetService<CommandParser>()!;
+        return new MacroCommand(this, commandParser);
     }
 }
