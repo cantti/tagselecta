@@ -40,6 +40,7 @@ public class TuiCommandFactory : ITuiCommandFactory
     private ITuiCommand CreateMacroCommand()
     {
         var commandParser = _provider.GetService<CommandParser>()!;
-        return new MacroCommand(this, commandParser);
+        var macroSettings = _provider.GetService<MacroSettings>()!;
+        return new MacroCommand(this, commandParser, macroSettings);
     }
 }

@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagSelecta.App.Config;
 using TagSelecta.Commands;
-using TagSelecta.Commands.Tui;
 using TagSelecta.Shared;
 
 namespace TagSelecta.App;
@@ -18,6 +18,7 @@ class Program
 
         var services = new ServiceCollection();
 
+        services.AddConfig();
         services.AddCommandServices().AddSharedServices();
 
         var app = new CommandApp(new TypeRegistrar(services));

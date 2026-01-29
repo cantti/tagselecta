@@ -1,10 +1,18 @@
-using TagLib.Riff;
+using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
-[TuiCommand("macro")]
-public class MacroCommand(ITuiCommandFactory commandFactory, CommandParser commandParser)
-    : ITuiCommand
+public class MacroSettings
+{
+    public Dictionary<string, string> Macros { get; set; } = new();
+}
+
+[TuiCommand("macro", "m")]
+public class MacroCommand(
+    ITuiCommandFactory commandFactory,
+    CommandParser commandParser,
+    MacroSettings settings
+) : ITuiCommand
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
@@ -12,7 +20,15 @@ public class MacroCommand(ITuiCommandFactory commandFactory, CommandParser comma
         CancellationToken token
     )
     {
-        var commands = new List<string>() { "edit g=g-from-macro", "edit a=a-from-macro" };
+        var macroName = request.Args[0].Key;
+
+        if (!settings.Macros.TryGetValue(macroName, out var macro))
+        {
+            var available = string.Join(", ", settings.Macros.Keys.OrderBy(k => k));
+            throw new TagSelectaException($"Unknown macro '{macroName}'. Available: {available}");
+        }
+
+        var commands = macro.Split("&&");
 
         foreach (var command in commands)
         {

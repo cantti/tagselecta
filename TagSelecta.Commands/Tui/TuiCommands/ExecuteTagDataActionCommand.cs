@@ -86,7 +86,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             }
             else if (prop.PropertyType == typeof(string[]))
             {
-                prop.SetValue(baseSettings, matchedArgs.Select(x => x.Value).ToList());
+                prop.SetValue(baseSettings, matchedArgs.Select(x => x.Value).ToArray());
             }
             else if (prop.PropertyType == typeof(bool))
             {
