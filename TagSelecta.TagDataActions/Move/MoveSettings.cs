@@ -7,7 +7,7 @@ namespace TagSelecta.TagDataActions.Move;
 public class MoveSettings : TagDataActionSettings
 {
     [CommandOption("--template|-t", isRequired: true)]
-    [Description("Template. For example: {{ date }} - {{ album }}")]
+    [Description("Template. For example: {{ track }} - {{ title }}.{{ ext }}")]
     public required string Template { get; set; }
 
     [CommandOption("--keepemptydirs|-k")]

@@ -221,7 +221,6 @@ public class TuiApp(
         hotkeys.Bind(HotkeyTokens.Space, "select");
         hotkeys.Bind("a", "selectall");
         hotkeys.Bind("*", "selectall");
-        hotkeys.Bind("w", "write");
     }
 
     private async Task DispatchCommand(Request request)

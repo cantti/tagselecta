@@ -4,21 +4,35 @@ TagSelecta is a cross-platform, opinionated command-line tool for managing audio
 
 https://github.com/user-attachments/assets/650ab503-4d2a-4dbb-9739-d78f781e2a61
 
-This tool is under active development and primarily built for personal use.
-However, if you need additional features - for example, support for new tag types - feel free to open an [open an issue](https://github.com/cantti/audio-tag-helper/issues).
-Adding new tags or functionality is straightforward and contributions are welcome.
+The tool supports two modes: interactive UI (TUI) and command-line interface (CLI).
+
+To run the TUI, simply run `tagselecta ui <path>`.
+
+To execute commands from the CLI, run `tagselecta <command> <path>`.
+
+`Path` can be a single file or a directory (recursive).
+
+Some commands available only in the CLI mode: `find` to find  files by metadata.
 
 The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spectre.console) for rich command-line output and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 
 ## Features
 
-- Works with both files and directories (recursively) as input
-- Edit command to read and write tags
-- And many other commands to work with audio metadata. See the full list below.
+- CLI and TUI modes
+- Recursive directory scanning
+- Macros support
+- Previw of changes before applying them
+- `:edit` command to read and write tags
+- `:move` command to move and rename files
+- `:extractpicture` command to extract pictures to files
+- `:titlecase` command to convert all fields to title case
+- `:split` command to split artists, album artists and composers
+- `:autotrack` command to automatically set track number and total tracks based on disc and disc total
+- `:discogs` command to update album metadata from Discogs release
 
-# Install
+## Install
 
-## Option 1. Download Release (Manual Install)
+### Option 1. Download Release (Manual Install)
 
 1. Go to the **[Releases page](https://github.com/cantti/tagselecta/releases)**
 2. Download the latest archive for your system
@@ -31,9 +45,9 @@ mv tagselecta "$HOME/.local/bin"
 
 Ensure `"$HOME/.local/bin"` is in your `PATH`.
 
-## Option 2. Install via Script (Automatic Install)
+### Option 2. Install via Script (Automatic Install)
 
-You can install the latest release automatically using the provided installer script:
+You can install the latest release automatically using the provided installer script (review the script before running it):
 
 ```sh
 wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | bash -s "$HOME/.local/bin"
@@ -47,17 +61,261 @@ This will:
 
 Works from **bash**, **zsh**, **fish**, and other shells.
 
-## Option 3. Download Script Manually
+## Getting started
 
-If you prefer to inspect the script before running it:
+Great way to get started is to use the interactive UI (TUI). Open directory with album (audio files) and run:
 
-```sh
-wget https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh
-chmod +x install.sh
-./install.sh "$HOME/.local/bin"
+```
+tagselecta ui .
 ```
 
-## Usage
+Do not run it from the root of your music library, because it will scan all files in the directory!
+
+Conseptually, the UI is divided into two parts: top panel with list of files and bottom panel with file details.
+
+Navigate through files using arrow keys or vim bindings (`jk`).
+
+Use `q` to exit.
+
+Use `tab` or `space` to select file. Use `esc` to unselect.
+
+Commands are executed using command mode (`:`).
+
+Try running `:edit genre=Reggae`. This will edit genre field for selected files.
+
+To write changes to files use `:write` (`:w`) command.
+
+All command have the following format: `:command <arg>=<value>`. Value can be in double quotes if it contains spaces.
+
+Update multiple fields at once: `:edit genre=Reggae albumartist="King Tubby"`.
+
+Format field values using Scriban template engine:
+
+```sh
+# Lowercase genre
+:edit genre="{{ genre | string.downcase }}"
+
+# Set artist from albumartist
+:edit artist="{{ albumartist  }}"
+
+# Set artist from albumartist
+:edit artist="{{ albumartist  }}"
+
+# Set title from filename
+:edit title="{{ filename }}"
+```
+
+Other commands are implemented using the same format.
+
+Very usefull command is `move` (`mv`) to rename and move files.
+
+Example:
+```sh
+:move template="../{{ date }} - {{ album }}/{{ track00 }}. {{ title }}.{{ext}}"
+```
+
+Most comnmand and opionts have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
+
+Great way to learn more about commands and options is to run `--help` from cli for each command.
+
+For example:
+
+```
+tagselecta edit --help
+```
+
+## `edit` command
+
+The basic and most common use case is to edit tags for selected files.
+
+The `edit` action updates tag fields on the selected audio files.
+Any option you pass will **overwrite** the existing value for that field (after template formatting, if supported by your config). Options you don’t pass are left unchanged.
+
+### Multi-value fields
+
+Some fields accept **multiple values** (artists, genres, etc.). Provide multiple values by separating them with a semicolon:
+
+- `--artist "Artist 1; Artist 2"`
+- `--genre "House; Deep House"`
+
+### Standard tag fields
+
+| Option | Short | Value | Description | Notes / Examples |
+|---|---:|---|---|---|
+| `--album` | `-l` | string | Album name. | `--album "Test Album"` |
+| `--albumartist` | `-A` | string | One or more album artists. | `--albumartist "Artist 1; Artist 2"` |
+| `--artist` | `-a` | string | One or more artists. | `--artist "Artist 1; Artist 2"` |
+| `--bpm` |  | string | Beats per minute. | `--bpm 128` |
+| `--catalognumber` |  | string | Catalog number. | `--catalognumber "ABC-001"` |
+| `--comment` | `-c` | string | Comment or notes. | `--comment "Ripped from vinyl"` |
+| `--composer` | `-C` | string | Composer. | Can be multi-value via `;` if your tags support it: `--composer "A; B"` |
+| `--conductor` |  | string | Conductor. | `--conductor "John Doe"` |
+| `--copyright` |  | string | Copyright. | `--copyright "© 1999 Label"` |
+| `--date` | `-y` | string | Release date. | `--date 1999` or `--date 1999-06-01` |
+| `--disc` | `-d` | string | Disc number. | `--disc 1` |
+| `--disctotal` | `-D` | string | Total number of discs. | `--disctotal 2` |
+| `--genre` | `-g` | string | One or more genres. | `--genre "House; Techno"` |
+| `--isrc` |  | string | International Standard Recording Code. | `--isrc "GBXXX0100001"` |
+| `--label` |  | string | Record label. | `--label "Warp"` |
+| `--publisher` |  | string | Publisher. | `--publisher "Warp Records"` |
+| `--title` | `-t` | string | Track title. | `--title "Track Name"` |
+| `--track` | `-n` | string | Track number. | `--track 5` |
+| `--tracktotal` | `-N` | string | Total number of tracks. | `--tracktotal 12` |
+
+### Custom fields
+
+| Option | Short | Value | Description | Notes / Examples |
+|---|---:|---|---|---|
+| `--set` | `-s` | `key=value` (repeatable) | Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a custom field. | Use multiple times: `--set catalogNumber=ABC-001 --set custom_url=https://example.com` |
+| `--clearcustom` |  | flag | Clear **all** custom fields before applying any `--set` values. | `--clearcustom --set my_field=123` |
+
+> Tip: `--set` is useful for scripting or for fields not exposed as dedicated options.
+
+### Pictures (cover art)
+
+| Option | Short | Value | Description | Notes / Examples |
+|---|---:|---|---|---|
+| `--picture` | `-p` | path (repeatable) | Add one or more pictures from file paths. | `--picture cover.jpg --picture back.jpg` |
+| `--picturetype` |  | string (repeatable) | Type for each picture, matching the order of `--picture`. Optional. | `--picture cover.jpg --picturetype FrontCover` |
+| `--clearpicture` |  | flag | Remove all existing pictures before adding new ones. | `--clearpicture --picture cover.jpg` |
+
+**Picture type behavior:**
+- If you provide multiple `--picturetype` values, they are matched by index to `--picture`.
+- If you provide fewer types than pictures, the first provided type may be reused.
+- If no type is provided (or parsing fails), the default type is `FrontCover`.
+
+## `move` command
+
+Moves/renames files using a template.
+
+| Option | Short | Required | Description                                                                      |
+|---|---:|:---:|----------------------------------------------------------------------------------|
+| `--template` | `-t` | yes | Destination template (e.g. `../{{ year }} - {{ album }}/{{ filename }}.{{ext}}`) |
+| `--keepemptydirs` | `-k` | no | Keep empty source directories after moving                                       |
+| `--donotmoveother` | `-d` | no | Only move the audio files (don’t move other files in the folder)                 |
+
+## `split` command
+
+Split artists, album artists and composers. Default separators are `,`, `;`, `.feat`. 
+
+Can be customized using `--separator` option.
+
+## `titlecase` command
+
+Converts all fields to title case.
+
+## `discogs` command
+
+Set album metadata from Discogs.com. Use `--url|-u` option to specify the release URL.
+
+## `autotrack` command
+
+Set track number automatically based on position in directory.
+
+## Template fields
+
+When using templates (for example in `:move t`), TagSelecta exposes a `TagDataForTemplate` object.  
+All fields are **strings** unless stated otherwise. List fields are provided both as a joined string and as a list.
+
+> Notes:
+> - `Disc00` / `Track00` are **zero-padded** only when the original value is numeric.
+> - `Year` is parsed from `Date` only if `Date` matches one of: `yyyy`, `yyyy-MM-dd`, `yyyy/MM/dd`.
+> - `Custom` fields are accessed via dot notation (example: `custom.url`).
+
+### File/path fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `path` | string | Full file path. | `/music/Artist/Album/01 - Title.flac` |
+| `filename` | string | File name without extension. | `01 - Title` |
+| `ext` | string | File extension (without the dot). | `flac` |
+
+### Album fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `album` | string | Album name. | `Selected Ambient Works 85-92` |
+| `albumartist` | string | Album artists as a single string. | `Aphex Twin` |
+| `albumartists` | list<string> | List of album artists. | `["Aphex Twin"]` |
+
+### Artist fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `artist` | string | Track artists as a single string. | `Artist A; Artist B` |
+| `artists` | list<string> | List of track artists. | `["Artist A", "Artist B"]` |
+
+### Track fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `title` | string | Track title. | `Xtal` |
+| `track` | string | Track number (raw value from tags). | `1` |
+| `track00` | string | Track number padded to 2 digits when numeric. | `01` |
+| `tracktotal` | string | Total number of tracks. | `12` |
+
+### Disc fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `disc` | string | Disc number (raw value from tags). | `1` |
+| `disc00` | string | Disc number padded to 2 digits when numeric. | `01` |
+| `disctotal` | string | Total number of discs. | `2` |
+
+### Date fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `date` | string | Original date value as stored in tags. | `1993-03-01` |
+| `year` | string | Year extracted from `date` (if parseable). | `1993` |
+
+### Metadata fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `genre` | string | Genres as a single string. | `Ambient; Electronic` |
+| `genres` | list<string> | List of genres. | `["Ambient", "Electronic"]` |
+| `label` | string | Record label. | `Warp` |
+| `publisher` | string | Publisher/organization. | `Warp Records` |
+| `catalognumber` | string | Catalog number. | `WARPCD01` |
+| `bpm` | string | Beats per minute. | `128` |
+| `isrc` | string | ISRC code. | `GBXYZ1200001` |
+| `comment` | string | User comment. | `Ripped from CD` |
+| `composer` | string | Composers as a single string. | `Composer A` |
+| `composers` | list<string> | List of composers. | `["Composer A"]` |
+| `conductor` | string | Conductor name. | `John Doe` |
+| `copyright` | string | Copyright text. | `© 1993 Label` |
+
+### Custom fields
+
+| Template field | Type | Description | Example |
+|---|---|---|---|
+| `custom` | map<string,string> | Custom tag fields (normalized keys). Access with dot syntax. | `{{ custom.url }}` |
+
+## Macros
+
+Macros are set of predefined command.
+
+Macros are defined in the config file: `~/.config/tagselecta/config.toml`.
+
+Each macro can have aliases and list of commands.
+
+Example:
+
+```toml
+[macro.reggae]
+aliases=["r"]
+commands=['e g=Reggae']
+
+[macro.dnb]
+commands=['e g="Drum & Bass"']
+```
+
+To call a macro use `:macro <name>` (`:m <name>`) command.
+
+## CLI Usage
+
+Below is documentation generated from the CLI help.
 
 The program support multiple commands:
 
@@ -294,92 +552,6 @@ OPTIONS:
 
 
 <!-- end:cli-help -->
-
-## More examples
-
-
-Tagselecta uses the Scriban template engine when writing fields, allowing you to define powerful and flexible actions.
-You can explore Scriban’s built-in functions here: [https://github.com/scriban/scriban/blob/master/doc/builtins.md](https://github.com/scriban/scriban/blob/master/doc/builtins.md)
-
-It also integrates smoothly with shell functionality, enabling even more advanced workflows.
-
-You can awlays get reference for formatting using `tagselecta helpformatting` or information below.
-
-### Replace va with Various Artists
-
-Assign Scriban expression to environment variable and use it to replace value of artist and albumartist. 
-
-```sh
-REPLACE='regex.replace "^va$" "Various Artists" "-i"' tagselecta edit . -a "{{ artist | $REPLACE }}" -A "{{ albumartist | $REPLACE }}"
-```
-
-### Clean tags
-
-Common action to remove fields you do not need. The command below will remove label and catalognumber and all custom fields except url.
-
-```sh
-tagselecta edit ./song.mp3 --label '' --catalognumber '' --clearcustom -s 'url={{ custom.url }}'
-```
-
-Or just remove all custom tags:
-
-```sh
-tagselecta edit ./song.mp3 --clearcustom
-```
-
-### Extract picture to file and remove from tags
-
-```sh
-tagselecta extractpicture ./song.mp3 -o cover && tagselecta edit ./song.mp3 --clearpicture
-```
-
-Multiple pictures will be saved as cover, cover(1), cover(2), etc. Front covers come first.
-
-## Formatting
-
-<!-- start:formatting -->
-```
-Tagselecta uses the Scriban template engine when formatting fields and when 
-renaming files or directories.
-
-Example:
-{{ year }} - {{ album }}
-
-Useful links:
-https://github.com/scriban/scriban/blob/master/doc/language.md
-https://github.com/scriban/scriban/blob/master/doc/builtins.md#string-functions
-
-Below is the list of available template fields:
-path             Full file path.                         
-filename         File name without extension.            
-album            Album name.                             
-albumartist      Album artists as a single string.       
-albumartists     List of album artists.                  
-artist           Artists as a single string.             
-artists          List of artists.                        
-bpm              Beats per minute.                       
-catalognumber    Catalog number.                         
-comment          User comment.                           
-composer         Composers as a single string.           
-composers        List of composers.                      
-conductor        Conductor name.                         
-copyright        Copyright text.                         
-date             Original date value.                    
-disc             Disc number.                            
-disctotal        Total number of discs.                  
-discogsreleaseid Discogs release ID.                     
-genre            Genres as a single string.              
-genres           List of genres.                         
-isrc             ISRC code.                              
-label            Record label.                           
-publisher        Publisher.                              
-title            Track title.                            
-track            Track number.                           
-tracktotal       Total number of tracks.                 
-year             Year extracted from the Date field.     
-custom           Custom fields. Usage example: custom.url
-```
-<!-- end:formatting -->
 
 ## Settings
 

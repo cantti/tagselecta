@@ -8,8 +8,8 @@ public class TagDataForTemplate(TagData tagData, string path)
     [Description("Full file path.")]
     public string Path { get; } = path;
 
-    [Description("File name with extension.")]
-    public string FileName { get; } = System.IO.Path.GetFileName(path);
+    [Description("File name without extension.")]
+    public string FileName { get; } = System.IO.Path.GetFileNameWithoutExtension(path);
 
     [Description("File extension")]
     public string Ext { get; } = System.IO.Path.GetExtension(path).TrimStart('.');
