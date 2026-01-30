@@ -4,7 +4,13 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 
 public class MacroSettings
 {
-    public Dictionary<string, string> Macros { get; set; } = new();
+    public Dictionary<string, Macro> Macro { get; set; } = new();
+}
+
+public class Macro
+{
+    public List<string> Aliases { get; set; } = [];
+    public List<string> Commands { get; set; } = [];
 }
 
 [TuiCommand("macro", "m")]
@@ -20,22 +26,38 @@ public class MacroCommand(
         CancellationToken token
     )
     {
-        var macroName = request.Args[0].Key;
+        var macroName = request.Args.FirstOrDefault()?.Key;
 
-        if (!settings.Macros.TryGetValue(macroName, out var macro))
+        if (string.IsNullOrWhiteSpace(macroName))
         {
-            var available = string.Join(", ", settings.Macros.Keys.OrderBy(k => k));
+            throw new TagSelectaException("Macro name is required.");
+        }
+
+        var macro = settings
+            .Macro.Where(x => x.Key == macroName || x.Value.Aliases.Contains(macroName))
+            .Select(x => x.Value)
+            .FirstOrDefault();
+
+        if (macro is null)
+        {
+            var available = string.Join(", ", settings.Macro.Keys.OrderBy(k => k));
             throw new TagSelectaException($"Unknown macro '{macroName}'. Available: {available}");
         }
 
-        var commands = macro.Split("&&");
-
-        foreach (var command in commands)
+        foreach (var command in macro.Commands)
         {
-            commandParser.TryParse(command, out var parsedRequest);
-            await commandFactory
-                .Create(parsedRequest.Name)
-                .ExecuteAsync(context, parsedRequest, token);
+            token.ThrowIfCancellationRequested();
+
+            if (commandParser.TryParse(command, out var parsedRequest))
+            {
+                await commandFactory
+                    .Create(parsedRequest.Name)
+                    .ExecuteAsync(context, parsedRequest, token);
+            }
+            else
+            {
+                throw new TagSelectaException($"Invalid command: {command}");
+            }
         }
     }
 }
