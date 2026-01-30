@@ -135,39 +135,39 @@ Any option you pass will **overwrite** the existing value for that field (after 
 
 Some fields accept **multiple values** (artists, genres, etc.). Provide multiple values by separating them with a semicolon:
 
-- `--artist "Artist 1; Artist 2"`
-- `--genre "House; Deep House"`
+- `artist="Artist 1; Artist 2"`
+- `genre="House; Deep House"`
 
 ### Standard tag fields
 
-| Option | Short | Value | Description | Notes / Examples |
-|---|---:|---|---|---|
-| `--album` | `-l` | string | Album name. | `--album "Test Album"` |
-| `--albumartist` | `-A` | string | One or more album artists. | `--albumartist "Artist 1; Artist 2"` |
-| `--artist` | `-a` | string | One or more artists. | `--artist "Artist 1; Artist 2"` |
-| `--bpm` |  | string | Beats per minute. | `--bpm 128` |
-| `--catalognumber` |  | string | Catalog number. | `--catalognumber "ABC-001"` |
-| `--comment` | `-c` | string | Comment or notes. | `--comment "Ripped from vinyl"` |
-| `--composer` | `-C` | string | Composer. | Can be multi-value via `;` if your tags support it: `--composer "A; B"` |
-| `--conductor` |  | string | Conductor. | `--conductor "John Doe"` |
-| `--copyright` |  | string | Copyright. | `--copyright "© 1999 Label"` |
-| `--date` | `-y` | string | Release date. | `--date 1999` or `--date 1999-06-01` |
-| `--disc` | `-d` | string | Disc number. | `--disc 1` |
-| `--disctotal` | `-D` | string | Total number of discs. | `--disctotal 2` |
-| `--genre` | `-g` | string | One or more genres. | `--genre "House; Techno"` |
-| `--isrc` |  | string | International Standard Recording Code. | `--isrc "GBXXX0100001"` |
-| `--label` |  | string | Record label. | `--label "Warp"` |
-| `--publisher` |  | string | Publisher. | `--publisher "Warp Records"` |
-| `--title` | `-t` | string | Track title. | `--title "Track Name"` |
-| `--track` | `-n` | string | Track number. | `--track 5` |
-| `--tracktotal` | `-N` | string | Total number of tracks. | `--tracktotal 12` |
+| Field | Short | Description | Notes / Examples |
+|---|---:|---|---|
+| `album` | `l` | Album name. | `album="Test Album"` |
+| `albumartist` | `A` | One or more album artists. | `albumartist="Artist 1; Artist 2"` |
+| `artist` | `a` | One or more artists. | `artist="Artist 1; Artist 2"` |
+| `bpm` |  | Beats per minute. | `bpm=128` |
+| `catalognumber` |  | Catalog number. | `catalognumber="ABC-001"` |
+| `comment` | `c` | Comment or notes. | `comment="Ripped from vinyl"` |
+| `composer` | `C` | Composer. | `composer="A; B"` |
+| `conductor` |  | Conductor. | `conductor="John Doe"` |
+| `copyright` |  | Copyright. | `copyright="© 1999 Label"` |
+| `date` | `y` | Release date. | `date=1999` or `date=1999-06-01` |
+| `disc` | `d` | Disc number. | `disc=1` |
+| `disctotal` | `D` | Total number of discs. | `disctotal=2` |
+| `genre` | `g` | One or more genres. | `genre="House; Techno"` |
+| `isrc` |  | International Standard Recording Code. | `isrc="GBXXX0100001"` |
+| `label` |  | Record label. | `label="Warp"` |
+| `publisher` |  | Publisher. | `publisher="Warp Records"` |
+| `title` | `t` | Track title. | `title="Track Name"` |
+| `track` | `n` | Track number. | `track=5` |
+| `tracktotal` | `N` | Total number of tracks. | `tracktotal=12` |
 
 ### Custom fields
 
-| Option | Short | Value | Description | Notes / Examples |
-|---|---:|---|---|---|
-| `--set` | `-s` | `key=value` (repeatable) | Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a custom field. | Use multiple times: `--set catalogNumber=ABC-001 --set custom_url=https://example.com` |
-| `--clearcustom` |  | flag | Clear **all** custom fields before applying any `--set` values. | `--clearcustom --set my_field=123` |
+| Option | Short | Value | Description | Notes / Examples                                  |
+|---|---:|---|---|---------------------------------------------------|
+| `set` | `s` | `key=value` (repeatable) | Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a custom field. | Use multiple times: `set="catalogNumber=ABC-001"` |
+| `clearcustom` |  | flag | Clear **all** custom fields before applying any `set` values. | `clearcustom set=my_field=123`                    |
 
 > Tip: `--set` is useful for scripting or for fields not exposed as dedicated options.
 
