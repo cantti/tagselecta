@@ -10,7 +10,9 @@ public class MoveAction : TagDataAction<MoveSettings>
     {
         var dir = Path.GetDirectoryName(context.Target.BackupPath)!;
         var formatter = new TagDataFormatter(
-            context.Target.BackupTagData,
+            // todo check logic and document
+            // if user edited tags we want to use the new tagdata when moving files
+            context.Target.CurrentTagData,
             context.Target.BackupPath
         );
         var newName = formatter.Format(context.Settings.Template);
