@@ -298,9 +298,8 @@ OPTIONS:
     -v, --version    Prints version information
 
 COMMANDS:
-    edit <path>              Edit (read and write) tags. Unrecognized options   
-                             are saved as custom fields. Another way to edit    
-                             custom fields is to use --custom option            
+    edit <path>              Edit (read and write) tags. To edit extra fields is
+                             to use --extra option                              
     extractpicture <path>    Extract pictures to files                          
     titlecase <path>         Convert all fields to title case                   
     split <path>             Split artists, album artists and composers         
@@ -316,8 +315,7 @@ COMMANDS:
 
 ```
 DESCRIPTION:
-Edit (read and write) tags. Unrecognized options are saved as custom fields. 
-Another way to edit custom fields is to use --custom option
+Edit (read and write) tags. To edit extra fields is to use --extra option
 
 USAGE:
     tagselecta edit <path> [OPTIONS]
@@ -356,10 +354,10 @@ OPTIONS:
     -t, --title            Track title                                          
     -n, --track            Track number                                         
     -N, --tracktotal       Total number of tracks                               
-    -s, --set              Custom fields in key=value format. Use this option   
-                           multiple times to include multiple fields (e.g., -c  
-                           key1=value1 -c key2=value2)                          
-        --clearcustom      Clear all other custom fields                        
+    -s, --set              Extra fields in key=value format. Use this option    
+                           multiple times to include multiple fields (e.g., -s  
+                           key1=value1 -s key2=value2)                          
+        --clearextra       Clear all other extra fields                         
     -p, --picture          Path to a picture file. Use this option multiple     
                            times to include multiple images (e.g., -p path1 -p  
                            path2)                                               
@@ -406,8 +404,8 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help              Prints help information                             
-    -t, --template          Template. For example: {{ date }} - {{ album }}.    
-                            Required                                            
+    -t, --template          Template. For example: {{ track }} - {{ title }}.{{ 
+                            ext }}. Required                                    
     -k, --keepemptydirs     Keep empty directories                              
     -d, --donotmoveother    Do not move other files
 ```
