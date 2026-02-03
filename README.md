@@ -140,46 +140,39 @@ Some fields accept **multiple values** (artists, genres, etc.). Provide multiple
 
 ### Standard tag fields
 
-| Field | Short | Description | Notes / Examples |
-|---|---:|---|---|
-| `album` | `l` | Album name. | `album="Test Album"` |
-| `albumartist` | `A` | One or more album artists. | `albumartist="Artist 1; Artist 2"` |
-| `artist` | `a` | One or more artists. | `artist="Artist 1; Artist 2"` |
-| `bpm` |  | Beats per minute. | `bpm=128` |
-| `catalognumber` |  | Catalog number. | `catalognumber="ABC-001"` |
-| `comment` | `c` | Comment or notes. | `comment="Ripped from vinyl"` |
-| `composer` | `C` | Composer. | `composer="A; B"` |
-| `conductor` |  | Conductor. | `conductor="John Doe"` |
-| `copyright` |  | Copyright. | `copyright="© 1999 Label"` |
-| `date` | `y` | Release date. | `date=1999` or `date=1999-06-01` |
-| `disc` | `d` | Disc number. | `disc=1` |
-| `disctotal` | `D` | Total number of discs. | `disctotal=2` |
-| `genre` | `g` | One or more genres. | `genre="House; Techno"` |
-| `isrc` |  | International Standard Recording Code. | `isrc="GBXXX0100001"` |
-| `label` |  | Record label. | `label="Warp"` |
-| `publisher` |  | Publisher. | `publisher="Warp Records"` |
-| `title` | `t` | Track title. | `title="Track Name"` |
-| `track` | `n` | Track number. | `track=5` |
-| `tracktotal` | `N` | Total number of tracks. | `tracktotal=12` |
+- `album` (`l`): Album name. Example: `album="Test Album"`
+- `albumartist` (`A`): One or more album artists. Example: `albumartist="Artist 1; Artist 2"`
+- `artist` (`a`): One or more artists. Example: `artist="Artist 1; Artist 2"`
+- `bpm`: Beats per minute. Example: `bpm=128`
+- `catalognumber`: Catalog number. Example: `catalognumber="ABC-001"`
+- `comment` (`c`): Comment or notes. Example: `comment="Ripped from vinyl"`
+- `composer` (`C`): Composer. Example: `composer="A; B"`
+- `conductor`: Conductor. Example: `conductor="John Doe"`
+- `copyright`: Copyright. Example: `copyright="© 1999 Label"`
+- `date` (`y`): Release date. Examples: `date=1999` or `date=1999-06-01`
+- `disc` (`d`): Disc number. Example: `disc=1`
+- `disctotal` (`D`): Total number of discs. Example: `disctotal=2`
+- `genre` (`g`): One or more genres. Example: `genre="House; Techno"`
+- `isrc`: International Standard Recording Code. Example: `isrc="GBXXX0100001"`
+- `label`: Record label. Example: `label="Warp"`
+- `publisher`: Publisher. Example: `publisher="Warp Records"`
+- `title` (`t`): Track title. Example: `title="Track Name"`
+- `track` (`n`): Track number. Example: `track=5`
+- `tracktotal` (`N`): Total number of tracks. Example: `tracktotal=12`
+ 
+### Extra fields
 
-### Custom fields
-
-| Option | Short | Value | Description | Notes / Examples                                  |
-|---|---:|---|---|---------------------------------------------------|
-| `set` | `s` | `key=value` (repeatable) | Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a custom field. | Use multiple times: `set="catalogNumber=ABC-001"` |
-| `clearcustom` |  | flag | Clear **all** custom fields before applying any `set` values. | `clearcustom set=my_field=123`                    |
+- `set` (`s`): Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a extra field. Example: `set="catalogNumber=ABC-001"`
+- `clearextra` (`e`): Clear **all** extra fields before applying any `set` values.
 
 > Tip: `--set` is useful for scripting or for fields not exposed as dedicated options.
 
 ### Pictures (cover art)
 
-| Option | Short | Value | Description | Notes / Examples |
-|---|---:|---|---|---|
-| `--picture` | `-p` | path (repeatable) | Add one or more pictures from file paths. | `--picture cover.jpg --picture back.jpg` |
-| `--picturetype` |  | string (repeatable) | Type for each picture, matching the order of `--picture`. Optional. | `--picture cover.jpg --picturetype FrontCover` |
-| `--clearpicture` |  | flag | Remove all existing pictures before adding new ones. | `--clearpicture --picture cover.jpg` |
+- `picture` (`p`): Add one or more pictures from file paths. Example: `picture=./cover.jpg`
+- `picturetype`: Type for picture. Example: `picturetype=FrontCover`
+- `clearpicture`: Remove all existing pictures before adding new ones.
 
-**Picture type behavior:**
 - If you provide multiple `--picturetype` values, they are matched by index to `--picture`.
 - If you provide fewer types than pictures, the first provided type may be reused.
 - If no type is provided (or parsing fails), the default type is `FrontCover`.
@@ -220,77 +213,38 @@ All fields are **strings** unless stated otherwise. List fields are provided bot
 > Notes:
 > - `Disc00` / `Track00` are **zero-padded** only when the original value is numeric.
 > - `Year` is parsed from `Date` only if `Date` matches one of: `yyyy`, `yyyy-MM-dd`, `yyyy/MM/dd`.
-> - `Custom` fields are accessed via dot notation (example: `custom.url`).
+> - `Extra` fields are accessed via dot notation (example: `extra.url`).
 
-### File/path fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `path` | string | Full file path. | `/music/Artist/Album/01 - Title.flac` |
-| `filename` | string | File name without extension. | `01 - Title` |
-| `ext` | string | File extension (without the dot). | `flac` |
-
-### Album fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `album` | string | Album name. | `Selected Ambient Works 85-92` |
-| `albumartist` | string | Album artists as a single string. | `Aphex Twin` |
-| `albumartists` | list<string> | List of album artists. | `["Aphex Twin"]` |
-
-### Artist fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `artist` | string | Track artists as a single string. | `Artist A; Artist B` |
-| `artists` | list<string> | List of track artists. | `["Artist A", "Artist B"]` |
-
-### Track fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `title` | string | Track title. | `Xtal` |
-| `track` | string | Track number (raw value from tags). | `1` |
-| `track00` | string | Track number padded to 2 digits when numeric. | `01` |
-| `tracktotal` | string | Total number of tracks. | `12` |
-
-### Disc fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `disc` | string | Disc number (raw value from tags). | `1` |
-| `disc00` | string | Disc number padded to 2 digits when numeric. | `01` |
-| `disctotal` | string | Total number of discs. | `2` |
-
-### Date fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `date` | string | Original date value as stored in tags. | `1993-03-01` |
-| `year` | string | Year extracted from `date` (if parseable). | `1993` |
-
-### Metadata fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `genre` | string | Genres as a single string. | `Ambient; Electronic` |
-| `genres` | list<string> | List of genres. | `["Ambient", "Electronic"]` |
-| `label` | string | Record label. | `Warp` |
-| `publisher` | string | Publisher/organization. | `Warp Records` |
-| `catalognumber` | string | Catalog number. | `WARPCD01` |
-| `bpm` | string | Beats per minute. | `128` |
-| `isrc` | string | ISRC code. | `GBXYZ1200001` |
-| `comment` | string | User comment. | `Ripped from CD` |
-| `composer` | string | Composers as a single string. | `Composer A` |
-| `composers` | list<string> | List of composers. | `["Composer A"]` |
-| `conductor` | string | Conductor name. | `John Doe` |
-| `copyright` | string | Copyright text. | `© 1993 Label` |
-
-### Custom fields
-
-| Template field | Type | Description | Example |
-|---|---|---|---|
-| `custom` | map<string,string> | Custom tag fields (normalized keys). Access with dot syntax. | `{{ custom.url }}` |
+- `album`: Album name. Example: `Selected Ambient Works 85-92`
+- `albumartist`: Album artists as a single string. Example: `Aphex Twin`
+- `albumartists`: List of album artists. Example: `["Aphex Twin"]`
+- `artist` (string): Track artists as a single string. Example: `Artist A; Artist B`
+- `artists` (list<string>): List of track artists. Example: `["Artist A", "Artist B"]`
+- `bpm`: string. Beats per minute. Example: `128`
+- `catalognumber`: string. Catalog number. Example: `WARPCD01`
+- `comment`: string. User comment. Example: `Ripped from CD`
+- `composer`: string. Composers as a single string. Example: `Composer A`
+- `composers`: list<string>. List of composers. Example: `["Composer A"]`
+- `conductor`: string. Conductor name. Example: `John Doe`
+- `copyright`: string. Copyright text. Example: `© 1993 Label`
+- `date`: Original date value as stored in tags. Example: `1993-03-01`
+- `disc`: Disc number (raw value from tags). Example: `1`
+- `disc00`: Disc number padded to 2 digits when numeric. Example: `01`
+- `disctotal`: Total number of discs. Example: `2`
+- `ext`: File extension (without the dot). Example: `flac`
+- `filename`: File name without extension. Example: `01 - Title`
+- `genre`: string. Genres as a single string. Example: `Ambient; Electronic`
+- `genres`: list<string>. List of genres. Example: `["Ambient", "Electronic"]`
+- `isrc`: string. ISRC code. Example: `GBXYZ1200001`
+- `label`: string. Record label. Example: `Warp`
+- `path`: Full file path. Example: `/music/Artist/Album/01 - Title.flac`
+- `publisher`: string. Publisher/organization. Example: `Warp Records`
+- `title`: Track title. Example: `Xtal`
+- `track`: Track number (raw value from tags). Example: `1`
+- `track00`: Track number padded to 2 digits when numeric. Example: `01`
+- `tracktotal`: Total number of tracks. Example: `12`
+- `year`: Year extracted from `date` (if parseable). Example: `1993`
+- `extra`: Extra fields as a map. Usage: `{{ extra.url }}`
 
 ## Macros
 

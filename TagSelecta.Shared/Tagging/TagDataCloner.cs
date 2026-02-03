@@ -7,12 +7,12 @@ public static class TagDataCloner
     public static TagData Clone(TagData source)
     {
         var clone = new TagData { Picture = ClonePictures(source.Picture) };
-        CloneCustom(clone, source.Custom);
+        CloneExtra(clone, source.Extra);
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
                 .Where(p => p.Name != nameof(TagData.Picture))
-                .Where(p => p.Name != nameof(TagData.Custom))
+                .Where(p => p.Name != nameof(TagData.Extra))
         )
         {
             if (prop.PropertyType == typeof(string))
@@ -55,11 +55,11 @@ public static class TagDataCloner
         };
     }
 
-    private static void CloneCustom(TagData clone, IEnumerable<CustomField> source)
+    private static void CloneExtra(TagData clone, IEnumerable<ExtraField> source)
     {
         foreach (var field in source)
         {
-            clone.SetCustomField(field.Key, field.Text);
+            clone.SetExtraField(field.Key, field.Text);
         }
     }
 }

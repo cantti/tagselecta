@@ -84,7 +84,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fil
         Write(Fields.Date, () => tagData.Date = _release.Release.Year.ToString());
         Write(Fields.Picture, () => tagData.Picture = [new TagLib.Picture(_release.Image)]);
         Write(Fields.CatalogNumber, () => tagData.CatalogNumber = label?.CatNo ?? "");
-        tagData.SetCustomField("discogs_release_id", _release.Release.Id.ToString());
+        tagData.SetExtraField("discogs_release_id", _release.Release.Id.ToString());
         context.Target.UpdateTagData(tagData);
     }
 

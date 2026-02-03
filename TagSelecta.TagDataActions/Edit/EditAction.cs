@@ -34,9 +34,9 @@ public class EditAction : TagDataAction<EditSettings>
         Write(s => s.Track, v => tagData.Track = v);
         Write(s => s.TrackTotal, v => tagData.TrackTotal = v);
 
-        if (context.Settings.ClearCustom)
+        if (context.Settings.ClearExtra)
         {
-            tagData.ClearCustomFields();
+            tagData.ClearExtraFields();
         }
 
         if (context.Settings.Set is not null)
@@ -115,7 +115,7 @@ public class EditAction : TagDataAction<EditSettings>
         }
         else
         {
-            tagData.SetCustomField(key, value);
+            tagData.SetExtraField(key, value);
         }
     }
 }

@@ -86,13 +86,13 @@ public class EditSettings : TagDataActionSettings
 
     [CommandOption($"--{Fields.Set}|-s")]
     [Description(
-        "Custom fields in key=value format. Use this option multiple times to include multiple fields (e.g., -c key1=value1 -c key2=value2)."
+        "Extra fields in key=value format. Use this option multiple times to include multiple fields (e.g., -s key1=value1 -s key2=value2)."
     )]
     public string[]? Set { get; set; }
 
-    [CommandOption("--clearcustom")]
-    [Description("Clear all other custom fields.")]
-    public bool ClearCustom { get; set; }
+    [CommandOption("--clearextra")]
+    [Description("Clear all other extra fields.")]
+    public bool ClearExtra { get; set; }
 
     [CommandOption($"--{Fields.Picture}|-p")]
     [Description(

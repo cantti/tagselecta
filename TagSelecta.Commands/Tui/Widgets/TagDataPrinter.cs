@@ -20,18 +20,18 @@ public static class TagDataPrinter
             var prop in typeof(TagData)
                 .GetProperties()
                 .Where(p => p.Name != nameof(TagData.Picture))
-                .Where(p => p.Name != nameof(TagData.Custom))
+                .Where(p => p.Name != nameof(TagData.Extra))
         )
         {
             AddField(table, prop.Name, ConvertValue(prop.GetValue(tagData), prop.PropertyType));
         }
-        if (tagData.Custom.Count > 0)
+        if (tagData.Extra.Count > 0)
         {
             table.AddEmptyRow();
-            table.AddRow("[i]Custom:[/]");
-            foreach (var custom in tagData.Custom)
+            table.AddRow("[i]Extra:[/]");
+            foreach (var extra in tagData.Extra)
             {
-                AddField(table, custom.Key, custom.Text);
+                AddField(table, extra.Key, extra.Text);
             }
         }
         if (tagData.Picture.Count > 0)
@@ -63,7 +63,7 @@ public static class TagDataPrinter
             var prop in typeof(TagData)
                 .GetProperties()
                 .Where(p => p.Name != nameof(TagData.Picture))
-                .Where(p => p.Name != nameof(TagData.Custom))
+                .Where(p => p.Name != nameof(TagData.Extra))
         )
         {
             AddFieldComparison(
@@ -73,22 +73,22 @@ public static class TagDataPrinter
                 ConvertValue(prop.GetValue(tagData), prop.PropertyType)
             );
         }
-        var customKeys = backupTagData
-            .Custom.Select(x => x.Key)
-            .Union(tagData.Custom.Select(x => x.Key))
+        var extraKeys = backupTagData
+            .Extra.Select(x => x.Key)
+            .Union(tagData.Extra.Select(x => x.Key))
             .ToList();
-        if (customKeys.Count > 0)
+        if (extraKeys.Count > 0)
         {
             table.AddEmptyRow();
-            table.AddRow("[i]Custom:[/]");
+            table.AddRow("[i]Extra:[/]");
             foreach (
                 var key in backupTagData
-                    .Custom.Select(x => x.Key)
-                    .Union(tagData.Custom.Select(x => x.Key))
+                    .Extra.Select(x => x.Key)
+                    .Union(tagData.Extra.Select(x => x.Key))
             )
             {
-                var value1 = backupTagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
-                var value2 = tagData.Custom.SingleOrDefault(x => x.Key == key)?.Text ?? "";
+                var value1 = backupTagData.Extra.SingleOrDefault(x => x.Key == key)?.Text ?? "";
+                var value2 = tagData.Extra.SingleOrDefault(x => x.Key == key)?.Text ?? "";
                 AddFieldComparison(table, key, value1, value2);
             }
         }

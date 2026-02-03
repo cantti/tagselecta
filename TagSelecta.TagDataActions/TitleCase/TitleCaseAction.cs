@@ -14,7 +14,7 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
             var prop in typeof(TagData)
                 .GetProperties()
                 .Where(p => p.Name != nameof(TagData.Picture))
-                .Where(p => p.Name != nameof(TagData.Custom))
+                .Where(p => p.Name != nameof(TagData.Extra))
         )
         {
             var value = prop.GetValue(tagData)!;

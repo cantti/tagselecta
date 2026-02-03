@@ -41,7 +41,7 @@ public static class TagDataComparer
                 );
             }
         }
-        return PictureListEq(a.Picture, b.Picture) && CustomListEq(a.Custom, b.Custom);
+        return PictureListEq(a.Picture, b.Picture) && ExtraListEq(a.Extra, b.Extra);
     }
 
     private static bool Eq(string a, string b) => a == b;
@@ -90,7 +90,7 @@ public static class TagDataComparer
             && a.Data?.Data.SequenceEqual(b.Data?.Data ?? []) == true;
     }
 
-    private static bool CustomListEq(IReadOnlyList<CustomField>? a, IReadOnlyList<CustomField>? b)
+    private static bool ExtraListEq(IReadOnlyList<ExtraField>? a, IReadOnlyList<ExtraField>? b)
     {
         if (ReferenceEquals(a, b))
             return true;

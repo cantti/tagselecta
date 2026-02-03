@@ -37,7 +37,7 @@ public class TagDataClonerTests
             ],
         };
 
-        original.SetCustomField("key", "value");
+        original.SetExtraField("key", "value");
 
         var clone = TagDataCloner.Clone(original);
 
@@ -48,9 +48,9 @@ public class TagDataClonerTests
         Assert.Equal(original.Picture.Count, clone.Picture.Count);
         Assert.NotSame(original.Picture[0], clone.Picture[0]);
         Assert.Equal(original.Picture[0].Data, clone.Picture[0].Data);
-        Assert.Equal(original.Custom.Count, clone.Custom.Count);
-        Assert.NotSame(original.Custom[0], clone.Custom[0]);
-        Assert.Equal(original.Custom[0].Key, clone.Custom[0].Key);
-        Assert.Equal(original.Custom[0].Text, clone.Custom[0].Text);
+        Assert.Equal(original.Extra.Count, clone.Extra.Count);
+        Assert.NotSame(original.Extra[0], clone.Extra[0]);
+        Assert.Equal(original.Extra[0].Key, clone.Extra[0].Key);
+        Assert.Equal(original.Extra[0].Text, clone.Extra[0].Text);
     }
 }

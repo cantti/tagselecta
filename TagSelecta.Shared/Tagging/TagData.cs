@@ -42,34 +42,34 @@ public class TagData
 
     public List<TagLib.Picture> Picture { get; set; } = [];
 
-    private readonly List<CustomField> _custom = [];
-    public IReadOnlyList<CustomField> Custom => _custom.OrderBy(cf => cf.Key).ToList();
+    private readonly List<ExtraField> _extra = [];
+    public IReadOnlyList<ExtraField> Extra => _extra.OrderBy(cf => cf.Key).ToList();
 
-    public void ClearCustomFields() => _custom.Clear();
+    public void ClearExtraFields() => _extra.Clear();
 
-    public void SetCustomField(string key, string value)
+    public void SetExtraField(string key, string value)
     {
         key = key.NormalizeKey();
 
-        var index = _custom.FindIndex(cf => cf.Key == key);
+        var index = _extra.FindIndex(cf => cf.Key == key);
 
         if (string.IsNullOrWhiteSpace(value))
         {
             if (index >= 0)
             {
-                _custom.RemoveAt(index);
+                _extra.RemoveAt(index);
             }
         }
         else
         {
-            var replacement = new CustomField(key, value);
+            var replacement = new ExtraField(key, value);
             if (index < 0)
             {
-                _custom.Add(replacement);
+                _extra.Add(replacement);
             }
             else
             {
-                _custom[index] = replacement;
+                _extra[index] = replacement;
             }
         }
     }

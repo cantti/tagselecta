@@ -61,7 +61,7 @@ public class EditTests
             Picture = [],
         };
 
-        tagData.SetCustomField("original_field", "original_value");
+        tagData.SetExtraField("original_field", "original_value");
 
         var item = new TestTarget("file.mp3", tagData);
 
@@ -93,11 +93,11 @@ public class EditTests
         Assert.Equal(settings.Track, currentTagData.Track);
         Assert.Equal(settings.TrackTotal, currentTagData.TrackTotal);
 
-        // assert custom
-        Assert.Equal(2, currentTagData.Custom.Count);
-        Assert.Equal("original_field", currentTagData.Custom[0].Key);
-        Assert.Equal("original_value", currentTagData.Custom[0].Text);
-        Assert.Equal("test_field", currentTagData.Custom[1].Key);
-        Assert.Equal("test_value", currentTagData.Custom[1].Text);
+        // assert extra
+        Assert.Equal(2, currentTagData.Extra.Count);
+        Assert.Equal("original_field", currentTagData.Extra[0].Key);
+        Assert.Equal("original_value", currentTagData.Extra[0].Text);
+        Assert.Equal("test_field", currentTagData.Extra[1].Key);
+        Assert.Equal("test_value", currentTagData.Extra[1].Text);
     }
 }

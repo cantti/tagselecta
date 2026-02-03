@@ -35,7 +35,7 @@ public static class CommandRegistration
         configurator
             .AddTagDataAction<EditAction>(services)
             .WithDescription(
-                "Edit (read and write) tags. Unrecognized options are saved as custom fields. Another way to edit custom fields is to use --custom option."
+                "Edit (read and write) tags. To edit extra fields is to use --extra option."
             )
             // Basic examples
             .WithExample(

@@ -103,7 +103,7 @@ public class TagDataForTemplate(TagData tagData, string path)
             ? d.Year.ToString()
             : "";
 
-    [Description("Custom fields. Usage example: custom.url")]
-    public Dictionary<string, string> Custom { get; } =
-        tagData.Custom.ToDictionary(x => x.Key, x => x.Text);
+    [Description("Extra fields. Usage example: extra.url")]
+    public Dictionary<string, string> Extra { get; } =
+        tagData.Extra.ToDictionary(x => x.Key, x => x.Text);
 }

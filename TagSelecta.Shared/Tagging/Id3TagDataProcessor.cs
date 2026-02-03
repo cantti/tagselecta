@@ -39,7 +39,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             TrackTotal = GetTextValueAndTotal("TRCK").Total,
             Picture = id3v2.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
         };
-        ReadCustomFields(tagData);
+        ReadExtraFields(tagData);
         return tagData;
     }
 
@@ -65,13 +65,13 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
         id3v2.Pictures = data.Picture.Select(p => new TagLib.Picture(p)).ToArray<TagLib.IPicture>();
         ClearUnusedUserTextFrames();
-        foreach (var field in data.Custom)
+        foreach (var field in data.Extra)
         {
             WriteUserText(field.Key, field.Text);
         }
     }
 
-    private void ReadCustomFields(TagData tagData)
+    private void ReadExtraFields(TagData tagData)
     {
         foreach (var frame in id3v2.GetFrames())
         {
@@ -83,8 +83,8 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                     continue;
                 }
                 var text = txxx.Text.ToJoined();
-                var existing = tagData.Custom.SingleOrDefault(x => x.Key == key);
-                tagData.SetCustomField(
+                var existing = tagData.Extra.SingleOrDefault(x => x.Key == key);
+                tagData.SetExtraField(
                     key,
                     existing is not null ? $"{existing.Text}; {text}" : text
                 );

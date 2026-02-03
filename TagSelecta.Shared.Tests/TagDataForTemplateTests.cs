@@ -11,7 +11,7 @@ public class TagDataForTemplateTests
             .GetProperties()
             .Select(p => p.Name)
             .Where(p => p != nameof(TagData.Picture))
-            .Where(p => p != nameof(TagData.Custom))
+            .Where(p => p != nameof(TagData.Extra))
             .ToHashSet();
 
         var templateProps = typeof(TagDataForTemplate)
