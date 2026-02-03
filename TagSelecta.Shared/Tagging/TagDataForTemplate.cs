@@ -84,9 +84,15 @@ public class TagDataForTemplate(TagData tagData, string path)
     [Description("Track number.")]
     public string Track { get; } = tagData.Track;
 
-    [Description("Track number padded with zeros (e.g. 01, 02, 03, etc.)")]
+    [Description("Track number as a two-digit string with leading zeros (e.g. 01, 02, 03, etc.)")]
     public string Track00 { get; } =
         int.TryParse(tagData.Track, out var track) ? track.ToString("D2") : tagData.Track;
+
+    [Description(
+        "Track number as a three-digit string with leading zeros (e.g. 001, 002, 003, etc.)"
+    )]
+    public string Track000 { get; } =
+        int.TryParse(tagData.Track, out var track) ? track.ToString("D3") : tagData.Track;
 
     [Description("Total number of tracks.")]
     public string TrackTotal { get; } = tagData.TrackTotal;

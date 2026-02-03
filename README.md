@@ -65,27 +65,28 @@ Works from **bash**, **zsh**, **fish**, and other shells.
 
 Great way to get started is to use the interactive UI (TUI). Open directory with album (audio files) and run:
 
-```
+```sh
 tagselecta ui .
 ```
 
-Do not run it from the root of your music library, because it will scan all files in the directory!
+>Important: Do not run it from the root of your music library, because it will scan all files in the directory!
 
 Conseptually, the UI is divided into two parts: top panel with list of files and bottom panel with file details.
 
-Navigate through files using arrow keys or vim bindings (`jk`).
+**Navigation**
 
-Use `q` to exit.
-
+Navigate through files using arrow keys or vim bindings (`jk`). Use `q` to exit. 
 Use `tab` or `space` to select file. Use `esc` to unselect.
 
-Commands are executed using command mode (`:`).
+**Edit tags**
+
+Commands are executed using command mode (`:`). All command have the following format: `:command <arg>=<value>`. Value can be in double quotes if it contains spaces.
+
 
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.
 
-To write changes to files use `:write` (`:w`) command.
+No changes are applied until you *write* them. To write changes to files use `:write` (`:w`) command.
 
-All command have the following format: `:command <arg>=<value>`. Value can be in double quotes if it contains spaces.
 
 Update multiple fields at once: `:edit genre=Reggae albumartist="King Tubby"`.
 
@@ -107,6 +108,8 @@ Format field values using Scriban template engine:
 
 Other commands are implemented using the same format.
 
+**Move files**
+
 Very usefull command is `move` (`mv`) to rename and move files.
 
 Example:
@@ -114,7 +117,9 @@ Example:
 :move template="../{{ date }} - {{ album }}/{{ track00 }}. {{ title }}.{{ext}}"
 ```
 
-Most comnmand and opionts have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
+**Notes**
+
+Most comnmand and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
 
 Great way to learn more about commands and options is to run `--help` from cli for each command.
 
@@ -124,14 +129,14 @@ For example:
 tagselecta edit --help
 ```
 
+Below is a detaled documentation for each command.
+
 ## `edit` command
 
 The basic and most common use case is to edit tags for selected files.
 
 The `edit` action updates tag fields on the selected audio files.
 Any option you pass will **overwrite** the existing value for that field (after template formatting, if supported by your config). Options you don’t pass are left unchanged.
-
-### Multi-value fields
 
 Some fields accept **multiple values** (artists, genres, etc.). Provide multiple values by separating them with a semicolon:
 
@@ -181,33 +186,31 @@ Some fields accept **multiple values** (artists, genres, etc.). Provide multiple
 
 Moves/renames files using a template.
 
-| Option | Short | Required | Description                                                                      |
-|---|---:|:---:|----------------------------------------------------------------------------------|
-| `--template` | `-t` | yes | Destination template (e.g. `../{{ year }} - {{ album }}/{{ filename }}.{{ext}}`) |
-| `--keepemptydirs` | `-k` | no | Keep empty source directories after moving                                       |
-| `--donotmoveother` | `-d` | no | Only move the audio files (don’t move other files in the folder)                 |
-
+- `template` (`t`): Destination template (e.g. `../{{ year }} - {{ album }}/{{ filename }}.{{ext}}`)
+- `keepemptydirs` (`k`):Keep empty source directories after moving
+- `donotmoveother` (`d`): Only move the audio files (don’t move other files in the folder)
 ## `split` command
 
 Split artists, album artists and composers. Default separators are `,`, `;`, `.feat`. 
 
 Can be customized using `--separator` option.
 
+## `autotrack` command
+
+Set track number automatically based on position in directory.
+
 ## `titlecase` command
 
-Converts all fields to title case.
+Converts values of all fields to title case.
 
 ## `discogs` command
 
 Set album metadata from Discogs.com. Use `--url|-u` option to specify the release URL.
 
-## `autotrack` command
-
-Set track number automatically based on position in directory.
 
 ## Template fields
 
-When using templates (for example in `:move t`), TagSelecta exposes a `TagDataForTemplate` object.  
+When using templates (for example in `:move t=`), TagSelecta exposes a `TagDataForTemplate` object.  
 All fields are **strings** unless stated otherwise. List fields are provided both as a joined string and as a list.
 
 > Notes:
