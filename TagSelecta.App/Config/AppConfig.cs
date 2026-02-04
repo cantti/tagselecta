@@ -1,5 +1,3 @@
-using TagSelecta.Commands.Tui.TuiCommands;
-
 namespace TagSelecta.App.Config;
 
 public class AppConfig

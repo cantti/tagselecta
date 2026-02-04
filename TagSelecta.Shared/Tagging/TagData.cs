@@ -1,7 +1,10 @@
+using TagLib;
+
 namespace TagSelecta.Shared.Tagging;
 
 public class TagData
 {
+    private readonly List<ExtraField> _extra = [];
     public string Album { get; set; } = "";
 
     public List<string> AlbumArtist { get; set; } = [];
@@ -40,12 +43,13 @@ public class TagData
 
     public string TrackTotal { get; set; } = "";
 
-    public List<TagLib.Picture> Picture { get; set; } = [];
-
-    private readonly List<ExtraField> _extra = [];
+    public List<Picture> Picture { get; set; } = [];
     public IReadOnlyList<ExtraField> Extra => _extra.OrderBy(cf => cf.Key).ToList();
 
-    public void ClearExtraFields() => _extra.Clear();
+    public void ClearExtraFields()
+    {
+        _extra.Clear();
+    }
 
     public void SetExtraField(string key, string value)
     {

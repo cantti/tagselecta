@@ -23,7 +23,9 @@ public static class StringListExtensions
     public static string ToSpacedWords(this string input)
     {
         if (string.IsNullOrWhiteSpace(input))
+        {
             return input;
+        }
 
         return Regex.Replace(input, "(?<!^)([A-Z])", " $1");
     }
@@ -31,7 +33,9 @@ public static class StringListExtensions
     public static string SubstringFromEnd(this string value, int length)
     {
         if (string.IsNullOrEmpty(value) || length <= 0)
+        {
             return string.Empty;
+        }
 
         return value.Length <= length ? value : value.Substring(value.Length - length, length);
     }

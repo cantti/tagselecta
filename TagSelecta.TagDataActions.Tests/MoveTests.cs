@@ -15,7 +15,7 @@ public class MoveTests
 
         var settings = new MoveSettings { Template = "{{ year }} - {{album}}/{{filename}}" };
 
-        var tagData = new TagData() { Date = "1990", Album = "Test Album" };
+        var tagData = new TagData { Date = "1990", Album = "Test Album" };
 
         var item = new TestTarget("/file.mp3", tagData);
 
@@ -37,7 +37,7 @@ public class MoveTests
 
         var settings = new MoveSettings { Template = "../{{ year }} - {{album}}/{{filename}}" };
 
-        var tagData = new TagData() { Date = "1990", Album = "Test Album" };
+        var tagData = new TagData { Date = "1990", Album = "Test Album" };
 
         var item = new TestTarget("/dir/file.mp3", tagData);
 

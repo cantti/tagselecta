@@ -17,15 +17,17 @@ public class MoveAction : TagDataAction<MoveSettings>
         );
         var newName = formatter.Format(context.Settings.Template);
         var newPath = Path.GetFullPath(newName, dir);
-        MoveOptions moveOptions = MoveOptions.None;
+        var moveOptions = MoveOptions.None;
         if (context.Settings.KeepEmptyDirectories)
         {
             moveOptions |= MoveOptions.KeepEmptyDirectories;
         }
+
         if (context.Settings.DoNotMoveOtherFiles)
         {
             moveOptions |= MoveOptions.DoNotMoveOtherFiles;
         }
+
         context.Target.UpdatePath(newPath, moveOptions);
     }
 }

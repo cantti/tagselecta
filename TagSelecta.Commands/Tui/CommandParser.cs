@@ -10,16 +10,20 @@ public static class CommandParser
         request = null!;
 
         if (string.IsNullOrWhiteSpace(input))
+        {
             return false;
+        }
 
         var parts = Tokenize(input);
         if (parts.Count == 0)
+        {
             return false;
+        }
 
         var name = parts[0];
         var options = new List<RequestOption>();
 
-        for (int i = 1; i < parts.Count; i++)
+        for (var i = 1; i < parts.Count; i++)
         {
             var part = parts[i];
 
@@ -44,11 +48,11 @@ public static class CommandParser
     {
         var tokens = new List<string>();
         var current = new StringBuilder();
-        bool inQuotes = false;
+        var inQuotes = false;
 
-        for (int i = 0; i < input.Length; i++)
+        for (var i = 0; i < input.Length; i++)
         {
-            char c = input[i];
+            var c = input[i];
 
             if (c == '"' && (i == 0 || input[i - 1] != '\\'))
             {
@@ -71,13 +75,13 @@ public static class CommandParser
         }
 
         if (current.Length > 0)
+        {
             tokens.Add(current.ToString());
+        }
 
         // unescape \" to "
-        for (int i = 0; i < tokens.Count; i++)
-        {
+        for (var i = 0; i < tokens.Count; i++)
             tokens[i] = tokens[i].Replace("\\\"", "\"");
-        }
 
         return tokens;
     }

@@ -23,6 +23,7 @@ public class AutoTrackAction(IAudioFileScanner fileScanner) : TagDataAction<Auto
             tagData.Disc = "";
             tagData.DiscTotal = "";
         }
+
         context.Target.UpdateTagData(tagData);
     }
 }

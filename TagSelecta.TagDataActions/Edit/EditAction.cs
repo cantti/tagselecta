@@ -1,3 +1,4 @@
+using TagLib;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
@@ -58,20 +59,20 @@ public class EditAction : TagDataAction<EditSettings>
 
         if (context.Settings.Picture is not null)
         {
-            for (int i = 0; i < context.Settings.Picture.Length; i++)
+            for (var i = 0; i < context.Settings.Picture.Length; i++)
             {
                 var path = context.Settings.Picture[i];
                 // try to find a corresponding picture type, or use first
                 var typeStr =
                     context.Settings.PictureType?.ElementAtOrDefault(i)
                     ?? context.Settings.PictureType?.FirstOrDefault();
-                var picture = new TagLib.Picture(path)
+                var picture = new Picture(path)
                 {
                     Type =
                         !string.IsNullOrEmpty(typeStr)
-                        && Enum.TryParse<TagLib.PictureType>(typeStr, true, out var type)
+                        && Enum.TryParse<PictureType>(typeStr, true, out var type)
                             ? type
-                            : TagLib.PictureType.FrontCover,
+                            : PictureType.FrontCover,
                 };
                 tagData.Picture.Add(picture);
             }

@@ -12,7 +12,7 @@ public class CommandPromptWidget(string text, int cursorPos) : Renderable
         for (var i = 0; i < text.Length; i++)
         {
             var characterString = text[i].ToString();
-            Style style = new Style();
+            var style = new Style();
             if (i == cursorPos)
             {
                 style = new Style(decoration: i == cursorPos ? Decoration.Invert : Decoration.None);
@@ -21,12 +21,15 @@ public class CommandPromptWidget(string text, int cursorPos) : Renderable
             {
                 style = new Style(Color.Blue);
             }
+
             cols.Add(new Text(characterString, style));
         }
+
         if (text.Length == cursorPos)
         {
             cols.Add(new Text(" ", new Style(decoration: Decoration.Invert)));
         }
+
         return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
             options,
             maxWidth

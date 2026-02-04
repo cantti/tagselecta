@@ -1,5 +1,9 @@
 using TagLib;
+using TagLib.Flac;
+using TagLib.Ogg;
 using TagSelecta.Shared.Exceptions;
+using File = TagLib.File;
+using Tag = TagLib.Id3v2.Tag;
 
 namespace TagSelecta.Shared.Tagging;
 
@@ -7,7 +11,7 @@ public class Tagger : ITagger
 {
     public TagData ReadTags(string file)
     {
-        using var tfile = TagLib.File.Create(file);
+        using var tfile = File.Create(file);
         var processor = CreateProcessor(tfile);
         var tagData = processor.Read();
         return tagData;
@@ -15,7 +19,7 @@ public class Tagger : ITagger
 
     public void WriteTags(string file, TagData data)
     {
-        using var tfile = TagLib.File.Create(file);
+        using var tfile = File.Create(file);
         var processor = CreateProcessor(tfile);
         processor.Write(data);
         tfile.Save();
@@ -23,25 +27,27 @@ public class Tagger : ITagger
 
     public void RemoveTags(string file)
     {
-        using var tfile = TagLib.File.Create(file);
+        using var tfile = File.Create(file);
         tfile.RemoveTags(TagTypes.AllTags);
         tfile.Save();
     }
 
-    private static TagDataProcessor CreateProcessor(TagLib.File tfile)
+    private static TagDataProcessor CreateProcessor(File tfile)
     {
-        string mime = tfile.MimeType.ToLowerInvariant();
+        var mime = tfile.MimeType.ToLowerInvariant();
         if (mime.Contains("mpeg") || mime.Contains("mp3") || mime.Contains("wav"))
         {
-            var id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
+            var id3v2 = (Tag)tfile.GetTag(TagTypes.Id3v2, true);
             return new Id3TagDataProcessor(id3v2);
         }
+
         if (mime.Contains("flac"))
         {
-            var xiph = (TagLib.Ogg.XiphComment)tfile.GetTag(TagTypes.Xiph, true);
-            var flac = (TagLib.Flac.Metadata)tfile.GetTag(TagTypes.FlacMetadata, true);
+            var xiph = (XiphComment)tfile.GetTag(TagTypes.Xiph, true);
+            var flac = (Metadata)tfile.GetTag(TagTypes.FlacMetadata, true);
             return new FlacTagDataProcessor(xiph, flac);
         }
+
         throw new TagSelectaException($"Unsupported format: {mime}");
     }
 }

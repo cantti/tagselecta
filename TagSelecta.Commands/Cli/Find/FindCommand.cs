@@ -20,12 +20,13 @@ public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanne
             var formatter = new TagDataFormatter(file.TagData, file.Path);
             var shouldPrint =
                 string.IsNullOrWhiteSpace(settings.Query)
-                || (formatter.Format("{{ " + settings.Query + " }}") == "true");
+                || formatter.Format("{{ " + settings.Query + " }}") == "true";
             if (shouldPrint)
             {
                 console.WriteLine(file.Path);
             }
         }
+
         return 0;
     }
 }

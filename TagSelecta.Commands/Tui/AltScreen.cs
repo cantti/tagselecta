@@ -5,26 +5,28 @@ namespace TagSelecta.Commands.Tui;
 
 public static class AltScreen
 {
-    private static bool _active;
-
-    public static bool IsActive => _active;
+    public static bool IsActive { get; private set; }
 
     public static void Enter()
     {
-        if (_active)
+        if (IsActive)
+        {
             return;
+        }
 
         AnsiConsole.Console.WriteAnsi("\x1b[?1049h"); // enter alt screen
         AnsiConsole.Console.WriteAnsi("\x1b[H"); // cursor home
-        _active = true;
+        IsActive = true;
     }
 
     public static void Exit()
     {
-        if (!_active)
+        if (!IsActive)
+        {
             return;
+        }
 
         AnsiConsole.Console.WriteAnsi("\x1b[?1049l"); // exit alt screen
-        _active = false;
+        IsActive = false;
     }
 }

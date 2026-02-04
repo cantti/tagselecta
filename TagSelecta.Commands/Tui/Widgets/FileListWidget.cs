@@ -17,7 +17,7 @@ public class FileListWidget(
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
         var focusedIndex = filesList.FindIndex(x => x == focusedFile);
-        var windowStart = focusedIndex - (windowSize / 2);
+        var windowStart = focusedIndex - windowSize / 2;
 
         // clamp so we don't go before 0 or past the last possible full window start
         var maxStart = Math.Max(0, filesList.Count - windowSize);
@@ -43,6 +43,7 @@ public class FileListWidget(
                 cols.Add(new Text("...", new Style(fg, bg)));
                 path = path.Substring(start);
             }
+
             cols.Add(new Text(path, new Style(fg, bg)));
             items.Add(new Columns(cols) { Expand = false, Padding = new Padding(0) });
         }

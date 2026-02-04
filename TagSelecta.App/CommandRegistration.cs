@@ -39,25 +39,21 @@ public static class CommandRegistration
             )
             // Basic examples
             .WithExample(
-                [
-                    "edit",
-                    "song.mp3",
-                    "-t",
-                    "'Song 1'",
-                    "-a",
-                    "'Artist1;Artist 2'",
-                    "-s",
-                    "description=test",
-                ]
+                "edit",
+                "song.mp3",
+                "-t",
+                "'Song 1'",
+                "-a",
+                "'Artist1;Artist 2'",
+                "-s",
+                "description=test"
             )
-            .WithExample(["edit", "song.mp3", "-c", "'url=https://github.com'"])
+            .WithExample("edit", "song.mp3", "-c", "'url=https://github.com'")
             .WithExample(
-                [
-                    "edit",
-                    "song.mp3",
-                    "-a",
-                    "'{{ artist | regex.replace \"^VA$\" \"Various Artists\" \"-i\" }}'",
-                ]
+                "edit",
+                "song.mp3",
+                "-a",
+                "'{{ artist | regex.replace \"^VA$\" \"Various Artists\" \"-i\" }}'"
             );
     }
 
@@ -84,14 +80,12 @@ public static class CommandRegistration
                 "Update album from discogs. You can pass discogs release id (not master) or query to search."
             )
             .WithExample(
-                [
-                    "discogs",
-                    "path-to-album",
-                    "-r",
-                    "https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots",
-                ]
+                "discogs",
+                "path-to-album",
+                "-r",
+                "https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots"
             )
-            .WithExample(["discogs", "path-to-album", "-q", "King Tubby Dub From The Roots"]);
+            .WithExample("discogs", "path-to-album", "-q", "King Tubby Dub From The Roots");
     }
 
     private static void AddExtractPicture(IConfigurator configurator, IServiceCollection services)
@@ -127,9 +121,7 @@ public static class CommandRegistration
         configurator
             .AddCommand<FindCommand>("find")
             .WithDescription("Find files by metadata")
-            .WithExample(
-                ["find", ".", "-q", "\"title | string.downcase |  string.contains 'dub'\""]
-            );
+            .WithExample("find", ".", "-q", "\"title | string.downcase |  string.contains 'dub'\"");
     }
 
     private static void AddTui(IConfigurator configurator, IServiceCollection services)

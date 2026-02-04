@@ -22,7 +22,7 @@ public class AutoTrackTests
 
         var item1 = new TestTarget(
             "file1.mp3",
-            new TagData()
+            new TagData
             {
                 Disc = "1",
                 DiscTotal = "1",

@@ -13,7 +13,7 @@ public class SplitTests
         // Arrange
         ITagDataAction action = new SplitAction();
         var settings = new SplitSettings();
-        var tagData = new TagData() { Artist = ["Artist1; Artist2"] };
+        var tagData = new TagData { Artist = ["Artist1; Artist2"] };
         var item = new TestTarget("file.mp3", tagData);
 
         // Act

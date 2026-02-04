@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using TagLib;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
@@ -10,8 +11,8 @@ namespace TagSelecta.TagDataActions.Discogs;
 public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fileScanner)
     : TagDataAction<DiscogsSettings>
 {
-    private ReleaseFetcherResult? _release;
     private List<string> _fieldToWriteList = [];
+    private ReleaseFetcherResult? _release;
 
     public override async Task<bool> BeforeExecuteAsync(
         DiscogsSettings settings,
@@ -82,7 +83,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fil
         Write(Fields.Genre, () => tagData.Genre = _release.Release.Styles ?? []);
         Write(Fields.Label, () => tagData.Label = label?.Name ?? "");
         Write(Fields.Date, () => tagData.Date = _release.Release.Year.ToString());
-        Write(Fields.Picture, () => tagData.Picture = [new TagLib.Picture(_release.Image)]);
+        Write(Fields.Picture, () => tagData.Picture = [new Picture(_release.Image)]);
         Write(Fields.CatalogNumber, () => tagData.CatalogNumber = label?.CatNo ?? "");
         tagData.SetExtraField("discogs_release_id", _release.Release.Id.ToString());
         context.Target.UpdateTagData(tagData);

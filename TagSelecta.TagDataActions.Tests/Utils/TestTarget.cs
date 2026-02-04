@@ -13,13 +13,13 @@ public class TestTarget : ITagDataActionTarget
         CurrentPath = path;
     }
 
-    public TagData CurrentTagData { get; private set; }
-    public TagData BackupTagData { get; }
-
     public string CurrentPath { get; private set; }
-    public string BackupPath { get; }
 
     public MoveOptions MoveOptions { get; set; }
+
+    public TagData CurrentTagData { get; private set; }
+    public TagData BackupTagData { get; }
+    public string BackupPath { get; }
 
     public void UpdatePath(string path, MoveOptions moveOptions)
     {

@@ -4,7 +4,10 @@ public sealed class HotkeyMap
 {
     private readonly Dictionary<string, string> _map = new(StringComparer.Ordinal);
 
-    public void Bind(string key, string actionName) => _map[NormalizeKey(key)] = actionName;
+    public void Bind(string key, string actionName)
+    {
+        _map[NormalizeKey(key)] = actionName;
+    }
 
     public string? Resolve(ConsoleKeyInfo key)
     {
@@ -33,11 +36,13 @@ public sealed class HotkeyMap
         {
             throw new ArgumentException("Hotkey cannot be empty.", nameof(key));
         }
+
         return trimmed.Length == 1 ? trimmed : trimmed.ToLowerInvariant();
     }
 
-    private static string? ToToken(ConsoleKeyInfo key) =>
-        key.Key switch
+    private static string? ToToken(ConsoleKeyInfo key)
+    {
+        return key.Key switch
         {
             ConsoleKey.Escape => HotkeyTokens.Esc,
             ConsoleKey.UpArrow => HotkeyTokens.Up,
@@ -55,4 +60,5 @@ public sealed class HotkeyMap
             ConsoleKey.Delete => HotkeyTokens.Delete,
             _ => null,
         };
+    }
 }

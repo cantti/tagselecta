@@ -1,11 +1,11 @@
+using TagLib;
 using TagLib.Id3v2;
+using Tag = TagLib.Id3v2.Tag;
 
 namespace TagSelecta.Shared.Tagging;
 
 public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
 {
-    private readonly Tag id3v2 = tag;
-
     private static readonly HashSet<string> _usedUserTextFields = new(
         StringComparer.OrdinalIgnoreCase
     )
@@ -13,6 +13,8 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         "label",
         "catalognumber",
     };
+
+    private readonly Tag id3v2 = tag;
 
     public override TagData Read()
     {
@@ -37,7 +39,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             Title = id3v2.Title ?? "",
             Track = GetTextValueAndTotal("TRCK").Value,
             TrackTotal = GetTextValueAndTotal("TRCK").Total,
-            Picture = id3v2.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
+            Picture = id3v2.Pictures.Select(x => new Picture(x)).ToList(),
         };
         ReadExtraFields(tagData);
         return tagData;
@@ -63,18 +65,15 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.Publisher = data.Publisher;
         id3v2.Title = data.Title;
         WriteTextValueAndTotal("TRCK", data.Track, data.TrackTotal);
-        id3v2.Pictures = data.Picture.Select(p => new TagLib.Picture(p)).ToArray<TagLib.IPicture>();
+        id3v2.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
         ClearUnusedUserTextFrames();
         foreach (var field in data.Extra)
-        {
             WriteUserText(field.Key, field.Text);
-        }
     }
 
     private void ReadExtraFields(TagData tagData)
     {
         foreach (var frame in id3v2.GetFrames())
-        {
             if (frame is UserTextInformationFrame txxx)
             {
                 var key = txxx.Description.NormalizeKey();
@@ -82,6 +81,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                 {
                     continue;
                 }
+
                 var text = txxx.Text.ToJoined();
                 var existing = tagData.Extra.SingleOrDefault(x => x.Key == key);
                 tagData.SetExtraField(
@@ -89,7 +89,6 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                     existing is not null ? $"{existing.Text}; {text}" : text
                 );
             }
-        }
     }
 
     private string GetText(string ident)
@@ -108,7 +107,9 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         var raw = GetText(ident);
 
         if (string.IsNullOrWhiteSpace(raw))
+        {
             return ("", "");
+        }
 
         var parts = raw.Split('/', 2, StringSplitOptions.TrimEntries);
 
@@ -120,20 +121,23 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
 
     private void WriteTextValueAndTotal(string ident, string value, string total)
     {
-        string text = string.IsNullOrEmpty(total) ? value : $"{value}/{total}";
+        var text = string.IsNullOrEmpty(total) ? value : $"{value}/{total}";
 
         var frame = TextInformationFrame.Get(id3v2, ident, true);
 
         if (string.IsNullOrWhiteSpace(text))
+        {
             id3v2.RemoveFrame(frame);
+        }
         else
+        {
             frame.Text = [text];
+        }
     }
 
     private void ClearUnusedUserTextFrames()
     {
         foreach (var frame in id3v2.GetFrames().ToList())
-        {
             if (
                 frame is UserTextInformationFrame txxx
                 && !_usedUserTextFields.Contains(txxx.Description)
@@ -141,7 +145,6 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             {
                 id3v2.RemoveFrame(txxx);
             }
-        }
     }
 
     private string GetUserTextAsString(string key)

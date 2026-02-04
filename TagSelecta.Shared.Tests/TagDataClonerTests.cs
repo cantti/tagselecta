@@ -28,7 +28,7 @@ public class TagDataClonerTests
             [
                 new Picture
                 {
-                    Data = new ByteVector([1, 2, 3]),
+                    Data = new ByteVector(1, 2, 3),
                     Description = "desc",
                     Filename = "file.jpg",
                     MimeType = "image/jpeg",

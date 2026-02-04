@@ -8,9 +8,9 @@ using TagSelecta.Shared;
 
 namespace TagSelecta.App;
 
-class Program
+internal class Program
 {
-    static int Main(string[] args)
+    private static int Main(string[] args)
     {
         var cst = new CancellationTokenSource();
         SetAnsiSupport();
@@ -30,6 +30,7 @@ class Program
             {
                 config.PropagateExceptions();
             }
+
             config.AddCommands(services);
             config.SetApplicationVersion(GetAppVersion());
         });

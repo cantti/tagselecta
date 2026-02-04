@@ -1,3 +1,5 @@
+using TagLib;
+
 namespace TagSelecta.Shared.Tagging;
 
 public static class TagDataComparer
@@ -5,9 +7,15 @@ public static class TagDataComparer
     public static bool AreEqual(TagData? a, TagData? b)
     {
         if (ReferenceEquals(a, b))
+        {
             return true;
+        }
+
         if (a == null || b == null)
+        {
             return false;
+        }
+
         foreach (
             var prop in typeof(TagData)
                 .GetProperties()
@@ -15,7 +23,6 @@ public static class TagDataComparer
                     p.PropertyType == typeof(string) || p.PropertyType == typeof(List<string>)
                 )
         )
-        {
             if (prop.PropertyType == typeof(string))
             {
                 var val1 = (string)prop.GetValue(a)!;
@@ -40,48 +47,72 @@ public static class TagDataComparer
                     $"Unsupported property type: {prop.PropertyType}"
                 );
             }
-        }
+
         return PictureListEq(a.Picture, b.Picture) && ExtraListEq(a.Extra, b.Extra);
     }
 
-    private static bool Eq(string a, string b) => a == b;
+    private static bool Eq(string a, string b)
+    {
+        return a == b;
+    }
 
     private static bool ListEq(List<string>? a, List<string>? b)
     {
         if (ReferenceEquals(a, b))
+        {
             return true;
+        }
+
         if (a == null || b == null)
+        {
             return false;
+        }
+
         if (a.Count != b.Count)
+        {
             return false;
+        }
 
         return a.SequenceEqual(b);
     }
 
-    private static bool PictureListEq(List<TagLib.Picture>? a, List<TagLib.Picture>? b)
+    private static bool PictureListEq(List<Picture>? a, List<Picture>? b)
     {
         if (ReferenceEquals(a, b))
-            return true;
-        if (a == null || b == null)
-            return false;
-        if (a.Count != b.Count)
-            return false;
-
-        for (int i = 0; i < a.Count; i++)
         {
-            if (!PictureEq(a[i], b[i]))
-                return false;
+            return true;
         }
+
+        if (a == null || b == null)
+        {
+            return false;
+        }
+
+        if (a.Count != b.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < a.Count; i++)
+            if (!PictureEq(a[i], b[i]))
+            {
+                return false;
+            }
 
         return true;
     }
 
-    public static bool PictureEq(TagLib.Picture? a, TagLib.Picture? b)
+    public static bool PictureEq(Picture? a, Picture? b)
     {
         if (ReferenceEquals(a, b))
+        {
             return true;
+        }
+
         if (a == null || b == null)
+        {
             return false;
+        }
 
         return a.Type == b.Type
             && a.MimeType == b.MimeType
@@ -93,17 +124,25 @@ public static class TagDataComparer
     private static bool ExtraListEq(IReadOnlyList<ExtraField>? a, IReadOnlyList<ExtraField>? b)
     {
         if (ReferenceEquals(a, b))
-            return true;
-        if (a == null || b == null)
-            return false;
-        if (a.Count != b.Count)
-            return false;
-
-        for (int i = 0; i < a.Count; i++)
         {
-            if (!(a[i] == b[i]))
-                return false;
+            return true;
         }
+
+        if (a == null || b == null)
+        {
+            return false;
+        }
+
+        if (a.Count != b.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < a.Count; i++)
+            if (!(a[i] == b[i]))
+            {
+                return false;
+            }
 
         return true;
     }

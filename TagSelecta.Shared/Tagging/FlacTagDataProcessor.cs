@@ -1,13 +1,12 @@
+using TagLib;
 using TagLib.Flac;
 using TagLib.Ogg;
+using Picture = TagLib.Picture;
 
 namespace TagSelecta.Shared.Tagging;
 
 public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProcessor
 {
-    private readonly XiphComment xiph = tag;
-    private readonly Metadata flac = flac;
-
     private static readonly HashSet<string> _usedXiphFields = new(StringComparer.OrdinalIgnoreCase)
     {
         "album",
@@ -30,6 +29,9 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         "tracknumber",
         "tracktotal",
     };
+
+    private readonly Metadata flac = flac;
+    private readonly XiphComment xiph = tag;
 
     public override TagData Read()
     {
@@ -54,7 +56,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             Title = ReadField("title"),
             Track = ReadField("tracknumber"),
             TrackTotal = ReadField("tracktotal"),
-            Picture = flac.Pictures.Select(x => new TagLib.Picture(x)).ToList(),
+            Picture = flac.Pictures.Select(x => new Picture(x)).ToList(),
         };
         ReadExtraFields(tagData);
         return tagData;
@@ -83,10 +85,8 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         WriteField("tracktotal", data.TrackTotal);
         ClearUnusedFields();
         foreach (var field in data.Extra)
-        {
             WriteField(field.Key, field.Text);
-        }
-        flac.Pictures = data.Picture.Select(p => new TagLib.Picture(p)).ToArray<TagLib.IPicture>();
+        flac.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
     }
 
     private string ReadField(string key)
@@ -114,12 +114,10 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
     private void ClearUnusedFields()
     {
         foreach (var key in xiph)
-        {
             if (!_usedXiphFields.Contains(key))
             {
                 xiph.RemoveField(key);
             }
-        }
     }
 
     private void ReadExtraFields(TagData tagData)
@@ -129,7 +127,9 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             var normKey = key.NormalizeKey();
 
             if (_usedXiphFields.Contains(normKey))
+            {
                 continue;
+            }
 
             var values = xiph.GetField(key) ?? [];
             tagData.SetExtraField(normKey, values.ToJoined());

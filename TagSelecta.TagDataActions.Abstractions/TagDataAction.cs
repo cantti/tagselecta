@@ -3,6 +3,23 @@ namespace TagSelecta.TagDataActions.Abstractions;
 public abstract class TagDataAction<TSettings> : ITagDataAction
     where TSettings : TagDataActionSettings
 {
+    Task ITagDataAction.Execute(ITagDataActionExecuteContext context, CancellationToken token)
+    {
+        return ExecuteAsync(
+            new TagDataActionExecuteContext<TSettings>
+            {
+                Settings = (TSettings)context.Settings,
+                Target = context.Target,
+            },
+            token
+        );
+    }
+
+    Task<bool> ITagDataAction.BeforeExecute(TagDataActionSettings settings, CancellationToken token)
+    {
+        return BeforeExecuteAsync((TSettings)settings, token);
+    }
+
     protected virtual bool BeforeExecute(TSettings settings)
     {
         return true;
@@ -22,22 +39,5 @@ public abstract class TagDataAction<TSettings> : ITagDataAction
     {
         Execute(context);
         return Task.CompletedTask;
-    }
-
-    Task ITagDataAction.Execute(ITagDataActionExecuteContext context, CancellationToken token)
-    {
-        return ExecuteAsync(
-            new TagDataActionExecuteContext<TSettings>
-            {
-                Settings = (TSettings)context.Settings,
-                Target = context.Target,
-            },
-            token
-        );
-    }
-
-    Task<bool> ITagDataAction.BeforeExecute(TagDataActionSettings settings, CancellationToken token)
-    {
-        return BeforeExecuteAsync((TSettings)settings, token);
     }
 }

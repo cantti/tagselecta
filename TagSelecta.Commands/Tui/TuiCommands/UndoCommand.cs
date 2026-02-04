@@ -10,6 +10,7 @@ public class UndoCommand : ITuiCommand
             token.ThrowIfCancellationRequested();
             file.Undo();
         }
+
         return Task.CompletedTask;
     }
 }

@@ -1,12 +1,14 @@
+using TagLib;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
+using File = System.IO.File;
 
 namespace TagSelecta.TagDataActions.ExtractPicture;
 
 [TagDataActionName("extractpicture")]
 public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 {
-    private readonly List<TagLib.PictureType> _types = [];
+    private readonly List<PictureType> _types = [];
 
     protected override bool BeforeExecute(ExtractPictureSettings settings)
     {
@@ -14,13 +16,12 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         {
             var typesStr = settings.Type.ToMulti();
             foreach (var typeStr in typesStr)
-            {
-                if (Enum.TryParse<TagLib.PictureType>(typeStr, out var type))
+                if (Enum.TryParse<PictureType>(typeStr, out var type))
                 {
                     _types.Add(type);
                 }
-            }
         }
+
         return true;
     }
 
@@ -34,13 +35,13 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             {
                 return x.Type switch
                 {
-                    TagLib.PictureType.FrontCover => 0,
-                    TagLib.PictureType.BackCover => 1,
+                    PictureType.FrontCover => 0,
+                    PictureType.BackCover => 1,
                     _ => 2,
                 };
             })
             .ToList();
-        for (int i = 0; i < pictures.Count; i++)
+        for (var i = 0; i < pictures.Count; i++)
         {
             if (context.Settings.Limit.HasValue && i >= context.Settings.Limit.Value)
             {
@@ -48,7 +49,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             }
 
             var picture = pictures[i];
-            var ext = TagLib.Picture.GetExtensionFromData(picture.Data);
+            var ext = Picture.GetExtensionFromData(picture.Data);
 
             var output = context.Settings.Output;
 
@@ -82,7 +83,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 
             if (!context.Settings.Override)
             {
-                int counter = 1;
+                var counter = 1;
                 while (File.Exists(filePath))
                 {
                     var numberedName = $"{baseName}({counter}){finalExt}";

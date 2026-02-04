@@ -21,12 +21,13 @@ public class ReleaseFetcher(IDiscogsApi discogsApi, DiscogsImageDownloader disco
             var bytes = await discogsImageDownloader.DownloadAsync(image.Uri);
             resultImage = bytes;
         }
+
         return new ReleaseFetcherResult { Release = result, Image = resultImage };
     }
 
     private static (string Type, int Id) GetDiscogsReleaseInfo(string input)
     {
-        string pattern = @"/(release|master)/(\d+)";
+        var pattern = @"/(release|master)/(\d+)";
         var match = Regex.Match(input, pattern);
         return match.Success
             ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))

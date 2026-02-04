@@ -7,7 +7,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddSettings(this IServiceCollection services, AppConfig config)
     {
-        services.AddSingleton(new MacroSettings() { Macros = config.Macros });
+        services.AddSingleton(new MacroSettings { Macros = config.Macros });
         return services;
     }
 }

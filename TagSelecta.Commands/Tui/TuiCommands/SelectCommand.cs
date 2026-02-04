@@ -9,12 +9,14 @@ public class SelectCommand : ITuiCommand
         {
             return Task.CompletedTask;
         }
+
         context.FocusedFile.IsSelected = !context.FocusedFile.IsSelected;
         var newIndex = context.FocusedFileIndex + 1;
         if (newIndex < context.VisibleFiles.Count())
         {
             context.FocusedFileIndex = newIndex;
         }
+
         return Task.CompletedTask;
     }
 }

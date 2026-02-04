@@ -17,6 +17,7 @@ public class WriteCommand : ITuiCommand
                     : $"Failed to write metadata {i + 1} of {filesToWrite.Count} ({file.CurrentPath}): {file.Exception.Message}"
             );
         }
+
         return Task.CompletedTask;
     }
 }

@@ -13,6 +13,7 @@ public class SplitAction : TagDataAction<SplitSettings>
         {
             _separators = settings.Separator;
         }
+
         return true;
     }
 

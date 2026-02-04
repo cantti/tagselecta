@@ -7,6 +7,14 @@ public sealed class TypeResolver(IServiceProvider provider) : ITypeResolver, IDi
     private readonly IServiceProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
 
+    public void Dispose()
+    {
+        if (_provider is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+    }
+
     public object? Resolve(Type? type)
     {
         if (type == null)
@@ -15,13 +23,5 @@ public sealed class TypeResolver(IServiceProvider provider) : ITypeResolver, IDi
         }
 
         return _provider.GetService(type);
-    }
-
-    public void Dispose()
-    {
-        if (_provider is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
     }
 }

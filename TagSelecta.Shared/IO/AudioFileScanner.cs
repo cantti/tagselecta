@@ -30,6 +30,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                     {
                         console.WriteException(ex);
                     }
+
                     task.Increment(1);
                 }
             });
@@ -76,6 +77,7 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                 );
             }
         }
+
         files.Sort();
         return files;
     }

@@ -112,13 +112,12 @@ public class ExecuteTagDataActionCommand<TSettings>(
             .ToList();
         if (unknownOptions.Count != 0)
         {
-            console.MarkupLine($"[red]Unknown option(s) provided:[/]");
+            console.MarkupLine("[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
-            {
                 console.WriteLine($"  {option}", new Style(Color.Yellow));
-            }
             return false;
         }
+
         return true;
     }
 }

@@ -6,19 +6,11 @@ namespace TagSelecta.Commands;
 
 public class TagDataActionTarget : ITagDataActionTarget
 {
-    private readonly ITagger _tagger;
     private readonly IFileSystem _fs;
+    private readonly ITagger _tagger;
     private TagData _backupTagData = null!;
     private TagData _currentTagData;
-    private string _currentPath = null!;
-    private string _path = null!;
     private MoveOptions _moveOptions;
-
-    public Exception? Exception { get; private set; }
-
-    public bool HasChanges { get; private set; }
-
-    public bool IsSelected { get; set; }
 
     public TagDataActionTarget(
         ITagger tagger,
@@ -34,9 +26,15 @@ public class TagDataActionTarget : ITagDataActionTarget
         UpdateBackup();
     }
 
-    public string CurrentPath => _currentPath;
+    public Exception? Exception { get; private set; }
 
-    public string BackupPath => _path;
+    public bool HasChanges { get; private set; }
+
+    public bool IsSelected { get; set; }
+
+    public string CurrentPath { get; private set; } = null!;
+
+    public string BackupPath { get; private set; } = null!;
 
     public TagData CurrentTagData => _currentTagData.Clone();
 
@@ -44,7 +42,7 @@ public class TagDataActionTarget : ITagDataActionTarget
 
     public void UpdatePath(string path, MoveOptions moveOptions)
     {
-        _currentPath = path;
+        CurrentPath = path;
         _moveOptions = moveOptions;
         CheckForChanges();
     }
@@ -58,7 +56,7 @@ public class TagDataActionTarget : ITagDataActionTarget
     public void Undo()
     {
         _currentTagData = _backupTagData.Clone();
-        UpdatePath(_path, MoveOptions.None);
+        UpdatePath(BackupPath, MoveOptions.None);
         HasChanges = false;
         Exception = null;
     }
@@ -70,49 +68,48 @@ public class TagDataActionTarget : ITagDataActionTarget
         {
             if (!TagDataComparer.AreEqual(CurrentTagData, BackupTagData))
             {
-                _tagger.WriteTags(_path, CurrentTagData);
+                _tagger.WriteTags(BackupPath, CurrentTagData);
             }
 
-            if (_currentPath != _path && !_fs.Exists(_currentPath))
+            if (CurrentPath != BackupPath && !_fs.Exists(CurrentPath))
             {
-                var destDir = Path.GetDirectoryName(_currentPath)!;
+                var destDir = Path.GetDirectoryName(CurrentPath)!;
 
                 // create a directory with subdirectories
                 _fs.CreateDirectory(destDir);
 
                 // move audio file
-                _fs.Move(_path, _currentPath);
+                _fs.Move(BackupPath, CurrentPath);
 
                 // move other files
                 if (!_moveOptions.HasFlag(MoveOptions.DoNotMoveOtherFiles))
                 {
-                    var otherFiles = _fs.GetFiles(System.IO.Path.GetDirectoryName(_path)!)
+                    var otherFiles = _fs.GetFiles(Path.GetDirectoryName(BackupPath)!)
                         .Where(f =>
                             !AudioFileScanner.AllowedExtensions.Contains(
-                                System.IO.Path.GetExtension(f).ToLower()
+                                Path.GetExtension(f).ToLower()
                             )
                         );
                     foreach (var file in otherFiles)
                     {
-                        var dest = System.IO.Path.Combine(
-                            destDir,
-                            System.IO.Path.GetFileName(file)
-                        );
+                        var dest = Path.Combine(destDir, Path.GetFileName(file));
                         if (!_fs.Exists(dest))
                         {
                             _fs.Move(file, dest);
                         }
                     }
                 }
+
                 // delete empty directories
                 if (
                     !_moveOptions.HasFlag(MoveOptions.KeepEmptyDirectories)
-                    && _fs.IsDirectoryEmpty(System.IO.Path.GetDirectoryName(_path)!)
+                    && _fs.IsDirectoryEmpty(Path.GetDirectoryName(BackupPath)!)
                 )
                 {
-                    _fs.DeleteDirectory(System.IO.Path.GetDirectoryName(_path)!);
+                    _fs.DeleteDirectory(Path.GetDirectoryName(BackupPath)!);
                 }
             }
+
             UpdateBackup();
         }
         catch (Exception ex)
@@ -141,7 +138,7 @@ public class TagDataActionTarget : ITagDataActionTarget
     private void UpdateBackup()
     {
         _backupTagData = _currentTagData.Clone();
-        _path = _currentPath;
+        BackupPath = CurrentPath;
         _moveOptions = MoveOptions.None;
         HasChanges = false;
     }
@@ -159,6 +156,6 @@ public class TagDataActionTarget : ITagDataActionTarget
     private void CheckForChanges()
     {
         HasChanges =
-            !TagDataComparer.AreEqual(_currentTagData, _backupTagData) || _currentPath != _path;
+            !TagDataComparer.AreEqual(_currentTagData, _backupTagData) || CurrentPath != BackupPath;
     }
 }

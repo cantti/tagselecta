@@ -67,6 +67,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             {
                 continue;
             }
+
             var matchedArgs = argList
                 .Where(x => attr.LongNames.Contains(x.Key) || attr.ShortNames.Contains(x.Key))
                 .ToArray();
@@ -78,8 +79,10 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
                         $"Command is missing required argument '{attr.LongNames[0]}'"
                     );
                 }
+
                 continue;
             }
+
             if (prop.PropertyType == typeof(string))
             {
                 prop.SetValue(baseSettings, matchedArgs.First().Value);
@@ -96,6 +99,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             {
                 throw new TagSelectaException($"Unsupported property type: {prop.PropertyType}");
             }
+
             argList.RemoveAll(x => matchedArgs.Any(matchedArg => matchedArg.Key == x.Key));
         }
 

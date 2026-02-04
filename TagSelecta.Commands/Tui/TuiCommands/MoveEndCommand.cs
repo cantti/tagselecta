@@ -10,6 +10,7 @@ public class MoveEndCommand : ITuiCommand
         {
             return Task.CompletedTask;
         }
+
         context.FocusedFileIndex = newIndex;
         return Task.CompletedTask;
     }

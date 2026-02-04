@@ -9,13 +9,13 @@ public class TreeListWidget(
     int windowSize
 ) : Renderable
 {
-    private readonly StringComparison _pathComparer = OperatingSystem.IsWindows()
-        ? StringComparison.OrdinalIgnoreCase
-        : StringComparison.Ordinal;
+    private static List<TreeLine>? _cachedTreeLines;
 
     private readonly List<TagDataActionTarget> _files = files.ToList();
 
-    private static List<TreeLine>? _cachedTreeLines;
+    private readonly StringComparison _pathComparer = OperatingSystem.IsWindows()
+        ? StringComparison.OrdinalIgnoreCase
+        : StringComparison.Ordinal;
 
     // todo find better approach
     private List<TreeLine> GetTreeLines()
@@ -27,6 +27,7 @@ public class TreeListWidget(
         {
             _cachedTreeLines = BuildTreeLines();
         }
+
         return _cachedTreeLines;
     }
 
@@ -36,7 +37,7 @@ public class TreeListWidget(
 
         // center around the current index (5 lines above, 4 below), but keep a full window when possible
         var focusedIndex = treeLines.FindIndex(x => x.File == focusedFile);
-        var windowStart = focusedIndex - (windowSize / 2);
+        var windowStart = focusedIndex - windowSize / 2;
 
         // clamp so we dont go before 0 or past the last possible full window start
         var maxStart = Math.Max(0, treeLines.Count - windowSize);
@@ -118,9 +119,7 @@ public class TreeListWidget(
             .ToList();
 
         foreach (var root in roots)
-        {
             AddNode(root);
-        }
 
         return treeLines;
 
@@ -145,9 +144,7 @@ public class TreeListWidget(
                 .ToList();
 
             foreach (var child in children)
-            {
                 AddNode(child, depth + 1);
-            }
         }
     }
 

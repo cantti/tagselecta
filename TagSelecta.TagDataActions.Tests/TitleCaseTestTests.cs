@@ -15,7 +15,7 @@ public class TitleCaseTests
 
         var settings = new TitleCaseSettings();
 
-        var tagData = new TagData() { Title = "test title", Artist = ["test artist"] };
+        var tagData = new TagData { Title = "test title", Artist = ["test artist"] };
 
         var item = new TestTarget("file.mp3", tagData);
 
