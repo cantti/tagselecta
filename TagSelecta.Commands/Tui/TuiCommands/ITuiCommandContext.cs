@@ -13,4 +13,5 @@ public interface ITuiCommandContext
     IEnumerable<TagDataActionTarget> VisibleFiles { get; }
     void Quit();
     void Print(string markupMessage);
+    void SetCommandPromptText(string text);
 }

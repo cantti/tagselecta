@@ -34,19 +34,26 @@ public class MacroCommand(ITuiCommandFactory commandFactory, MacroSettings setti
             throw new TagSelectaException($"Unknown macro '{macroName}'. Available: {available}");
         }
 
-        foreach (var command in macro)
+        if (macro.Length == 1)
         {
-            token.ThrowIfCancellationRequested();
+            context.SetCommandPromptText(macro[0]);
+        }
+        else
+        {
+            foreach (var command in macro)
+            {
+                token.ThrowIfCancellationRequested();
 
-            if (CommandParser.TryParse(command, out var parsedRequest))
-            {
-                await commandFactory
-                    .Create(parsedRequest.Name)
-                    .ExecuteAsync(context, parsedRequest, token);
-            }
-            else
-            {
-                throw new TagSelectaException($"Invalid command: {command}");
+                if (CommandParser.TryParse(command, out var parsedRequest))
+                {
+                    await commandFactory
+                        .Create(parsedRequest.Name)
+                        .ExecuteAsync(context, parsedRequest, token);
+                }
+                else
+                {
+                    throw new TagSelectaException($"Invalid command: {command}");
+                }
             }
         }
     }

@@ -11,6 +11,10 @@ public class RequestReader(HotkeyMap hotkeys)
     // -1 = not navigating history
     private int _historyIndex = -1;
 
+    public string Text => _buffer.ToString();
+    public int CursorPos { get; private set; }
+    public InputMode Mode { get; private set; } = InputMode.Normal;
+
     public bool TryRead(ConsoleKeyInfo key, out Request request)
     {
         var handleResult =
@@ -24,6 +28,14 @@ public class RequestReader(HotkeyMap hotkeys)
 
         request = new Request("", []);
         return false;
+    }
+
+    public void SetText(string text)
+    {
+        Mode = InputMode.Command;
+        _buffer.Clear();
+        _buffer.Append(text);
+        CursorPos = _buffer.Length;
     }
 
     private Request? HandleNormalMode(ConsoleKeyInfo key)
@@ -45,22 +57,28 @@ public class RequestReader(HotkeyMap hotkeys)
         switch (key.Key)
         {
             case ConsoleKey.Escape:
-                ExitCommandMode(addToHistory: false);
+                ExitCommandMode(false);
                 return null;
 
             case ConsoleKey.Enter:
                 var text = _buffer.ToString();
-                ExitCommandMode(addToHistory: true, text);
+                ExitCommandMode(true, text);
                 return CommandParser.TryParse(text, out var request) ? request : null;
 
             case ConsoleKey.LeftArrow:
                 if (CursorPos > 0)
+                {
                     CursorPos--;
+                }
+
                 return null;
 
             case ConsoleKey.RightArrow:
                 if (CursorPos < _buffer.Length)
+                {
                     CursorPos++;
+                }
+
                 return null;
 
             case ConsoleKey.Home:
@@ -77,11 +95,15 @@ public class RequestReader(HotkeyMap hotkeys)
                     _buffer.Remove(CursorPos - 1, 1);
                     CursorPos--;
                 }
+
                 return null;
 
             case ConsoleKey.Delete:
                 if (CursorPos < _buffer.Length)
+                {
                     _buffer.Remove(CursorPos, 1);
+                }
+
                 return null;
 
             case ConsoleKey.UpArrow:
@@ -107,12 +129,18 @@ public class RequestReader(HotkeyMap hotkeys)
     private void NavigateHistoryUp()
     {
         if (_history.Count == 0)
+        {
             return;
+        }
 
         if (_historyIndex == -1)
+        {
             _historyIndex = _history.Count - 1;
+        }
         else if (_historyIndex > 0)
+        {
             _historyIndex--;
+        }
 
         LoadHistoryEntry();
     }
@@ -120,7 +148,9 @@ public class RequestReader(HotkeyMap hotkeys)
     private void NavigateHistoryDown()
     {
         if (_historyIndex == -1)
+        {
             return;
+        }
 
         if (_historyIndex < _history.Count - 1)
         {
@@ -148,14 +178,12 @@ public class RequestReader(HotkeyMap hotkeys)
         Mode = InputMode.Normal;
 
         if (addToHistory && !string.IsNullOrWhiteSpace(text))
+        {
             _history.Add(text);
+        }
 
         _historyIndex = -1;
         _buffer.Clear();
         CursorPos = 0;
     }
-
-    public string Text => _buffer.ToString();
-    public int CursorPos { get; private set; }
-    public InputMode Mode { get; private set; } = InputMode.Normal;
 }

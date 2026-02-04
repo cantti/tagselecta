@@ -16,13 +16,16 @@ public sealed class TagDataActionFactory : ITagDataActionFactory
             var type = action.GetType();
             var attr = type.GetCustomAttribute<TagDataActionNameAttribute>();
             if (attr is null)
+            {
                 continue;
+            }
 
             var names = new List<string> { attr.Name };
             if (attr.Alias is not null)
             {
                 names.Add(attr.Alias);
             }
+
             _factories.Add(
                 (
                     names.ToArray(),

@@ -11,14 +11,22 @@ namespace TagSelecta.Commands.Tui;
 public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private const string HeaderLayoutKey = "navigation";
-    private const string FilesLayoutKey = "files";
     private const string TagDataLayoutKey = "body";
     private const string CommandLayoutKey = "command";
     private const string StatusLayoutKey = "status";
-    private string _statusMessage = "";
-    private CancellationTokenSource? _currentCommandCts;
+
+    private const string FilesLayoutKey = "files";
+    private readonly IAudioFileScanner _audioFileScanner;
+    private readonly ITuiCommandFactory _commandFactory;
+    private readonly IAnsiConsole _console;
+    private readonly HotkeyMap _hotkeys;
+    private readonly Lock _printLock = new();
+    private readonly RequestReader _requestReader;
+    private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
     private CancellationTokenSource _cts = new();
+    private CancellationTokenSource? _currentCommandCts;
     private Task _currentCommandTask = Task.CompletedTask;
+    private string _statusMessage = "";
 
     public TuiApp(
         IAnsiConsole console,
@@ -56,6 +64,24 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     public bool KeymapHelpEnabled { get; set; }
 
     public bool CommandHelpEnabled { get; set; }
+
+    public void SetCommandPromptText(string text)
+    {
+        _requestReader.SetText(text);
+    }
+
+    public void Quit()
+    {
+        _cts.Cancel();
+    }
+
+    public void Print(string markupMessage)
+    {
+        lock (_printLock)
+        {
+            _statusMessage = markupMessage;
+        }
+    }
 
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -113,8 +139,10 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                         {
                             await DispatchCommand(request);
                         }
+
                         ctx.UpdateTarget(DrawLayout());
                     }
+
                     await Task.Delay(33, _cts.Token);
                 }
             });
@@ -128,7 +156,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             {
                 while (true)
                 {
-                    var key = Console.ReadKey(intercept: true);
+                    var key = Console.ReadKey(true);
                     if (_currentCommandTask.IsCompleted || key.Key == ConsoleKey.Escape)
                     {
                         channel.Writer.TryWrite(key);
@@ -172,6 +200,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                 new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
             );
         }
+
         children.Add(new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)));
         children.Add(
             new Layout(CommandLayoutKey)
@@ -194,13 +223,12 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             .ToList();
         if (unknownOptions.Count != 0)
         {
-            _console.MarkupLine($"[red]Unknown option(s) provided:[/]");
+            _console.MarkupLine("[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
-            {
                 _console.WriteLine($"  {option}", new Style(Color.Yellow));
-            }
             return false;
         }
+
         return true;
     }
 
@@ -223,27 +251,6 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             new Text("Tagselecta:", new Style(Color.Yellow)),
             new Columns(cols1) { Padding = new Padding(2, 0, 2, 0), Expand = false }
         );
-    }
-
-    public void Quit()
-    {
-        _cts.Cancel();
-    }
-
-    private readonly Lock _printLock = new();
-    private readonly IAnsiConsole _console;
-    private readonly IAudioFileScanner _audioFileScanner;
-    private readonly HotkeyMap _hotkeys;
-    private readonly ITuiCommandFactory _commandFactory;
-    private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
-    private readonly RequestReader _requestReader;
-
-    public void Print(string markupMessage)
-    {
-        lock (_printLock)
-        {
-            _statusMessage = markupMessage;
-        }
     }
 
     private void BindHotkeys()
@@ -305,6 +312,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             {
                 Print(ex.Message);
             }
+
             _hotkeys.Bind("esc", "clearselection");
         });
     }
