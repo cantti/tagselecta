@@ -3,22 +3,13 @@ using TagSelecta.Commands.Tui.TuiCommands;
 
 namespace TagSelecta.Commands.Tui;
 
-public class RequestReader : IRequestReader
+public class RequestReader(HotkeyMap hotkeys)
 {
-    private readonly HotkeyMap _hotkeys;
-    private readonly CommandParser _parser;
-
     private readonly StringBuilder _buffer = new();
     private readonly List<string> _history = [];
 
     // -1 = not navigating history
     private int _historyIndex = -1;
-
-    public RequestReader(HotkeyMap hotkeys, CommandParser parser)
-    {
-        _hotkeys = hotkeys;
-        _parser = parser;
-    }
 
     public bool TryRead(ConsoleKeyInfo key, out Request request)
     {
@@ -45,7 +36,7 @@ public class RequestReader : IRequestReader
             return null;
         }
 
-        var action = _hotkeys.Resolve(key);
+        var action = hotkeys.Resolve(key);
         return action != null ? new Request(action, []) : null;
     }
 
@@ -60,7 +51,7 @@ public class RequestReader : IRequestReader
             case ConsoleKey.Enter:
                 var text = _buffer.ToString();
                 ExitCommandMode(addToHistory: true, text);
-                return _parser.TryParse(text, out var request) ? request : null;
+                return CommandParser.TryParse(text, out var request) ? request : null;
 
             case ConsoleKey.LeftArrow:
                 if (CursorPos > 0)

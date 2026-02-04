@@ -8,14 +8,7 @@ using TagSelecta.Shared.IO;
 
 namespace TagSelecta.Commands.Tui;
 
-public class TuiApp(
-    IAnsiConsole console,
-    IAudioFileScanner audioFileScanner,
-    HotkeyMap hotkeys,
-    IRequestReader requestReader,
-    ITuiCommandFactory commandFactory,
-    ITagDataActionTargetFactory tagDataActionTargetFactory
-) : AsyncCommand<TuiSettings>, ITuiCommandContext
+public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private const string HeaderLayoutKey = "navigation";
     private const string FilesLayoutKey = "files";
@@ -67,9 +60,9 @@ public class TuiApp(
 
             AltScreen.Enter();
 
-            Files = audioFileScanner
+            Files = _audioFileScanner
                 .SearchAndRead(settings.Path, ct)
-                .Select(x => tagDataActionTargetFactory.Create(x.Path, x.TagData))
+                .Select(x => _tagDataActionTargetFactory.Create(x.Path, x.TagData))
                 .ToList();
 
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
@@ -90,7 +83,7 @@ public class TuiApp(
 
     private Task StartUiLoop(Channel<ConsoleKeyInfo> channel)
     {
-        return console
+        return _console
             .Live(new Panel("Starting..."))
             .AutoClear(true)
             .StartAsync(async ctx =>
@@ -100,7 +93,7 @@ public class TuiApp(
                     ctx.UpdateTarget(DrawLayout());
                     while (channel.Reader.TryRead(out var key))
                     {
-                        if (requestReader.TryRead(key, out var request))
+                        if (_requestReader.TryRead(key, out var request))
                         {
                             await DispatchCommand(request);
                         }
@@ -152,8 +145,8 @@ public class TuiApp(
             new Layout(CommandLayoutKey)
                 .Size(1)
                 .Update(
-                    requestReader.Mode == InputMode.Command
-                        ? new CommandPromptWidget(requestReader.Text, requestReader.CursorPos)
+                    _requestReader.Mode == InputMode.Command
+                        ? new CommandPromptWidget(_requestReader.Text, _requestReader.CursorPos)
                         : Text.Empty
                 )
         );
@@ -168,10 +161,10 @@ public class TuiApp(
             .ToList();
         if (unknownOptions.Count != 0)
         {
-            console.MarkupLine($"[red]Unknown option(s) provided:[/]");
+            _console.MarkupLine($"[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
             {
-                console.WriteLine($"  {option}", new Style(Color.Yellow));
+                _console.WriteLine($"  {option}", new Style(Color.Yellow));
             }
             return false;
         }
@@ -194,6 +187,27 @@ public class TuiApp(
     }
 
     private readonly Lock _printLock = new();
+    private readonly IAnsiConsole _console;
+    private readonly IAudioFileScanner _audioFileScanner;
+    private readonly HotkeyMap _hotkeys;
+    private readonly ITuiCommandFactory _commandFactory;
+    private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
+    private readonly RequestReader _requestReader;
+
+    public TuiApp(
+        IAnsiConsole console,
+        IAudioFileScanner audioFileScanner,
+        ITuiCommandFactory commandFactory,
+        ITagDataActionTargetFactory tagDataActionTargetFactory
+    )
+    {
+        _console = console;
+        _audioFileScanner = audioFileScanner;
+        _commandFactory = commandFactory;
+        _tagDataActionTargetFactory = tagDataActionTargetFactory;
+        _hotkeys = new HotkeyMap();
+        _requestReader = new RequestReader(_hotkeys);
+    }
 
     public void Print(string markupMessage)
     {
@@ -205,22 +219,22 @@ public class TuiApp(
 
     private void BindHotkeys()
     {
-        hotkeys.Bind(HotkeyTokens.Esc, "clearselection");
-        hotkeys.Bind(HotkeyTokens.Down, "movedown");
-        hotkeys.Bind(HotkeyTokens.Up, "moveup");
-        hotkeys.Bind("j", "movedown");
-        hotkeys.Bind("k", "moveup");
-        hotkeys.Bind("g", "movestart");
-        hotkeys.Bind("G", "moveend");
-        hotkeys.Bind("q", "quit");
-        hotkeys.Bind("t", "toggletree");
-        hotkeys.Bind("f", "togglefilter");
-        hotkeys.Bind("h", "togglehelp");
-        hotkeys.Bind("u", "undo");
-        hotkeys.Bind(HotkeyTokens.Tab, "select");
-        hotkeys.Bind(HotkeyTokens.Space, "select");
-        hotkeys.Bind("a", "selectall");
-        hotkeys.Bind("*", "selectall");
+        _hotkeys.Bind(HotkeyTokens.Esc, "clearselection");
+        _hotkeys.Bind(HotkeyTokens.Down, "movedown");
+        _hotkeys.Bind(HotkeyTokens.Up, "moveup");
+        _hotkeys.Bind("j", "movedown");
+        _hotkeys.Bind("k", "moveup");
+        _hotkeys.Bind("g", "movestart");
+        _hotkeys.Bind("G", "moveend");
+        _hotkeys.Bind("q", "quit");
+        _hotkeys.Bind("t", "toggletree");
+        _hotkeys.Bind("f", "togglefilter");
+        _hotkeys.Bind("h", "togglehelp");
+        _hotkeys.Bind("u", "undo");
+        _hotkeys.Bind(HotkeyTokens.Tab, "select");
+        _hotkeys.Bind(HotkeyTokens.Space, "select");
+        _hotkeys.Bind("a", "selectall");
+        _hotkeys.Bind("*", "selectall");
     }
 
     private async Task DispatchCommand(Request request)
@@ -242,9 +256,9 @@ public class TuiApp(
 
         _currentCommandCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
 
-        var command = commandFactory.Create(request.Name);
+        var command = _commandFactory.Create(request.Name);
 
-        hotkeys.Bind("esc", "cancel");
+        _hotkeys.Bind("esc", "cancel");
 
         _currentCommandTask = Task.Run(async () =>
         {
@@ -260,7 +274,7 @@ public class TuiApp(
             {
                 Print(ex.Message);
             }
-            hotkeys.Bind("esc", "clearselection");
+            _hotkeys.Bind("esc", "clearselection");
         });
     }
 }

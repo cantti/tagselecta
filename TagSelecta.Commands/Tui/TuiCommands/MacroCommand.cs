@@ -14,11 +14,7 @@ public class Macro
 }
 
 [TuiCommand("macro", "m")]
-public class MacroCommand(
-    ITuiCommandFactory commandFactory,
-    CommandParser commandParser,
-    MacroSettings settings
-) : ITuiCommand
+public class MacroCommand(ITuiCommandFactory commandFactory, MacroSettings settings) : ITuiCommand
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
@@ -48,7 +44,7 @@ public class MacroCommand(
         {
             token.ThrowIfCancellationRequested();
 
-            if (commandParser.TryParse(command, out var parsedRequest))
+            if (CommandParser.TryParse(command, out var parsedRequest))
             {
                 await commandFactory
                     .Create(parsedRequest.Name)

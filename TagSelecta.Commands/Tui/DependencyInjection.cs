@@ -7,13 +7,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddTuiServices(this IServiceCollection services)
     {
-        // action factory and dispatcher
         services.AddTransient<ITagDataActionFactory, TagDataActionFactory>();
-
-        services.AddTransient<IRequestReader, RequestReader>();
-        services.AddSingleton<HotkeyMap>();
-        services.AddSingleton<CommandParser>();
-
         services.AddTransient<ITuiCommand, MoveDownCommand>();
         services.AddTransient<ITuiCommand, MoveUpCommand>();
         services.AddTransient<ITuiCommand, MoveStartCommand>();

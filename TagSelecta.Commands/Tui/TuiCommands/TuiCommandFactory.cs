@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
@@ -39,8 +38,7 @@ public class TuiCommandFactory : ITuiCommandFactory
 
     private ITuiCommand CreateMacroCommand()
     {
-        var commandParser = _provider.GetService<CommandParser>()!;
         var macroSettings = _provider.GetService<MacroSettings>()!;
-        return new MacroCommand(this, commandParser, macroSettings);
+        return new MacroCommand(this, macroSettings);
     }
 }

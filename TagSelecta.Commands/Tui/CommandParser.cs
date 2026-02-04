@@ -3,9 +3,9 @@ using TagSelecta.Commands.Tui.TuiCommands;
 
 namespace TagSelecta.Commands.Tui;
 
-public sealed class CommandParser
+public static class CommandParser
 {
-    public bool TryParse(string input, out Request request)
+    public static bool TryParse(string input, out Request request)
     {
         request = null!;
 
