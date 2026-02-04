@@ -1,3 +1,3 @@
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
-public record Request(string Name, TagDataActionArg[] Args);
+public record Request(string Name, RequestOption[] Options);

@@ -18,10 +18,6 @@ The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spect
 
 ## Features
 
-- CLI and TUI modes
-- Recursive directory scanning
-- Macros support
-- Previw of changes before applying them
 - `:edit` command to read and write tags
 - `:move` command to move and rename files
 - `:extractpicture` command to extract pictures to files
@@ -29,6 +25,15 @@ The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spect
 - `:split` command to split artists, album artists and composers
 - `:autotrack` command to automatically set track number and total tracks based on disc and disc total
 - `:discogs` command to update album metadata from Discogs release
+- CLI and TUI modes
+- Recursive directory scanning
+- Macros support
+- Previw of changes before applying them
+- Tree view of files
+
+## TUI vs CLI
+
+The program is primarily designed for use in TUI mode. However, the CLI mode is particularly useful for scripting and automating tasks.
 
 ## Install
 
@@ -80,7 +85,8 @@ Use `tab` or `space` to select file. Use `esc` to unselect.
 
 **Edit tags**
 
-Commands are executed using command mode (`:`). All command have the following format: `:command <arg>=<value>`. Value can be in double quotes if it contains spaces.
+Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`. Value can be in double quotes if it contains spaces.
+Exception is `:macro` command which has just one argument: `:macro <macro_name>`.
 
 
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.
@@ -255,17 +261,12 @@ Macros are set of predefined command.
 
 Macros are defined in the config file: `~/.config/tagselecta/config.toml`.
 
-Each macro can have aliases and list of commands.
-
 Example:
 
 ```toml
-[macro.reggae]
-aliases=["r"]
-commands=['e g=Reggae']
-
-[macro.dnb]
-commands=['e g="Drum & Bass"']
+[macros]
+reggae=['edit genre=Reggae']
+dnb=['edit genre="Drum & Bass"']
 ```
 
 To call a macro use `:macro <name>` (`:m <name>`) command.

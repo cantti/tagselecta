@@ -24,7 +24,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         context.Print($"Starting {request.Name} action..");
 
-        var settings = CreateSettings(action, request.Args);
+        var settings = CreateSettings(action, request.Options);
 
         await action.BeforeExecute(settings, token);
 
@@ -47,7 +47,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
     private static TagDataActionSettings CreateSettings(
         ITagDataAction action,
-        TagDataActionArg[] args
+        RequestOption[] options
     )
     {
         var settingsType = GetSettingsTypeFromAction(action.GetType());
@@ -56,7 +56,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             ?? throw new TagSelectaException("Failed to create settings instance")
         );
 
-        var argList = args.ToList();
+        var argList = options.ToList();
 
         var props = settingsType.GetProperties();
 

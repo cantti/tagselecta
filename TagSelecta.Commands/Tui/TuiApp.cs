@@ -15,8 +15,27 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     private const string TagDataLayoutKey = "body";
     private const string CommandLayoutKey = "command";
     private const string StatusLayoutKey = "status";
-
     private string _statusMessage = "";
+    private CancellationTokenSource? _currentCommandCts;
+    private CancellationTokenSource _cts = new();
+    private Task _currentCommandTask = Task.CompletedTask;
+
+    public TuiApp(
+        IAnsiConsole console,
+        IAudioFileScanner audioFileScanner,
+        ITuiCommandFactory commandFactory,
+        ITagDataActionTargetFactory tagDataActionTargetFactory
+    )
+    {
+        _console = console;
+        _audioFileScanner = audioFileScanner;
+        _commandFactory = commandFactory;
+        _tagDataActionTargetFactory = tagDataActionTargetFactory;
+        _hotkeys = new HotkeyMap();
+        _requestReader = new RequestReader(_hotkeys);
+    }
+
+    public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
 
     public IEnumerable<TagDataActionTarget> Files { get; private set; } = [];
 
@@ -30,16 +49,13 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     public int FocusedFileIndex { get; set; }
 
-    public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
-
-    private CancellationTokenSource _cts = new();
-
-    private CancellationTokenSource? _currentCommandCts;
-    private Task _currentCommandTask = Task.CompletedTask;
-
     public bool TreeEnabled { get; set; }
+
     public bool FilterEnabled { get; set; }
-    public bool HelpEnabled { get; set; }
+
+    public bool KeymapHelpEnabled { get; set; }
+
+    public bool CommandHelpEnabled { get; set; }
 
     protected override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -128,20 +144,36 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     private IRenderable DrawLayout()
     {
-        var filesContentSize = (Console.WindowHeight - 3 - 1 - 1 - 1) / 2;
-
-        var layout = new Layout("root").SplitRows(
-            new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()),
-            new Layout(FilesLayoutKey)
-                .Size(filesContentSize)
-                .Update(
-                    HelpEnabled ? new HelpWidget()
-                    : TreeEnabled
-                        ? new TreeListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
-                    : new FileListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
-                ),
-            new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile)),
-            new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)),
+        var children = new List<Layout>();
+        children.Add(new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()));
+        if (KeymapHelpEnabled || CommandHelpEnabled)
+        {
+            children.Add(
+                new Layout(FilesLayoutKey).Update(
+                    KeymapHelpEnabled ? new KeymapHelpWidget()
+                    : CommandHelpEnabled ? new CommandHelpWidget()
+                    : Text.Empty
+                )
+            );
+        }
+        else
+        {
+            var filesContentSize = (Console.WindowHeight - 3 - 1 - 1 - 1) / 2;
+            children.Add(
+                new Layout(FilesLayoutKey)
+                    .Size(filesContentSize)
+                    .Update(
+                        TreeEnabled
+                            ? new TreeListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
+                            : new FileListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
+                    )
+            );
+            children.Add(
+                new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
+            );
+        }
+        children.Add(new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)));
+        children.Add(
             new Layout(CommandLayoutKey)
                 .Size(1)
                 .Update(
@@ -150,6 +182,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                         : Text.Empty
                 )
         );
+        var layout = new Layout("root").SplitRows(children.ToArray());
         return layout;
     }
 
@@ -173,8 +206,19 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     private IRenderable RenderHeader()
     {
-        var keys = new List<(string Key, string Action)> { ("q", "Quit"), ("h", "Help") };
-        var cols1 = keys.Select(x => new Markup($"[bold blue]{x.Key}[/] ➔ {x.Action}")).ToList();
+        var keys = new List<(string Key, string Action)>
+        {
+            ("q", "Quit"),
+            ("h", "Command help"),
+            ("?", "Keymap help"),
+        };
+        var cols1 = new List<IRenderable>();
+        cols1.AddRange(
+            keys.Select(x => new Markup($"[bold blue]{x.Key}[/] ➔ {x.Action}")).ToList()
+        );
+        cols1.Add(
+            new Markup("[bold blue]Documentation[/]: [link]https://github.com/cantti/tagselecta[/]")
+        );
         return new Rows(
             new Text("Tagselecta:", new Style(Color.Yellow)),
             new Columns(cols1) { Padding = new Padding(2, 0, 2, 0), Expand = false }
@@ -193,21 +237,6 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     private readonly ITuiCommandFactory _commandFactory;
     private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
     private readonly RequestReader _requestReader;
-
-    public TuiApp(
-        IAnsiConsole console,
-        IAudioFileScanner audioFileScanner,
-        ITuiCommandFactory commandFactory,
-        ITagDataActionTargetFactory tagDataActionTargetFactory
-    )
-    {
-        _console = console;
-        _audioFileScanner = audioFileScanner;
-        _commandFactory = commandFactory;
-        _tagDataActionTargetFactory = tagDataActionTargetFactory;
-        _hotkeys = new HotkeyMap();
-        _requestReader = new RequestReader(_hotkeys);
-    }
 
     public void Print(string markupMessage)
     {
@@ -229,11 +258,13 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _hotkeys.Bind("q", "quit");
         _hotkeys.Bind("t", "toggletree");
         _hotkeys.Bind("f", "togglefilter");
-        _hotkeys.Bind("h", "togglehelp");
+        _hotkeys.Bind("?", "togglekeymaphelp");
+        _hotkeys.Bind("h", "togglecommandhelp");
         _hotkeys.Bind("u", "undo");
         _hotkeys.Bind(HotkeyTokens.Tab, "select");
         _hotkeys.Bind(HotkeyTokens.Space, "select");
         _hotkeys.Bind("a", "selectall");
+        _hotkeys.Bind("A", "selectdir");
         _hotkeys.Bind("*", "selectall");
     }
 

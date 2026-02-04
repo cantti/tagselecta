@@ -1,11 +1,12 @@
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
-[TuiCommand("togglehelp")]
-public class ToggleHelpCommand : ITuiCommand
+[TuiCommand("togglekeymaphelp")]
+public class ToggleKeymapHelpCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
-        context.HelpEnabled = !context.HelpEnabled;
+        context.CommandHelpEnabled = false;
+        context.KeymapHelpEnabled = !context.KeymapHelpEnabled;
         return Task.CompletedTask;
     }
 }

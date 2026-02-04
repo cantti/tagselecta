@@ -20,7 +20,8 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommand, QuitCommand>();
         services.AddTransient<ITuiCommand, ToggleTreeCommand>();
         services.AddTransient<ITuiCommand, ToggleFilterCommand>();
-        services.AddTransient<ITuiCommand, ToggleHelpCommand>();
+        services.AddTransient<ITuiCommand, ToggleKeymapHelpCommand>();
+        services.AddTransient<ITuiCommand, ToggleCommandHelpCommand>();
         services.AddTransient<ITuiCommand, WriteCommand>();
         services.AddTransient<ITuiCommand, UndoCommand>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();

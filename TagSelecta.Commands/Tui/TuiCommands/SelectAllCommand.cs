@@ -5,9 +5,20 @@ public class SelectAllCommand : ITuiCommand
 {
     public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
     {
-        foreach (var file in context.VisibleFiles)
+        var filesToSelect = context.Files.Where(x => !x.IsSelected).ToList();
+        if (filesToSelect.Count > 0)
         {
-            file.IsSelected = true;
+            foreach (var file in filesToSelect)
+            {
+                file.IsSelected = true;
+            }
+        }
+        else
+        {
+            foreach (var file in context.SelectedFiles)
+            {
+                file.IsSelected = false;
+            }
         }
         return Task.CompletedTask;
     }

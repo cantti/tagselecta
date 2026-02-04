@@ -4,13 +4,7 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 
 public class MacroSettings
 {
-    public Dictionary<string, Macro> Macro { get; set; } = new();
-}
-
-public class Macro
-{
-    public List<string> Aliases { get; set; } = [];
-    public List<string> Commands { get; set; } = [];
+    public Dictionary<string, string[]> Macros { get; set; } = new();
 }
 
 [TuiCommand("macro", "m")]
@@ -22,7 +16,7 @@ public class MacroCommand(ITuiCommandFactory commandFactory, MacroSettings setti
         CancellationToken token
     )
     {
-        var macroName = request.Args.FirstOrDefault()?.Key;
+        var macroName = request.Options.FirstOrDefault()?.Key;
 
         if (string.IsNullOrWhiteSpace(macroName))
         {
@@ -30,17 +24,17 @@ public class MacroCommand(ITuiCommandFactory commandFactory, MacroSettings setti
         }
 
         var macro = settings
-            .Macro.Where(x => x.Key == macroName || x.Value.Aliases.Contains(macroName))
+            .Macros.Where(x => x.Key == macroName)
             .Select(x => x.Value)
             .FirstOrDefault();
 
         if (macro is null)
         {
-            var available = string.Join(", ", settings.Macro.Keys.OrderBy(k => k));
+            var available = string.Join(", ", settings.Macros.Keys.OrderBy(k => k));
             throw new TagSelectaException($"Unknown macro '{macroName}'. Available: {available}");
         }
 
-        foreach (var command in macro.Commands)
+        foreach (var command in macro)
         {
             token.ThrowIfCancellationRequested();
 

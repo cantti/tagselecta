@@ -17,7 +17,7 @@ public static class CommandParser
             return false;
 
         var name = parts[0];
-        var args = new List<TagDataActionArg>();
+        var options = new List<RequestOption>();
 
         for (int i = 1; i < parts.Count; i++)
         {
@@ -28,15 +28,15 @@ public static class CommandParser
             {
                 var key = part[..eq];
                 var value = part[(eq + 1)..];
-                args.Add(new TagDataActionArg(key, value));
+                options.Add(new RequestOption(key, value));
             }
             else
             {
-                args.Add(new TagDataActionArg(part, ""));
+                options.Add(new RequestOption(part, ""));
             }
         }
 
-        request = new Request(name, args.ToArray());
+        request = new Request(name, options.ToArray());
         return true;
     }
 

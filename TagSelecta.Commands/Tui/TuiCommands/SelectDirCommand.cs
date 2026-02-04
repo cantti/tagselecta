@@ -10,13 +10,22 @@ public class SelectDirCommand : ITuiCommand
             return Task.CompletedTask;
         }
         var dir = Path.GetDirectoryName(context.FocusedFile.BackupPath);
-        foreach (
-            var file in context
-                .Files.Where(x => Path.GetDirectoryName(x.BackupPath) == dir)
-                .ToList()
-        )
+        var filesToSelect = context
+            .Files.Where(x => Path.GetDirectoryName(x.BackupPath) == dir && !x.IsSelected)
+            .ToList();
+        if (filesToSelect.Count > 0)
         {
-            file.IsSelected = true;
+            foreach (var file in filesToSelect)
+            {
+                file.IsSelected = true;
+            }
+        }
+        else
+        {
+            foreach (var file in context.SelectedFiles)
+            {
+                file.IsSelected = false;
+            }
         }
         return Task.CompletedTask;
     }
