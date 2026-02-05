@@ -40,7 +40,8 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
                 token
             );
             context.Print(
-                $"Processed {i + 1} of {selectedFilesList.Count} files. Type :w to write changes."
+                $"Processed {i + 1} of {selectedFilesList.Count} files. "
+                    + $"{selectedFilesList.Count(x => x.Exception is not null)} errors. Type :w to write changes."
             );
         }
     }
