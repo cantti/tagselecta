@@ -364,7 +364,7 @@ OPTIONS:
                            multiple times to include multiple fields (e.g., -s  
                            key1=value1 -s key2=value2)                          
         --clearextra       Clear all other extra fields                         
-    -p, --picture          Path to a picture file. Use this option multiple     
+    -p, --picture          Path or url to a picture. Use this option multiple   
                            times to include multiple images (e.g., -p path1 -p  
                            path2)                                               
         --picturetype      Type of each picture provided. Specify multiple times
