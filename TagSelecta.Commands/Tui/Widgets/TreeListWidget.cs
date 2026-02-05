@@ -119,7 +119,9 @@ public class TreeListWidget(
             .ToList();
 
         foreach (var root in roots)
+        {
             AddNode(root);
+        }
 
         return treeLines;
 
@@ -144,7 +146,9 @@ public class TreeListWidget(
                 .ToList();
 
             foreach (var child in children)
+            {
                 AddNode(child, depth + 1);
+            }
         }
     }
 

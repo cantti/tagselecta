@@ -114,7 +114,10 @@ public class ExecuteTagDataActionCommand<TSettings>(
         {
             console.MarkupLine("[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
+            {
                 console.WriteLine($"  {option}", new Style(Color.Yellow));
+            }
+
             return false;
         }
 

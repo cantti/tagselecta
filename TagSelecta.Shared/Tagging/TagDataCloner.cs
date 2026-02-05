@@ -15,6 +15,7 @@ public static class TagDataCloner
                 .Where(p => p.Name != nameof(TagData.Picture))
                 .Where(p => p.Name != nameof(TagData.Extra))
         )
+        {
             if (prop.PropertyType == typeof(string))
             {
                 prop.SetValue(clone, prop.GetValue(source));
@@ -27,6 +28,7 @@ public static class TagDataCloner
             {
                 throw new TagSelectaException($"Unsupported property type: {prop.PropertyType}");
             }
+        }
 
         return clone;
     }
@@ -40,7 +42,10 @@ public static class TagDataCloner
     {
         var list = new List<Picture>();
         foreach (var pic in source)
+        {
             list.Add(ClonePicture(pic));
+        }
+
         return list;
     }
 
@@ -59,6 +64,8 @@ public static class TagDataCloner
     private static void CloneExtra(TagData clone, IEnumerable<ExtraField> source)
     {
         foreach (var field in source)
+        {
             clone.SetExtraField(field.Key, field.Text);
+        }
     }
 }

@@ -16,10 +16,12 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
         {
             var typesStr = settings.Type.ToMulti();
             foreach (var typeStr in typesStr)
+            {
                 if (Enum.TryParse<PictureType>(typeStr, out var type))
                 {
                     _types.Add(type);
                 }
+            }
         }
 
         return true;

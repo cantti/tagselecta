@@ -225,7 +225,10 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         {
             _console.MarkupLine("[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
+            {
                 _console.WriteLine($"  {option}", new Style(Color.Yellow));
+            }
+
             return false;
         }
 

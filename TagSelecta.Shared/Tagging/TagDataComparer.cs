@@ -23,6 +23,7 @@ public static class TagDataComparer
                     p.PropertyType == typeof(string) || p.PropertyType == typeof(List<string>)
                 )
         )
+        {
             if (prop.PropertyType == typeof(string))
             {
                 var val1 = (string)prop.GetValue(a)!;
@@ -47,6 +48,7 @@ public static class TagDataComparer
                     $"Unsupported property type: {prop.PropertyType}"
                 );
             }
+        }
 
         return PictureListEq(a.Picture, b.Picture) && ExtraListEq(a.Extra, b.Extra);
     }
@@ -94,10 +96,12 @@ public static class TagDataComparer
         }
 
         for (var i = 0; i < a.Count; i++)
+        {
             if (!PictureEq(a[i], b[i]))
             {
                 return false;
             }
+        }
 
         return true;
     }
@@ -139,10 +143,12 @@ public static class TagDataComparer
         }
 
         for (var i = 0; i < a.Count; i++)
+        {
             if (!(a[i] == b[i]))
             {
                 return false;
             }
+        }
 
         return true;
     }

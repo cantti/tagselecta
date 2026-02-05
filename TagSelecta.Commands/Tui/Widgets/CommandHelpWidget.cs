@@ -48,7 +48,10 @@ public class CommandHelpWidget : Renderable
         var result = new Grid();
         result.AddColumns(2);
         foreach (var (command, action) in commands)
+        {
             result.AddRow(command, action);
+        }
+
         return result;
     }
 

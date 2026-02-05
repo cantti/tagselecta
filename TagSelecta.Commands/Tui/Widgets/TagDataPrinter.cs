@@ -23,13 +23,18 @@ public static class TagDataPrinter
                 .Where(p => p.Name != nameof(TagData.Picture))
                 .Where(p => p.Name != nameof(TagData.Extra))
         )
+        {
             AddField(table, prop.Name, ConvertValue(prop.GetValue(tagData), prop.PropertyType));
+        }
+
         if (tagData.Extra.Count > 0)
         {
             table.AddEmptyRow();
             table.AddRow("[i]Extra:[/]");
             foreach (var extra in tagData.Extra)
+            {
                 AddField(table, extra.Key, extra.Text);
+            }
         }
 
         if (tagData.Picture.Count > 0)
@@ -37,7 +42,9 @@ public static class TagDataPrinter
             table.AddEmptyRow();
             table.AddRow("[i]Pictures:[/]");
             foreach (var picture in tagData.Picture)
+            {
                 AddField(table, picture.Type.ToString(), PictureToStr(picture));
+            }
         }
 
         return table;
@@ -62,12 +69,15 @@ public static class TagDataPrinter
                 .Where(p => p.Name != nameof(TagData.Picture))
                 .Where(p => p.Name != nameof(TagData.Extra))
         )
+        {
             AddFieldComparison(
                 table,
                 prop.Name,
                 ConvertValue(prop.GetValue(backupTagData), prop.PropertyType),
                 ConvertValue(prop.GetValue(tagData), prop.PropertyType)
             );
+        }
+
         var extraKeys = backupTagData
             .Extra.Select(x => x.Key)
             .Union(tagData.Extra.Select(x => x.Key))

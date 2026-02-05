@@ -23,7 +23,10 @@ public class KeymapHelpWidget : Renderable
         var grid = new Grid();
         grid.AddColumns(2);
         foreach (var key in keys)
+        {
             grid.AddRow($"[bold blue]{Markup.Escape(key.Key)}[/]", key.Action);
+        }
+
         IRenderable content = new Rows(new Text("Keymap help:", new Style(Color.Yellow)), grid);
         return content.Render(options, maxWidth);
     }

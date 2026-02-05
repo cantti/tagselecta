@@ -17,12 +17,16 @@ public class SelectDirCommand : ITuiCommand
         if (filesToSelect.Count > 0)
         {
             foreach (var file in filesToSelect)
+            {
                 file.IsSelected = true;
+            }
         }
         else
         {
             foreach (var file in context.SelectedFiles)
+            {
                 file.IsSelected = false;
+            }
         }
 
         return Task.CompletedTask;

@@ -20,6 +20,8 @@ public class TagDataForTemplateTests
             .ToHashSet();
 
         foreach (var p in tagDataProps)
+        {
             Assert.Contains(p, templateProps);
+        }
     }
 }

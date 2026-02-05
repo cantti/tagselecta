@@ -68,12 +68,15 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
         id3v2.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
         ClearUnusedUserTextFrames();
         foreach (var field in data.Extra)
+        {
             WriteUserText(field.Key, field.Text);
+        }
     }
 
     private void ReadExtraFields(TagData tagData)
     {
         foreach (var frame in id3v2.GetFrames())
+        {
             if (frame is UserTextInformationFrame txxx)
             {
                 var key = txxx.Description.NormalizeKey();
@@ -89,6 +92,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
                     existing is not null ? $"{existing.Text}; {text}" : text
                 );
             }
+        }
     }
 
     private string GetText(string ident)
@@ -138,6 +142,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
     private void ClearUnusedUserTextFrames()
     {
         foreach (var frame in id3v2.GetFrames().ToList())
+        {
             if (
                 frame is UserTextInformationFrame txxx
                 && !_usedUserTextFields.Contains(txxx.Description)
@@ -145,6 +150,7 @@ public class Id3TagDataProcessor(Tag tag) : TagDataProcessor
             {
                 id3v2.RemoveFrame(txxx);
             }
+        }
     }
 
     private string GetUserTextAsString(string key)

@@ -85,7 +85,10 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         WriteField("tracktotal", data.TrackTotal);
         ClearUnusedFields();
         foreach (var field in data.Extra)
+        {
             WriteField(field.Key, field.Text);
+        }
+
         flac.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
     }
 
@@ -114,10 +117,12 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
     private void ClearUnusedFields()
     {
         foreach (var key in xiph)
+        {
             if (!_usedXiphFields.Contains(key))
             {
                 xiph.RemoveField(key);
             }
+        }
     }
 
     private void ReadExtraFields(TagData tagData)

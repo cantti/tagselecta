@@ -81,7 +81,9 @@ public static class CommandParser
 
         // unescape \" to "
         for (var i = 0; i < tokens.Count; i++)
+        {
             tokens[i] = tokens[i].Replace("\\\"", "\"");
+        }
 
         return tokens;
     }
