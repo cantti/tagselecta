@@ -10,21 +10,21 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
-        Request request,
+        ParsedCommand parsedCommand,
         CancellationToken token
     )
     {
-        var action = actionFactory.Create(request.Name);
+        var action = actionFactory.Create(parsedCommand.Name);
 
         if (action is null)
         {
-            context.Print($"No action found with name {request.Name}");
+            context.Print($"No action found with name {parsedCommand.Name}");
             return;
         }
 
-        context.Print($"Starting {request.Name} action..");
+        context.Print($"Starting {parsedCommand.Name} action..");
 
-        var settings = CreateSettings(action, request.Options);
+        var settings = CreateSettings(action, parsedCommand.Options);
 
         await action.BeforeExecute(settings, token);
 
@@ -47,7 +47,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
     private static TagDataActionSettings CreateSettings(
         ITagDataAction action,
-        RequestOption[] options
+        ParsedCommandOption[] options
     )
     {
         var settingsType = GetSettingsTypeFromAction(action.GetType());

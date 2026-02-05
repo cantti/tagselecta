@@ -3,7 +3,11 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 [TuiCommand("select")]
 public class SelectCommand : ITuiCommand
 {
-    public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
+    public Task ExecuteAsync(
+        ITuiCommandContext context,
+        ParsedCommand parsedCommand,
+        CancellationToken token
+    )
     {
         if (context.FocusedFile is null)
         {

@@ -3,7 +3,11 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 [TuiCommand("write", "w")]
 public class WriteCommand : ITuiCommand
 {
-    public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
+    public Task ExecuteAsync(
+        ITuiCommandContext context,
+        ParsedCommand parsedCommand,
+        CancellationToken token
+    )
     {
         var filesToWrite = context.Files.Where(x => x.HasChanges).ToList();
         for (var i = 0; i < filesToWrite.Count; i++)

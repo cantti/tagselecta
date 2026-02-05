@@ -21,7 +21,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     private readonly IAnsiConsole _console;
     private readonly HotkeyMap _hotkeys;
     private readonly Lock _printLock = new();
-    private readonly RequestReader _requestReader;
+    private readonly InputHandler _inputHandler;
     private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
@@ -40,7 +40,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _commandFactory = commandFactory;
         _tagDataActionTargetFactory = tagDataActionTargetFactory;
         _hotkeys = new HotkeyMap();
-        _requestReader = new RequestReader(_hotkeys);
+        _inputHandler = new InputHandler(_hotkeys);
     }
 
     public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
@@ -67,7 +67,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     public void SetCommandPromptText(string text)
     {
-        _requestReader.SetText(text);
+        _inputHandler.SetText(text);
     }
 
     public void Quit()
@@ -135,7 +135,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                     ctx.UpdateTarget(DrawLayout());
                     while (channel.Reader.TryRead(out var key))
                     {
-                        if (_requestReader.TryRead(key, out var request))
+                        if (_inputHandler.ProcessKey(key, out var request))
                         {
                             await DispatchCommand(request);
                         }
@@ -206,8 +206,8 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             new Layout(CommandLayoutKey)
                 .Size(1)
                 .Update(
-                    _requestReader.Mode == InputMode.Command
-                        ? new CommandPromptWidget(_requestReader.Text, _requestReader.CursorPos)
+                    _inputHandler.Mode == InputMode.Command
+                        ? new CommandPromptWidget(_inputHandler.Text, _inputHandler.CursorPos)
                         : Text.Empty
                 )
         );
@@ -278,9 +278,9 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _hotkeys.Bind("*", "selectall");
     }
 
-    private async Task DispatchCommand(Request request)
+    private async Task DispatchCommand(string commandText)
     {
-        var isCancelRequest = request.Name == "cancel";
+        var isCancelRequest = commandText == "cancel";
 
         if (isCancelRequest && _currentCommandCts is not null)
         {
@@ -297,7 +297,11 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
         _currentCommandCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
 
-        var command = _commandFactory.Create(request.Name);
+        if (!CommandParser.TryParse(commandText, out var commands))
+        {
+            Print($"Invalid command: {commandText}");
+            return;
+        }
 
         _hotkeys.Bind("esc", "cancel");
 
@@ -305,7 +309,12 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         {
             try
             {
-                await command.ExecuteAsync(this, request, _currentCommandCts.Token);
+                foreach (var parsedCommand in commands)
+                {
+                    _currentCommandCts.Token.ThrowIfCancellationRequested();
+                    var command = _commandFactory.Create(parsedCommand.Name);
+                    await command.ExecuteAsync(this, parsedCommand, _currentCommandCts.Token);
+                }
             }
             catch (OperationCanceledException)
             {

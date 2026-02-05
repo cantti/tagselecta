@@ -1,9 +1,8 @@
 using System.Text;
-using TagSelecta.Commands.Tui.TuiCommands;
 
 namespace TagSelecta.Commands.Tui;
 
-public class RequestReader(HotkeyMap hotkeys)
+public class InputHandler(HotkeyMap hotkeys)
 {
     private readonly StringBuilder _buffer = new();
     private readonly List<string> _history = [];
@@ -15,18 +14,17 @@ public class RequestReader(HotkeyMap hotkeys)
     public int CursorPos { get; private set; }
     public InputMode Mode { get; private set; } = InputMode.Normal;
 
-    public bool TryRead(ConsoleKeyInfo key, out Request request)
+    public bool ProcessKey(ConsoleKeyInfo key, out string commandText)
     {
         var handleResult =
             Mode == InputMode.Normal ? HandleNormalMode(key) : HandleCommandMode(key);
 
         if (handleResult != null)
         {
-            request = handleResult;
+            commandText = handleResult;
             return true;
         }
-
-        request = new Request("", []);
+        commandText = "";
         return false;
     }
 
@@ -38,7 +36,7 @@ public class RequestReader(HotkeyMap hotkeys)
         CursorPos = _buffer.Length;
     }
 
-    private Request? HandleNormalMode(ConsoleKeyInfo key)
+    private string? HandleNormalMode(ConsoleKeyInfo key)
     {
         if (key.KeyChar == ':')
         {
@@ -48,11 +46,10 @@ public class RequestReader(HotkeyMap hotkeys)
             return null;
         }
 
-        var action = hotkeys.Resolve(key);
-        return action != null ? new Request(action, []) : null;
+        return hotkeys.Resolve(key);
     }
 
-    private Request? HandleCommandMode(ConsoleKeyInfo key)
+    private string? HandleCommandMode(ConsoleKeyInfo key)
     {
         switch (key.Key)
         {
@@ -63,7 +60,7 @@ public class RequestReader(HotkeyMap hotkeys)
             case ConsoleKey.Enter:
                 var text = _buffer.ToString();
                 ExitCommandMode(true, text);
-                return CommandParser.TryParse(text, out var request) ? request : null;
+                return text;
 
             case ConsoleKey.LeftArrow:
                 if (CursorPos > 0)

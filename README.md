@@ -86,7 +86,7 @@ Use `tab` or `space` to select file. Use `esc` to unselect.
 **Edit tags**
 
 Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`. Value can be in double quotes if it contains spaces.
-Exception is `:macro` command which has just one argument: `:macro <macro_name>`.
+Exception is `:macro` (`:m`) command which has just one argument: `:macro <macro_name>`.
 
 
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.
@@ -265,8 +265,8 @@ Example:
 
 ```toml
 [macros]
-reggae=["edit genre=Reggae"]
-dnb=["edit genre=\"Drum & Bass\""]
+reggae="edit genre=Reggae"
+clean="edit clearextra comment=\"\" && autotrack"
 ```
 
 To call a macro use `:macro <name>` (`:m <name>`) command.

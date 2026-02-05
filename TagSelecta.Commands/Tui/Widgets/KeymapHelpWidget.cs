@@ -12,6 +12,7 @@ public class KeymapHelpWidget : Renderable
             ("space, tab", "Select"),
             ("escape", "Clear selection"),
             ("a, *", "Select All"),
+            ("A", "Select all files in directory"),
             ("j, move down", "Move down"),
             ("k, move up", "Move up"),
             ("t", "Toggle tree"),

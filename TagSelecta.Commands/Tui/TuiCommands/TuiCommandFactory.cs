@@ -6,13 +6,10 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 public class TuiCommandFactory : ITuiCommandFactory
 {
     private readonly List<(string[] Names, ITuiCommand command)> _commands = [];
-    private readonly IServiceProvider _provider;
 
     public TuiCommandFactory(IServiceProvider provider)
     {
-        _provider = provider;
         var commands = provider.GetServices<ITuiCommand>();
-        commands = commands.Append(CreateMacroCommand());
         foreach (var command in commands)
         {
             var type = command.GetType();
@@ -37,11 +34,5 @@ public class TuiCommandFactory : ITuiCommandFactory
         }
 
         return command.command;
-    }
-
-    private ITuiCommand CreateMacroCommand()
-    {
-        var macroSettings = _provider.GetService<MacroSettings>()!;
-        return new MacroCommand(this, macroSettings);
     }
 }

@@ -3,7 +3,11 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 [TuiCommand("moveup")]
 public class MoveUpCommand : ITuiCommand
 {
-    public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
+    public Task ExecuteAsync(
+        ITuiCommandContext context,
+        ParsedCommand parsedCommand,
+        CancellationToken token
+    )
     {
         var newIndex = context.FocusedFileIndex - 1;
         if (newIndex < 0)

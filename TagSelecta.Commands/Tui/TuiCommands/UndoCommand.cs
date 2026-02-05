@@ -3,7 +3,11 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 [TuiCommand("undo")]
 public class UndoCommand : ITuiCommand
 {
-    public Task ExecuteAsync(ITuiCommandContext context, Request request, CancellationToken token)
+    public Task ExecuteAsync(
+        ITuiCommandContext context,
+        ParsedCommand parsedCommand,
+        CancellationToken token
+    )
     {
         foreach (var file in context.SelectedFiles.Where(x => x.HasChanges).ToList())
         {

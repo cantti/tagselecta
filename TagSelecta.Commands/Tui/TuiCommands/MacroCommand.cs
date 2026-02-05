@@ -4,19 +4,19 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 
 public class MacroSettings
 {
-    public Dictionary<string, string[]> Macros { get; set; } = new();
+    public Dictionary<string, string> Macros { get; set; } = new();
 }
 
 [TuiCommand("macro", "m")]
-public class MacroCommand(ITuiCommandFactory commandFactory, MacroSettings settings) : ITuiCommand
+public class MacroCommand(MacroSettings settings) : ITuiCommand
 {
-    public async Task ExecuteAsync(
+    public Task ExecuteAsync(
         ITuiCommandContext context,
-        Request request,
+        ParsedCommand parsedCommand,
         CancellationToken token
     )
     {
-        var macroName = request.Options.FirstOrDefault()?.Key;
+        var macroName = parsedCommand.Options.FirstOrDefault()?.Key;
 
         if (string.IsNullOrWhiteSpace(macroName))
         {
@@ -34,27 +34,8 @@ public class MacroCommand(ITuiCommandFactory commandFactory, MacroSettings setti
             throw new TagSelectaException($"Unknown macro '{macroName}'. Available: {available}");
         }
 
-        if (macro.Length == 1)
-        {
-            context.SetCommandPromptText(macro[0]);
-        }
-        else
-        {
-            foreach (var command in macro)
-            {
-                token.ThrowIfCancellationRequested();
+        context.SetCommandPromptText(macro);
 
-                if (CommandParser.TryParse(command, out var parsedRequest))
-                {
-                    await commandFactory
-                        .Create(parsedRequest.Name)
-                        .ExecuteAsync(context, parsedRequest, token);
-                }
-                else
-                {
-                    throw new TagSelectaException($"Invalid command: {command}");
-                }
-            }
-        }
+        return Task.CompletedTask;
     }
 }
