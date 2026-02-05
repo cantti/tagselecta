@@ -4,6 +4,7 @@ using Spectre.Console.Cli;
 using TagSelecta.Commands;
 using TagSelecta.Commands.Cli.Find;
 using TagSelecta.Commands.Tui;
+using TagSelecta.Shared.Http;
 using TagSelecta.TagDataActions.AutoTrack;
 using TagSelecta.TagDataActions.Discogs;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using TagSelecta.Shared.Http;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 
@@ -11,6 +12,7 @@ public static class DependencyInjection
         services.AddTransient<IAudioFileScanner, AudioFileScanner>();
         services.AddTransient<ITagger, Tagger>();
         services.AddTransient<IFileSystem, FileSystem>();
+        services.AddTransient<IDownloader, Downloader>();
         return services;
     }
 }

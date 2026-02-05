@@ -13,7 +13,8 @@ public class MoveAction : TagDataAction<MoveSettings>
             // todo check logic and document
             // if user edited tags we want to use the new tagdata when moving files
             context.Target.CurrentTagData,
-            context.Target.BackupPath
+            context.Target.BackupPath,
+            true
         );
         var newName = formatter.Format(context.Settings.Template);
         var newPath = Path.GetFullPath(newName, dir);

@@ -1,13 +1,17 @@
 using TagLib;
+using TagSelecta.Shared.Http;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Edit;
 
 [TagDataActionName("edit", "e")]
-public class EditAction : TagDataAction<EditSettings>
+public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
 {
-    protected override void Execute(TagDataActionExecuteContext<EditSettings> context)
+    public override async Task ExecuteAsync(
+        TagDataActionExecuteContext<EditSettings> context,
+        CancellationToken token
+    )
     {
         var tagData = context.Target.CurrentTagData;
         var formatter = new TagDataFormatter(
@@ -52,31 +56,7 @@ public class EditAction : TagDataAction<EditSettings>
             }
         }
 
-        if (context.Settings.ClearPicture)
-        {
-            tagData.Picture = [];
-        }
-
-        if (context.Settings.Picture is not null)
-        {
-            for (var i = 0; i < context.Settings.Picture.Length; i++)
-            {
-                var path = context.Settings.Picture[i];
-                // try to find a corresponding picture type, or use first
-                var typeStr =
-                    context.Settings.PictureType?.ElementAtOrDefault(i)
-                    ?? context.Settings.PictureType?.FirstOrDefault();
-                var picture = new Picture(path)
-                {
-                    Type =
-                        !string.IsNullOrEmpty(typeStr)
-                        && Enum.TryParse<PictureType>(typeStr, true, out var type)
-                            ? type
-                            : PictureType.FrontCover,
-                };
-                tagData.Picture.Add(picture);
-            }
-        }
+        await SetPicture(context, tagData, token);
 
         context.Target.UpdateTagData(tagData);
 
@@ -92,6 +72,49 @@ public class EditAction : TagDataAction<EditSettings>
 
             var formatted = formatter.Format(value);
             set(formatted);
+        }
+    }
+
+    private async Task SetPicture(
+        TagDataActionExecuteContext<EditSettings> context,
+        TagData tagData,
+        CancellationToken token
+    )
+    {
+        if (context.Settings.ClearPicture)
+        {
+            tagData.Picture = [];
+        }
+
+        if (context.Settings.Picture is not null)
+        {
+            for (var i = 0; i < context.Settings.Picture.Length; i++)
+            {
+                var path = context.Settings.Picture[i];
+                // try to find a corresponding picture type, or use first
+                var typeStr =
+                    context.Settings.PictureType?.ElementAtOrDefault(i)
+                    ?? context.Settings.PictureType?.FirstOrDefault();
+
+                Picture picture;
+
+                if (path.StartsWith("http://") || path.StartsWith("https://"))
+                {
+                    picture = new Picture(await downloader.Download(path, token));
+                }
+                else
+                {
+                    picture = new Picture(path);
+                }
+
+                picture.Type =
+                    !string.IsNullOrEmpty(typeStr)
+                    && Enum.TryParse<PictureType>(typeStr, true, out var type)
+                        ? type
+                        : PictureType.FrontCover;
+
+                tagData.Picture.Add(picture);
+            }
         }
     }
 

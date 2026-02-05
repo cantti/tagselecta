@@ -13,7 +13,10 @@ public class MoveTests
         // Arrange
         ITagDataAction action = new MoveAction();
 
-        var settings = new MoveSettings { Template = "{{ year }} - {{album}}/{{filename}}" };
+        var settings = new MoveSettings
+        {
+            Template = "{{ year }} - {{album}}/{{filename}}.{{ext}}",
+        };
 
         var tagData = new TagData { Date = "1990", Album = "Test Album" };
 
@@ -35,7 +38,10 @@ public class MoveTests
         // Arrange
         ITagDataAction action = new MoveAction();
 
-        var settings = new MoveSettings { Template = "../{{ year }} - {{album}}/{{filename}}" };
+        var settings = new MoveSettings
+        {
+            Template = "../{{ year }} - {{album}}/{{filename}}.{{ext}}",
+        };
 
         var tagData = new TagData { Date = "1990", Album = "Test Album" };
 

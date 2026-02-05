@@ -1,3 +1,6 @@
+using NSubstitute;
+using TagSelecta.Shared.Http;
+using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.Edit;
@@ -11,7 +14,9 @@ public class EditTests
     public async Task EditTest()
     {
         // Arrange
-        ITagDataAction action = new EditAction();
+        var downloader = Substitute.For<IDownloader>();
+
+        ITagDataAction action = new EditAction(downloader);
 
         var settings = new EditSettings
         {

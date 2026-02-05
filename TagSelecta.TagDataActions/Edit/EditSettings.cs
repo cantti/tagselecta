@@ -96,7 +96,7 @@ public class EditSettings : TagDataActionSettings
 
     [CommandOption($"--{Fields.Picture}|-p")]
     [Description(
-        "Path to a picture file. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)."
+        "Path or url to a picture. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)."
     )]
     public string[]? Picture { get; set; }
 

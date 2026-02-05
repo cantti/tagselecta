@@ -3,113 +3,89 @@ using System.Globalization;
 
 namespace TagSelecta.Shared.Tagging;
 
-public class TagDataForTemplate(TagData tagData, string path)
+public class TagDataForTemplate
 {
     [Description("Full file path.")]
-    public string Path { get; } = path;
+    public string? Path { get; set; }
 
     [Description("File name without extension.")]
-    public string FileName { get; } = System.IO.Path.GetFileNameWithoutExtension(path);
+    public string? FileName { get; set; }
 
     [Description("File extension")]
-    public string Ext { get; } = System.IO.Path.GetExtension(path).TrimStart('.');
+    public string? Ext { get; set; }
 
     [Description("Album name.")]
-    public string Album { get; } = tagData.Album;
+    public string? Album { get; set; }
 
     [Description("Album artists as a single string.")]
-    public string AlbumArtist { get; } = tagData.AlbumArtist.ToJoined();
+    public string? AlbumArtist { get; set; }
 
     [Description("List of album artists.")]
-    public List<string> AlbumArtists { get; } = tagData.AlbumArtist;
+    public List<string> AlbumArtists { get; set; } = [];
 
     [Description("Artists as a single string.")]
-    public string Artist { get; } = tagData.Artist.ToJoined();
+    public string? Artist { get; set; }
 
     [Description("List of artists.")]
-    public List<string> Artists { get; } = tagData.Artist;
+    public List<string> Artists { get; set; } = [];
 
     [Description("Beats per minute.")]
-    public string Bpm { get; } = tagData.Bpm;
+    public string? Bpm { get; set; }
 
     [Description("Catalog number.")]
-    public string CatalogNumber { get; } = tagData.CatalogNumber;
+    public string? CatalogNumber { get; set; }
 
     [Description("User comment.")]
-    public string Comment { get; } = tagData.Comment;
+    public string? Comment { get; set; }
 
     [Description("Composers as a single string.")]
-    public string Composer { get; } = tagData.Composer.ToJoined();
+    public string? Composer { get; set; }
 
     [Description("List of composers.")]
-    public List<string> Composers { get; } = tagData.Composer;
+    public List<string> Composers { get; set; } = [];
 
     [Description("Conductor name.")]
-    public string Conductor { get; } = tagData.Conductor;
+    public string? Conductor { get; set; }
 
     [Description("Copyright text.")]
-    public string Copyright { get; } = tagData.Copyright;
+    public string? Copyright { get; set; }
 
     [Description("Original date value.")]
-    public string Date { get; } = tagData.Date;
+    public string? Date { get; set; }
 
     [Description("Disc number.")]
-    public string Disc { get; } = tagData.Disc;
-
-    [Description("Disc number padded with zeros (e.g. 01, 02, 03, etc.)")]
-    public string Disc00 { get; } =
-        int.TryParse(tagData.Disc, out var disc) ? disc.ToString("D2") : tagData.Disc;
+    public string? Disc { get; set; }
 
     [Description("Total number of discs.")]
-    public string DiscTotal { get; } = tagData.DiscTotal;
+    public string? DiscTotal { get; set; }
 
     [Description("Genres as a single string.")]
-    public string Genre { get; } = tagData.Genre.ToJoined();
+    public string? Genre { get; set; }
 
     [Description("List of genres.")]
-    public List<string> Genres { get; } = tagData.Genre;
+    public List<string> Genres { get; set; } = [];
 
     [Description("ISRC code.")]
-    public string Isrc { get; } = tagData.Isrc;
+    public string? Isrc { get; set; }
 
     [Description("Record label.")]
-    public string Label { get; } = tagData.Label;
+    public string? Label { get; set; }
 
     [Description("Publisher.")]
-    public string Publisher { get; } = tagData.Publisher;
+    public string? Publisher { get; set; }
 
     [Description("Track title.")]
-    public string Title { get; } = tagData.Title;
+    public string? Title { get; set; }
 
     [Description("Track number.")]
-    public string Track { get; } = tagData.Track;
-
-    [Description("Track number as a two-digit string with leading zeros (e.g. 01, 02, 03, etc.)")]
-    public string Track00 { get; } =
-        int.TryParse(tagData.Track, out var track) ? track.ToString("D2") : tagData.Track;
-
-    [Description(
-        "Track number as a three-digit string with leading zeros (e.g. 001, 002, 003, etc.)"
-    )]
-    public string Track000 { get; } =
-        int.TryParse(tagData.Track, out var track) ? track.ToString("D3") : tagData.Track;
+    public string? Track { get; set; }
 
     [Description("Total number of tracks.")]
-    public string TrackTotal { get; } = tagData.TrackTotal;
+    public string? TrackTotal { get; set; }
 
     [Description("Year extracted from the Date field.")]
-    public string Year { get; } =
-        DateTime.TryParseExact(
-            tagData.Date,
-            ["yyyy", "yyyy-MM-dd", "yyyy/MM/dd"],
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.None,
-            out var d
-        )
-            ? d.Year.ToString()
-            : "";
+    public string? Year { get; set; }
 
     [Description("Extra fields. Usage example: extra.url")]
-    public Dictionary<string, string> Extra { get; } =
-        tagData.Extra.ToDictionary(x => x.Key, x => x.Text);
+    public Dictionary<string, string> Extra { get; set; } = [];
 }
