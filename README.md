@@ -1,6 +1,7 @@
 # TagSelecta
 
-<img width="1820" height="947" alt="Tagselecta TUI" src="https://github.com/user-attachments/assets/0f8e62be-a587-4019-8c71-10c7af3f8cbe" />
+<img width="1820" height="947" alt="TagSelecta TUI" src="https://github.com/user-attachments/assets/b982bc08-dcbf-45c3-a86e-a3600f21cded" />
+
 
 TagSelecta is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).
 
