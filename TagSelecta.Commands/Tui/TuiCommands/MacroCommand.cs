@@ -2,13 +2,13 @@ using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
-public class MacroSettings
+public class MacroConfig
 {
     public Dictionary<string, string> Macros { get; set; } = new();
 }
 
 [TuiCommand("macro", "m")]
-public class MacroCommand(MacroSettings settings) : ITuiCommand
+public class MacroCommand(MacroConfig config) : ITuiCommand
 {
     public Task ExecuteAsync(
         ITuiCommandContext context,
@@ -23,14 +23,14 @@ public class MacroCommand(MacroSettings settings) : ITuiCommand
             throw new TagSelectaException("Macro name is required.");
         }
 
-        var macro = settings
+        var macro = config
             .Macros.Where(x => x.Key == macroName)
             .Select(x => x.Value)
             .FirstOrDefault();
 
         if (macro is null)
         {
-            var available = string.Join(", ", settings.Macros.Keys.OrderBy(k => k));
+            var available = string.Join(", ", config.Macros.Keys.OrderBy(k => k));
             throw new TagSelectaException($"Unknown macro '{macroName}'. Available: {available}");
         }
 

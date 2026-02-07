@@ -23,6 +23,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     private readonly InputHandler _inputHandler;
     private readonly Lock _printLock = new();
     private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
+    private readonly TuiAppConfig _config;
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
     private Task _currentCommandTask = Task.CompletedTask;
@@ -32,13 +33,15 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         IAnsiConsole console,
         IAudioFileScanner audioFileScanner,
         ITuiCommandFactory commandFactory,
-        ITagDataActionTargetFactory tagDataActionTargetFactory
+        ITagDataActionTargetFactory tagDataActionTargetFactory,
+        TuiAppConfig config
     )
     {
         _console = console;
         _audioFileScanner = audioFileScanner;
         _commandFactory = commandFactory;
         _tagDataActionTargetFactory = tagDataActionTargetFactory;
+        _config = config;
         _hotkeys = new HotkeyMap();
         _inputHandler = new InputHandler(_hotkeys);
     }
@@ -190,7 +193,9 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         {
             if (FileListEnabled)
             {
-                var filesContentSize = (int)((Console.WindowHeight - 3 - 1 - 1 - 1) * 0.3);
+                var filesContentSize = (int)(
+                    (Console.WindowHeight - 3 - 1 - 1 - 1) * _config.FileListRatio
+                );
                 children.Add(
                     new Layout(FilesLayoutKey)
                         .Size(filesContentSize)

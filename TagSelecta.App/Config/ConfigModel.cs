@@ -1,7 +1,7 @@
 namespace TagSelecta.App.Config;
 
-public class AppConfig
+public class ConfigModel
 {
-    public GeneralConfig General { get; set; } = new();
+    public GeneralSection General { get; set; } = new();
     public Dictionary<string, string> Macros { get; set; } = new();
 }

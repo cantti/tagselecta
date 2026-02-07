@@ -4,11 +4,19 @@ namespace TagSelecta.App.Config;
 
 public static class AppConfigReader
 {
-    public static AppConfig Read()
+    private const string DefaultConfig = """
+        [general]
+        debug = false
+        file_list_ratio = 0.3
+
+        [macros]
+        """;
+
+    public static ConfigModel Read()
     {
         var configPath = GetConfigPath();
         var tomlText = File.ReadAllText(configPath);
-        var config = Toml.ToModel<AppConfig>(tomlText);
+        var config = Toml.ToModel<ConfigModel>(tomlText);
         return config;
     }
 
