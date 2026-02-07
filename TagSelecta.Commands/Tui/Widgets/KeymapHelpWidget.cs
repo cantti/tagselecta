@@ -7,25 +7,33 @@ public class KeymapHelpWidget : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        var keys = new List<(string Key, string Action)>
+        var keys = new List<(string Key, string AltKey, string Action)>
         {
-            ("space, tab", "Select"),
-            ("escape", "Clear selection"),
-            ("a, *", "Select All"),
-            ("A", "Select all files in directory"),
-            ("j, move down", "Move down"),
-            ("k, move up", "Move up"),
-            ("t", "Toggle tree"),
-            ("f", "Toggle filter"),
-            ("u", "Undo"),
-            ("g", "Go to start"),
-            ("G", "Go to end"),
+            ("space", "tab", "Select"),
+            ("escape", "", "Clear selection"),
+            ("a", "*", "Select all"),
+            ("A", "", "Select all files in directory"),
+            ("j", "down", "Move down"),
+            ("k", "up", "Move up"),
+            ("e", "", "Toggle file list (explorer)"),
+            ("t", "", "Toggle tree"),
+            ("f", "", "Toggle filter"),
+            ("u", "", "Undo"),
+            ("g", "", "Go to start"),
+            ("G", "", "Go to end"),
+            ("?", "", "Toggle this help"),
+            ("h", "", "Toggle command help"),
+            ("q", "", "Quit"),
         };
         var grid = new Grid();
-        grid.AddColumns(2);
+        grid.AddColumns(3);
         foreach (var key in keys)
         {
-            grid.AddRow($"[bold blue]{Markup.Escape(key.Key)}[/]", key.Action);
+            grid.AddRow(
+                $"[bold blue]{Markup.Escape(key.Key)}[/]",
+                $"[bold blue]{Markup.Escape(key.AltKey)}[/]",
+                key.Action
+            );
         }
 
         IRenderable content = new Rows(new Text("Keymap help:", new Style(Color.Yellow)), grid);

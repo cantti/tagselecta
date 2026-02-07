@@ -20,8 +20,8 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     private readonly ITuiCommandFactory _commandFactory;
     private readonly IAnsiConsole _console;
     private readonly HotkeyMap _hotkeys;
-    private readonly Lock _printLock = new();
     private readonly InputHandler _inputHandler;
+    private readonly Lock _printLock = new();
     private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
@@ -64,6 +64,8 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     public bool KeymapHelpEnabled { get; set; }
 
     public bool CommandHelpEnabled { get; set; }
+
+    public bool FileListEnabled { get; set; } = true;
 
     public void SetCommandPromptText(string text)
     {
@@ -186,16 +188,27 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         }
         else
         {
-            var filesContentSize = (Console.WindowHeight - 3 - 1 - 1 - 1) / 2;
-            children.Add(
-                new Layout(FilesLayoutKey)
-                    .Size(filesContentSize)
-                    .Update(
-                        TreeEnabled
-                            ? new TreeListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
-                            : new FileListWidget(VisibleFiles, FocusedFile, filesContentSize - 2)
-                    )
-            );
+            if (FileListEnabled)
+            {
+                var filesContentSize = (Console.WindowHeight - 3 - 1 - 1 - 1) / 2;
+                children.Add(
+                    new Layout(FilesLayoutKey)
+                        .Size(filesContentSize)
+                        .Update(
+                            TreeEnabled
+                                ? new TreeListWidget(
+                                    VisibleFiles,
+                                    FocusedFile,
+                                    filesContentSize - 2
+                                )
+                                : new FileListWidget(
+                                    VisibleFiles,
+                                    FocusedFile,
+                                    filesContentSize - 2
+                                )
+                        )
+                );
+            }
             children.Add(
                 new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
             );
@@ -270,6 +283,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _hotkeys.Bind("f", "togglefilter");
         _hotkeys.Bind("?", "togglekeymaphelp");
         _hotkeys.Bind("h", "togglecommandhelp");
+        _hotkeys.Bind("e", "togglefilelist");
         _hotkeys.Bind("u", "undo");
         _hotkeys.Bind(HotkeyTokens.Tab, "select");
         _hotkeys.Bind(HotkeyTokens.Space, "select");

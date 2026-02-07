@@ -18,19 +18,9 @@ public class SelectDirCommand : ITuiCommand
         var filesToSelect = context
             .Files.Where(x => Path.GetDirectoryName(x.BackupPath) == dir && !x.IsSelected)
             .ToList();
-        if (filesToSelect.Count > 0)
+        foreach (var file in filesToSelect)
         {
-            foreach (var file in filesToSelect)
-            {
-                file.IsSelected = true;
-            }
-        }
-        else
-        {
-            foreach (var file in context.SelectedFiles)
-            {
-                file.IsSelected = false;
-            }
+            file.IsSelected = true;
         }
 
         return Task.CompletedTask;

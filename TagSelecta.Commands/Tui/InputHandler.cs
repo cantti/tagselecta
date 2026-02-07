@@ -24,6 +24,7 @@ public class InputHandler(HotkeyMap hotkeys)
             commandText = handleResult;
             return true;
         }
+
         commandText = "";
         return false;
     }

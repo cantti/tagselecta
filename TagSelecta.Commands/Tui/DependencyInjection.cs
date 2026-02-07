@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommand, ToggleFilterCommand>();
         services.AddTransient<ITuiCommand, ToggleKeymapHelpCommand>();
         services.AddTransient<ITuiCommand, ToggleCommandHelpCommand>();
+        services.AddTransient<ITuiCommand, ToggleFileListCommand>();
         services.AddTransient<ITuiCommand, WriteCommand>();
         services.AddTransient<ITuiCommand, UndoCommand>();
         services.AddTransient<ITuiCommand, MacroCommand>();

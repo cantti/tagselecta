@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Globalization;
 
 namespace TagSelecta.Shared.Tagging;
 

@@ -10,6 +10,7 @@ public interface ITuiCommandContext
     bool FilterEnabled { get; set; }
     bool KeymapHelpEnabled { get; set; }
     bool CommandHelpEnabled { get; set; }
+    bool FileListEnabled { get; set; }
     IEnumerable<TagDataActionTarget> VisibleFiles { get; }
     void Quit();
     void Print(string markupMessage);
