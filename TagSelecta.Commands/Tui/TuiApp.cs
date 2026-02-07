@@ -190,7 +190,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         {
             if (FileListEnabled)
             {
-                var filesContentSize = (Console.WindowHeight - 3 - 1 - 1 - 1) / 2;
+                var filesContentSize = (int)((Console.WindowHeight - 3 - 1 - 1 - 1) * 0.3);
                 children.Add(
                     new Layout(FilesLayoutKey)
                         .Size(filesContentSize)

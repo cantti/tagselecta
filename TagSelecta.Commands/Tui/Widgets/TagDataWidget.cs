@@ -10,19 +10,16 @@ public class TagDataWidget(TagDataActionTarget? focusedFile) : Renderable
         var rows = new List<IRenderable>();
         rows.Add(new Text("Metadata:", new Style(Color.Yellow, Color.Default, Decoration.Bold)));
 
+        if (focusedFile?.Exception is not null)
+        {
+            rows.Add(new Text($"Error: {focusedFile.Exception.Message}", new Style(Color.Red)));
+        }
+
         var tagDataRenderable = focusedFile is not null
-            ? focusedFile.HasChanges
-                ? TagDataPrinter.PrintComparison(focusedFile)
-                : TagDataPrinter.PrintTagData(focusedFile)
+            ? TagDataPrinter.PrintComparison(focusedFile)
             : Text.Empty;
 
         rows.Add(tagDataRenderable);
-
-        if (focusedFile?.Exception is not null)
-        {
-            rows.Add(Text.NewLine);
-            rows.Add(new Text($"Error: {focusedFile.Exception.Message}", new Style(Color.Red)));
-        }
 
         return ((IRenderable)new Rows(rows)).Render(options, maxWidth);
     }

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using Scriban;
 using Scriban.Runtime;
+using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Shared.Tagging;
 
@@ -89,6 +90,10 @@ public class TagDataFormatter
         var context = new TemplateContext();
         context.PushGlobal(scriptObject);
         var parsedTemplate = Template.Parse(template);
+        if (parsedTemplate.HasErrors)
+        {
+            throw new TagSelectaException(parsedTemplate.Messages.ToString());
+        }
         var result = parsedTemplate.Render(context);
         return result.Trim();
     }
