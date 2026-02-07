@@ -10,6 +10,7 @@ public static class AppConfigReader
         file_list_ratio = 0.3
 
         [macros]
+        reggae="edit genre=\"Reggae\""
         """;
 
     public static ConfigModel Read()
