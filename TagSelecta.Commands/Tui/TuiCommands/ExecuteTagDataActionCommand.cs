@@ -30,15 +30,13 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         var selectedFilesList = context.SelectedFiles.ToList();
 
+        var executor = new TagDataActionTargetExecutor();
+
         for (var i = 0; i < selectedFilesList.Count; i++)
         {
             token.ThrowIfCancellationRequested();
             var file = selectedFilesList[i];
-            await file.ExecuteTagDataAction(
-                action,
-                new TagDataActionExecuteContext { Settings = settings, Target = file },
-                token
-            );
+            await executor.ExecuteTagDataAction(file, action, settings, token);
             context.Print(
                 $"Processed {i + 1} of {selectedFilesList.Count} files. "
                     + $"{selectedFilesList.Count(x => x.Exception is not null)} errors. Type :w to write changes."

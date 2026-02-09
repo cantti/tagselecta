@@ -1,6 +1,8 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TagLib.Ape;
 using TagSelecta.Shared.IO;
+using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.Commands.Cli.ExecuteTagDataAction;
@@ -9,7 +11,8 @@ public class ExecuteTagDataActionCommand<TSettings>(
     TagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITagDataActionTargetFactory targetFactory
+    IFileSystem fs,
+    ITagger tagger
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
@@ -33,7 +36,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 
             var files = audioFileScanner
                 .SearchAndRead(settings.Path, ct)
-                .Select(x => targetFactory.Create(x.Path, x.TagData))
+                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
             console.WriteLine($"Total {files.Count} files found");
@@ -67,6 +70,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
         CancellationToken ct
     )
     {
+        var executor = new TagDataActionTargetExecutor();
         await console
             .Progress()
             .AutoClear(true)
@@ -76,11 +80,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var file in files)
                 {
                     ct.ThrowIfCancellationRequested();
-                    await file.ExecuteTagDataAction(
-                        action,
-                        new TagDataActionExecuteContext { Settings = settings, Target = file },
-                        ct
-                    );
+                    await executor.ExecuteTagDataAction(file, action, settings, ct);
                     task.Increment(1);
                 }
             });
@@ -88,6 +88,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 
     private void Write(List<TagDataActionTarget> files, CancellationToken ct)
     {
+        var writer = new TagDataActionTargetWriter(fs, tagger);
         console
             .Progress()
             .AutoClear(true)
@@ -98,7 +99,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 foreach (var file in filesToWrite)
                 {
                     ct.ThrowIfCancellationRequested();
-                    file.Write();
+                    writer.Write(file);
                     task.Increment(1);
                 }
             });

@@ -22,7 +22,6 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     private readonly HotkeyMap _hotkeys;
     private readonly InputHandler _inputHandler;
     private readonly Lock _printLock = new();
-    private readonly ITagDataActionTargetFactory _tagDataActionTargetFactory;
     private readonly TuiAppConfig _config;
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
@@ -33,14 +32,12 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         IAnsiConsole console,
         IAudioFileScanner audioFileScanner,
         ITuiCommandFactory commandFactory,
-        ITagDataActionTargetFactory tagDataActionTargetFactory,
         TuiAppConfig config
     )
     {
         _console = console;
         _audioFileScanner = audioFileScanner;
         _commandFactory = commandFactory;
-        _tagDataActionTargetFactory = tagDataActionTargetFactory;
         _config = config;
         _hotkeys = new HotkeyMap();
         _inputHandler = new InputHandler(_hotkeys);
@@ -109,7 +106,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
             Files = _audioFileScanner
                 .SearchAndRead(settings.Path, ct)
-                .Select(x => _tagDataActionTargetFactory.Create(x.Path, x.TagData))
+                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
