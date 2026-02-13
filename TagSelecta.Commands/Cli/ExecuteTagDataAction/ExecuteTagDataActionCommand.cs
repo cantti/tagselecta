@@ -44,7 +44,8 @@ public class ExecuteTagDataActionCommand<TSettings>(
             await ExecuteAction(settings, files, ct);
 
             if (
-                !await console.ConfirmAsync(
+                !settings.Yes
+                && !await console.ConfirmAsync(
                     $"{files.Count(x => x.HasChanges)} pending files. {files.Count(x => x.Exception is not null)} errors. Continue?",
                     cancellationToken: ct
                 )
