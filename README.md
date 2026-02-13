@@ -339,6 +339,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help             Prints help information                              
+        --yes              Skip confirmation before writing changes to files    
     -l, --album            Album name                                           
     -A, --albumartist      One or more album artists. Multiple values can be    
                            provided using a ';' separator                       
@@ -389,6 +390,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help        Prints help information                                   
+        --yes         Skip confirmation before writing changes to files         
     -t, --type        Types of pictures to extract. Multiple entries can be     
                       provided using a ';' separator.                           
                       Common types: FrontCover, BackCover, Artist, Other        
@@ -411,6 +413,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help              Prints help information                             
+        --yes               Skip confirmation before writing changes to files   
     -t, --template          Template. For example: {{ track }} - {{ title }}.{{ 
                             ext }}. Required                                    
     -k, --keepemptydirs     Keep empty directories                              
@@ -430,7 +433,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help         Prints help information       
+    -h, --help         Prints help information                          
+        --yes          Skip confirmation before writing changes to files
     -s, --separator    Default values are: , ; feat.
 ```
 
@@ -447,7 +451,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help    Prints help information
+    -h, --help    Prints help information                          
+        --yes     Skip confirmation before writing changes to files
 ```
 
 ### Auto Track command
@@ -463,7 +468,8 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help        Prints help information  
+    -h, --help        Prints help information                          
+        --yes         Skip confirmation before writing changes to files
         --keepdisk    Remove Disc and DiscTotal
 ```
 
@@ -487,6 +493,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help      Prints help information                                     
+        --yes       Skip confirmation before writing changes to files           
     -u, --url       Discogs release URL. Required                               
     -f, --fields    Fields to update from Discogs release. If not specified, all
                     values will be updated
