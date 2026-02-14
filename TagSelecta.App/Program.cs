@@ -18,7 +18,7 @@ internal class Program
 
         var services = new ServiceCollection();
 
-        var appConfig = AppConfigReader.Read();
+        var appConfig = ConfigReader.Read();
         services.AddSettings(appConfig);
 
         services.AddCommandServices().AddSharedServices();

@@ -2,7 +2,7 @@ using Tomlyn;
 
 namespace TagSelecta.App.Config;
 
-public static class AppConfigReader
+public static class ConfigReader
 {
     private const string DefaultConfig = """
         [general]
@@ -11,6 +11,7 @@ public static class AppConfigReader
 
         [macros]
         reggae="edit genre=\"Reggae\""
+
         """;
 
     public static ConfigModel Read()
@@ -52,7 +53,7 @@ public static class AppConfigReader
         var path = Path.Combine(baseConfigDir, fileName);
         if (!File.Exists(path))
         {
-            File.WriteAllText(path, "");
+            File.WriteAllText(path, DefaultConfig);
         }
 
         return path;
