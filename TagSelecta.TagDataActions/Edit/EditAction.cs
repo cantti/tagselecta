@@ -1,4 +1,5 @@
 using TagLib;
+using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.Http;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
@@ -44,16 +45,19 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
             tagData.ClearExtraFields();
         }
 
-        if (context.Settings.Set is not null)
+        if (context.Settings.Value.Length != context.Settings.Key.Length)
         {
-            foreach (var entry in context.Settings.Set)
-            {
-                var parts = entry.Split('=', 2);
-                var key = parts[0].NormalizeKey();
-                var value = parts.Length > 1 ? parts[1].Trim() : "";
-                value = formatter.Format(value);
-                WriteSet(tagData, key, value);
-            }
+            throw new TagSelectaException(
+                "The number of keys does not match the number of values."
+            );
+        }
+
+        for (var i = 0; i < context.Settings.Key.Length; i++)
+        {
+            var key = context.Settings.Key[i].NormalizeKey();
+            var value = context.Settings.Value[i].Trim();
+            value = formatter.Format(value);
+            WriteSet(tagData, key, value);
         }
 
         await SetPicture(context, tagData, token);

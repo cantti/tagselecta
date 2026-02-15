@@ -25,12 +25,6 @@ public static class Fields
     public const string TrackTotal = "tracktotal";
     public const string Picture = "picture";
     public const string PictureType = "picturetype";
-    public const string Set = "set";
-
-    public static IReadOnlyList<string> All { get; } =
-        typeof(Fields)
-            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-            .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string))
-            .Select(f => (string)f.GetRawConstantValue()!)
-            .ToArray();
+    public const string Key = "key";
+    public const string Value = "value";
 }

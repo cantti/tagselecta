@@ -84,11 +84,12 @@ public class EditSettings : TagDataActionSettings
     [Description("Total number of tracks.")]
     public string? TrackTotal { get; set; }
 
-    [CommandOption($"--{Fields.Set}|-s")]
-    [Description(
-        "Extra fields in key=value format. Use this option multiple times to include multiple fields (e.g., -s key1=value1 -s key2=value2)."
-    )]
-    public string[]? Set { get; set; }
+    [CommandOption($"--{Fields.Key}|-k")]
+    [Description("Extra field key key. Must be used together with --value.")]
+    public string[] Key { get; set; } = [];
+
+    [CommandOption($"--{Fields.Value}|-v")]
+    public string[] Value { get; set; } = [];
 
     [CommandOption("--clearextra")]
     [Description("Clear all other extra fields.")]

@@ -174,10 +174,10 @@ Some fields accept **multiple values** (artists, genres, etc.). Provide multiple
  
 ### Extra fields
 
-- `set` (`s`): Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a extra field. Example: `set="catalogNumber=ABC-001"`
-- `clearextra` (`e`): Clear **all** extra fields before applying any `set` values.
+- `--key key1 --value value1` (`-k key1 -v value1`): Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a extra field. Example: `key=url value=https://example.com`. Can be used multiple times.
+- `clearextra` (`e`): Clear **all** extra fields.
 
-> Tip: `--set` is useful for scripting or for fields not exposed as dedicated options.
+> Tip: `--key`/`--value` is useful for scripting or for fields not exposed as dedicated options.
 
 ### Pictures (cover art)
 

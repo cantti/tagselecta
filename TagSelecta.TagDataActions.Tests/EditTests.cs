@@ -38,7 +38,8 @@ public class EditTests
             Title = "Test Title",
             Track = "5",
             TrackTotal = "12",
-            Set = ["test_field=test_value"],
+            Key = ["test_field"],
+            Value = ["test_value"],
         };
 
         var tagData = new TagData

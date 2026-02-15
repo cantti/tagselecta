@@ -20,27 +20,26 @@ public class CommandHelpWidget : Renderable
 
     private static IRenderable CommandHelp()
     {
-        var valueColor = Color.DarkOrange;
+        var valueColor = Color.Yellow;
         var commandColor = Color.Blue;
-        var parameterColor = Color.Magenta;
         var commands = new List<(string Command, string Action)>
         {
             ($"[bold {commandColor}]:selectdir[/]", "Select all files in dir"),
             ($"[bold {commandColor}]:write[/]", "Save changes"),
             (
-                $"[bold {commandColor}]:edit[/] [{parameterColor}]artist[/]=[{valueColor}]Bach[/] [{parameterColor}]title[/]=[{valueColor}]\"The Goldberg Variations\"[/] [{parameterColor}]set[/]=[{valueColor}]custom_key=value[/]",
+                $"[bold {commandColor}]:edit[/] artist=[{valueColor}]Bach[/] title=[{valueColor}]\"The Goldberg Variations\"[/] key=[{valueColor}]url[/] value=[{valueColor}]https://example.com[/]",
                 "Edit tags"
             ),
             ($"[bold {commandColor}]:autotrack[/]", "Auto track number"),
             ($"[bold {commandColor}]:split[/]", "Split artists"),
             ($"[bold {commandColor}]:titlecase[/]", "Title case conversion"),
             (
-                $"[bold {commandColor}]:move[/] [{parameterColor}]template[/]=[{valueColor}]\"../{{ year }} - {{ album }}/{{ filename }}.{{ext}}\"[/]",
+                $"[bold {commandColor}]:move[/] template=[{valueColor}]\"../{{ year }} - {{ album }}/{{ filename }}.{{ext}}\"[/]",
                 "Move file using template"
             ),
             ($"[bold {commandColor}]:extractpicture[/]", "Extract picture"),
             (
-                $"[bold {commandColor}]:discogs[/] [{parameterColor}]url[/]=[{valueColor}]\"https://www.discogs.com/master/...\"[/]",
+                $"[bold {commandColor}]:discogs[/] url=[{valueColor}]\"https://www.discogs.com/master/...\"[/]",
                 "Discogs"
             ),
             ($"[bold {commandColor}]:macro[/] [{valueColor}]<name>[/]", "Execute macro"),

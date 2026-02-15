@@ -35,7 +35,7 @@ public static class CommandRegistration
         configurator
             .AddTagDataAction<EditAction>(services)
             .WithDescription(
-                "Edit (read and write) tags. To edit extra fields is to use --extra option."
+                "Edit tags (read/write). To edit extra fields, use the --key key1 --value value1 options."
             )
             // Basic examples
             .WithExample(
@@ -45,8 +45,10 @@ public static class CommandRegistration
                 "'Song 1'",
                 "-a",
                 "'Artist1;Artist 2'",
-                "-s",
-                "description=test"
+                "-k",
+                "description",
+                "-v",
+                "test"
             )
             .WithExample("edit", "song.mp3", "-c", "'url=https://github.com'")
             .WithExample(
