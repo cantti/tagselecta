@@ -20,31 +20,64 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
             context.Target.BackupPath
         );
 
-        Write(s => s.Album, v => tagData.Album = v);
-        Write(s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti());
-        Write(s => s.Artist, v => tagData.Artist = v.ToMulti());
-        Write(s => s.Bpm, v => tagData.Bpm = v);
-        Write(s => s.CatalogNumber, v => tagData.CatalogNumber = v);
-        Write(s => s.Comment, v => tagData.Comment = v);
-        Write(s => s.Composer, v => tagData.Composer = v.ToMulti());
-        Write(s => s.Conductor, v => tagData.Conductor = v);
-        Write(s => s.Copyright, v => tagData.Copyright = v);
-        Write(s => s.Date, v => tagData.Date = v);
-        Write(s => s.Disc, v => tagData.Disc = v);
-        Write(s => s.DiscTotal, v => tagData.DiscTotal = v);
-        Write(s => s.Genre, v => tagData.Genre = v.ToMulti());
-        Write(s => s.Isrc, v => tagData.Isrc = v);
-        Write(s => s.Label, v => tagData.Label = v);
-        Write(s => s.Publisher, v => tagData.Publisher = v);
-        Write(s => s.Title, v => tagData.Title = v);
-        Write(s => s.Track, v => tagData.Track = v);
-        Write(s => s.TrackTotal, v => tagData.TrackTotal = v);
+        SetStandardFields(context, tagData, formatter);
 
         if (context.Settings.ClearExtra)
         {
             tagData.ClearExtraFields();
         }
 
+        SetKeyValueFields(context, formatter, tagData);
+
+        await SetPicture(context, tagData, token);
+
+        context.Target.UpdateTagData(tagData);
+    }
+
+    private static void SetStandardFields(
+        TagDataActionExecuteContext<EditSettings> context,
+        TagData tagData,
+        TagDataFormatter formatter
+    )
+    {
+        Set(s => s.Album, v => tagData.Album = v);
+        Set(s => s.AlbumArtist, v => tagData.AlbumArtist = v.ToMulti());
+        Set(s => s.Artist, v => tagData.Artist = v.ToMulti());
+        Set(s => s.Bpm, v => tagData.Bpm = v);
+        Set(s => s.CatalogNumber, v => tagData.CatalogNumber = v);
+        Set(s => s.Comment, v => tagData.Comment = v);
+        Set(s => s.Composer, v => tagData.Composer = v.ToMulti());
+        Set(s => s.Conductor, v => tagData.Conductor = v);
+        Set(s => s.Copyright, v => tagData.Copyright = v);
+        Set(s => s.Date, v => tagData.Date = v);
+        Set(s => s.Disc, v => tagData.Disc = v);
+        Set(s => s.DiscTotal, v => tagData.DiscTotal = v);
+        Set(s => s.Genre, v => tagData.Genre = v.ToMulti());
+        Set(s => s.Isrc, v => tagData.Isrc = v);
+        Set(s => s.Label, v => tagData.Label = v);
+        Set(s => s.Publisher, v => tagData.Publisher = v);
+        Set(s => s.Title, v => tagData.Title = v);
+        Set(s => s.Track, v => tagData.Track = v);
+        Set(s => s.TrackTotal, v => tagData.TrackTotal = v);
+
+        void Set(Func<EditSettings, string?> get, Action<string> set)
+        {
+            var value = get(context.Settings);
+            if (value is null)
+            {
+                return;
+            }
+            value = formatter.Format(value);
+            set(value);
+        }
+    }
+
+    private static void SetKeyValueFields(
+        TagDataActionExecuteContext<EditSettings> context,
+        TagDataFormatter formatter,
+        TagData tagData
+    )
+    {
         if (context.Settings.Value.Length != context.Settings.Key.Length)
         {
             throw new TagSelectaException(
@@ -57,25 +90,27 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
             var key = context.Settings.Key[i].NormalizeKey();
             var value = context.Settings.Value[i].Trim();
             value = formatter.Format(value);
-            WriteSet(tagData, key, value);
-        }
-
-        await SetPicture(context, tagData, token);
-
-        context.Target.UpdateTagData(tagData);
-
-        return;
-
-        void Write(Func<EditSettings, string?> get, Action<string> set)
-        {
-            var value = get(context.Settings);
-            if (value is null)
+            var prop = typeof(TagData)
+                .GetProperties()
+                .SingleOrDefault(x =>
+                    x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                    && (x.PropertyType == typeof(string) || x.PropertyType == typeof(List<string>))
+                );
+            if (prop is not null)
             {
-                return;
+                if (prop.PropertyType == typeof(string))
+                {
+                    prop.SetValue(tagData, value);
+                }
+                else
+                {
+                    prop.SetValue(tagData, value.ToMulti());
+                }
             }
-
-            var formatted = formatter.Format(value);
-            set(formatted);
+            else
+            {
+                tagData.SetExtraField(key, value);
+            }
         }
     }
 
@@ -119,31 +154,6 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
 
                 tagData.Picture.Add(picture);
             }
-        }
-    }
-
-    private static void WriteSet(TagData tagData, string key, string value)
-    {
-        var prop = typeof(TagData)
-            .GetProperties()
-            .SingleOrDefault(x =>
-                x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)
-                && (x.PropertyType == typeof(string) || x.PropertyType == typeof(List<string>))
-            );
-        if (prop is not null)
-        {
-            if (prop.PropertyType == typeof(string))
-            {
-                prop.SetValue(tagData, value);
-            }
-            else
-            {
-                prop.SetValue(tagData, value.ToMulti());
-            }
-        }
-        else
-        {
-            tagData.SetExtraField(key, value);
         }
     }
 }
