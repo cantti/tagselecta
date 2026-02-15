@@ -19,6 +19,7 @@ The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spect
 
 ## Features
 
+- CLI and TUI modes
 - `:edit` command to read and write tags
 - `:move` command to move and rename files
 - `:extractpicture` command to extract pictures to files
@@ -26,7 +27,7 @@ The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spect
 - `:split` command to split artists, album artists and composers
 - `:autotrack` command to automatically set track number and total tracks based on disc and disc total
 - `:discogs` command to update album metadata from Discogs release
-- CLI and TUI modes
+- `find` command to find files by metadata (CLI only)
 - Recursive directory scanning
 - Macros support
 - Previw of changes before applying them
