@@ -291,8 +291,8 @@ USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -s 
-description=test
+    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k 
+description -v test
     tagselecta edit song.mp3 -c 'url=https://github.com'
     tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
 Artists" "-i" }}'
@@ -305,8 +305,8 @@ OPTIONS:
     -v, --version    Prints version information
 
 COMMANDS:
-    edit <path>              Edit (read and write) tags. To edit extra fields is
-                             to use --extra option                              
+    edit <path>              Edit tags (read/write). To edit extra fields, use  
+                             the --key key1 --value value1 options              
     extractpicture <path>    Extract pictures to files                          
     titlecase <path>         Convert all fields to title case                   
     split <path>             Split artists, album artists and composers         
@@ -322,14 +322,15 @@ COMMANDS:
 
 ```
 DESCRIPTION:
-Edit (read and write) tags. To edit extra fields is to use --extra option
+Edit tags (read/write). To edit extra fields, use the --key key1 --value value1 
+options
 
 USAGE:
     tagselecta edit <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -s 
-description=test
+    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k 
+description -v test
     tagselecta edit song.mp3 -c 'url=https://github.com'
     tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
 Artists" "-i" }}'
@@ -362,9 +363,9 @@ OPTIONS:
     -t, --title            Track title                                          
     -n, --track            Track number                                         
     -N, --tracktotal       Total number of tracks                               
-    -s, --set              Extra fields in key=value format. Use this option    
-                           multiple times to include multiple fields (e.g., -s  
-                           key1=value1 -s key2=value2)                          
+    -k, --key              Extra field key key. Must be used together with      
+                           --value                                              
+    -v, --value                                                                 
         --clearextra       Clear all other extra fields                         
     -p, --picture          Path or url to a picture. Use this option multiple   
                            times to include multiple images (e.g., -p path1 -p  
