@@ -117,11 +117,11 @@ Other commands are implemented using the same format.
 
 **Move files**
 
-Very usefull command is `move` (`mv`) to rename and move files.
+Very useful command is `move` (`mv`) to rename and move files.
 
 Example:
 ```sh
-:move template="../{{ date }} - {{ album }}/{{ track00 }}. {{ title }}.{{ext}}"
+:move template="../{{ date }} - {{ album }}/{{ pad(track) }}. {{ title }}.{{ext}}"
 ```
 
 **Notes**
