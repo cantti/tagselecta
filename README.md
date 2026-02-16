@@ -66,8 +66,6 @@ This will:
 * extract it,
 * install it into the directory you provide (default recommended: `$HOME/.local/bin`).
 
-Works from **bash**, **zsh**, **fish**, and other shells.
-
 ## Getting started
 
 Great way to get started is to use the interactive UI (TUI). Open directory with album (audio files) and run:
@@ -127,7 +125,7 @@ Example:
 
 **Notes**
 
-Most comnmand and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
+Most command and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
 
 Great way to learn more about commands and options is to run `--help` from cli for each command.
 
@@ -137,7 +135,7 @@ For example:
 tagselecta edit --help
 ```
 
-Below is a detaled documentation for each command.
+Below is a detailed documentation for each command.
 
 ## `edit` command
 
@@ -146,7 +144,7 @@ The basic and most common use case is to edit tags for selected files.
 The `edit` action updates tag fields on the selected audio files.
 Any option you pass will **overwrite** the existing value for that field (after template formatting, if supported by your config). Options you don’t pass are left unchanged.
 
-Some fields accept **multiple values** (artists, genres, etc.). Provide multiple values by separating them with a semicolon:
+Some fields accept multiple values (artists, genres, etc.). Provide multiple values by separating them with a semicolon:
 
 - `artist="Artist 1; Artist 2"`
 - `genre="House; Deep House"`
@@ -176,7 +174,7 @@ Some fields accept **multiple values** (artists, genres, etc.). Provide multiple
 ### Extra fields
 
 - `--key key1 --value value1` (`-k key1 -v value1`): Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a extra field. Example: `key=url value=https://example.com`. Can be used multiple times.
-- `clearextra` (`e`): Clear **all** extra fields.
+- `clearextra` (`e`): Clear all extra fields.
 
 > Tip: `--key`/`--value` is useful for scripting or for fields not exposed as dedicated options.
 
@@ -219,12 +217,12 @@ Set album metadata from Discogs.com. Use `--url|-u` option to specify the releas
 ## Template fields
 
 When using templates (for example in `:move t=`), TagSelecta exposes a `TagDataForTemplate` object.  
-All fields are **strings** unless stated otherwise. List fields are provided both as a joined string and as a list.
+All fields are strings unless stated otherwise. List fields are provided both as a joined string and as a list.
 
 > Notes:
-> - `Disc00` / `Track00` are **zero-padded** only when the original value is numeric.
 > - `Year` is parsed from `Date` only if `Date` matches one of: `yyyy`, `yyyy-MM-dd`, `yyyy/MM/dd`.
 > - `Extra` fields are accessed via dot notation (example: `extra.url`).
+> - `pad(...)` function zero-pads a field (commonly the `track` field), e.g. `pad(track)`.
 
 - `album`: Album name. Example: `Selected Ambient Works 85-92`
 - `albumartist`: Album artists as a single string. Example: `Aphex Twin`
