@@ -1,6 +1,7 @@
 using TagLib;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.Http;
+using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
@@ -143,6 +144,7 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
                 }
                 else
                 {
+                    path = PathUtils.Expand(path);
                     picture = new Picture(path);
                 }
 
