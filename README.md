@@ -76,7 +76,7 @@ tagselecta ui .
 
 >Important: Do not run it from the root of your music library, because it will scan all files in the directory!
 
-Conseptually, the UI is divided into two parts: top panel with list of files and bottom panel with file details.
+Conceptually, the UI is divided into two parts: top panel with list of files and bottom panel with file details.
 
 **Navigation**
 
@@ -174,13 +174,13 @@ Some fields accept multiple values (artists, genres, etc.). Provide multiple val
 ### Extra fields
 
 - `--key key1 --value value1` (`-k key1 -v value1`): Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a extra field. Example: `key=url value=https://example.com`. Can be used multiple times.
-- `clearextra` (`e`): Clear all extra fields.
+- `clearextra`: Clear all extra fields.
 
 > Tip: `--key`/`--value` is useful for scripting or for fields not exposed as dedicated options.
 
 ### Pictures (cover art)
 
-- `picture` (`p`): Add one or more pictures from file paths. Example: `picture=./cover.jpg`
+- `picture` (`p`): Add one or more pictures from file paths or url. Example: `picture=./cover.jpg`
 - `picturetype`: Type for picture. Example: `picturetype=FrontCover`
 - `clearpicture`: Remove all existing pictures before adding new ones.
 
