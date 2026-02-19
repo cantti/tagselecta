@@ -18,6 +18,7 @@ public class KeymapHelpWidget : Renderable
             ("e", "", "Toggle file list (explorer)"),
             ("t", "", "Toggle tree"),
             ("f", "", "Toggle filter"),
+            ("p", "", "Toggle picture"),
             ("u", "", "Undo"),
             ("g", "", "Go to start"),
             ("G", "", "Go to end"),
