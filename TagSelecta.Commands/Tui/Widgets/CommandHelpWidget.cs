@@ -8,7 +8,7 @@ public class CommandHelpWidget : Renderable
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         IRenderable content = new Rows(
-            new Text("Command help:", new Style(Color.Yellow)),
+            new SectionHeaderWidget("Command help:"),
             CommandHelp(),
             Text.Empty,
             EditableFieldsHelp(),

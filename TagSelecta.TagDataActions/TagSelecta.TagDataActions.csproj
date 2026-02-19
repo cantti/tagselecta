@@ -13,7 +13,7 @@
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
       Version="10.0.2"
     />
-    <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
     <PackageReference Include="Refit.HttpClientFactory" Version="9.0.2" />
   </ItemGroup>
 </Project>

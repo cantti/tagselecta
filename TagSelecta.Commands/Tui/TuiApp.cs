@@ -10,12 +10,6 @@ namespace TagSelecta.Commands.Tui;
 
 public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
-    private const string HeaderLayoutKey = "navigation";
-    private const string TagDataLayoutKey = "body";
-    private const string CommandLayoutKey = "command";
-    private const string StatusLayoutKey = "status";
-
-    private const string FilesLayoutKey = "files";
     private readonly IAudioFileScanner _audioFileScanner;
     private readonly ITuiCommandFactory _commandFactory;
     private readonly IAnsiConsole _console;
@@ -67,6 +61,8 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     public bool FileListEnabled { get; set; } = true;
 
+    public bool PictureEnabled { get; set; }
+
     public void SetCommandPromptText(string text)
     {
         _inputHandler.SetText(text);
@@ -85,7 +81,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         }
     }
 
-    protected override async Task<int> ExecuteAsync(
+    public override async Task<int> ExecuteAsync(
         CommandContext context,
         TuiSettings settings,
         CancellationToken ct
@@ -174,14 +170,30 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     private IRenderable DrawLayout()
     {
+        const string HeaderLayoutKey = "navigation";
+        const string TagDataLayoutKey = "body";
+        const string CommandLayoutKey = "command";
+        const string StatusLayoutKey = "status";
+        const string FilesLayoutKey = "files";
+        const int headerSize = 3;
+        const int statusBarHeight = 1;
+        const int commandBarHeight = 1;
         var children = new List<Layout>();
-        children.Add(new Layout(HeaderLayoutKey).Size(3).Update(RenderHeader()));
-        if (KeymapHelpEnabled || CommandHelpEnabled)
+        children.Add(new Layout(HeaderLayoutKey).Size(headerSize).Update(RenderHeader()));
+        if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
         {
             children.Add(
                 new Layout(FilesLayoutKey).Update(
                     KeymapHelpEnabled ? new KeymapHelpWidget()
                     : CommandHelpEnabled ? new CommandHelpWidget()
+                    : PictureEnabled
+                        ? new PictureWidget(
+                            FocusedFile,
+                            _console.Profile.Height
+                                - headerSize
+                                - statusBarHeight
+                                - commandBarHeight
+                        )
                     : Text.Empty
                 )
             );
@@ -190,23 +202,30 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         {
             if (FileListEnabled)
             {
-                var filesContentSize = (int)(
-                    (Console.WindowHeight - 3 - 1 - 1 - 1) * _config.FileListRatio
+                const int fileListPadding = 1;
+                var filesContentHeight = (int)(
+                    (
+                        Console.WindowHeight
+                        - headerSize
+                        - statusBarHeight
+                        - commandBarHeight
+                        - fileListPadding
+                    ) * _config.FileListRatio
                 );
                 children.Add(
                     new Layout(FilesLayoutKey)
-                        .Size(filesContentSize)
+                        .Size(filesContentHeight)
                         .Update(
                             TreeEnabled
                                 ? new TreeListWidget(
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentSize - 2
+                                    filesContentHeight - 2
                                 )
                                 : new FileListWidget(
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentSize - 2
+                                    filesContentHeight - 2
                                 )
                         )
                 );
@@ -216,10 +235,14 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             );
         }
 
-        children.Add(new Layout(StatusLayoutKey).Size(1).Update(new StatusWidget(_statusMessage)));
+        children.Add(
+            new Layout(StatusLayoutKey)
+                .Size(statusBarHeight)
+                .Update(new StatusWidget(_statusMessage))
+        );
         children.Add(
             new Layout(CommandLayoutKey)
-                .Size(1)
+                .Size(statusBarHeight)
                 .Update(
                     _inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(_inputHandler.Text, _inputHandler.CursorPos)
@@ -266,7 +289,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             new Markup("[bold blue]Documentation[/]: [link]https://github.com/cantti/tagselecta[/]")
         );
         return new Rows(
-            new Text("Tagselecta:", new Style(Color.Yellow)),
+            new SectionHeaderWidget("Tagselecta"),
             new Columns(cols1) { Padding = new Padding(2, 0, 2, 0), Expand = false }
         );
     }
@@ -292,6 +315,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _hotkeys.Bind("a", "selectall");
         _hotkeys.Bind("A", "selectdir");
         _hotkeys.Bind("*", "selectall");
+        _hotkeys.Bind("p", "togglepicture");
     }
 
     private async Task DispatchCommand(string commandText)

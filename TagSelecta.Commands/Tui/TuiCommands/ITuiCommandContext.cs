@@ -12,6 +12,7 @@ public interface ITuiCommandContext
     bool CommandHelpEnabled { get; set; }
     bool FileListEnabled { get; set; }
     IEnumerable<TagDataActionTarget> VisibleFiles { get; }
+    bool PictureEnabled { get; set; }
     void Quit();
     void Print(string markupMessage);
     void SetCommandPromptText(string text);

@@ -49,7 +49,7 @@ public class TreeListWidget(
             var style = new Style(
                 treeLine.File is not null && treeLine.File.HasChanges ? Color.Red : Color.Default,
                 treeLine.File is not null && treeLine.File == focusedFile
-                    ? Color.Gray
+                    ? Color.Grey
                     : Color.Default
             );
 
@@ -57,7 +57,7 @@ public class TreeListWidget(
         }
 
         IRenderable content = new Rows(
-            new Text($"Files ({_files.Count}):", new Style(Color.Yellow)),
+            new SectionHeaderWidget($"Files ({_files.Count}):"),
             new Rows(items)
         );
 

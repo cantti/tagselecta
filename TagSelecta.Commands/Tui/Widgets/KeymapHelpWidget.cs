@@ -36,7 +36,7 @@ public class KeymapHelpWidget : Renderable
             );
         }
 
-        IRenderable content = new Rows(new Text("Keymap help:", new Style(Color.Yellow)), grid);
+        IRenderable content = new Rows(new SectionHeaderWidget("Keymap help:"), grid);
         return content.Render(options, maxWidth);
     }
 }

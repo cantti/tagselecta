@@ -8,7 +8,7 @@ public class TagDataWidget(TagDataActionTarget? focusedFile) : Renderable
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         var rows = new List<IRenderable>();
-        rows.Add(new Text("Metadata:", new Style(Color.Yellow, Color.Default, Decoration.Bold)));
+        rows.Add(new SectionHeaderWidget("Metadata:"));
 
         if (focusedFile?.Exception is not null)
         {

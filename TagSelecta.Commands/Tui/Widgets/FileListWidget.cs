@@ -49,10 +49,7 @@ public class FileListWidget(
         }
 
         IRenderable content = new Rows(
-            new Text($"Files ({filesList.Count}):", new Style(Color.Yellow))
-            {
-                Overflow = Overflow.Ellipsis,
-            },
+            new SectionHeaderWidget($"Files ({filesList.Count}):"),
             new Rows(items)
         );
 

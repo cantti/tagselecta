@@ -16,7 +16,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
 ) : AsyncCommand<TSettings>
     where TSettings : TagDataActionSettings
 {
-    protected override async Task<int> ExecuteAsync(
+    public override async Task<int> ExecuteAsync(
         CommandContext context,
         TSettings settings,
         CancellationToken ct
