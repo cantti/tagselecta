@@ -345,7 +345,7 @@ OPTIONS:
                            provided using a ';' separator                       
     -a, --artist           One or more artists. Multiple values can be provided 
                            using a ';' separator                                
-        --Bpm              Beat per minutes                                     
+        --bpm              Beat per minutes                                     
         --catalognumber    Catalog number                                       
     -c, --comment          Comment or notes                                     
     -C, --composer         Composer                                             

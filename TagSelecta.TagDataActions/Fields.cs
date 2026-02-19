@@ -7,7 +7,7 @@ public static class Fields
     public const string Album = "album";
     public const string AlbumArtist = "albumartist";
     public const string Artist = "artist";
-    public const string Bpm = "Bpm";
+    public const string Bpm = "bpm";
     public const string CatalogNumber = "catalognumber";
     public const string Comment = "comment";
     public const string Composer = "composer";
