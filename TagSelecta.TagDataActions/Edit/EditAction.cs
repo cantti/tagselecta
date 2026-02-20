@@ -154,6 +154,8 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
                         ? type
                         : PictureType.FrontCover;
 
+                tagData.Picture.RemoveAll(x => x.Type == picture.Type);
+
                 tagData.Picture.Add(picture);
             }
         }
