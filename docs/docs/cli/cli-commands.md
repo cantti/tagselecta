@@ -1,0 +1,203 @@
+# CLI commands
+
+### Edit command
+
+```
+DESCRIPTION:
+Edit tags (read/write). To edit extra fields, use the --key key1 --value value1 
+options
+
+USAGE:
+    tagselecta edit <path> [OPTIONS]
+
+EXAMPLES:
+    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k 
+description -v test
+    tagselecta edit song.mp3 -c 'url=https://github.com'
+    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
+Artists" "-i" }}'
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help             Prints help information                              
+        --yes              Skip confirmation before writing changes to files    
+    -l, --album            Album name                                           
+    -A, --albumartist      One or more album artists. Multiple values can be    
+                           provided using a ';' separator                       
+    -a, --artist           One or more artists. Multiple values can be provided 
+                           using a ';' separator                                
+        --bpm              Beat per minutes                                     
+        --catalognumber    Catalog number                                       
+    -c, --comment          Comment or notes                                     
+    -C, --composer         Composer                                             
+        --conductor        Conductor                                            
+        --copyright        Copyright                                            
+    -y, --date             Release date                                         
+    -d, --disc             Disc number                                          
+    -D, --disctotal        Total number of discs                                
+    -g, --genre            One or more genres. Multiple values can be provided  
+                           using a ';' separator                                
+        --isrc             International standard recording code                
+        --label            Record label                                         
+        --publisher        Publisher                                            
+    -t, --title            Track title                                          
+    -n, --track            Track number                                         
+    -N, --tracktotal       Total number of tracks                               
+    -k, --key              Extra field key key. Must be used together with      
+                           --value                                              
+    -v, --value                                                                 
+        --clearextra       Clear all other extra fields                         
+    -p, --picture          Path or url to a picture. Use this option multiple   
+                           times to include multiple images (e.g., -p path1 -p  
+                           path2)                                               
+        --picturetype      Type of each picture provided. Specify multiple times
+                           to match the order of the pictures. This option is   
+                           optional.                                            
+                           Common values: FrontCover, BackCover, Artist, Other  
+        --clearpicture     Clear all other pictures
+```
+
+### Extract Picture command
+
+```
+DESCRIPTION:
+Extract pictures to files
+
+USAGE:
+    tagselecta extractpicture <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information                                   
+        --yes         Skip confirmation before writing changes to files         
+    -t, --type        Types of pictures to extract. Multiple entries can be     
+                      provided using a ';' separator.                           
+                      Common types: FrontCover, BackCover, Artist, Other        
+    -o, --output      Output file name                                          
+        --override    Override files                                            
+    -l, --limit       Limit number of files to be extracted
+```
+
+### Move command
+
+```
+DESCRIPTION:
+Move (rename) files to another directory
+
+USAGE:
+    tagselecta move <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help              Prints help information                             
+        --yes               Skip confirmation before writing changes to files   
+    -t, --template          Template. For example: {{ track }} - {{ title }}.{{ 
+                            ext }}. Required                                    
+    -k, --keepemptydirs     Keep empty directories                              
+    -d, --donotmoveother    Do not move other files
+```
+
+### Split command
+
+```
+DESCRIPTION:
+Split artists, album artists and composers
+
+USAGE:
+    tagselecta split <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help         Prints help information                          
+        --yes          Skip confirmation before writing changes to files
+    -s, --separator    Default values are: , ; feat.
+```
+
+### Title case command
+
+```
+DESCRIPTION:
+Convert all fields to title case
+
+USAGE:
+    tagselecta titlecase <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help    Prints help information                          
+        --yes     Skip confirmation before writing changes to files
+```
+
+### Auto Track command
+
+```
+DESCRIPTION:
+Auto track
+
+USAGE:
+    tagselecta autotrack <path> [OPTIONS]
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help        Prints help information                          
+        --yes         Skip confirmation before writing changes to files
+        --keepdisk    Remove Disc and DiscTotal
+```
+
+### Discogs command
+
+```
+DESCRIPTION:
+Update album from discogs. You can pass discogs release id (not master) or query
+to search
+
+USAGE:
+    tagselecta discogs <path> [OPTIONS]
+
+EXAMPLES:
+    tagselecta discogs path-to-album -r 
+https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help      Prints help information                                     
+        --yes       Skip confirmation before writing changes to files           
+    -u, --url       Discogs release URL. Required                               
+    -f, --fields    Fields to update from Discogs release. If not specified, all
+                    values will be updated
+```
+
+### Find command
+
+```
+DESCRIPTION:
+Find files by metadata
+
+USAGE:
+    tagselecta find <path> [OPTIONS]
+
+EXAMPLES:
+    tagselecta find . -q "title | string.downcase |  string.contains 'dub'"
+
+ARGUMENTS:
+    <path>     
+
+OPTIONS:
+    -h, --help     Prints help information
+    -q, --query    Find query
+```

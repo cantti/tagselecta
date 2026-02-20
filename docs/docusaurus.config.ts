@@ -58,10 +58,10 @@ const config: Config = {
     },
     navbar: {
       title: 'TagSelecta',
-      logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.svg',
-      },
+      // logo: {
+      //   alt: 'My Site Logo',
+      //   src: 'img/logo.svg',
+      // },
       items: [
         // {
         //   type: 'docSidebar',
