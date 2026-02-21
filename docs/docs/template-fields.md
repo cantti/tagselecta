@@ -37,7 +37,6 @@ All fields are strings unless stated otherwise. List fields are provided both as
 - `publisher`: string. Publisher/organization. Example: `Warp Records`
 - `title`: Track title. Example: `Xtal`
 - `track`: Track number (raw value from tags). Example: `1`
-- `track00`: Track number padded to 2 digits when numeric. Example: `01`
 - `tracktotal`: Total number of tracks. Example: `12`
 - `year`: Year extracted from `date` (if parseable). Example: `1993`
 - `extra`: Extra fields as a map. Usage: `{{ extra.url }}`

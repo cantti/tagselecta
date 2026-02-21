@@ -30,3 +30,5 @@ This will:
 * download the latest release,
 * extract it,
 * install it into the directory you provide (default recommended: `$HOME/.local/bin`).
+* 
+> Tip: the same script can be used to update the installed version.

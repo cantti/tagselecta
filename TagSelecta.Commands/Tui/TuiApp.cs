@@ -286,7 +286,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             keys.Select(x => new Markup($"[bold blue]{x.Key}[/] ➔ {x.Action}")).ToList()
         );
         cols1.Add(
-            new Markup("[bold blue]Documentation[/]: [link]https://github.com/cantti/tagselecta[/]")
+            new Markup("[bold blue]Documentation[/]: [link]https://cantti.github.io/tagselecta[/]")
         );
         return new Rows(
             new SectionHeaderWidget("Tagselecta"),

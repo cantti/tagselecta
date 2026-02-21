@@ -7,10 +7,10 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const string readmePath = "README.md";
-        string readme = File.ReadAllText(readmePath);
+        const string mdPath = "./docs/docs/cli/cli-commands.md";
+        string readme = File.ReadAllText(mdPath);
         readme = UpdateHelp(readme);
-        File.WriteAllText(readmePath, readme);
+        File.WriteAllText(mdPath, readme);
     }
 
     static string UpdateHelp(string readme)
