@@ -1,11 +1,7 @@
----
-sidebar_position: 3
----
-
 # Move command
 
 ```
-:move t=...
+:move t="..."
 ```
 
 Moves/renames files using a template.

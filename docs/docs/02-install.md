@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Install
 
 ### Option 1. Download Release (Manual Install)

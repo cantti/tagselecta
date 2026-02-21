@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Get started
 
 Great way to get started is to use the interactive UI (TUI). Open directory with album (audio files) and run:

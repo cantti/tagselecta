@@ -12,11 +12,11 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private readonly IAudioFileScanner _audioFileScanner;
     private readonly ITuiCommandFactory _commandFactory;
+    private readonly TuiAppConfig _config;
     private readonly IAnsiConsole _console;
     private readonly HotkeyMap _hotkeys;
     private readonly InputHandler _inputHandler;
     private readonly Lock _printLock = new();
-    private readonly TuiAppConfig _config;
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
     private Task _currentCommandTask = Task.CompletedTask;
@@ -230,6 +230,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                         )
                 );
             }
+
             children.Add(
                 new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
             );
@@ -308,6 +309,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _hotkeys.Bind("f", "togglefilter");
         _hotkeys.Bind("?", "togglekeymaphelp");
         _hotkeys.Bind("h", "togglecommandhelp");
+        _hotkeys.Bind("H", "opendocs");
         _hotkeys.Bind("e", "togglefilelist");
         _hotkeys.Bind("u", "undo");
         _hotkeys.Bind(HotkeyTokens.Tab, "select");
@@ -316,6 +318,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _hotkeys.Bind("A", "selectdir");
         _hotkeys.Bind("*", "selectall");
         _hotkeys.Bind("p", "togglepicture");
+        _hotkeys.Bind("P", "openpicture");
     }
 
     private async Task DispatchCommand(string commandText)

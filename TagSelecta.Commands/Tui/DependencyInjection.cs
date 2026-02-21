@@ -27,6 +27,8 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommand, UndoCommand>();
         services.AddTransient<ITuiCommand, MacroCommand>();
         services.AddTransient<ITuiCommand, TogglePictureCommand>();
+        services.AddTransient<ITuiCommand, OpenPictureCommand>();
+        services.AddTransient<ITuiCommand, OpenDocs>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
 
         return services;

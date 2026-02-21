@@ -1,8 +1,4 @@
----
-sidebar_position: 1
----
-
-## CLI Usage
+# CLI Usage
 
 CLI mode is useful for scripts and quick edits.
 

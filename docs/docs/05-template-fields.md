@@ -1,7 +1,3 @@
----
-sidebar_position: 5
----
-
 # Template fields
 
 When using templates (for example in `:move t=`), TagSelecta exposes a `TagDataForTemplate` object.  

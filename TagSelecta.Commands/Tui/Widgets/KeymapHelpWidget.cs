@@ -9,6 +9,7 @@ public class KeymapHelpWidget : Renderable
     {
         var keys = new List<(string Key, string AltKey, string Action)>
         {
+            (":", "", "Command mode"),
             ("space", "tab", "Select"),
             ("escape", "", "Clear selection"),
             ("a", "*", "Select all"),
@@ -19,11 +20,13 @@ public class KeymapHelpWidget : Renderable
             ("t", "", "Toggle tree"),
             ("f", "", "Toggle filter"),
             ("p", "", "Toggle picture"),
+            ("P", "", "Open picture in default image viewer"),
             ("u", "", "Undo"),
             ("g", "", "Go to start"),
             ("G", "", "Go to end"),
             ("?", "", "Toggle this help"),
             ("h", "", "Toggle command help"),
+            ("H", "", "Open docs in browser"),
             ("q", "", "Quit"),
         };
         var grid = new Grid();
