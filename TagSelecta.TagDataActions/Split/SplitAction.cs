@@ -5,35 +5,21 @@ namespace TagSelecta.TagDataActions.Split;
 [TagDataActionName("split")]
 public class SplitAction : TagDataAction<SplitSettings>
 {
-    private string[] _separators = [",", ";", "feat."];
-
-    protected override bool BeforeExecute(SplitSettings settings)
-    {
-        if (settings.Separator is not null)
-        {
-            _separators = settings.Separator;
-        }
-
-        return true;
-    }
-
     protected override void Execute(TagDataActionExecuteContext<SplitSettings> context)
     {
         var tagData = context.Target.CurrentTagData;
-        var artists = tagData.Artist.SelectMany(Split).Distinct().ToList();
-        var albumArtists = tagData.AlbumArtist.SelectMany(Split).Distinct().ToList();
-        var composers = tagData.Composer.Select(Split).SelectMany(x => x).Distinct().ToList();
-
-        tagData.Artist = artists;
-        tagData.AlbumArtist = albumArtists;
-        tagData.Composer = composers;
+        var separator = context.Settings.Separator;
+        tagData.Artist = Split(tagData.Artist, separator);
+        tagData.AlbumArtist = Split(tagData.AlbumArtist, separator);
+        tagData.Composer = Split(tagData.Composer, separator);
+        tagData.Genre = Split(tagData.Genre, separator);
         context.Target.UpdateTagData(tagData);
     }
 
-    private List<string> Split(string input)
+    private static List<string> Split(List<string> input, string[] settingsSeparator)
     {
         return input
-            .Split(_separators, StringSplitOptions.RemoveEmptyEntries)
+            .SelectMany(x => x.Split(settingsSeparator, StringSplitOptions.RemoveEmptyEntries))
             .Select(x => x.Trim())
             .ToList();
     }
