@@ -26,7 +26,8 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         IAnsiConsole console,
         IAudioFileScanner audioFileScanner,
         ITuiCommandFactory commandFactory,
-        TuiAppConfig config
+        TuiAppConfig config,
+        ICompletionProvider completionProvider
     )
     {
         _console = console;
@@ -34,7 +35,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
         _commandFactory = commandFactory;
         _config = config;
         _hotkeys = new HotkeyMap();
-        _inputHandler = new InputHandler(_hotkeys);
+        _inputHandler = new InputHandler(_hotkeys, completionProvider);
     }
 
     public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
@@ -246,7 +247,11 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                 .Size(statusBarHeight)
                 .Update(
                     _inputHandler.Mode == InputMode.Command
-                        ? new CommandPromptWidget(_inputHandler.Text, _inputHandler.CursorPos)
+                        ? new CommandPromptWidget(
+                            _inputHandler.Text,
+                            _inputHandler.CursorPos,
+                            _inputHandler.Completion
+                        )
                         : Text.Empty
                 )
         );

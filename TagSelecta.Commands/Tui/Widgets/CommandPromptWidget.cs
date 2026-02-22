@@ -3,21 +3,23 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class CommandPromptWidget(string text, int cursorPos) : Renderable
+public class CommandPromptWidget(string text, int cursorPos, string completion) : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         var cols = new List<IRenderable>();
         cols.Add(new Text(":"));
 
-        foreach (var token in Tokenize(text))
+        if (text != "")
         {
-            AddTokenAsRenderable(cols, token);
+            foreach (var token in Tokenize(text))
+            {
+                AddTokenAsRenderable(cols, token);
+            }
         }
-
-        if (text.Length == cursorPos)
+        else
         {
-            cols.Add(new Text(" ", GetStyle(TokenKind.Cursor)));
+            cols.Add(new Text(" ", _cursorStyle));
         }
 
         return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
@@ -29,42 +31,78 @@ public class CommandPromptWidget(string text, int cursorPos) : Renderable
     private void AddTokenAsRenderable(List<IRenderable> cols, Token token)
     {
         var s = text.Substring(token.Start, token.Length);
-        var style = GetStyle(token.Kind);
+        var style = GetTokenStyle(token.Kind);
 
         var cursorInside = cursorPos >= token.Start && cursorPos < token.Start + token.Length;
+
         if (!cursorInside)
         {
             cols.Add(new Text(s, style));
-            return;
+            var isLastToken = token.Start + token.Length == text.Length;
+            if (isLastToken && cursorPos == text.Length)
+            {
+                if (!string.IsNullOrEmpty(completion))
+                {
+                    AddCompletion();
+                }
+                else
+                {
+                    cols.Add(new Text(" ", _cursorStyle));
+                }
+            }
+        }
+        else
+        {
+            var beforeLen = cursorPos - token.Start;
+            var atLen = 1;
+            var afterStart = beforeLen + atLen;
+
+            if (beforeLen > 0)
+            {
+                cols.Add(new Text(s.Substring(0, beforeLen), style));
+            }
+
+            var at = s[beforeLen].ToString();
+
+            if (!string.IsNullOrEmpty(completion) && at == " ")
+            {
+                AddCompletion();
+                cols.Add(new Text(" "));
+            }
+            else
+            {
+                cols.Add(new Text(at, _cursorStyle));
+            }
+
+            if (afterStart < s.Length)
+            {
+                cols.Add(new Text(s.Substring(afterStart), style));
+            }
         }
 
-        var beforeLen = cursorPos - token.Start;
-        var atLen = 1;
-        var afterStart = beforeLen + atLen;
-
-        if (beforeLen > 0)
+        void AddCompletion()
         {
-            cols.Add(new Text(s.Substring(0, beforeLen), style));
-        }
-
-        cols.Add(new Text(s.Substring(beforeLen, atLen), GetStyle(TokenKind.Cursor)));
-
-        if (afterStart < s.Length)
-        {
-            cols.Add(new Text(s.Substring(afterStart), style));
+            cols.Add(new Text(completion[0].ToString(), _cursorStyle));
+            if (completion.Length > 1)
+            {
+                cols.Add(new Text(completion[1..], _completionStyle));
+            }
         }
     }
 
-    private static Style GetStyle(TokenKind kind)
+    private static Style GetTokenStyle(TokenKind kind)
     {
         return kind switch
         {
             TokenKind.Value => new Style(Color.Yellow),
             TokenKind.QuotedValue => new Style(Color.Yellow),
-            TokenKind.Cursor => new Style(decoration: Decoration.Invert),
             _ => Style.Plain,
         };
     }
+
+    private readonly Style _cursorStyle = new Style(decoration: Decoration.Invert);
+
+    private readonly Style _completionStyle = new Style(Color.Grey);
 
     private IEnumerable<Token> Tokenize(string input)
     {
@@ -160,7 +198,6 @@ public class CommandPromptWidget(string text, int cursorPos) : Renderable
         Default,
         Value,
         QuotedValue,
-        Cursor,
     }
 
     private readonly record struct Token(int Start, int Length, TokenKind Kind);

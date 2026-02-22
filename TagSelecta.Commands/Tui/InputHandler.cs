@@ -1,16 +1,16 @@
-using System.Text;
-
 namespace TagSelecta.Commands.Tui;
 
-public class InputHandler(HotkeyMap hotkeys)
+public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvider)
 {
-    private readonly StringBuilder _buffer = new();
     private readonly List<string> _history = [];
 
     // -1 = not navigating history
     private int _historyIndex = -1;
 
-    public string Text => _buffer.ToString();
+    public string Text { get; private set; } = "";
+
+    public string Completion { get; private set; } = "";
+
     public int CursorPos { get; private set; }
     public InputMode Mode { get; private set; } = InputMode.Normal;
 
@@ -32,9 +32,8 @@ public class InputHandler(HotkeyMap hotkeys)
     public void SetText(string text)
     {
         Mode = InputMode.Command;
-        _buffer.Clear();
-        _buffer.Append(text);
-        CursorPos = _buffer.Length;
+        Text = text;
+        CursorPos = Text.Length;
     }
 
     private string? HandleNormalMode(ConsoleKeyInfo key)
@@ -42,7 +41,7 @@ public class InputHandler(HotkeyMap hotkeys)
         if (key.KeyChar == ':')
         {
             Mode = InputMode.Command;
-            _buffer.Clear();
+            Text = "";
             CursorPos = 0;
             return null;
         }
@@ -59,8 +58,8 @@ public class InputHandler(HotkeyMap hotkeys)
                 return null;
 
             case ConsoleKey.Enter:
-                var text = _buffer.ToString();
-                ExitCommandMode(true, text);
+                var text = Text;
+                ExitCommandMode(true);
                 return text;
 
             case ConsoleKey.LeftArrow:
@@ -68,57 +67,67 @@ public class InputHandler(HotkeyMap hotkeys)
                 {
                     CursorPos--;
                 }
-
+                Completion = "";
                 return null;
 
             case ConsoleKey.RightArrow:
-                if (CursorPos < _buffer.Length)
+                if (CursorPos < Text.Length)
                 {
                     CursorPos++;
                 }
-
+                Completion = "";
                 return null;
 
             case ConsoleKey.Home:
                 CursorPos = 0;
+                Completion = "";
                 return null;
 
             case ConsoleKey.End:
-                CursorPos = _buffer.Length;
+                CursorPos = Text.Length;
+                Completion = "";
                 return null;
 
             case ConsoleKey.Backspace:
                 if (CursorPos > 0)
                 {
-                    _buffer.Remove(CursorPos - 1, 1);
+                    Text = Text.Remove(CursorPos - 1, 1);
                     CursorPos--;
                 }
-
+                Completion = "";
                 return null;
 
             case ConsoleKey.Delete:
-                if (CursorPos < _buffer.Length)
+                if (CursorPos < Text.Length)
                 {
-                    _buffer.Remove(CursorPos, 1);
+                    Text = Text.Remove(CursorPos, 1);
                 }
-
+                Completion = "";
                 return null;
 
             case ConsoleKey.UpArrow:
                 NavigateHistoryUp();
+                Completion = "";
                 return null;
 
             case ConsoleKey.DownArrow:
                 NavigateHistoryDown();
+                Completion = "";
+                return null;
+
+            case ConsoleKey.Tab:
+                Text = Text.Insert(CursorPos, Completion);
+                CursorPos += Completion.Length;
+                Completion = "";
                 return null;
         }
 
-        // typing resets history navigation
         if (!char.IsControl(key.KeyChar))
         {
             _historyIndex = -1;
-            _buffer.Insert(CursorPos, key.KeyChar);
+            Text = Text.Insert(CursorPos, key.KeyChar.ToString());
             CursorPos++;
+            Completion = completionProvider.GetCompletion(Text, CursorPos);
         }
 
         return null;
@@ -159,29 +168,29 @@ public class InputHandler(HotkeyMap hotkeys)
         {
             // past newest => empty input
             _historyIndex = -1;
-            _buffer.Clear();
+            Text = "";
             CursorPos = 0;
         }
     }
 
     private void LoadHistoryEntry()
     {
-        _buffer.Clear();
-        _buffer.Append(_history[_historyIndex]);
-        CursorPos = _buffer.Length;
+        Text = _history[_historyIndex];
+        CursorPos = Text.Length;
     }
 
-    private void ExitCommandMode(bool addToHistory, string? text = null)
+    private void ExitCommandMode(bool addToHistory)
     {
         Mode = InputMode.Normal;
 
-        if (addToHistory && !string.IsNullOrWhiteSpace(text))
+        if (addToHistory && !string.IsNullOrWhiteSpace(Text))
         {
-            _history.Add(text);
+            _history.Add(Text);
         }
 
         _historyIndex = -1;
-        _buffer.Clear();
+        Text = "";
         CursorPos = 0;
+        Completion = "";
     }
 }
