@@ -1,10 +1,13 @@
 # Edit command
 
+The basic and most common use case is to edit tags for selected files.
+
+Example:
+
 ```
-:edit
+:edit artist="Artist 1" title="Track Name"
 ```
 
-The basic and most common use case is to edit tags for selected files.
 
 The `edit` action updates tag fields on the selected audio files.
 Any option you pass will **overwrite** the existing value for that field (after template formatting, if supported by your config). Options you don’t pass are left unchanged.

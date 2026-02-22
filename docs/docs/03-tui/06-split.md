@@ -1,9 +1,13 @@
 # Split command
 
+Split artists, album artists, composers, genres.
+
+Example:
+
 ```
-:split
+:split seperator=";" seperator="," 
 ```
 
-Split artists, album artists and composers. Default separators are `,`, `;`, `.feat`. 
+Options:
 
-Can be customized using `separator` option.
+- `seperator` (`s`):  Seperator. Can be used multiple times. Default: , ; feat.
