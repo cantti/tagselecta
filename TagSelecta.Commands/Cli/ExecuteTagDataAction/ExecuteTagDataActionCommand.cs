@@ -1,6 +1,5 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
-using TagLib.Ape;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;

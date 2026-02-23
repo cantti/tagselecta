@@ -8,35 +8,20 @@ using TagSelecta.Shared.IO;
 
 namespace TagSelecta.Commands.Tui;
 
-public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
+public class TuiApp(
+    IAnsiConsole console,
+    IAudioFileScanner audioFileScanner,
+    ITuiCommandFactory commandFactory,
+    TuiAppConfig config,
+    InputHandler inputHandler
+) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
-    private readonly IAudioFileScanner _audioFileScanner;
-    private readonly ITuiCommandFactory _commandFactory;
-    private readonly TuiAppConfig _config;
-    private readonly IAnsiConsole _console;
-    private readonly HotkeyMap _hotkeys;
-    private readonly InputHandler _inputHandler;
+    private readonly HotkeyMap _hotkeys = new();
     private readonly Lock _printLock = new();
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
     private Task _currentCommandTask = Task.CompletedTask;
     private string _statusMessage = "";
-
-    public TuiApp(
-        IAnsiConsole console,
-        IAudioFileScanner audioFileScanner,
-        ITuiCommandFactory commandFactory,
-        TuiAppConfig config,
-        ICompletionProvider completionProvider
-    )
-    {
-        _console = console;
-        _audioFileScanner = audioFileScanner;
-        _commandFactory = commandFactory;
-        _config = config;
-        _hotkeys = new HotkeyMap();
-        _inputHandler = new InputHandler(_hotkeys, completionProvider);
-    }
 
     public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
 
@@ -66,7 +51,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     public void SetCommandPromptText(string text)
     {
-        _inputHandler.SetText(text);
+        inputHandler.SetText(text);
     }
 
     public void Quit()
@@ -101,7 +86,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
             AltScreen.Enter();
 
-            Files = _audioFileScanner
+            Files = audioFileScanner
                 .SearchAndRead(settings.Path, ct)
                 .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
@@ -124,7 +109,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     private Task StartUiLoop(Channel<ConsoleKeyInfo> channel)
     {
-        return _console
+        return console
             .Live(new Panel("Starting..."))
             .AutoClear(true)
             .StartAsync(async ctx =>
@@ -134,7 +119,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                     ctx.UpdateTarget(DrawLayout());
                     while (channel.Reader.TryRead(out var key))
                     {
-                        if (_inputHandler.ProcessKey(key, out var request))
+                        if (inputHandler.ProcessKey(key, out var request))
                         {
                             await DispatchCommand(request);
                         }
@@ -190,10 +175,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                     : PictureEnabled
                         ? new PictureWidget(
                             FocusedFile,
-                            _console.Profile.Height
-                                - headerSize
-                                - statusBarHeight
-                                - commandBarHeight
+                            console.Profile.Height - headerSize - statusBarHeight - commandBarHeight
                         )
                     : Text.Empty
                 )
@@ -211,7 +193,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                         - statusBarHeight
                         - commandBarHeight
                         - fileListPadding
-                    ) * _config.FileListRatio
+                    ) * config.FileListRatio
                 );
                 children.Add(
                     new Layout(FilesLayoutKey)
@@ -246,11 +228,11 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             new Layout(CommandLayoutKey)
                 .Size(statusBarHeight)
                 .Update(
-                    _inputHandler.Mode == InputMode.Command
+                    inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(
-                            _inputHandler.Text,
-                            _inputHandler.CursorPos,
-                            _inputHandler.Completion
+                            inputHandler.Text,
+                            inputHandler.CursorPos,
+                            inputHandler.Completion
                         )
                         : Text.Empty
                 )
@@ -267,10 +249,10 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             .ToList();
         if (unknownOptions.Count != 0)
         {
-            _console.MarkupLine("[red]Unknown option(s) provided:[/]");
+            console.MarkupLine("[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
             {
-                _console.WriteLine($"  {option}", new Style(Color.Yellow));
+                console.WriteLine($"  {option}", new Style(Color.Yellow));
             }
 
             return false;
@@ -360,7 +342,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                 foreach (var parsedCommand in commands)
                 {
                     _currentCommandCts.Token.ThrowIfCancellationRequested();
-                    var command = _commandFactory.Create(parsedCommand.Name);
+                    var command = commandFactory.Create(parsedCommand.Name);
                     await command.ExecuteAsync(this, parsedCommand, _currentCommandCts.Token);
                 }
             }

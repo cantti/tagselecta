@@ -67,6 +67,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 {
                     CursorPos--;
                 }
+
                 Completion = "";
                 return null;
 
@@ -75,6 +76,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 {
                     CursorPos++;
                 }
+
                 Completion = "";
                 return null;
 
@@ -94,6 +96,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                     Text = Text.Remove(CursorPos - 1, 1);
                     CursorPos--;
                 }
+
                 Completion = "";
                 return null;
 
@@ -102,6 +105,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 {
                     Text = Text.Remove(CursorPos, 1);
                 }
+
                 Completion = "";
                 return null;
 

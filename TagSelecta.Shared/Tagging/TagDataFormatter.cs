@@ -94,6 +94,7 @@ public class TagDataFormatter
         {
             throw new TagSelectaException(parsedTemplate.Messages.ToString());
         }
+
         var result = parsedTemplate.Render(context);
         return result.Trim();
     }

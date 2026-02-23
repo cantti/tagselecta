@@ -5,6 +5,10 @@ namespace TagSelecta.Commands.Tui.Widgets;
 
 public class CommandPromptWidget(string text, int cursorPos, string completion) : Renderable
 {
+    private readonly Style _completionStyle = new(Color.Grey);
+
+    private readonly Style _cursorStyle = new(decoration: Decoration.Invert);
+
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         var cols = new List<IRenderable>();
@@ -99,10 +103,6 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
             _ => Style.Plain,
         };
     }
-
-    private readonly Style _cursorStyle = new Style(decoration: Decoration.Invert);
-
-    private readonly Style _completionStyle = new Style(Color.Grey);
 
     private IEnumerable<Token> Tokenize(string input)
     {

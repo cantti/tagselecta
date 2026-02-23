@@ -23,13 +23,13 @@ public class TagDataActionTarget : ITagDataActionTarget
 
     public string CurrentPath { get; private set; } = null!;
 
+    public MoveOptions MoveOptions { get; private set; }
+
     public string BackupPath { get; private set; } = null!;
 
     public TagData CurrentTagData => _currentTagData.Clone();
 
     public TagData BackupTagData => _backupTagData.Clone();
-
-    public MoveOptions MoveOptions { get; private set; }
 
     public void UpdatePath(string path, MoveOptions moveOptions)
     {
