@@ -32,11 +32,6 @@ public sealed class HotkeyMap
     private static string NormalizeKey(string key)
     {
         var trimmed = key.Trim();
-        if (trimmed.Length == 0)
-        {
-            throw new ArgumentException("Hotkey cannot be empty.", nameof(key));
-        }
-
         return trimmed.Length == 1 ? trimmed : trimmed.ToLowerInvariant();
     }
 
