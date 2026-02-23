@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Spectre.Console.Cli;
-using TagSelecta.Commands.Tui.TuiCommands;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.TagDataActions.Abstractions;
 
@@ -17,7 +16,7 @@ public class CompletionProvider : ICompletionProvider
         AddActions(tagDataActions);
     }
 
-    public string GetCompletion(string input, int cursorPos)
+    public string GetCompletion(string input, int cursorPos, int completionIndex)
     {
         if (IsCursorInsideDoubleQuotes(input, cursorPos))
         {
@@ -27,19 +26,19 @@ public class CompletionProvider : ICompletionProvider
         // only consider text to the left of the cursor for completion
         var leftOfCursor = input[..cursorPos];
 
-        // get last word
-        var word = Regex.Match(leftOfCursor, "[a-zA-Z]+$").Value;
-
-        if (string.IsNullOrEmpty(word))
+        if (leftOfCursor.EndsWith('=') || leftOfCursor.EndsWith('"') || leftOfCursor.EndsWith('&'))
         {
             return "";
         }
 
+        // get last word
+        var word = Regex.Match(leftOfCursor, "[a-zA-Z]+$").Value;
+
         var currentCommand = GetCurrentCommand(leftOfCursor);
 
         return currentCommand.IsTyping
-            ? GetCommandCompletion(word)
-            : GetOptionCompletion(currentCommand.Command, word);
+            ? GetCommandCompletion(word, completionIndex)
+            : GetOptionCompletion(currentCommand.Command, word, completionIndex);
     }
 
     private void AddActions(IEnumerable<ITagDataAction> actions)
@@ -73,20 +72,10 @@ public class CompletionProvider : ICompletionProvider
                 options.AddRange(attr.LongNames);
             }
 
+            options = options.OrderBy(x => x).ToList();
+
             _actions.Add((names.ToArray(), options.ToArray()));
         }
-    }
-
-    private string GetOptionCompletion(string currentCommand, string word)
-    {
-        var action = _actions.FirstOrDefault(a => a.Names.Contains(currentCommand));
-        if (action == default)
-        {
-            return "";
-        }
-
-        var completion = action.Options.FirstOrDefault(o => o.StartsWith(word));
-        return completion is not null ? completion[word.Length..] : "";
     }
 
     private static Type GetSettingsTypeFromAction(Type? actionType)
@@ -109,10 +98,34 @@ public class CompletionProvider : ICompletionProvider
         );
     }
 
-    private string GetCommandCompletion(string word)
+    private string GetCommandCompletion(string word, int completionIndex)
     {
-        var completion = _commands.FirstOrDefault(c => c.StartsWith(word));
-        return completion is not null ? completion[word.Length..] : "";
+        var candidates = _commands.Where(c => c.StartsWith(word)).ToList();
+        if (candidates.Count == 0)
+        {
+            return "";
+        }
+
+        var completion = candidates[completionIndex % candidates.Count];
+        return completion[word.Length..];
+    }
+
+    private string GetOptionCompletion(string currentCommand, string word, int completionIndex)
+    {
+        var action = _actions.FirstOrDefault(a => a.Names.Contains(currentCommand));
+        if (action == default)
+        {
+            return "";
+        }
+
+        var candidates = action.Options.Where(o => o.StartsWith(word)).ToList();
+        if (candidates.Count == 0)
+        {
+            return "";
+        }
+
+        var completion = candidates[completionIndex % candidates.Count];
+        return completion[word.Length..];
     }
 
     private (string Command, bool IsTyping) GetCurrentCommand(string leftOfCursor)

@@ -32,7 +32,7 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
         services.AddTransient<ICompletionProvider, CompletionProvider>();
         services.AddTransient<InputHandler>();
-        services.AddTransient<HotkeyMap>();
+        services.AddSingleton<HotkeyMap>();
 
         return services;
     }
