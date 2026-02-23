@@ -8,8 +8,8 @@ namespace TagSelecta.Commands.Tui;
 
 public class CompletionProvider : ICompletionProvider
 {
-    private readonly List<(string[] Names, string[] Options)> _actions = [];
     private readonly List<string> _commands = [];
+    private List<(string[] Names, string[] Options)> _actions = [];
 
     public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
     {
@@ -26,7 +26,8 @@ public class CompletionProvider : ICompletionProvider
         // only consider text to the left of the cursor for completion
         var leftOfCursor = input[..cursorPos];
 
-        if (leftOfCursor.EndsWith('=') || leftOfCursor.EndsWith('"') || leftOfCursor.EndsWith('&'))
+        // only complete words
+        if (input != "" && !Regex.IsMatch(leftOfCursor, "[a-z]+$"))
         {
             return "";
         }
@@ -51,13 +52,9 @@ public class CompletionProvider : ICompletionProvider
                 continue;
             }
 
-            List<string> names = [nameAttribute.Name];
-            if (nameAttribute.Alias is not null)
-            {
-                names.Add(nameAttribute.Alias);
-            }
+            // use only full names for command completion
+            _commands.Add(nameAttribute.Name);
 
-            _commands.AddRange(names);
             var settingsType = GetSettingsTypeFromAction(action.GetType());
             var props = settingsType.GetProperties();
             List<string> options = [];
@@ -74,8 +71,15 @@ public class CompletionProvider : ICompletionProvider
 
             options = options.OrderBy(x => x).ToList();
 
+            List<string> names = [nameAttribute.Name];
+            if (nameAttribute.Alias is not null)
+            {
+                names.Add(nameAttribute.Alias);
+            }
             _actions.Add((names.ToArray(), options.ToArray()));
         }
+
+        _actions = _actions.OrderBy(x => x.Names[0]).ToList();
     }
 
     private static Type GetSettingsTypeFromAction(Type? actionType)
@@ -125,7 +129,7 @@ public class CompletionProvider : ICompletionProvider
         }
 
         var completion = candidates[completionIndex % candidates.Count];
-        return completion[word.Length..];
+        return $"{completion[word.Length..]}=";
     }
 
     private (string Command, bool IsTyping) GetCurrentCommand(string leftOfCursor)

@@ -23,7 +23,18 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
         }
         else
         {
-            cols.Add(new Text(" ", _cursorStyle));
+            if (!string.IsNullOrEmpty(completion))
+            {
+                cols.Add(new Text(completion[0].ToString(), _cursorStyle));
+                if (completion.Length > 1)
+                {
+                    cols.Add(new Text(completion[1..], _completionStyle));
+                }
+            }
+            else
+            {
+                cols.Add(new Text(" ", _cursorStyle));
+            }
         }
 
         return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
