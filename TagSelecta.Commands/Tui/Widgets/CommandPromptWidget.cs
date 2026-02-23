@@ -3,38 +3,31 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class CommandPromptWidget(string text, int cursorPos, string completion) : Renderable
+public class CommandPromptWidget : Renderable
 {
     private readonly Style _completionStyle = new(Color.Grey);
 
     private readonly Style _cursorStyle = new(decoration: Decoration.Invert);
+    private readonly string _text;
+    private readonly int _cursorPos;
+    private readonly string _completion;
+
+    public CommandPromptWidget(string text, int cursorPos, string completion)
+    {
+        _cursorPos = cursorPos;
+        _completion = completion;
+        _text = text[0.._cursorPos] + _completion + text[_cursorPos..];
+    }
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         var cols = new List<IRenderable>();
         cols.Add(new Text(":"));
 
-        if (text != "")
+        var tokens = Tokenize(_text).ToList();
+        foreach (var token in tokens)
         {
-            foreach (var token in Tokenize(text))
-            {
-                AddTokenAsRenderable(cols, token);
-            }
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(completion))
-            {
-                cols.Add(new Text(completion[0].ToString(), _cursorStyle));
-                if (completion.Length > 1)
-                {
-                    cols.Add(new Text(completion[1..], _completionStyle));
-                }
-            }
-            else
-            {
-                cols.Add(new Text(" ", _cursorStyle));
-            }
+            AddTokenAsRenderable(cols, token);
         }
 
         return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
@@ -45,64 +38,8 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
 
     private void AddTokenAsRenderable(List<IRenderable> cols, Token token)
     {
-        var s = text.Substring(token.Start, token.Length);
         var style = GetTokenStyle(token.Kind);
-
-        var cursorInside = cursorPos >= token.Start && cursorPos < token.Start + token.Length;
-
-        if (!cursorInside)
-        {
-            cols.Add(new Text(s, style));
-            var isLastToken = token.Start + token.Length == text.Length;
-            if (isLastToken && cursorPos == text.Length)
-            {
-                if (!string.IsNullOrEmpty(completion))
-                {
-                    AddCompletion();
-                }
-                else
-                {
-                    cols.Add(new Text(" ", _cursorStyle));
-                }
-            }
-        }
-        else
-        {
-            var beforeLen = cursorPos - token.Start;
-            var atLen = 1;
-            var afterStart = beforeLen + atLen;
-
-            if (beforeLen > 0)
-            {
-                cols.Add(new Text(s.Substring(0, beforeLen), style));
-            }
-
-            var at = s[beforeLen].ToString();
-
-            if (!string.IsNullOrEmpty(completion) && at == " ")
-            {
-                AddCompletion();
-                cols.Add(new Text(" "));
-            }
-            else
-            {
-                cols.Add(new Text(at, _cursorStyle));
-            }
-
-            if (afterStart < s.Length)
-            {
-                cols.Add(new Text(s.Substring(afterStart), style));
-            }
-        }
-
-        void AddCompletion()
-        {
-            cols.Add(new Text(completion[0].ToString(), _cursorStyle));
-            if (completion.Length > 1)
-            {
-                cols.Add(new Text(completion[1..], _completionStyle));
-            }
-        }
+        cols.Add(new Text(token.Text, style));
     }
 
     private static Style GetTokenStyle(TokenKind kind)
@@ -111,6 +48,8 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
         {
             TokenKind.Value => new Style(Color.Yellow),
             TokenKind.QuotedValue => new Style(Color.Yellow),
+            TokenKind.Completion => new Style(Color.Grey),
+            TokenKind.Cursor => new Style(decoration: Decoration.Invert),
             _ => Style.Plain,
         };
     }
@@ -124,11 +63,28 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
             // value in ""
             if (input[i] == '"')
             {
+                if (i == _cursorPos)
+                {
+                    yield return new Token(_text.Substring(i, 1), TokenKind.Cursor);
+                    i++;
+                }
                 var start = i;
                 i++; // opening "
 
                 while (i < input.Length)
                 {
+                    if (_cursorPos == i)
+                    {
+                        yield return new Token(
+                            _text.Substring(start, i - start),
+                            TokenKind.QuotedValue
+                        );
+                        yield return new Token(_text.Substring(i, 1), TokenKind.Cursor);
+                        start = i + 1;
+                        i++;
+                        continue;
+                    }
+
                     if (input[i] == '\\' && i + 1 < input.Length)
                     {
                         i += 2; // skip escaped char
@@ -144,7 +100,13 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
                     i++;
                 }
 
-                yield return new Token(start, i - start, TokenKind.QuotedValue);
+                if (i > start)
+                {
+                    yield return new Token(
+                        _text.Substring(start, i - start),
+                        TokenKind.QuotedValue
+                    );
+                }
                 continue;
             }
 
@@ -152,7 +114,14 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
             if (input[i] == '=')
             {
                 // apply default to =
-                yield return new Token(i, 1, TokenKind.Default);
+                if (i == _cursorPos)
+                {
+                    yield return new Token(_text.Substring(i, 1), TokenKind.Cursor);
+                }
+                else
+                {
+                    yield return new Token(_text.Substring(i, 1), TokenKind.Default);
+                }
                 i++;
 
                 if (i >= input.Length)
@@ -179,28 +148,73 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
                         break;
                     }
 
+                    if (_cursorPos == i)
+                    {
+                        if (i > vStart)
+                        {
+                            yield return new Token(
+                                _text.Substring(vStart, i - vStart),
+                                TokenKind.Value
+                            );
+                        }
+                        yield return new Token(_text.Substring(i, 1), TokenKind.Cursor);
+                        vStart = i + 1;
+                    }
+
                     i++;
                 }
 
                 if (i > vStart)
                 {
-                    yield return new Token(vStart, i - vStart, TokenKind.Value);
+                    yield return new Token(_text.Substring(vStart, i - vStart), TokenKind.Value);
                 }
-
                 continue;
+            }
+            if (i == _cursorPos)
+            {
+                if (!string.IsNullOrEmpty(_completion))
+                {
+                    i += _completion.Length;
+
+                    yield return new Token(_text.Substring(_cursorPos, 1), TokenKind.Cursor);
+
+                    if (_completion.Length > 1)
+                    {
+                        yield return new Token(
+                            _text.Substring(_cursorPos + 1, _completion.Length - 1),
+                            TokenKind.Completion
+                        );
+                    }
+
+                    continue;
+                }
+                else
+                {
+                    i++;
+                    yield return new Token(_text.Substring(_cursorPos, 1), TokenKind.Cursor);
+                    continue;
+                }
             }
 
             // everything else default
             var startDefault = i;
-            while (i < input.Length && input[i] != '"' && input[i] != '=')
+            while (i < input.Length && input[i] != '"' && input[i] != '=' && i != _cursorPos)
             {
                 i++;
             }
 
             if (i > startDefault)
             {
-                yield return new Token(startDefault, i - startDefault, TokenKind.Default);
+                yield return new Token(
+                    _text.Substring(startDefault, i - startDefault),
+                    TokenKind.Default
+                );
             }
+        }
+
+        if (input.Length == _cursorPos)
+        {
+            yield return new Token(" ", TokenKind.Cursor);
         }
     }
 
@@ -209,7 +223,9 @@ public class CommandPromptWidget(string text, int cursorPos, string completion) 
         Default,
         Value,
         QuotedValue,
+        Completion,
+        Cursor,
     }
 
-    private readonly record struct Token(int Start, int Length, TokenKind Kind);
+    private readonly record struct Token(string Text, TokenKind Kind);
 }
