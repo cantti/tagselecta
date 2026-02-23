@@ -12,12 +12,8 @@ public class CompletionProvider : ICompletionProvider
     private readonly List<(string[] Names, string[] Options)> _actions = [];
     private readonly List<string> _commands = [];
 
-    public CompletionProvider(
-        IEnumerable<ITagDataAction> tagDataActions,
-        IEnumerable<ITuiCommand> tuiCommands
-    )
+    public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
     {
-        AddCommands(tuiCommands);
         AddActions(tagDataActions);
     }
 
@@ -44,18 +40,6 @@ public class CompletionProvider : ICompletionProvider
         return currentCommand.IsTyping
             ? GetCommandCompletion(word)
             : GetOptionCompletion(currentCommand.Command, word);
-    }
-
-    private void AddCommands(IEnumerable<ITuiCommand> tuiCommands)
-    {
-        var commandKeywords = tuiCommands
-            .Select(command => command.GetType())
-            .Where(x => x != typeof(ExecuteTagDataActionCommand))
-            .Select(type => type.GetCustomAttribute<TuiCommandAttribute>())
-            .OfType<TuiCommandAttribute>()
-            .Select(attr => attr.Names[0])
-            .ToList();
-        _commands.AddRange(commandKeywords);
     }
 
     private void AddActions(IEnumerable<ITagDataAction> actions)
