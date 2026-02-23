@@ -1,41 +1,24 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Spectre.Console.Cli;
 using TagSelecta.Commands.Tui.TuiCommands;
+using TagSelecta.Shared.Exceptions;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.Commands.Tui;
 
 public class CompletionProvider : ICompletionProvider
 {
-    private readonly List<string> _keywords = [];
+    private readonly List<(string[] Names, string[] Options)> _actions = [];
+    private readonly List<string> _commands = [];
 
     public CompletionProvider(
         IEnumerable<ITagDataAction> tagDataActions,
         IEnumerable<ITuiCommand> tuiCommands
     )
     {
-        var actionKeywords = GetActions(tagDataActions);
-        _keywords.AddRange(actionKeywords);
-        var commandKeywords = GetTuiCommands(tuiCommands);
-        _keywords.AddRange(commandKeywords);
-    }
-
-    private IEnumerable<string> GetTuiCommands(IEnumerable<ITuiCommand> tuiCommands)
-    {
-        return tuiCommands
-            .Select(command => command.GetType())
-            .Select(type => type.GetCustomAttribute<TuiCommandAttribute>())
-            .OfType<TuiCommandAttribute>()
-            .Select(attr => attr.Names[0]);
-    }
-
-    private IEnumerable<string> GetActions(IEnumerable<ITagDataAction> actions)
-    {
-        return actions
-            .Select(action => action.GetType())
-            .Select(type => type.GetCustomAttribute<TagDataActionNameAttribute>())
-            .OfType<TagDataActionNameAttribute>()
-            .Select(attr => attr.Name);
+        AddCommands(tuiCommands);
+        AddActions(tagDataActions);
     }
 
     public string GetCompletion(string input, int cursorPos)
@@ -55,11 +38,120 @@ public class CompletionProvider : ICompletionProvider
         {
             return "";
         }
-        var completion = _keywords.FirstOrDefault(c => c.StartsWith(word));
+
+        var currentCommand = GetCurrentCommand(leftOfCursor);
+
+        return currentCommand.IsTyping
+            ? GetCommandCompletion(word)
+            : GetOptionCompletion(currentCommand.Command, word);
+    }
+
+    private void AddCommands(IEnumerable<ITuiCommand> tuiCommands)
+    {
+        var commandKeywords = tuiCommands
+            .Select(command => command.GetType())
+            .Where(x => x != typeof(ExecuteTagDataActionCommand))
+            .Select(type => type.GetCustomAttribute<TuiCommandAttribute>())
+            .OfType<TuiCommandAttribute>()
+            .Select(attr => attr.Names[0])
+            .ToList();
+        _commands.AddRange(commandKeywords);
+    }
+
+    private void AddActions(IEnumerable<ITagDataAction> actions)
+    {
+        foreach (var action in actions)
+        {
+            var nameAttribute = action.GetType().GetCustomAttribute<TagDataActionNameAttribute>();
+            if (nameAttribute is null)
+            {
+                continue;
+            }
+
+            List<string> names = [nameAttribute.Name];
+            if (nameAttribute.Alias is not null)
+            {
+                names.Add(nameAttribute.Alias);
+            }
+
+            _commands.AddRange(names);
+            var settingsType = GetSettingsTypeFromAction(action.GetType());
+            var props = settingsType.GetProperties();
+            List<string> options = [];
+            foreach (var prop in props)
+            {
+                var attr = prop.GetCustomAttribute<CommandOptionAttribute>();
+                if (attr is null)
+                {
+                    continue;
+                }
+
+                options.AddRange(attr.LongNames);
+            }
+
+            _actions.Add((names.ToArray(), options.ToArray()));
+        }
+    }
+
+    private string GetOptionCompletion(string currentCommand, string word)
+    {
+        var action = _actions.FirstOrDefault(a => a.Names.Contains(currentCommand));
+        if (action == default)
+        {
+            return "";
+        }
+
+        var completion = action.Options.FirstOrDefault(o => o.StartsWith(word));
         return completion is not null ? completion[word.Length..] : "";
     }
 
-    private bool IsCursorInsideDoubleQuotes(string input, int cursorPos)
+    private static Type GetSettingsTypeFromAction(Type? actionType)
+    {
+        while (actionType != null)
+        {
+            if (
+                actionType.IsGenericType
+                && actionType.GetGenericTypeDefinition() == typeof(TagDataAction<>)
+            )
+            {
+                return actionType.GetGenericArguments()[0];
+            }
+
+            actionType = actionType.BaseType!;
+        }
+
+        throw new TagSelectaException(
+            $"{actionType} does not inherit from TagDataAction<TSettings>"
+        );
+    }
+
+    private string GetCommandCompletion(string word)
+    {
+        var completion = _commands.FirstOrDefault(c => c.StartsWith(word));
+        return completion is not null ? completion[word.Length..] : "";
+    }
+
+    private (string Command, bool IsTyping) GetCurrentCommand(string leftOfCursor)
+    {
+        var idx = leftOfCursor.LastIndexOf("&&", StringComparison.Ordinal);
+        var start = idx >= 0 ? idx + 2 : 0; // after &&
+        while (start < leftOfCursor.Length && char.IsWhiteSpace(leftOfCursor[start]))
+        {
+            start++;
+        }
+
+        var end = start;
+        while (end < leftOfCursor.Length && !char.IsWhiteSpace(leftOfCursor[end]))
+        {
+            end++;
+        }
+
+        var command = start < end ? leftOfCursor[start..end] : "";
+        var isTyping = end == leftOfCursor.Length;
+        return (command, isTyping);
+    }
+
+    private static bool IsCursorInsideDoubleQuotes(string input, int cursorPos)
     {
         // We consider quotes up to (but not including) CursorPos.
         // Escaped quotes \" do not toggle quote state.
