@@ -37,5 +37,6 @@ The program is primarily designed for use in TUI mode. However, the CLI mode is 
 - `find` command to find files by metadata (CLI only)
 - Recursive directory scanning
 - Macros support
-- Previw of changes before applying them
+- Preview of changes before applying them
 - Tree view of files
+- Command history and autocompletion
