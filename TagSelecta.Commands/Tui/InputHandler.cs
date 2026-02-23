@@ -53,21 +53,16 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
 
     private string? HandleCommandMode(ConsoleKeyInfo key)
     {
-        if (key.Modifiers.HasFlag(ConsoleModifiers.Control) && key.Key == ConsoleKey.N)
+        // ctrl+space => complete
+        if (
+            key.Modifiers.HasFlag(ConsoleModifiers.Control)
+            && (key.Key == ConsoleKey.Spacebar || key.KeyChar == '\0')
+        )
         {
             CompletionIndex++;
             Completion = completionProvider.GetCompletion(Text, CursorPos, CompletionIndex);
             return null;
         }
-        // if (
-        //     Completion == ""
-        //     && key.Modifiers.HasFlag(ConsoleModifiers.Control)
-        //     && (key.Key == ConsoleKey.Spacebar || key.KeyChar == '\0')
-        // )
-        // {
-        //     Completion = completionProvider.GetCompletion(Text, CursorPos, CompletionIndex);
-        //     return null;
-        // }
         switch (key.Key)
         {
             case ConsoleKey.Escape:

@@ -26,8 +26,8 @@ public class CompletionProvider : ICompletionProvider
         // only consider text to the left of the cursor for completion
         var leftOfCursor = input[..cursorPos];
 
-        // only complete words
-        if (input != "" && !Regex.IsMatch(leftOfCursor, "[a-z]+$"))
+        // only complete words or after space. ignore things like &, =
+        if (input != "" && !Regex.IsMatch(leftOfCursor, @"[a-z\s]+$"))
         {
             return "";
         }
