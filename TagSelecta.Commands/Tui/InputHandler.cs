@@ -6,11 +6,12 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
 
     // -1 = not navigating history
     private int _historyIndex = -1;
+    private List<string> _completions = [];
     private int _completionIndex;
 
     public string Input { get; private set; } = "";
 
-    public string Completion { get; private set; } = "";
+    public string Completion => _completions.Count > 0 ? _completions[_completionIndex] : "";
 
     public int CursorPos { get; private set; }
     public InputMode Mode { get; private set; } = InputMode.Normal;
@@ -60,15 +61,21 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
             && (key.Key == ConsoleKey.Spacebar || key.KeyChar == '\0')
         )
         {
-            _completionIndex++;
-            Completion = completionProvider.GetCompletion(Input, CursorPos, _completionIndex);
+            if (_completions.Count == 0)
+            {
+                LoadCompletions();
+            }
+            else
+            {
+                _completionIndex = (_completionIndex + 1) % _completions.Count;
+            }
             return null;
         }
 
         // keys other than tab => reset completion
         if (key.Key != ConsoleKey.Tab)
         {
-            ResetCompletion();
+            ClearCompletions();
         }
 
         if (key.Key == ConsoleKey.Escape)
@@ -134,7 +141,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 Input = Input.Remove(CursorPos, 1);
             }
 
-            ResetCompletion();
+            ClearCompletions();
             return null;
         }
 
@@ -154,7 +161,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
         {
             Input = Input.Insert(CursorPos, Completion);
             CursorPos += Completion.Length;
-            ResetCompletion();
+            ClearCompletions();
             return null;
         }
 
@@ -163,21 +170,25 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
             _historyIndex = -1;
             Input = Input.Insert(CursorPos, key.KeyChar.ToString());
             CursorPos++;
-            if (IsAutoCompletionEnabled)
+            // autocomplete
+            if (IsAutoCompletionEnabled && key.KeyChar != ' ')
             {
-                // do not show completion if typing space
-                Completion =
-                    key.KeyChar != ' ' ? completionProvider.GetCompletion(Input, CursorPos, 0) : "";
+                LoadCompletions();
             }
         }
 
         return null;
     }
 
-    private void ResetCompletion()
+    private void ClearCompletions()
     {
-        Completion = "";
         _completionIndex = 0;
+        _completions = [];
+    }
+
+    private void LoadCompletions()
+    {
+        _completions = completionProvider.GetCompletions(Input, CursorPos).ToList();
     }
 
     private void NavigateHistoryUp()
@@ -238,6 +249,6 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
         _historyIndex = -1;
         Input = "";
         CursorPos = 0;
-        Completion = "";
+        ClearCompletions();
     }
 }

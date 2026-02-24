@@ -9,5 +9,5 @@ public interface ICompletionProvider
     /// <param name="cursorPos"></param>
     /// <param name="completionIndex"></param>
     /// <returns></returns>
-    string GetCompletion(string input, int cursorPos, int completionIndex);
+    IEnumerable<string> GetCompletions(string input, int cursorPos);
 }

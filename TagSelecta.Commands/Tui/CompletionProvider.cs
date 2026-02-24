@@ -16,11 +16,11 @@ public class CompletionProvider : ICompletionProvider
         AddActions(tagDataActions);
     }
 
-    public string GetCompletion(string input, int cursorPos, int completionIndex)
+    public IEnumerable<string> GetCompletions(string input, int cursorPos)
     {
         if (IsCursorInsideDoubleQuotes(input, cursorPos))
         {
-            return "";
+            return [];
         }
 
         // only consider text to the left of the cursor for completion
@@ -29,7 +29,7 @@ public class CompletionProvider : ICompletionProvider
         // only complete words or after space. ignore things like &, =
         if (input != "" && !Regex.IsMatch(leftOfCursor, @"[a-z\s]+$"))
         {
-            return "";
+            return [];
         }
 
         // get last word
@@ -38,8 +38,8 @@ public class CompletionProvider : ICompletionProvider
         var currentCommand = GetCurrentCommand(leftOfCursor);
 
         return currentCommand.IsTyping
-            ? GetCommandCompletion(word, completionIndex)
-            : GetOptionCompletion(currentCommand.Command, word, completionIndex);
+            ? GetCommandCompletion(word)
+            : GetOptionCompletion(currentCommand.Command, word);
     }
 
     private void AddActions(IEnumerable<ITagDataAction> actions)
@@ -104,34 +104,17 @@ public class CompletionProvider : ICompletionProvider
         );
     }
 
-    private string GetCommandCompletion(string word, int completionIndex)
+    private IEnumerable<string> GetCommandCompletion(string word)
     {
-        var candidates = _commands.Where(c => c.StartsWith(word)).ToList();
-        if (candidates.Count == 0)
-        {
-            return "";
-        }
-
-        var completion = candidates[completionIndex % candidates.Count];
-        return completion[word.Length..];
+        return _commands.Where(c => c.StartsWith(word)).Select(x => x[word.Length..]);
     }
 
-    private string GetOptionCompletion(string currentCommand, string word, int completionIndex)
+    private IEnumerable<string> GetOptionCompletion(string currentCommand, string word)
     {
         var action = _actions.FirstOrDefault(a => a.Names.Contains(currentCommand));
-        if (action == default)
-        {
-            return "";
-        }
-
-        var candidates = action.Options.Where(o => o.StartsWith(word)).ToList();
-        if (candidates.Count == 0)
-        {
-            return "";
-        }
-
-        var completion = candidates[completionIndex % candidates.Count];
-        return $"{completion[word.Length..]}=";
+        return action == default
+            ? []
+            : action.Options.Where(o => o.StartsWith(word)).Select(x => $"{x[word.Length..]}=");
     }
 
     private (string Command, bool IsTyping) GetCurrentCommand(string leftOfCursor)
