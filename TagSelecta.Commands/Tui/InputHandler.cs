@@ -6,15 +6,16 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
 
     // -1 = not navigating history
     private int _historyIndex = -1;
+    private int _completionIndex;
 
     public string Input { get; private set; } = "";
 
     public string Completion { get; private set; } = "";
 
-    public int CompletionIndex { get; set; }
-
     public int CursorPos { get; private set; }
     public InputMode Mode { get; private set; } = InputMode.Normal;
+
+    public bool IsAutoCompletionEnabled { get; set; } = true;
 
     public bool ProcessKey(ConsoleKeyInfo key, out string commandText)
     {
@@ -53,98 +54,107 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
 
     private string? HandleCommandMode(ConsoleKeyInfo key)
     {
-        // ctrl+space => complete
+        // ctrl+space => complete or cycle through completions
         if (
             key.Modifiers.HasFlag(ConsoleModifiers.Control)
             && (key.Key == ConsoleKey.Spacebar || key.KeyChar == '\0')
         )
         {
-            CompletionIndex++;
-            Completion = completionProvider.GetCompletion(Input, CursorPos, CompletionIndex);
+            _completionIndex++;
+            Completion = completionProvider.GetCompletion(Input, CursorPos, _completionIndex);
             return null;
         }
 
-        switch (key.Key)
+        // keys other than tab => reset completion
+        if (key.Key != ConsoleKey.Tab)
         {
-            case ConsoleKey.Escape:
-                ExitCommandMode(false);
-                return null;
+            ResetCompletion();
+        }
 
-            case ConsoleKey.Enter:
-                var text = Input;
-                ExitCommandMode(true);
-                return text;
+        if (key.Key == ConsoleKey.Escape)
+        {
+            ExitCommandMode(false);
+            return null;
+        }
 
-            case ConsoleKey.LeftArrow:
-                if (CursorPos > 0)
-                {
-                    CursorPos--;
-                }
+        if (key.Key == ConsoleKey.Enter)
+        {
+            var text = Input;
+            ExitCommandMode(true);
+            return text;
+        }
 
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+        if (key.Key == ConsoleKey.LeftArrow)
+        {
+            if (CursorPos > 0)
+            {
+                CursorPos--;
+            }
 
-            case ConsoleKey.RightArrow:
-                if (CursorPos < Input.Length)
-                {
-                    CursorPos++;
-                }
+            return null;
+        }
 
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+        if (key.Key == ConsoleKey.RightArrow)
+        {
+            if (CursorPos < Input.Length)
+            {
+                CursorPos++;
+            }
 
-            case ConsoleKey.Home:
-                CursorPos = 0;
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+            return null;
+        }
 
-            case ConsoleKey.End:
-                CursorPos = Input.Length;
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+        if (key.Key == ConsoleKey.Home)
+        {
+            CursorPos = 0;
+            return null;
+        }
 
-            case ConsoleKey.Backspace:
-                if (CursorPos > 0)
-                {
-                    Input = Input.Remove(CursorPos - 1, 1);
-                    CursorPos--;
-                }
+        if (key.Key == ConsoleKey.End)
+        {
+            CursorPos = Input.Length;
+            return null;
+        }
 
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+        if (key.Key == ConsoleKey.Backspace)
+        {
+            if (CursorPos > 0)
+            {
+                Input = Input.Remove(CursorPos - 1, 1);
+                CursorPos--;
+            }
 
-            case ConsoleKey.Delete:
-                if (CursorPos < Input.Length)
-                {
-                    Input = Input.Remove(CursorPos, 1);
-                }
+            return null;
+        }
 
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+        if (key.Key == ConsoleKey.Delete)
+        {
+            if (CursorPos < Input.Length)
+            {
+                Input = Input.Remove(CursorPos, 1);
+            }
 
-            case ConsoleKey.UpArrow:
-                NavigateHistoryUp();
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+            ResetCompletion();
+            return null;
+        }
 
-            case ConsoleKey.DownArrow:
-                NavigateHistoryDown();
-                Completion = "";
-                CompletionIndex = 0;
-                return null;
+        if (key.Key == ConsoleKey.UpArrow)
+        {
+            NavigateHistoryUp();
+            return null;
+        }
 
-            case ConsoleKey.Tab:
-                Input = Input.Insert(CursorPos, Completion);
-                CursorPos += Completion.Length;
-                Completion = "";
-                return null;
+        if (key.Key == ConsoleKey.DownArrow)
+        {
+            NavigateHistoryDown();
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.Tab)
+        {
+            Input = Input.Insert(CursorPos, Completion);
+            CursorPos += Completion.Length;
+            return null;
         }
 
         if (!char.IsControl(key.KeyChar))
@@ -152,18 +162,21 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
             _historyIndex = -1;
             Input = Input.Insert(CursorPos, key.KeyChar.ToString());
             CursorPos++;
-            // do not show completion if typing space
-            if (key.KeyChar != ' ')
+            if (IsAutoCompletionEnabled)
             {
-                Completion = completionProvider.GetCompletion(Input, CursorPos, 0);
-            }
-            else
-            {
-                Completion = "";
+                // do not show completion if typing space
+                Completion =
+                    key.KeyChar != ' ' ? completionProvider.GetCompletion(Input, CursorPos, 0) : "";
             }
         }
 
         return null;
+    }
+
+    private void ResetCompletion()
+    {
+        Completion = "";
+        _completionIndex = 0;
     }
 
     private void NavigateHistoryUp()
