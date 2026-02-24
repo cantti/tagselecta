@@ -55,7 +55,7 @@ public class CommandPromptWidget : Renderable
             var isQuote = false;
 
             // toggle inQuotes if we encounter an unescaped "
-            if (inQuotes && _text[i] == '"' && (i == 0 || _text[i - 1] != '\\'))
+            if (_text[i] == '"' && (i == 0 || _text[i - 1] != '\\'))
             {
                 inQuotes = !inQuotes;
                 isQuote = true;
