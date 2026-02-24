@@ -55,6 +55,11 @@ Example:
 :move template="../{{ date }} - {{ album }}/{{ pad(track) }}. {{ title }}.{{ext}}"
 ```
 
-**Notes**
+**Aliases**
 
 Most command and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
+
+**Completion**
+
+Completion is available for all commands and options. Use `ctrl+space` to trigger (and cycle through) completion. 
+Use `tab` to select completion.
