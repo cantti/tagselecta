@@ -154,6 +154,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
         {
             Input = Input.Insert(CursorPos, Completion);
             CursorPos += Completion.Length;
+            ResetCompletion();
             return null;
         }
 
