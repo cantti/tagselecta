@@ -66,7 +66,8 @@ public class CompletionProvider : ICompletionProvider
                     continue;
                 }
 
-                options.AddRange(attr.LongNames);
+                // use only long names for option completion, and ignore "yes"
+                options.AddRange(attr.LongNames.Where(x => x != "yes"));
             }
 
             options = options.OrderBy(x => x).ToList();
@@ -76,6 +77,7 @@ public class CompletionProvider : ICompletionProvider
             {
                 names.Add(nameAttribute.Alias);
             }
+
             _actions.Add((names.ToArray(), options.ToArray()));
         }
 

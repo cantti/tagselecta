@@ -7,7 +7,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
     // -1 = not navigating history
     private int _historyIndex = -1;
 
-    public string Text { get; private set; } = "";
+    public string Input { get; private set; } = "";
 
     public string Completion { get; private set; } = "";
 
@@ -34,8 +34,8 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
     public void SetText(string text)
     {
         Mode = InputMode.Command;
-        Text = text;
-        CursorPos = Text.Length;
+        Input = text;
+        CursorPos = Input.Length;
     }
 
     private string? HandleNormalMode(ConsoleKeyInfo key)
@@ -43,7 +43,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
         if (key.KeyChar == ':')
         {
             Mode = InputMode.Command;
-            Text = "";
+            Input = "";
             CursorPos = 0;
             return null;
         }
@@ -60,9 +60,10 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
         )
         {
             CompletionIndex++;
-            Completion = completionProvider.GetCompletion(Text, CursorPos, CompletionIndex);
+            Completion = completionProvider.GetCompletion(Input, CursorPos, CompletionIndex);
             return null;
         }
+
         switch (key.Key)
         {
             case ConsoleKey.Escape:
@@ -70,7 +71,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 return null;
 
             case ConsoleKey.Enter:
-                var text = Text;
+                var text = Input;
                 ExitCommandMode(true);
                 return text;
 
@@ -85,7 +86,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 return null;
 
             case ConsoleKey.RightArrow:
-                if (CursorPos < Text.Length)
+                if (CursorPos < Input.Length)
                 {
                     CursorPos++;
                 }
@@ -101,7 +102,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 return null;
 
             case ConsoleKey.End:
-                CursorPos = Text.Length;
+                CursorPos = Input.Length;
                 Completion = "";
                 CompletionIndex = 0;
                 return null;
@@ -109,7 +110,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
             case ConsoleKey.Backspace:
                 if (CursorPos > 0)
                 {
-                    Text = Text.Remove(CursorPos - 1, 1);
+                    Input = Input.Remove(CursorPos - 1, 1);
                     CursorPos--;
                 }
 
@@ -118,9 +119,9 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 return null;
 
             case ConsoleKey.Delete:
-                if (CursorPos < Text.Length)
+                if (CursorPos < Input.Length)
                 {
-                    Text = Text.Remove(CursorPos, 1);
+                    Input = Input.Remove(CursorPos, 1);
                 }
 
                 Completion = "";
@@ -140,7 +141,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
                 return null;
 
             case ConsoleKey.Tab:
-                Text = Text.Insert(CursorPos, Completion);
+                Input = Input.Insert(CursorPos, Completion);
                 CursorPos += Completion.Length;
                 Completion = "";
                 return null;
@@ -149,12 +150,12 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
         if (!char.IsControl(key.KeyChar))
         {
             _historyIndex = -1;
-            Text = Text.Insert(CursorPos, key.KeyChar.ToString());
+            Input = Input.Insert(CursorPos, key.KeyChar.ToString());
             CursorPos++;
             // do not show completion if typing space
             if (key.KeyChar != ' ')
             {
-                Completion = completionProvider.GetCompletion(Text, CursorPos, 0);
+                Completion = completionProvider.GetCompletion(Input, CursorPos, 0);
             }
             else
             {
@@ -200,28 +201,28 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
         {
             // past newest => empty input
             _historyIndex = -1;
-            Text = "";
+            Input = "";
             CursorPos = 0;
         }
     }
 
     private void LoadHistoryEntry()
     {
-        Text = _history[_historyIndex];
-        CursorPos = Text.Length;
+        Input = _history[_historyIndex];
+        CursorPos = Input.Length;
     }
 
     private void ExitCommandMode(bool addToHistory)
     {
         Mode = InputMode.Normal;
 
-        if (addToHistory && !string.IsNullOrWhiteSpace(Text))
+        if (addToHistory && !string.IsNullOrWhiteSpace(Input))
         {
-            _history.Add(Text);
+            _history.Add(Input);
         }
 
         _historyIndex = -1;
-        Text = "";
+        Input = "";
         CursorPos = 0;
         Completion = "";
     }

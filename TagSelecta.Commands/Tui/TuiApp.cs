@@ -230,9 +230,9 @@ public class TuiApp(
                 .Update(
                     inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(
-                            inputHandler.Text,
+                            inputHandler.Input,
                             inputHandler.CursorPos,
-                            inputHandler.Completion
+                            config.CompletionEnabled ? inputHandler.Completion : ""
                         )
                         : Text.Empty
                 )
