@@ -16,7 +16,7 @@ public static class DependencyInjection
             new TuiAppConfig
             {
                 FileListRatio = configModel.General.FileListRatio,
-                CompletionEnabled = configModel.General.CompletionEnabled,
+                AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
             }
         );
         return services;

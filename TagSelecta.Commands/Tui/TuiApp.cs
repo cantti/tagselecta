@@ -75,6 +75,7 @@ public class TuiApp(
     {
         try
         {
+            inputHandler.IsAutoCompletionEnabled = config.AutoCompletionEnabled;
             _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
             BindHotkeys();
@@ -232,7 +233,7 @@ public class TuiApp(
                         ? new CommandPromptWidget(
                             inputHandler.Input,
                             inputHandler.CursorPos,
-                            config.CompletionEnabled ? inputHandler.Completion : ""
+                            inputHandler.Completion
                         )
                         : Text.Empty
                 )
