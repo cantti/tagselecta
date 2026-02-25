@@ -3,21 +3,27 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class CommandPromptWidget(string text, int cursorPos) : Renderable
+public class CommandPromptWidget : Renderable
 {
+    private readonly string _completion;
+    private readonly int _cursorPos;
+    private readonly string _text;
+
+    public CommandPromptWidget(string text, int cursorPos, string completion)
+    {
+        _cursorPos = cursorPos;
+        _completion = completion;
+        _text = text[.._cursorPos] + _completion + text[_cursorPos..];
+    }
+
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        var cols = new List<IRenderable>();
-        cols.Add(new Text(":"));
-
-        foreach (var token in Tokenize(text))
+        var cols = new List<IRenderable> { new Text(":") };
+        var tokens = Tokenize().ToList();
+        foreach (var token in tokens)
         {
-            AddTokenAsRenderable(cols, token);
-        }
-
-        if (text.Length == cursorPos)
-        {
-            cols.Add(new Text(" ", GetStyle(TokenKind.Cursor)));
+            var style = GetTokenStyle(token.Kind);
+            cols.Add(new Text(token.Char.ToString(), style));
         }
 
         return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
@@ -26,142 +32,87 @@ public class CommandPromptWidget(string text, int cursorPos) : Renderable
         );
     }
 
-    private void AddTokenAsRenderable(List<IRenderable> cols, Token token)
-    {
-        var s = text.Substring(token.Start, token.Length);
-        var style = GetStyle(token.Kind);
-
-        var cursorInside = cursorPos >= token.Start && cursorPos < token.Start + token.Length;
-        if (!cursorInside)
-        {
-            cols.Add(new Text(s, style));
-            return;
-        }
-
-        var beforeLen = cursorPos - token.Start;
-        var atLen = 1;
-        var afterStart = beforeLen + atLen;
-
-        if (beforeLen > 0)
-        {
-            cols.Add(new Text(s.Substring(0, beforeLen), style));
-        }
-
-        cols.Add(new Text(s.Substring(beforeLen, atLen), GetStyle(TokenKind.Cursor)));
-
-        if (afterStart < s.Length)
-        {
-            cols.Add(new Text(s.Substring(afterStart), style));
-        }
-    }
-
-    private static Style GetStyle(TokenKind kind)
+    private static Style GetTokenStyle(TokenKind kind)
     {
         return kind switch
         {
             TokenKind.Value => new Style(Color.Yellow),
-            TokenKind.QuotedValue => new Style(Color.Yellow),
+            TokenKind.Completion => new Style(Color.Grey),
             TokenKind.Cursor => new Style(decoration: Decoration.Invert),
             _ => Style.Plain,
         };
     }
 
-    private IEnumerable<Token> Tokenize(string input)
+    private List<Token> Tokenize()
     {
-        var i = 0;
+        var tokens = new List<Token>();
+        var inQuotes = false;
+        var valueStarted = false;
 
-        while (i < input.Length)
+        for (var i = 0; i < _text.Length; i++)
         {
-            // value in ""
-            if (input[i] == '"')
+            // current char is quote
+            var isQuote = false;
+
+            // toggle inQuotes if we encounter an unescaped "
+            if (_text[i] == '"' && (i == 0 || _text[i - 1] != '\\'))
             {
-                var start = i;
-                i++; // opening "
-
-                while (i < input.Length)
-                {
-                    if (input[i] == '\\' && i + 1 < input.Length)
-                    {
-                        i += 2; // skip escaped char
-                        continue;
-                    }
-
-                    if (input[i] == '"')
-                    {
-                        i++; // closing ""
-                        break;
-                    }
-
-                    i++;
-                }
-
-                yield return new Token(start, i - start, TokenKind.QuotedValue);
-                continue;
+                inQuotes = !inQuotes;
+                isQuote = true;
             }
 
-            // highlight value in key=value
-            if (input[i] == '=')
+            // update valueStarted if previous char is =
+            if (!inQuotes && i > 0 && _text[i - 1] == '=')
             {
-                // apply default to =
-                yield return new Token(i, 1, TokenKind.Default);
-                i++;
-
-                if (i >= input.Length)
-                {
-                    break;
-                }
-
-                if (input[i] == '"')
-                {
-                    continue;
-                }
-
-                // unquoted value until whitespace or &&
-                var vStart = i;
-                while (i < input.Length)
-                {
-                    if (char.IsWhiteSpace(input[i]))
-                    {
-                        break;
-                    }
-
-                    if (input[i] == '&' && i + 1 < input.Length && input[i + 1] == '&')
-                    {
-                        break;
-                    }
-
-                    i++;
-                }
-
-                if (i > vStart)
-                {
-                    yield return new Token(vStart, i - vStart, TokenKind.Value);
-                }
-
-                continue;
+                valueStarted = true;
             }
 
-            // everything else default
-            var startDefault = i;
-            while (i < input.Length && input[i] != '"' && input[i] != '=')
+            // reset valueStarted if we encounter a space
+            if (_text[i] == ' ')
             {
-                i++;
+                valueStarted = false;
             }
 
-            if (i > startDefault)
+            // check if we are in the completion range
+            var inCompletion =
+                !string.IsNullOrEmpty(_completion)
+                && i >= _cursorPos
+                && i < _cursorPos + _completion.Length;
+
+            // finally render
+            if (i == _cursorPos)
             {
-                yield return new Token(startDefault, i - startDefault, TokenKind.Default);
+                tokens.Add(new Token(_text[i], TokenKind.Cursor));
+            }
+            else if (inCompletion)
+            {
+                tokens.Add(new Token(_text[i], TokenKind.Completion));
+            }
+            else if (inQuotes || valueStarted || isQuote)
+            {
+                tokens.Add(new Token(_text[i], TokenKind.Value));
+            }
+            else
+            {
+                tokens.Add(new Token(_text[i], TokenKind.Default));
             }
         }
+
+        if (_text.Length == _cursorPos)
+        {
+            tokens.Add(new Token(' ', TokenKind.Cursor));
+        }
+
+        return tokens;
     }
 
     private enum TokenKind
     {
         Default,
         Value,
-        QuotedValue,
+        Completion,
         Cursor,
     }
 
-    private readonly record struct Token(int Start, int Length, TokenKind Kind);
+    private readonly record struct Token(char Char, TokenKind Kind);
 }

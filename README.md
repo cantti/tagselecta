@@ -13,9 +13,10 @@ To execute commands from the CLI, run `tagselecta <command> <path>`.
 
 `Path` can be a single file or a directory (recursive).
 
-Some commands available only in the CLI mode: `find` to find  files by metadata.
+Some commands available only in the CLI mode: `find` to find files by metadata.
 
-The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spectre.console) for rich command-line output and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
+The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spectre.console) for rich command-line output
+and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 
 ## Features
 
@@ -35,7 +36,8 @@ The CLI is built using [Spectre.Console](https://github.com/spectreconsole/spect
 
 ## TUI vs CLI
 
-The program is primarily designed for use in TUI mode. However, the CLI mode is particularly useful for scripting and automating tasks.
+The program is primarily designed for use in TUI mode. However, the CLI mode is particularly useful for scripting and
+automating tasks.
 
 ## Install
 
@@ -54,7 +56,8 @@ Ensure `"$HOME/.local/bin"` is in your `PATH`.
 
 ### Option 2. Install via Script (Automatic Install)
 
-You can install the latest release automatically using the provided installer script (review the script before running it):
+You can install the latest release automatically using the provided installer script (review the script before running
+it):
 
 ```sh
 wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | bash -s "$HOME/.local/bin"
@@ -74,25 +77,24 @@ Great way to get started is to use the interactive UI (TUI). Open directory with
 tagselecta ui .
 ```
 
->Important: Do not run it from the root of your music library, because it will scan all files in the directory!
+> Important: Do not run it from the root of your music library, because it will scan all files in the directory!
 
 Conceptually, the UI is divided into two parts: top panel with list of files and bottom panel with file details.
 
 **Navigation**
 
-Navigate through files using arrow keys or vim bindings (`jk`). Use `q` to exit. 
+Navigate through files using arrow keys or vim bindings (`jk`). Use `q` to exit.
 Use `tab` or `space` to select file. Use `esc` to unselect.
 
 **Edit tags**
 
-Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`. Value can be in double quotes if it contains spaces.
+Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`.
+Value can be in double quotes if it contains spaces.
 Exception is `:macro` (`:m`) command which has just one argument: `:macro <macro_name>`.
-
 
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.
 
 No changes are applied until you *write* them. To write changes to files use `:write` (`:w`) command.
-
 
 Update multiple fields at once: `:edit genre=Reggae albumartist="King Tubby"`.
 
@@ -119,14 +121,15 @@ Other commands are implemented using the same format.
 Very useful command is `move` (`mv`) to rename and move files.
 
 Example:
+
 ```sh
 :move template="../{{ date }} - {{ album }}/{{ pad(track) }}. {{ title }}.{{ext}}"
 ```
 
 **Notes**
 
-Most command and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
-
+Most command and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for
+`:move template=` and so on.
 
 ## CLI Usage
 

@@ -68,6 +68,7 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
             {
                 return;
             }
+
             value = formatter.Format(value);
             set(value);
         }

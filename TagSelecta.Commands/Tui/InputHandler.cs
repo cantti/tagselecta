@@ -1,18 +1,22 @@
-using System.Text;
-
 namespace TagSelecta.Commands.Tui;
 
-public class InputHandler(HotkeyMap hotkeys)
+public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvider)
 {
-    private readonly StringBuilder _buffer = new();
     private readonly List<string> _history = [];
+    private int _completionIndex;
+    private List<string> _completions = [];
 
     // -1 = not navigating history
     private int _historyIndex = -1;
 
-    public string Text => _buffer.ToString();
+    public string Input { get; private set; } = "";
+
+    public string Completion => _completions.Count > 0 ? _completions[_completionIndex] : "";
+
     public int CursorPos { get; private set; }
     public InputMode Mode { get; private set; } = InputMode.Normal;
+
+    public bool IsAutoCompletionEnabled { get; set; } = true;
 
     public bool ProcessKey(ConsoleKeyInfo key, out string commandText)
     {
@@ -32,9 +36,8 @@ public class InputHandler(HotkeyMap hotkeys)
     public void SetText(string text)
     {
         Mode = InputMode.Command;
-        _buffer.Clear();
-        _buffer.Append(text);
-        CursorPos = _buffer.Length;
+        Input = text;
+        CursorPos = Input.Length;
     }
 
     private string? HandleNormalMode(ConsoleKeyInfo key)
@@ -42,7 +45,7 @@ public class InputHandler(HotkeyMap hotkeys)
         if (key.KeyChar == ':')
         {
             Mode = InputMode.Command;
-            _buffer.Clear();
+            Input = "";
             CursorPos = 0;
             return null;
         }
@@ -52,76 +55,141 @@ public class InputHandler(HotkeyMap hotkeys)
 
     private string? HandleCommandMode(ConsoleKeyInfo key)
     {
-        switch (key.Key)
+        // ctrl+space => complete or cycle through completions
+        if (
+            key.Modifiers.HasFlag(ConsoleModifiers.Control)
+            && (key.Key == ConsoleKey.Spacebar || key.KeyChar == '\0')
+        )
         {
-            case ConsoleKey.Escape:
-                ExitCommandMode(false);
-                return null;
+            if (_completions.Count == 0)
+            {
+                LoadCompletions();
+            }
+            else
+            {
+                _completionIndex = (_completionIndex + 1) % _completions.Count;
+            }
 
-            case ConsoleKey.Enter:
-                var text = _buffer.ToString();
-                ExitCommandMode(true, text);
-                return text;
-
-            case ConsoleKey.LeftArrow:
-                if (CursorPos > 0)
-                {
-                    CursorPos--;
-                }
-
-                return null;
-
-            case ConsoleKey.RightArrow:
-                if (CursorPos < _buffer.Length)
-                {
-                    CursorPos++;
-                }
-
-                return null;
-
-            case ConsoleKey.Home:
-                CursorPos = 0;
-                return null;
-
-            case ConsoleKey.End:
-                CursorPos = _buffer.Length;
-                return null;
-
-            case ConsoleKey.Backspace:
-                if (CursorPos > 0)
-                {
-                    _buffer.Remove(CursorPos - 1, 1);
-                    CursorPos--;
-                }
-
-                return null;
-
-            case ConsoleKey.Delete:
-                if (CursorPos < _buffer.Length)
-                {
-                    _buffer.Remove(CursorPos, 1);
-                }
-
-                return null;
-
-            case ConsoleKey.UpArrow:
-                NavigateHistoryUp();
-                return null;
-
-            case ConsoleKey.DownArrow:
-                NavigateHistoryDown();
-                return null;
+            return null;
         }
 
-        // typing resets history navigation
+        // keys other than tab => reset completion
+        if (key.Key != ConsoleKey.Tab)
+        {
+            ClearCompletions();
+        }
+
+        if (key.Key == ConsoleKey.Escape)
+        {
+            ExitCommandMode(false);
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.Enter)
+        {
+            var text = Input;
+            ExitCommandMode(true);
+            return text;
+        }
+
+        if (key.Key == ConsoleKey.LeftArrow)
+        {
+            if (CursorPos > 0)
+            {
+                CursorPos--;
+            }
+
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.RightArrow)
+        {
+            if (CursorPos < Input.Length)
+            {
+                CursorPos++;
+            }
+
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.Home)
+        {
+            CursorPos = 0;
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.End)
+        {
+            CursorPos = Input.Length;
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.Backspace)
+        {
+            if (CursorPos > 0)
+            {
+                Input = Input.Remove(CursorPos - 1, 1);
+                CursorPos--;
+            }
+
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.Delete)
+        {
+            if (CursorPos < Input.Length)
+            {
+                Input = Input.Remove(CursorPos, 1);
+            }
+
+            ClearCompletions();
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.UpArrow)
+        {
+            NavigateHistoryUp();
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.DownArrow)
+        {
+            NavigateHistoryDown();
+            return null;
+        }
+
+        if (key.Key == ConsoleKey.Tab)
+        {
+            Input = Input.Insert(CursorPos, Completion);
+            CursorPos += Completion.Length;
+            ClearCompletions();
+            return null;
+        }
+
         if (!char.IsControl(key.KeyChar))
         {
             _historyIndex = -1;
-            _buffer.Insert(CursorPos, key.KeyChar);
+            Input = Input.Insert(CursorPos, key.KeyChar.ToString());
             CursorPos++;
+            // autocomplete
+            if (IsAutoCompletionEnabled && key.KeyChar != ' ')
+            {
+                LoadCompletions();
+            }
         }
 
         return null;
+    }
+
+    private void ClearCompletions()
+    {
+        _completionIndex = 0;
+        _completions = [];
+    }
+
+    private void LoadCompletions()
+    {
+        _completions = completionProvider.GetCompletions(Input, CursorPos).ToList();
     }
 
     private void NavigateHistoryUp()
@@ -159,29 +227,29 @@ public class InputHandler(HotkeyMap hotkeys)
         {
             // past newest => empty input
             _historyIndex = -1;
-            _buffer.Clear();
+            Input = "";
             CursorPos = 0;
         }
     }
 
     private void LoadHistoryEntry()
     {
-        _buffer.Clear();
-        _buffer.Append(_history[_historyIndex]);
-        CursorPos = _buffer.Length;
+        Input = _history[_historyIndex];
+        CursorPos = Input.Length;
     }
 
-    private void ExitCommandMode(bool addToHistory, string? text = null)
+    private void ExitCommandMode(bool addToHistory)
     {
         Mode = InputMode.Normal;
 
-        if (addToHistory && !string.IsNullOrWhiteSpace(text))
+        if (addToHistory && !string.IsNullOrWhiteSpace(Input))
         {
-            _history.Add(text);
+            _history.Add(Input);
         }
 
         _historyIndex = -1;
-        _buffer.Clear();
+        Input = "";
         CursorPos = 0;
+        ClearCompletions();
     }
 }

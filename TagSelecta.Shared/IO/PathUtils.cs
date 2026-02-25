@@ -20,6 +20,7 @@ public static class PathUtils
         {
             return path;
         }
+
         return Path.Combine(home, path[2..]);
     }
 }

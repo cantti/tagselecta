@@ -30,6 +30,9 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommand, OpenPictureCommand>();
         services.AddTransient<ITuiCommand, OpenDocs>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
+        services.AddTransient<ICompletionProvider, CompletionProvider>();
+        services.AddTransient<InputHandler>();
+        services.AddSingleton<HotkeyMap>();
 
         return services;
     }

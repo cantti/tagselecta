@@ -8,34 +8,20 @@ using TagSelecta.Shared.IO;
 
 namespace TagSelecta.Commands.Tui;
 
-public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
+public class TuiApp(
+    IAnsiConsole console,
+    IAudioFileScanner audioFileScanner,
+    ITuiCommandFactory commandFactory,
+    TuiAppConfig config,
+    InputHandler inputHandler,
+    HotkeyMap hotkeys
+) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
-    private readonly IAudioFileScanner _audioFileScanner;
-    private readonly ITuiCommandFactory _commandFactory;
-    private readonly TuiAppConfig _config;
-    private readonly IAnsiConsole _console;
-    private readonly HotkeyMap _hotkeys;
-    private readonly InputHandler _inputHandler;
     private readonly Lock _printLock = new();
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
     private Task _currentCommandTask = Task.CompletedTask;
     private string _statusMessage = "";
-
-    public TuiApp(
-        IAnsiConsole console,
-        IAudioFileScanner audioFileScanner,
-        ITuiCommandFactory commandFactory,
-        TuiAppConfig config
-    )
-    {
-        _console = console;
-        _audioFileScanner = audioFileScanner;
-        _commandFactory = commandFactory;
-        _config = config;
-        _hotkeys = new HotkeyMap();
-        _inputHandler = new InputHandler(_hotkeys);
-    }
 
     public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
 
@@ -65,7 +51,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     public void SetCommandPromptText(string text)
     {
-        _inputHandler.SetText(text);
+        inputHandler.SetText(text);
     }
 
     public void Quit()
@@ -89,6 +75,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
     {
         try
         {
+            inputHandler.IsAutoCompletionEnabled = config.AutoCompletionEnabled;
             _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
             BindHotkeys();
@@ -100,7 +87,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
             AltScreen.Enter();
 
-            Files = _audioFileScanner
+            Files = audioFileScanner
                 .SearchAndRead(settings.Path, ct)
                 .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
@@ -123,7 +110,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     private Task StartUiLoop(Channel<ConsoleKeyInfo> channel)
     {
-        return _console
+        return console
             .Live(new Panel("Starting..."))
             .AutoClear(true)
             .StartAsync(async ctx =>
@@ -133,7 +120,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                     ctx.UpdateTarget(DrawLayout());
                     while (channel.Reader.TryRead(out var key))
                     {
-                        if (_inputHandler.ProcessKey(key, out var request))
+                        if (inputHandler.ProcessKey(key, out var request))
                         {
                             await DispatchCommand(request);
                         }
@@ -170,29 +157,26 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     private IRenderable DrawLayout()
     {
-        const string HeaderLayoutKey = "navigation";
-        const string TagDataLayoutKey = "body";
-        const string CommandLayoutKey = "command";
-        const string StatusLayoutKey = "status";
-        const string FilesLayoutKey = "files";
+        const string headerLayoutKey = "navigation";
+        const string tagDataLayoutKey = "body";
+        const string commandLayoutKey = "command";
+        const string statusLayoutKey = "status";
+        const string filesLayoutKey = "files";
         const int headerSize = 3;
         const int statusBarHeight = 1;
         const int commandBarHeight = 1;
         var children = new List<Layout>();
-        children.Add(new Layout(HeaderLayoutKey).Size(headerSize).Update(RenderHeader()));
+        children.Add(new Layout(headerLayoutKey).Size(headerSize).Update(RenderHeader()));
         if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
         {
             children.Add(
-                new Layout(FilesLayoutKey).Update(
+                new Layout(filesLayoutKey).Update(
                     KeymapHelpEnabled ? new KeymapHelpWidget()
                     : CommandHelpEnabled ? new CommandHelpWidget()
                     : PictureEnabled
                         ? new PictureWidget(
                             FocusedFile,
-                            _console.Profile.Height
-                                - headerSize
-                                - statusBarHeight
-                                - commandBarHeight
+                            console.Profile.Height - headerSize - statusBarHeight - commandBarHeight
                         )
                     : Text.Empty
                 )
@@ -210,10 +194,10 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                         - statusBarHeight
                         - commandBarHeight
                         - fileListPadding
-                    ) * _config.FileListRatio
+                    ) * config.FileListRatio
                 );
                 children.Add(
-                    new Layout(FilesLayoutKey)
+                    new Layout(filesLayoutKey)
                         .Size(filesContentHeight)
                         .Update(
                             TreeEnabled
@@ -232,21 +216,25 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             }
 
             children.Add(
-                new Layout(TagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
+                new Layout(tagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
             );
         }
 
         children.Add(
-            new Layout(StatusLayoutKey)
+            new Layout(statusLayoutKey)
                 .Size(statusBarHeight)
                 .Update(new StatusWidget(_statusMessage))
         );
         children.Add(
-            new Layout(CommandLayoutKey)
+            new Layout(commandLayoutKey)
                 .Size(statusBarHeight)
                 .Update(
-                    _inputHandler.Mode == InputMode.Command
-                        ? new CommandPromptWidget(_inputHandler.Text, _inputHandler.CursorPos)
+                    inputHandler.Mode == InputMode.Command
+                        ? new CommandPromptWidget(
+                            inputHandler.Input,
+                            inputHandler.CursorPos,
+                            inputHandler.Completion
+                        )
                         : Text.Empty
                 )
         );
@@ -262,10 +250,10 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             .ToList();
         if (unknownOptions.Count != 0)
         {
-            _console.MarkupLine("[red]Unknown option(s) provided:[/]");
+            console.MarkupLine("[red]Unknown option(s) provided:[/]");
             foreach (var option in unknownOptions)
             {
-                _console.WriteLine($"  {option}", new Style(Color.Yellow));
+                console.WriteLine($"  {option}", new Style(Color.Yellow));
             }
 
             return false;
@@ -297,28 +285,28 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
 
     private void BindHotkeys()
     {
-        _hotkeys.Bind(HotkeyTokens.Esc, "clearselection");
-        _hotkeys.Bind(HotkeyTokens.Down, "movedown");
-        _hotkeys.Bind(HotkeyTokens.Up, "moveup");
-        _hotkeys.Bind("j", "movedown");
-        _hotkeys.Bind("k", "moveup");
-        _hotkeys.Bind("g", "movestart");
-        _hotkeys.Bind("G", "moveend");
-        _hotkeys.Bind("q", "quit");
-        _hotkeys.Bind("t", "toggletree");
-        _hotkeys.Bind("f", "togglefilter");
-        _hotkeys.Bind("?", "togglekeymaphelp");
-        _hotkeys.Bind("h", "togglecommandhelp");
-        _hotkeys.Bind("H", "opendocs");
-        _hotkeys.Bind("e", "togglefilelist");
-        _hotkeys.Bind("u", "undo");
-        _hotkeys.Bind(HotkeyTokens.Tab, "select");
-        _hotkeys.Bind(HotkeyTokens.Space, "select");
-        _hotkeys.Bind("a", "selectall");
-        _hotkeys.Bind("A", "selectdir");
-        _hotkeys.Bind("*", "selectall");
-        _hotkeys.Bind("p", "togglepicture");
-        _hotkeys.Bind("P", "openpicture");
+        hotkeys.Bind(HotkeyTokens.Esc, "clearselection");
+        hotkeys.Bind(HotkeyTokens.Down, "movedown");
+        hotkeys.Bind(HotkeyTokens.Up, "moveup");
+        hotkeys.Bind("j", "movedown");
+        hotkeys.Bind("k", "moveup");
+        hotkeys.Bind("g", "movestart");
+        hotkeys.Bind("G", "moveend");
+        hotkeys.Bind("q", "quit");
+        hotkeys.Bind("t", "toggletree");
+        hotkeys.Bind("f", "togglefilter");
+        hotkeys.Bind("?", "togglekeymaphelp");
+        hotkeys.Bind("h", "togglecommandhelp");
+        hotkeys.Bind("H", "opendocs");
+        hotkeys.Bind("e", "togglefilelist");
+        hotkeys.Bind("u", "undo");
+        hotkeys.Bind(HotkeyTokens.Tab, "select");
+        hotkeys.Bind(HotkeyTokens.Space, "select");
+        hotkeys.Bind("a", "selectall");
+        hotkeys.Bind("A", "selectdir");
+        hotkeys.Bind("*", "selectall");
+        hotkeys.Bind("p", "togglepicture");
+        hotkeys.Bind("P", "openpicture");
     }
 
     private async Task DispatchCommand(string commandText)
@@ -346,7 +334,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
             return;
         }
 
-        _hotkeys.Bind("esc", "cancel");
+        hotkeys.Bind("esc", "cancel");
 
         _currentCommandTask = Task.Run(async () =>
         {
@@ -355,7 +343,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                 foreach (var parsedCommand in commands)
                 {
                     _currentCommandCts.Token.ThrowIfCancellationRequested();
-                    var command = _commandFactory.Create(parsedCommand.Name);
+                    var command = commandFactory.Create(parsedCommand.Name);
                     await command.ExecuteAsync(this, parsedCommand, _currentCommandCts.Token);
                 }
             }
@@ -368,7 +356,7 @@ public class TuiApp : AsyncCommand<TuiSettings>, ITuiCommandContext
                 Print(ex.Message);
             }
 
-            _hotkeys.Bind("esc", "clearselection");
+            hotkeys.Bind("esc", "clearselection");
         });
     }
 }

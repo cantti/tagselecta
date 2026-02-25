@@ -15,6 +15,8 @@ Ensure `"$HOME/.local/bin"` is in your `PATH`.
 
 ### Option 2. Install via Script (Automatic Install)
 
+> Tip: the same script can be used to update the installed version.
+
 You can install the latest release automatically using the provided installer script (review the script before running it):
 
 ```sh
@@ -26,5 +28,4 @@ This will:
 * download the latest release,
 * extract it,
 * install it into the directory you provide (default recommended: `$HOME/.local/bin`).
-* 
-> Tip: the same script can be used to update the installed version.
+

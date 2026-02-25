@@ -13,7 +13,11 @@ public static class DependencyInjection
     {
         services.AddSingleton(new MacroConfig { Macros = configModel.Macros });
         services.AddSingleton(
-            new TuiAppConfig { FileListRatio = configModel.General.FileListRatio }
+            new TuiAppConfig
+            {
+                FileListRatio = configModel.General.FileListRatio,
+                AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
+            }
         );
         return services;
     }
