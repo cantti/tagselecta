@@ -10,18 +10,18 @@ tagselecta ui .
 
 Conceptually, the UI is divided into two parts: top panel with list of files and bottom panel with file details.
 
-**Navigation**
+## Navigation
 
 Navigate through files using arrow keys or vim bindings (`jk`). Use `q` to exit. 
 Use `tab` or `space` to select file. Use `esc` to unselect.
 
-**Edit tags**
+## Edit tags
 
 Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`. Value can be in double quotes if it contains spaces.
 Exception is `:macro` (`:m`) command which has just one argument: `:macro <macro_name>`.
 
-
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.
+Use `tab` for inserting autocomplete suggestions. Use `ctrl+space` to trigger completion.
 
 No changes are applied until you *write* them. To write changes to files use `:write` (`:w`) command.
 
@@ -46,7 +46,7 @@ Format field values using Scriban template engine:
 
 Other commands are implemented using the same format.
 
-**Move files**
+## Move files
 
 Very useful command is `move` (`mv`) to rename and move files.
 
@@ -55,11 +55,11 @@ Example:
 :move template="../{{ date }} - {{ album }}/{{ pad(track) }}. {{ title }}.{{ext}}"
 ```
 
-**Aliases**
+## Aliases
 
 Most command and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for `:move template=` and so on.
 
-**Completion**
+## Completion
 
 Completion is available for all commands and options. Use `ctrl+space` to trigger (and cycle through) completion. 
 Use `tab` to select completion.

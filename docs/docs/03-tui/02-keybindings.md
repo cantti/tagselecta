@@ -2,6 +2,8 @@
 
 Below is the list of keybindings (keymap) for the TUI.
 
+## Normal mode
+
 | Key              | Action                               |
 |------------------|--------------------------------------|
 | `:`              | Command mode                         |
@@ -23,3 +25,11 @@ Below is the list of keybindings (keymap) for the TUI.
 | `h`              | Toggle command help                  |
 | `H`              | Open docs in browser                 |
 | `q`              | Quit                                 |
+
+## Command mode
+
+| Key          | Action             |
+|--------------|--------------------|
+| `enter`      | Submit command     |
+| `tab`        | Accept completion  |
+| `ctrl-space` | Trigger completion |
