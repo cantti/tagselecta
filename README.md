@@ -30,8 +30,9 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - `find` command to find files by metadata (CLI only)
 - Recursive directory scanning
 - Macros support
-- Previw of changes before applying them
+- Preview of changes before applying them
 - Tree view of files
+- Command history and autocompletion
 
 ## TUI vs CLI
 
