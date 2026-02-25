@@ -33,3 +33,4 @@ Below is the list of keybindings (keymap) for the TUI.
 | `enter`      | Submit command     |
 | `tab`        | Accept completion  |
 | `ctrl-space` | Trigger completion |
+| `up`         | History            |
