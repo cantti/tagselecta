@@ -2,7 +2,6 @@
 
 <img width="1820" height="947" alt="TagSelecta TUI" src="https://github.com/user-attachments/assets/b982bc08-dcbf-45c3-a86e-a3600f21cded" />
 
-
 TagSelecta is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).
 
 The tool supports two modes: interactive UI (TUI) and command-line interface (CLI).
@@ -56,6 +55,8 @@ Ensure `"$HOME/.local/bin"` is in your `PATH`.
 
 ### Option 2. Install via Script (Automatic Install)
 
+> Tip: the same script can be used to update the installed version.
+
 You can install the latest release automatically using the provided installer script (review the script before running
 it):
 
@@ -65,9 +66,9 @@ wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | 
 
 This will:
 
-* download the latest release,
-* extract it,
-* install it into the directory you provide (default recommended: `$HOME/.local/bin`).
+- download the latest release,
+- extract it,
+- install it into the directory you provide (default recommended: `$HOME/.local/bin`).
 
 ## Getting started
 
@@ -94,7 +95,7 @@ Exception is `:macro` (`:m`) command which has just one argument: `:macro <macro
 
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.
 
-No changes are applied until you *write* them. To write changes to files use `:write` (`:w`) command.
+No changes are applied until you _write_ them. To write changes to files use `:write` (`:w`) command.
 
 Update multiple fields at once: `:edit genre=Reggae albumartist="King Tubby"`.
 
@@ -142,30 +143,30 @@ USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k 
+    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k
 description -v test
     tagselecta edit song.mp3 -c 'url=https://github.com'
-    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
+    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various
 Artists" "-i" }}'
-    tagselecta discogs path-to-album -r 
+    tagselecta discogs path-to-album -r
 https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 OPTIONS:
-    -h, --help       Prints help information   
+    -h, --help       Prints help information
     -v, --version    Prints version information
 
 COMMANDS:
-    edit <path>              Edit tags (read/write). To edit extra fields, use  
-                             the --key key1 --value value1 options              
-    extractpicture <path>    Extract pictures to files                          
-    titlecase <path>         Convert all fields to title case                   
-    split <path>             Split artists, album artists and composers         
-    discogs <path>           Update album from discogs. You can pass discogs    
-                             release id (not master) or query to search         
-    autotrack <path>         Auto track                                         
-    move <path>              Move (rename) files to another directory           
-    find <path>              Find files by metadata                             
+    edit <path>              Edit tags (read/write). To edit extra fields, use
+                             the --key key1 --value value1 options
+    extractpicture <path>    Extract pictures to files
+    titlecase <path>         Convert all fields to title case
+    split <path>             Split artists, album artists and composers
+    discogs <path>           Update album from discogs. You can pass discogs
+                             release id (not master) or query to search
+    autotrack <path>         Auto track
+    move <path>              Move (rename) files to another directory
+    find <path>              Find files by metadata
     ui <path>                Interactive UI (TUI)
 ```
 
