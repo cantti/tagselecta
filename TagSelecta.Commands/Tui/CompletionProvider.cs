@@ -9,7 +9,7 @@ namespace TagSelecta.Commands.Tui;
 public class CompletionProvider : ICompletionProvider
 {
     private readonly List<string> _commands = [];
-    private List<(string[] Names, string[] Options)> _actions = [];
+    private List<ActionInfo> _actions = [];
 
     public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
     {
@@ -57,7 +57,7 @@ public class CompletionProvider : ICompletionProvider
 
             var settingsType = GetSettingsTypeFromAction(action.GetType());
             var props = settingsType.GetProperties();
-            List<string> options = [];
+            List<OptionInfo> options = [];
             foreach (var prop in props)
             {
                 var attr = prop.GetCustomAttribute<CommandOptionAttribute>();
@@ -66,11 +66,14 @@ public class CompletionProvider : ICompletionProvider
                     continue;
                 }
 
-                // use only long names for option completion, and ignore "yes"
-                options.AddRange(attr.LongNames.Where(x => x != "yes"));
+                // use only long names for option completion and ignore "yes"
+                options.AddRange(
+                    attr.LongNames.Where(x => x != nameof(TagDataActionSettings.Yes).ToLower())
+                        .Select(x => new OptionInfo(x, prop.PropertyType == typeof(bool)))
+                );
             }
 
-            options = options.OrderBy(x => x).ToList();
+            options = options.OrderBy(x => x.Name).ToList();
 
             List<string> names = [nameAttribute.Name];
             if (nameAttribute.Alias is not null)
@@ -78,7 +81,7 @@ public class CompletionProvider : ICompletionProvider
                 names.Add(nameAttribute.Alias);
             }
 
-            _actions.Add((names.ToArray(), options.ToArray()));
+            _actions.Add(new(names, options));
         }
 
         _actions = _actions.OrderBy(x => x.Names[0]).ToList();
@@ -112,9 +115,11 @@ public class CompletionProvider : ICompletionProvider
     private IEnumerable<string> GetOptionCompletion(string currentCommand, string word)
     {
         var action = _actions.FirstOrDefault(a => a.Names.Contains(currentCommand));
-        return action == default
+        return action is null
             ? []
-            : action.Options.Where(o => o.StartsWith(word)).Select(x => $"{x[word.Length..]}=");
+            : action
+                .Options.Where(o => o.Name.StartsWith(word))
+                .Select(x => !x.IsFlag ? $"{x.Name[word.Length..]}=" : x.Name[word.Length..]);
     }
 
     private (string Command, bool IsTyping) GetCurrentCommand(string leftOfCursor)
@@ -170,4 +175,8 @@ public class CompletionProvider : ICompletionProvider
 
         return inQuotes;
     }
+
+    private record ActionInfo(List<string> Names, List<OptionInfo> Options);
+
+    private record OptionInfo(string Name, bool IsFlag);
 }
