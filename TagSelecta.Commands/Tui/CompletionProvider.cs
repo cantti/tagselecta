@@ -81,7 +81,7 @@ public class CompletionProvider : ICompletionProvider
                 names.Add(nameAttribute.Alias);
             }
 
-            _actions.Add(new(names, options));
+            _actions.Add(new ActionInfo(names, options));
         }
 
         _actions = _actions.OrderBy(x => x.Names[0]).ToList();

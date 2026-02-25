@@ -3,11 +3,11 @@ namespace TagSelecta.Commands.Tui;
 public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvider)
 {
     private readonly List<string> _history = [];
+    private int _completionIndex;
+    private List<string> _completions = [];
 
     // -1 = not navigating history
     private int _historyIndex = -1;
-    private List<string> _completions = [];
-    private int _completionIndex;
 
     public string Input { get; private set; } = "";
 
@@ -69,6 +69,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
             {
                 _completionIndex = (_completionIndex + 1) % _completions.Count;
             }
+
             return null;
         }
 
