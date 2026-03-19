@@ -174,3 +174,7 @@ COMMANDS:
 ## Read More
 
 https://cantti.github.io/tagselecta
+
+## Roadmap
+
+See `ROADMAP.md` for planned improvements.
