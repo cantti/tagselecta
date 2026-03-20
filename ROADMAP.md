@@ -6,4 +6,4 @@
 
 ## Later
 
-- [ ] Add more roadmap items.
+- [ ] Add file and directory opening in the TUI (browse and open paths from within the app)
