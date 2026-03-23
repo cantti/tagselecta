@@ -45,7 +45,13 @@ public class Tagger : ITagger
         {
             var xiph = (XiphComment)tfile.GetTag(TagTypes.Xiph, true);
             var flac = (Metadata)tfile.GetTag(TagTypes.FlacMetadata, true);
-            return new FlacTagDataProcessor(xiph, flac);
+            return new FlacOggTagDataProcessor(xiph, flac);
+        }
+
+        if (mime.Contains("ogg"))
+        {
+            var xiph = (XiphComment)tfile.GetTag(TagTypes.Xiph, true);
+            return new FlacOggTagDataProcessor(xiph);
         }
 
         throw new TagSelectaException($"Unsupported format: {mime}");

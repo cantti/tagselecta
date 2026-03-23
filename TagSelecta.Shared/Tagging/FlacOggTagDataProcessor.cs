@@ -5,7 +5,7 @@ using Picture = TagLib.Picture;
 
 namespace TagSelecta.Shared.Tagging;
 
-public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProcessor
+public class FlacOggTagDataProcessor : TagDataProcessor
 {
     private static readonly HashSet<string> _usedXiphFields = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -28,10 +28,22 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         "title",
         "tracknumber",
         "tracktotal",
+        "metadata_block_picture",
     };
 
-    private readonly Metadata flac = flac;
-    private readonly XiphComment xiph = tag;
+    private readonly Metadata? flac;
+    private readonly XiphComment xiph;
+
+    public FlacOggTagDataProcessor(XiphComment xiph, Metadata flac)
+    {
+        this.flac = flac;
+        this.xiph = xiph;
+    }
+
+    public FlacOggTagDataProcessor(XiphComment xiph)
+    {
+        this.xiph = xiph;
+    }
 
     public override TagData Read()
     {
@@ -56,8 +68,9 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
             Title = ReadField("title"),
             Track = ReadField("tracknumber"),
             TrackTotal = ReadField("tracktotal"),
-            Picture = flac.Pictures.Select(x => new Picture(x)).ToList(),
         };
+        var pictures = flac is not null ? flac.Pictures : xiph.Pictures;
+        tagData.Picture = pictures.Select(x => new Picture(x)).ToList();
         ReadExtraFields(tagData);
         return tagData;
     }
@@ -79,7 +92,7 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         WriteFieldMulti("genre", data.Genre);
         WriteField("isrc", data.Isrc);
         WriteField("label", data.Label);
-        WriteField("Publisher", data.Publisher);
+        WriteField("organization", data.Publisher);
         WriteField("title", data.Title);
         WriteField("tracknumber", data.Track);
         WriteField("tracktotal", data.TrackTotal);
@@ -88,8 +101,15 @@ public class FlacTagDataProcessor(XiphComment tag, Metadata flac) : TagDataProce
         {
             WriteField(field.Key, field.Text);
         }
-
-        flac.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
+        var pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
+        if (flac is not null)
+        {
+            flac.Pictures = pictures;
+        }
+        else
+        {
+            xiph.Pictures = pictures;
+        }
     }
 
     private string ReadField(string key)
