@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using TagSelecta.Commands.Github;
 using TagSelecta.Commands.Tui.TuiCommands;
 
 namespace TagSelecta.Commands.Tui;
@@ -29,7 +30,9 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommand, TogglePictureCommand>();
         services.AddTransient<ITuiCommand, OpenPictureCommand>();
         services.AddTransient<ITuiCommand, OpenDocs>();
+        services.AddTransient<ITuiCommand, VersionCommand>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
+        services.AddTransient<IGithubClient, GithubClient>();
         services.AddTransient<ICompletionProvider, CompletionProvider>();
         services.AddTransient<InputHandler>();
         services.AddSingleton<HotkeyMap>();

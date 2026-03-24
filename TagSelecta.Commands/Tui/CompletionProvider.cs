@@ -14,6 +14,9 @@ public class CompletionProvider : ICompletionProvider
     public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
     {
         AddActions(tagDataActions);
+
+        // todo find way to add tui commands
+        _commands.Add("version");
     }
 
     public IEnumerable<string> GetCompletions(string input, int cursorPos)
