@@ -1,7 +1,7 @@
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
-[TuiCommand("clearselection")]
-public class ClearSelectionCommand : ITuiCommand
+[TuiCommand("escape")]
+public class EscapeCommand : ITuiCommand
 {
     public Task ExecuteAsync(
         ITuiCommandContext context,
@@ -13,6 +13,9 @@ public class ClearSelectionCommand : ITuiCommand
         {
             file.IsSelected = false;
         }
+
+        context.CommandHelpEnabled = false;
+        context.KeymapHelpEnabled = false;
 
         return Task.CompletedTask;
     }

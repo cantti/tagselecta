@@ -285,7 +285,7 @@ public class TuiApp(
 
     private void BindHotkeys()
     {
-        hotkeys.Bind(HotkeyTokens.Esc, "clearselection");
+        hotkeys.Bind(HotkeyTokens.Esc, "escape");
         hotkeys.Bind(HotkeyTokens.Down, "movedown");
         hotkeys.Bind(HotkeyTokens.Up, "moveup");
         hotkeys.Bind("j", "movedown");
@@ -356,7 +356,7 @@ public class TuiApp(
                 Print(ex.Message);
             }
 
-            hotkeys.Bind("esc", "clearselection");
+            hotkeys.Bind("esc", "escape");
         });
     }
 }
