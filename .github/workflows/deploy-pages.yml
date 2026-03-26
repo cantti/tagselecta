@@ -6,7 +6,7 @@ on:
       - main
 
   workflow_dispatch:
-    
+
 jobs:
   update-cli-docs:
     name: Update CLI Docs
