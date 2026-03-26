@@ -1,9 +1,14 @@
-name: release-please
+name: Release
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag to release (e.g. v1.0.0)"
+        required: true
 
 permissions:
   contents: write
@@ -12,6 +17,7 @@ permissions:
 
 jobs:
   release-please:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -23,7 +29,12 @@ jobs:
           release-type: simple
 
   build-and-release:
-    if: needs.release-please.outputs.release_created == 'true'
+    if: >-
+      ${{
+        always() &&
+        (github.event_name == 'workflow_dispatch' ||
+        needs.release-please.outputs.release_created == 'true')
+      }}
     needs: release-please
     runs-on: ubuntu-latest
     strategy:
@@ -33,7 +44,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag_name || needs.release-please.outputs.tag_name }}
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -42,7 +53,11 @@ jobs:
         run: dotnet restore
       - name: Publish for ${{ matrix.rid }}
         run: |
-          tag="${{ needs.release-please.outputs.tag_name }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            tag="${{ inputs.tag_name }}"
+          else
+            tag="${{ needs.release-please.outputs.tag_name }}"
+          fi
           ver="${tag#v}"
           dotnet publish -c Release -r ${{ matrix.rid }} \
             --self-contained true \
@@ -65,7 +80,12 @@ jobs:
           path: artifacts/tagselecta-${{ matrix.rid }}.zip
 
   release:
-    if: needs.release-please.outputs.release_created == 'true'
+    if: >-
+      ${{
+        always() &&
+        (github.event_name == 'workflow_dispatch' ||
+        needs.release-please.outputs.release_created == 'true')
+      }}
     needs: [release-please, build-and-release]
     runs-on: ubuntu-latest
     steps:
@@ -76,8 +96,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.release-please.outputs.tag_name }}
-          name: ${{ needs.release-please.outputs.tag_name }}
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag_name || needs.release-please.outputs.tag_name }}
+          name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag_name || needs.release-please.outputs.tag_name }}
           draft: false
           prerelease: false
           files: dist/**/*.zip
