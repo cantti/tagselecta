@@ -37,7 +37,7 @@ public class TuiApp(
 
     public int FocusedFileIndex { get; set; }
 
-    public bool TreeEnabled { get; set; }
+    public bool TreeEnabled { get; set; } = config.TreeEnabled;
 
     public bool FilterEnabled { get; set; }
 

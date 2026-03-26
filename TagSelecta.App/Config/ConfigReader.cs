@@ -9,6 +9,7 @@ public static class ConfigReader
         debug = false
         file_list_ratio = 0.3
         auto_completion_enabled = true
+        tree_enabled = false
 
         [macros]
         reggae="edit genre=\"Reggae\""

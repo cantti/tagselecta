@@ -17,6 +17,7 @@ public static class DependencyInjection
             {
                 FileListRatio = configModel.General.FileListRatio,
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
+                TreeEnabled = configModel.General.TreeEnabled,
             }
         );
         return services;
