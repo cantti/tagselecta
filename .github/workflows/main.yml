@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "v*"
+    # tags:
+    #   - "v*"
   workflow_dispatch:
     inputs:
       tag_name:
@@ -13,14 +13,12 @@ on:
         default: ""
 permissions:
   contents: write
-env:
-  RELEASE_GATE: >-
-    github.event_name == 'workflow_dispatch' ||
-    startsWith(github.ref, 'refs/tags/v') ||
-    contains(toJson(github.event.commits), 'chore(main): release')
 jobs:
   build-and-release:
-    if: ${{ env.RELEASE_GATE }}
+    if: &release_gate >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.ref, 'refs/tags/v') ||
+      contains(toJson(github.event.commits), 'chore(main): release')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,7 +62,7 @@ jobs:
           name: tagselecta-${{ matrix.rid }}
           path: artifacts/tagselecta-${{ matrix.rid }}.zip
   release:
-    if: ${{ env.RELEASE_GATE }}
+    if: *release_gate
     needs: build-and-release
     runs-on: ubuntu-latest
     steps:
