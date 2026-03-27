@@ -1,4 +1,4 @@
-name: Build and Release
+name: Release
 on:
   push:
     tags:
@@ -43,6 +43,7 @@ jobs:
             -p:DebugType=None \
             -p:DebugSymbols=false \
             -p:Version="$ver" \
+            -p:InformationalVersion="$ver" \
             -o artifacts/${{ matrix.rid }} \
             TagSelecta.App
       - name: Zip output
@@ -72,7 +73,7 @@ jobs:
         id: git-cliff
         with:
           config: cliff.toml
-          args: -vv --latest --strip header
+          args: -vv --current --strip header
   release:
     needs: changelog
     runs-on: ubuntu-latest
