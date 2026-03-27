@@ -1,5 +1,5 @@
-using System.Reflection;
 using TagSelecta.Commands.Github;
+using TagSelecta.Shared;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
@@ -13,15 +13,6 @@ public class VersionCommand(IGithubClient githubClient) : ITuiCommand
     )
     {
         var resp = await githubClient.LatestRelease(token);
-        context.Print($"Current version: {GetAppVersion()}. Latest version: {resp.TagName}.");
-    }
-
-    private static string GetAppVersion()
-    {
-        return Assembly
-                .GetExecutingAssembly()
-                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                ?.InformationalVersion
-            ?? "unknown";
+        context.Print($"Current version: {AppVersion.Get()}. Latest version: {resp.TagName}.");
     }
 }

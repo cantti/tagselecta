@@ -1,4 +1,3 @@
-﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -32,18 +31,9 @@ internal class Program
             }
 
             config.AddCommands(services);
-            config.SetApplicationVersion(GetAppVersion());
+            config.SetApplicationVersion(AppVersion.Get());
         });
         return app.Run(args, cst.Token);
-    }
-
-    private static string GetAppVersion()
-    {
-        return Assembly
-                .GetExecutingAssembly()
-                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                ?.InformationalVersion
-            ?? "unknown";
     }
 
     private static void SetAnsiSupport()
