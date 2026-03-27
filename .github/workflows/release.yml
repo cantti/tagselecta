@@ -43,7 +43,6 @@ jobs:
             -p:DebugType=None \
             -p:DebugSymbols=false \
             -p:Version="$ver" \
-            -p:InformationalVersion="$ver" \
             -o artifacts/${{ matrix.rid }} \
             TagSelecta.App
       - name: Zip output
