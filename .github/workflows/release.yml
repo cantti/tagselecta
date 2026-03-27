@@ -1,41 +1,18 @@
-name: Release
-
+name: Build and Release
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       tag_name:
         description: "Tag to release (e.g. v1.0.0)"
-        required: true
-
+        required: false
+        default: ""
 permissions:
   contents: write
-  issues: write
-  pull-requests: write
-
 jobs:
-  release-please:
-    if: ${{ github.event_name != 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-    steps:
-      - id: release
-        uses: googleapis/release-please-action@v4
-        with:
-          release-type: simple
-
   build-and-release:
-    if: >-
-      ${{
-        always() &&
-        (github.event_name == 'workflow_dispatch' ||
-        needs.release-please.outputs.release_created == 'true')
-      }}
-    needs: release-please
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -44,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag_name || needs.release-please.outputs.tag_name }}
+          ref: ${{ github.event.inputs.tag_name || github.ref }}
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -53,10 +30,10 @@ jobs:
         run: dotnet restore
       - name: Publish for ${{ matrix.rid }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            tag="${{ inputs.tag_name }}"
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            tag="${{ github.event.inputs.tag_name }}"
           else
-            tag="${{ needs.release-please.outputs.tag_name }}"
+            tag="${{ github.ref_name }}"
           fi
           ver="${tag#v}"
           dotnet publish -c Release -r ${{ matrix.rid }} \
@@ -78,26 +55,27 @@ jobs:
         with:
           name: tagselecta-${{ matrix.rid }}
           path: artifacts/tagselecta-${{ matrix.rid }}.zip
-
   release:
-    if: >-
-      ${{
-        always() &&
-        (github.event_name == 'workflow_dispatch' ||
-        needs.release-please.outputs.release_created == 'true')
-      }}
-    needs: [release-please, build-and-release]
+    needs: build-and-release
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
+      - name: Determine tag name
+        id: get_tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag_name || needs.release-please.outputs.tag_name }}
-          name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag_name || needs.release-please.outputs.tag_name }}
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          name: ${{ steps.get_tag.outputs.tag }}
           draft: false
           prerelease: false
           files: dist/**/*.zip
