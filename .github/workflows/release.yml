@@ -55,8 +55,26 @@ jobs:
         with:
           name: tagselecta-${{ matrix.rid }}
           path: artifacts/tagselecta-${{ matrix.rid }}.zip
-  release:
+  changelog:
+    name: Generate changelog
     needs: build-and-release
+    runs-on: ubuntu-latest
+    outputs:
+      release_body: ${{ steps.git-cliff.outputs.content }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag_name || github.ref }}
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v4
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: -vv --latest --strip header
+  release:
+    needs: changelog
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
@@ -79,3 +97,4 @@ jobs:
           draft: false
           prerelease: false
           files: dist/**/*.zip
+          body: ${{ needs.changelog.outputs.release_body }}
