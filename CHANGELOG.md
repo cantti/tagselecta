@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.4.0] - 2026-03-28
 
 ### Features
 
@@ -7,6 +7,7 @@
 ### Docs
 
 - Aur package
+- Auto-update changelog
 
 ## [1.3.2] - 2026-03-27
 
