@@ -9,8 +9,6 @@ on:
         description: "Tag to release (e.g. v1.0.0)"
         required: false
         default: ""
-permissions:
-  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -59,6 +57,8 @@ jobs:
     name: Generate changelog
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       release_body: ${{ steps.release-body.outputs.content }}
     steps:
@@ -109,6 +109,8 @@ jobs:
   release:
     needs: release-body
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4

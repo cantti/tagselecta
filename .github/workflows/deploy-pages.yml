@@ -13,6 +13,8 @@ jobs:
   update-cli-docs:
     name: Update CLI Docs
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,8 +48,6 @@ jobs:
           git add README.md
           git commit -m "docs: auto-update docs"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: Build Docusaurus
