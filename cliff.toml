@@ -58,13 +58,14 @@ protect_breaking_commits = false
 # Assigns commits to groups.
 # Optionally sets the commit's scope and can decide to exclude commits from further processing.
 commit_parsers = [
-    { message = "^feat", group = "Features" },
-    { message = "^fix", group = "Fixes" },
-    { message = "^perf", group = "Performance" },
-    # { message = ".*", group = "Other" },
+    { message = "^feat", group = "<!-- 0 -->Features" },
+    { message = "^fix", group = "<!-- 1 -->Fixes" },
+    { message = "^perf", group = "<!-- 2 -->Performance" },
+    { message = "^doc", group = "<!-- 3 -->Docs" },
 ]
 # Exclude commits that are not matched by any commit parser.
-filter_commits = false
+# Otherwise groups for unmatched commits will be created automatically
+filter_commits = true
 # Fail on a commit that is not matched by any commit parser.
 fail_on_unmatched_commit = false
 # An array of link parsers for extracting external references, and turning them into URLs, using regex.

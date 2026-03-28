@@ -60,20 +60,27 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     outputs:
-      release_body: ${{ steps.git-cliff.outputs.content }}
+      release_body: ${{ steps.release-body.outputs.content }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.tag_name || github.ref }}
-      - name: Generate a changelog
+      - name: Generate changelog
         uses: orhun/git-cliff-action@v4
-        id: git-cliff
         with:
-          config: cliff.toml
-          args: -vv --current --strip header
+          config: cliff.toml -o CHANGELOG.md
+          args: --verbose
+      - name: Check if changelog was updated
+        id: git_diff
+        run: |
+          if git diff --quiet CHANGELOG.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
       - name: Commit and push changes
+        if: steps.git_diff.outputs.changed == 'true'
         run: |
           git switch main
           git config --global user.name "github-actions[bot]"
@@ -83,8 +90,34 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  release-body:
+    name: Generate release body
+    needs: build
+    runs-on: ubuntu-latest
+    outputs:
+      release_body: ${{ steps.release-body.outputs.content }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag_name || github.ref }}
+      - name: Generate release body
+        uses: orhun/git-cliff-action@v4
+        id: release-body
+        with:
+          config: cliff.toml
+          args: --verbose --current --strip header
+      - name: Commit and push changes
+        run: |
+          git switch main
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: auto-update changelog"
+          git push
   release:
-    needs: changelog
+    needs: release-body
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
