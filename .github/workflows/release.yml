@@ -60,8 +60,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      release_body: ${{ steps.release-body.outputs.content }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -134,4 +132,4 @@ jobs:
           draft: false
           prerelease: false
           files: dist/**/*.zip
-          body: ${{ needs.changelog.outputs.release_body }}
+          body: ${{ needs.release-body.outputs.release_body }}
