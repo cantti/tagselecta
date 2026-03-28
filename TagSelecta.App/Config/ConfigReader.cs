@@ -20,7 +20,8 @@ public static class ConfigReader
     {
         var configPath = GetConfigPath();
         var tomlText = File.ReadAllText(configPath);
-        var config = Toml.ToModel<ConfigModel>(tomlText);
+        var options = new TomlModelOptions { IgnoreMissingProperties = true };
+        var config = Toml.ToModel<ConfigModel>(tomlText, configPath, options);
         return config;
     }
 
