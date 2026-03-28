@@ -88,8 +88,6 @@ jobs:
           git add CHANGELOG.md
           git commit -m "docs: auto-update changelog"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release-body:
     name: Generate release body
     needs: build
@@ -108,14 +106,6 @@ jobs:
         with:
           config: cliff.toml
           args: --verbose --current --strip header
-      - name: Commit and push changes
-        run: |
-          git switch main
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "docs: auto-update changelog"
-          git push
   release:
     needs: release-body
     runs-on: ubuntu-latest
