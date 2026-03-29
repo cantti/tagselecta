@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Json.Path;
+using System.Text.RegularExpressions;
 
 namespace TagSelecta.TagDataActions.Json;
 
@@ -27,6 +27,12 @@ public static class JsonPathValueResolver
             return string.Empty;
         }
 
+        if (HasIndexTemplate(path))
+        {
+            var resolvedPath = ResolveIndexTemplate(path, index);
+            return GetValue(json, resolvedPath);
+        }
+
         var values = Evaluate(json, path)
             .Select(ToTagString)
             .Where(static x => !string.IsNullOrWhiteSpace(x))
@@ -46,15 +52,22 @@ public static class JsonPathValueResolver
 
     private static IReadOnlyList<JsonNode?> Evaluate(string json, string path)
     {
-        var token = JsonNode.Parse(json);
-        if (token is null)
-        {
-            return [];
-        }
+        return JqWrapper.Evaluate(json, path);
+    }
 
-        var jsonPath = JsonPath.Parse(path);
-        var result = jsonPath.Evaluate(token);
-        return result.Matches.Select(x => x.Value).ToList();
+    private static bool HasIndexTemplate(string path)
+    {
+        return Regex.IsMatch(path, "\\{\\{\\s*index\\s*\\}\\}", RegexOptions.IgnoreCase);
+    }
+
+    private static string ResolveIndexTemplate(string path, int index)
+    {
+        return Regex.Replace(
+            path,
+            "\\{\\{\\s*index\\s*\\}\\}",
+            index.ToString(),
+            RegexOptions.IgnoreCase
+        );
     }
 
     public static string ToTagString(JsonNode? token)

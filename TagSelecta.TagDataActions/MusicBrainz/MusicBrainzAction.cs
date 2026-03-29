@@ -44,35 +44,33 @@ public class MusicBrainzAction(
             .ToList();
 
         var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);
-        var trackCount = JsonPathValueResolver.Count(_release, "$.media[*].tracks[*]");
 
         foreach (var entry in musicBrainzConfig.FieldMap)
         {
-            var value = GetMappedValue(entry, _release, trackIndex, trackCount);
+            var value = GetMappedValue(entry, _release, trackIndex);
             tagData.SetField(entry.FieldName, value);
         }
 
         context.Target.UpdateTagData(tagData);
     }
 
-    private static string GetMappedValue(MusicBrainzFieldMapEntry entry, string release, int trackIndex, int trackCount)
+    private static string GetMappedValue(MusicBrainzFieldMapEntry entry, string release, int trackIndex)
     {
         if (entry.Value.Equals("auto", StringComparison.OrdinalIgnoreCase))
         {
-            return GetAutoValue(entry.FieldName, trackIndex, trackCount);
+            return GetAutoValue(entry.FieldName, trackIndex);
         }
 
-        return entry.PerTrack
+        return entry.Value.Contains("{{", StringComparison.Ordinal)
             ? JsonPathValueResolver.GetIndexedValue(release, entry.Value, trackIndex)
             : JsonPathValueResolver.GetValue(release, entry.Value);
     }
 
-    private static string GetAutoValue(string fieldName, int trackIndex, int trackCount)
+    private static string GetAutoValue(string fieldName, int trackIndex)
     {
         return fieldName.ToLowerInvariant() switch
         {
             "track" => trackIndex >= 0 ? (trackIndex + 1).ToString() : string.Empty,
-            "tracktotal" => trackCount > 0 ? trackCount.ToString() : string.Empty,
             _ => string.Empty,
         };
     }

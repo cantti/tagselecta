@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
+using Refit;
 using Spectre.Console.Cli;
 using TagSelecta.Commands;
 using TagSelecta.Commands.Cli.Find;
@@ -71,18 +72,8 @@ public static class CommandRegistration
     {
         services.AddTransient<DiscogsAuthHeaderHandler>();
         services
-            .AddHttpClient<IDiscogsApi, DiscogsApiClient>(c =>
-            {
-                c.BaseAddress = new Uri("https://api.discogs.com/");
-                c.DefaultRequestHeaders.UserAgent.Clear();
-                c.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TagSelecta", "1.0"));
-                c.DefaultRequestHeaders.UserAgent.Add(
-                    new ProductInfoHeaderValue("(+https://github.com/cantti/tagselecta)")
-                );
-                c.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json")
-                );
-            })
+            .AddRefitClient<IDiscogsApi>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.discogs.com"))
             .AddHttpMessageHandler<DiscogsAuthHeaderHandler>();
         services
             .AddHttpClient<DiscogsImageDownloader>()

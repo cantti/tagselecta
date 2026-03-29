@@ -29,32 +29,20 @@ public static class DependencyInjection
 
     private static DiscogsConfig CreateDiscogsConfig(DiscogsSection discogsSection)
     {
-        var perTrackFields = new HashSet<string>(
-            discogsSection.PerTrackFields,
-            StringComparer.OrdinalIgnoreCase
-        );
-
         return new DiscogsConfig
         {
             FieldMap = discogsSection
-                .FieldMap.Select(x => new DiscogsFieldMapEntry(x.Key, x.Value, perTrackFields.Contains(x.Key)))
+                .FieldMap.Select(x => new DiscogsFieldMapEntry(x.Key, x.Value))
                 .ToList(),
         };
     }
 
     private static MusicBrainzConfig CreateMusicBrainzConfig(MusicBrainzSection musicBrainzSection)
     {
-        var perTrackFields = new HashSet<string>(
-            musicBrainzSection.PerTrackFields,
-            StringComparer.OrdinalIgnoreCase
-        );
-
         return new MusicBrainzConfig
         {
             FieldMap = musicBrainzSection
-                .FieldMap.Select(x =>
-                    new MusicBrainzFieldMapEntry(x.Key, x.Value, perTrackFields.Contains(x.Key))
-                )
+                .FieldMap.Select(x => new MusicBrainzFieldMapEntry(x.Key, x.Value))
                 .ToList(),
         };
     }

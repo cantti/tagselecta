@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="Spectre.Console.Cli" />
     <PackageReference Include="Tomlyn" />
   </ItemGroup>
