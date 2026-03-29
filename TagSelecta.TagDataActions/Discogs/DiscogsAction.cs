@@ -14,25 +14,10 @@ namespace TagSelecta.TagDataActions.Discogs;
 public class DiscogsAction(
     IDiscogsApi discogsApi,
     DiscogsImageDownloader discogsImageDownloader,
-    IAudioFileScanner fileScanner
+    IAudioFileScanner fileScanner,
+    DiscogsConfig discogsConfig
 ) : TagDataAction<DiscogsSettings>
 {
-    private const string AutoValue = "auto";
-
-    private static readonly FieldMapEntry[] FieldMap =
-    [
-        new("album", "$['title']"),
-        new("date", "$['year']"),
-        new("label", "$['labels'][0]['name']"),
-        new("catalognumber", "$['labels'][0]['catno']"),
-        new("genre", "$['styles'][*]"),
-        new("albumartist", AutoValue),
-        new("artist", AutoValue, true),
-        new("title", "$['tracklist'][?(@['type_']=='track')]['title']", true),
-        new("track", "$['tracklist'][?(@['type_']=='track')]['position']", true),
-        new("discogs_release_id", "$['id']"),
-    ];
-
     private JToken? _release;
     private byte[]? _releaseImage;
 
@@ -61,7 +46,7 @@ public class DiscogsAction(
             return false;
         }
 
-        var imageUrl = GetReleaseValue(_release, "$['images'][0]['uri']");
+        var imageUrl = GetReleaseValue(_release, "$.images[0].uri");
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
             _releaseImage = await discogsImageDownloader.DownloadAsync(imageUrl);
@@ -84,9 +69,7 @@ public class DiscogsAction(
             .ToList();
         var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);
 
-        var tracks = _release
-            .SelectTokens("$['tracklist'][?(@['type_']=='track')]", false)
-            .ToList();
+        var tracks = _release.SelectTokens("$.tracklist[?(@.type_=='track')]", false).ToList();
 
         if (trackIndex > tracks.Count - 1)
         {
@@ -98,7 +81,7 @@ public class DiscogsAction(
             return;
         }
 
-        foreach (var entry in FieldMap)
+        foreach (var entry in discogsConfig.FieldMap)
         {
             var value = GetMappedValue(entry, _release, trackIndex);
             tagData.SetField(entry.FieldName, value);
@@ -138,9 +121,9 @@ public class DiscogsAction(
         return index < values.Count ? values[index] : string.Empty;
     }
 
-    private static string GetMappedValue(FieldMapEntry entry, JToken release, int trackIndex)
+    private static string GetMappedValue(DiscogsFieldMapEntry entry, JToken release, int trackIndex)
     {
-        if (entry.Value.Equals(AutoValue, StringComparison.OrdinalIgnoreCase))
+        if (entry.Value.Equals("auto", StringComparison.OrdinalIgnoreCase))
         {
             return GetAutoValue(entry.FieldName, release, trackIndex);
         }
@@ -154,13 +137,14 @@ public class DiscogsAction(
     {
         return fieldName.ToLowerInvariant() switch
         {
-            "albumartist" => string.Join("; ", GetArtists(release, "$['artists'][*]['name']")),
+            "albumartist" => string.Join("; ", GetArtists(release)),
             "artist" => string.Join(
                 "; ",
                 GetTrackArtists(release, trackIndex) is { Count: > 0 } trackArtists
                     ? trackArtists
-                    : GetArtists(release, "$['artists'][*]['name']")
+                    : GetArtists(release)
             ),
+            "track" => trackIndex >= 0 ? (trackIndex + 1).ToString() : string.Empty,
             _ => string.Empty,
         };
     }
@@ -172,18 +156,18 @@ public class DiscogsAction(
             return [];
         }
 
-        var tracks = release.SelectTokens("$['tracklist'][?(@['type_']=='track')]", false).ToList();
+        var tracks = release.SelectTokens("$.tracklist[?(@.type_=='track')]", false).ToList();
         if (trackIndex >= tracks.Count)
         {
             return [];
         }
 
-        return GetArtists(tracks[trackIndex], "$['artists'][*]['name']");
+        return GetArtists(tracks[trackIndex]);
     }
 
-    private static List<string> GetArtists(JToken token, string path)
+    private static List<string> GetArtists(JToken token)
     {
-        return GetReleaseValues(token, path)
+        return GetReleaseValues(token, "$.artists[*].name")
             .Select(RemoveTrailingNumberParentheses)
             .Where(static x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x!)
@@ -202,7 +186,7 @@ public class DiscogsAction(
 
     private static int GetMainReleaseId(JToken master)
     {
-        var value = master.SelectToken("$['main_release']", false)?.Value<int?>();
+        var value = master.SelectToken("$.main_release", false)?.Value<int?>();
         if (value is null)
         {
             throw new TagSelectaException("Master release id not found");
@@ -253,6 +237,4 @@ public class DiscogsAction(
             ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))
             : throw new TagSelectaException("Error parsing discogs url");
     }
-
-    private sealed record FieldMapEntry(string FieldName, string Value, bool PerTrack = false);
 }
