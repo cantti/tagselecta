@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
 using Spectre.Console.Cli;
@@ -71,7 +72,18 @@ public static class CommandRegistration
     {
         services.AddTransient<DiscogsAuthHeaderHandler>();
         services
-            .AddRefitClient<IDiscogsApi>()
+            .AddRefitClient<IDiscogsApi>(
+                new RefitSettings
+                {
+                    ContentSerializer = new SystemTextJsonContentSerializer(
+                        new JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                            PropertyNameCaseInsensitive = true,
+                        }
+                    ),
+                }
+            )
             .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.discogs.com"))
             .AddHttpMessageHandler<DiscogsAuthHeaderHandler>();
         services
@@ -132,7 +144,18 @@ public static class CommandRegistration
     private static void AddMusicBrainz(IConfigurator configurator, IServiceCollection services)
     {
         services
-            .AddRefitClient<IMusicBrainzApiClient>()
+            .AddRefitClient<IMusicBrainzApiClient>(
+                new RefitSettings
+                {
+                    ContentSerializer = new SystemTextJsonContentSerializer(
+                        new JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower,
+                            PropertyNameCaseInsensitive = true,
+                        }
+                    ),
+                }
+            )
             .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://musicbrainz.org/ws/2"));
         configurator
             .AddTagDataAction<MusicBrainzAction>(services)

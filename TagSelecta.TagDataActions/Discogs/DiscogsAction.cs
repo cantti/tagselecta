@@ -45,17 +45,17 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fil
 
         var trackNumber = directoryFiles.ToList().FindIndex(x => x == context.Target.BackupPath);
 
-        if (trackNumber > _release.Release.TrackList?.Count - 1)
+        if (trackNumber > _release.Release.Tracklist?.Count - 1)
         {
             return;
         }
 
-        if (_release.Release.TrackList is null)
+        if (_release.Release.Tracklist is null)
         {
             return;
         }
 
-        var track = _release.Release.TrackList[trackNumber];
+        var track = _release.Release.Tracklist[trackNumber];
 
         var albumArtists =
             _release
@@ -76,7 +76,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fil
         Write(Fields.Track, () => tagData.Track = track.Position ?? "");
         Write(
             Fields.TrackTotal,
-            () => tagData.TrackTotal = _release.Release.TrackList.Count.ToString()
+            () => tagData.TrackTotal = _release.Release.Tracklist.Count.ToString()
         );
         Write(Fields.Disc, () => tagData.Disc = "");
         Write(Fields.DiscTotal, () => tagData.DiscTotal = "");
@@ -84,7 +84,7 @@ public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fil
         Write(Fields.Label, () => tagData.Label = label?.Name ?? "");
         Write(Fields.Date, () => tagData.Date = _release.Release.Year.ToString());
         Write(Fields.Picture, () => tagData.Picture = [new Picture(_release.Image)]);
-        Write(Fields.CatalogNumber, () => tagData.CatalogNumber = label?.CatNo ?? "");
+        Write(Fields.CatalogNumber, () => tagData.CatalogNumber = label?.Catno ?? "");
         tagData.SetExtraField("discogs_release_id", _release.Release.Id.ToString());
         context.Target.UpdateTagData(tagData);
     }

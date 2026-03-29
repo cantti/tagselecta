@@ -8,9 +8,7 @@ public class Master
     public string Title { get; set; } = "";
     public string Uri { get; set; } = "";
     public List<ReleaseArtist> Artists { get; set; } = [];
-    public List<ReleaseTrack> TrackList { get; set; } = [];
+    public List<ReleaseTrack> Tracklist { get; set; } = [];
     public int Year { get; set; }
-
-    [JsonPropertyName("main_release")]
     public int MainRelease { get; set; }
 }

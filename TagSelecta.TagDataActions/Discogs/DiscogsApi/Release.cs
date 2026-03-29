@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace TagSelecta.TagDataActions.Discogs.DiscogsApi;
 
 public class Release
@@ -7,7 +9,9 @@ public class Release
 
     public string? Uri { get; set; }
     public List<ReleaseArtist>? Artists { get; set; }
-    public List<ReleaseTrack>? TrackList { get; set; }
+
+    public List<ReleaseTrack>? Tracklist { get; set; }
+
     public List<string>? Genres { get; set; }
     public List<string>? Styles { get; set; }
     public List<ReleaseLabel>? Labels { get; set; }
