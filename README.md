@@ -64,7 +64,8 @@ Ensure `"$HOME/.local/bin"` is in your `PATH`.
 
 > Tip: the same script can be used to update the installed version.
 
-You can install the latest release automatically using the provided installer script (review the script before running it):
+You can install the latest release automatically using the provided installer script (review the script before running
+it):
 
 ```sh
 wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | bash -s "$HOME/.local/bin"

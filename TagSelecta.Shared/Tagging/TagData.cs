@@ -101,7 +101,7 @@ public class TagData
         }
         else
         {
-            this.SetExtraField(key, value);
+            SetExtraField(key, value);
         }
     }
 

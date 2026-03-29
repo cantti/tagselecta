@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
@@ -62,7 +63,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
         }
 
         var pattern = @"/release/([\d\w-]+)";
-        var match = System.Text.RegularExpressions.Regex.Match(url, pattern);
+        var match = Regex.Match(url, pattern);
         if (!match.Success)
         {
             throw new TagSelectaException("Error parsing MusicBrainz url");

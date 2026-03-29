@@ -101,6 +101,7 @@ public class FlacOggTagDataProcessor : TagDataProcessor
         {
             WriteField(field.Key, field.Text);
         }
+
         var pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
         if (flac is not null)
         {
