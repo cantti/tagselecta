@@ -1,13 +1,8 @@
-using Refit;
+using System.Text.Json;
 
 namespace TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
-[Headers(
-    "User-Agent: TagSelecta/1.0 +https://github.com/cantti/tagselecta",
-    "Accept: application/json"
-)]
 public interface IMusicBrainzApiClient
 {
-    [Get("/release/{id}?inc=artist-credits+labels+discids+recordings")]
-    Task<Release> GetRelease(string id);
+    Task<JsonElement?> GetRelease(string id, CancellationToken token);
 }

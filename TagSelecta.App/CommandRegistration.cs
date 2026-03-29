@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
@@ -143,20 +144,18 @@ public static class CommandRegistration
 
     private static void AddMusicBrainz(IConfigurator configurator, IServiceCollection services)
     {
-        services
-            .AddRefitClient<IMusicBrainzApiClient>(
-                new RefitSettings
-                {
-                    ContentSerializer = new SystemTextJsonContentSerializer(
-                        new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower,
-                            PropertyNameCaseInsensitive = true,
-                        }
-                    ),
-                }
-            )
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://musicbrainz.org/ws/2"));
+        services.AddHttpClient<IMusicBrainzApiClient, MusicBrainzApiClient>(c =>
+        {
+            c.BaseAddress = new Uri("https://musicbrainz.org/ws/2/");
+            c.DefaultRequestHeaders.UserAgent.Clear();
+            c.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TagSelecta", "1.0"));
+            c.DefaultRequestHeaders.UserAgent.Add(
+                new ProductInfoHeaderValue("(+https://github.com/cantti/tagselecta)")
+            );
+            c.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json")
+            );
+        });
         configurator
             .AddTagDataAction<MusicBrainzAction>(services)
             .WithDescription(
