@@ -29,14 +29,17 @@ public class CompletionProvider : ICompletionProvider
         // only consider text to the left of the cursor for completion
         var leftOfCursor = input[..cursorPos];
 
-        // only complete words or after space. ignore things like &, =
-        if (input != "" && !Regex.IsMatch(leftOfCursor, @"[a-z\s]+$"))
+        if (IsTypingUnquotedOptionValue(leftOfCursor))
         {
             return [];
         }
 
-        // get last word
-        var word = Regex.Match(leftOfCursor, "[a-zA-Z]+$").Value;
+        // complete only plain word tokens (or when starting a token)
+        var word = GetCurrentToken(leftOfCursor);
+        if (word.Length > 0 && !word.All(char.IsLetter))
+        {
+            return [];
+        }
 
         var currentCommand = GetCurrentCommand(leftOfCursor);
 
@@ -177,6 +180,18 @@ public class CompletionProvider : ICompletionProvider
         }
 
         return inQuotes;
+    }
+
+    private static bool IsTypingUnquotedOptionValue(string leftOfCursor)
+    {
+        var token = GetCurrentToken(leftOfCursor);
+        return token.Contains('=');
+    }
+
+    private static string GetCurrentToken(string leftOfCursor)
+    {
+        var tokenStart = leftOfCursor.LastIndexOfAny([' ', '\t', '\r', '\n']) + 1;
+        return leftOfCursor[tokenStart..];
     }
 
     private record ActionInfo(List<string> Names, List<OptionInfo> Options);
