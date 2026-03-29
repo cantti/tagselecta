@@ -9,6 +9,6 @@ public class Area
     public string? SortName { get; set; }
 
     [JsonPropertyName("iso-3166-1-codes")]
-    public string[]? Iso31661Codes { get; set; }
+    public List<string>? Iso31661Codes { get; set; }
     public string? Disambiguation { get; set; }
 }

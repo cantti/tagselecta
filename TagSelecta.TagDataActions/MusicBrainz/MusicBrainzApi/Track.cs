@@ -7,6 +7,6 @@ public class Track
     public int Length { get; set; }
     public string? Number { get; set; }
     public int Position { get; set; }
-    public ArtistCredit[]? ArtistCredit { get; set; }
+    public List<ArtistCredit>? ArtistCredit { get; set; }
     public Recording? Recording { get; set; }
 }

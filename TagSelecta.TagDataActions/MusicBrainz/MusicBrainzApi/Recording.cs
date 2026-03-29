@@ -7,5 +7,5 @@ public class Recording
     public string? Disambiguation { get; set; }
     public int Length { get; set; }
     public bool Video { get; set; }
-    public ArtistCredit[]? ArtistCredit { get; set; }
+    public List<ArtistCredit>? ArtistCredit { get; set; }
 }
