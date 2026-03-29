@@ -4,115 +4,138 @@ using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
+using TagSelecta.TagDataActions.Discogs.DiscogsApi;
 
 namespace TagSelecta.TagDataActions.Discogs;
 
 [TagDataActionName("discogs")]
-public class DiscogsAction(IReleaseFetcher releaseFetcher, IAudioFileScanner fileScanner)
-    : TagDataAction<DiscogsSettings>
+public class DiscogsAction : TagDataAction<DiscogsSettings>
 {
-    private List<string> _fieldToWriteList = [];
-    private ReleaseFetcherResult? _release;
+    private readonly IDiscogsApi _discogsApi;
+    private readonly DiscogsImageDownloader _discogsImageDownloader;
+
+    private readonly List<DiscogsFieldMapEntry> _fieldMap =
+    [
+        new("album", "{{ release.title }}"),
+        new("date", "{{ release.year }}"),
+        new("label", "{{ release.labels | array.map 'name' | joined }}"),
+        new("catalognumber", "{{ release.labels | array.map 'catno' | joined }}"),
+        new("genre", "{{ release.styles | joined }}"),
+        new("albumartist", "{{ release.artists | array.map 'name' | joined }}"),
+        new(
+            "artist",
+            "{{ if tracks[index].artists && tracks[index].artists.size > 0; tracks[index].artists | array.map 'name' | joined; else; release.artists | array.map 'name' | joined; end }}"
+        ),
+        new("title", "{{ tracks[index].title }}"),
+        new("track", "{{ index + 1 }}"),
+        new("tracktotal", "{{ tracks.size }}"),
+        new("discogs_release_id", "{{ release.id }}"),
+    ];
+
+    private readonly IAudioFileScanner _fileScanner;
+
+    private Release? _release;
+    private byte[]? _releaseImage;
+
+    public DiscogsAction(
+        IDiscogsApi discogsApi,
+        DiscogsImageDownloader discogsImageDownloader,
+        IAudioFileScanner fileScanner,
+        DiscogsConfig discogsConfig
+    )
+    {
+        _discogsApi = discogsApi;
+        _discogsImageDownloader = discogsImageDownloader;
+        _fileScanner = fileScanner;
+        MergeFieldMap(discogsConfig.FieldMap);
+    }
 
     public override async Task<bool> BeforeExecuteAsync(
         DiscogsSettings settings,
         CancellationToken token
     )
     {
-        if (settings.Fields is not null)
+        var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Url);
+        var releaseId = urlId;
+        if (urlType == "master")
         {
-            _fieldToWriteList = settings.Fields.ToMulti().Select(x => x.ToLower().Trim()).ToList();
+            var master = await _discogsApi.GetMaster(urlId);
+            releaseId = master.MainRelease;
         }
 
-        _release = await releaseFetcher.Fetch(settings);
+        _release = await _discogsApi.GetRelease(releaseId);
 
-        return _release is not null;
+        if (_release is null)
+        {
+            return false;
+        }
+
+        var imageUrl = _release.Images?.FirstOrDefault()?.Uri ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(imageUrl))
+        {
+            _releaseImage = await _discogsImageDownloader.DownloadAsync(imageUrl);
+        }
+
+        return true;
     }
 
     protected override void Execute(TagDataActionExecuteContext<DiscogsSettings> context)
     {
-        var tagData = context.Target.CurrentTagData;
-
         if (_release is null)
         {
             throw new TagSelectaException("Release not set");
         }
 
-        var directoryFiles = fileScanner
+        var tagData = context.Target.CurrentTagData;
+        var directoryFiles = _fileScanner
             .Search([context.Target.BackupPath.DirectoryName()])
             .Order()
             .ToList();
+        var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);
+        var tracks = DiscogsTemplateValueResolver.GetTracks(_release);
 
-        var trackNumber = directoryFiles.ToList().FindIndex(x => x == context.Target.BackupPath);
-
-        if (trackNumber > _release.Release.TrackList?.Count - 1)
+        if (trackIndex > tracks.Count - 1)
         {
             return;
         }
 
-        if (_release.Release.TrackList is null)
+        foreach (var entry in _fieldMap)
         {
-            return;
+            var value = DiscogsTemplateValueResolver.GetValue(entry.Value, _release, trackIndex);
+            tagData.SetField(entry.FieldName, value);
         }
 
-        var track = _release.Release.TrackList[trackNumber];
+        tagData.Disc = "";
+        tagData.DiscTotal = "";
+        tagData.Picture = [new Picture(_releaseImage)];
 
-        var albumArtists =
-            _release
-                .Release.Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "")
-                .ToList() ?? [];
-        var trackArtists =
-            track.Artists?.Select(a => RemoveTrailingNumberParentheses(a.Name) ?? "").ToList()
-            ?? [];
-        var label = _release.Release.Labels?.FirstOrDefault();
-
-        Write(Fields.AlbumArtist, () => tagData.AlbumArtist = albumArtists);
-        Write(
-            Fields.Artist,
-            () => tagData.Artist = trackArtists.Count != 0 ? trackArtists : albumArtists
-        );
-        Write(Fields.Album, () => tagData.Album = _release.Release.Title ?? "");
-        Write(Fields.Title, () => tagData.Title = track.Title ?? "");
-        Write(Fields.Track, () => tagData.Track = track.Position ?? "");
-        Write(
-            Fields.TrackTotal,
-            () => tagData.TrackTotal = _release.Release.TrackList.Count.ToString()
-        );
-        Write(Fields.Disc, () => tagData.Disc = "");
-        Write(Fields.DiscTotal, () => tagData.DiscTotal = "");
-        Write(Fields.Genre, () => tagData.Genre = _release.Release.Styles ?? []);
-        Write(Fields.Label, () => tagData.Label = label?.Name ?? "");
-        Write(Fields.Date, () => tagData.Date = _release.Release.Year.ToString());
-        Write(Fields.Picture, () => tagData.Picture = [new Picture(_release.Image)]);
-        Write(Fields.CatalogNumber, () => tagData.CatalogNumber = label?.CatNo ?? "");
-        tagData.SetExtraField("discogs_release_id", _release.Release.Id.ToString());
         context.Target.UpdateTagData(tagData);
     }
 
-    private void Write(string field, Action write)
+    private static (string Type, int Id) GetDiscogsReleaseInfo(string input)
     {
-        if (WriteRequired(field))
-        {
-            write();
-        }
+        var pattern = @"/(release|master)/(\d+)";
+        var match = Regex.Match(input, pattern);
+        return match.Success
+            ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))
+            : throw new TagSelectaException("Error parsing discogs url");
     }
 
-    private bool WriteRequired(string fieldName)
+    private void MergeFieldMap(IReadOnlyList<DiscogsFieldMapEntry> overrides)
     {
-        return _fieldToWriteList.Count == 0
-            || _fieldToWriteList.Contains(fieldName.ToLowerInvariant());
-    }
-
-    private static string? RemoveTrailingNumberParentheses(string? input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
+        foreach (var entry in overrides)
         {
-            return input;
+            var index = _fieldMap.FindIndex(x =>
+                x.FieldName.Equals(entry.FieldName, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (index >= 0)
+            {
+                _fieldMap[index] = entry;
+                continue;
+            }
+
+            _fieldMap.Add(entry);
         }
-
-        // Remove "(digits)" if it's at the end, possibly with spaces before or after
-        var result = Regex.Replace(input, @"\s*\(\d+\)\s*$", "");
-
-        return result.TrimEnd();
     }
 }

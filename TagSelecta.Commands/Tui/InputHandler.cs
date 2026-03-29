@@ -171,7 +171,7 @@ public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvi
             _historyIndex = -1;
             Input = Input.Insert(CursorPos, key.KeyChar.ToString());
             CursorPos++;
-            // autocomplete
+            // autocomplete. do not autocomplete on space
             if (IsAutoCompletionEnabled && key.KeyChar != ' ')
             {
                 LoadCompletions();

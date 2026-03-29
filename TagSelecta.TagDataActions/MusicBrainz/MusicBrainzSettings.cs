@@ -2,11 +2,11 @@ using System.ComponentModel;
 using Spectre.Console.Cli;
 using TagSelecta.TagDataActions.Abstractions;
 
-namespace TagSelecta.TagDataActions.Discogs;
+namespace TagSelecta.TagDataActions.MusicBrainz;
 
-public class DiscogsSettings : TagDataActionSettings
+public class MusicBrainzSettings : TagDataActionSettings
 {
     [CommandOption("--url|-u", true)]
-    [Description("Discogs release URL")]
+    [Description("MusicBrainz release URL or release id")]
     public required string Url { get; set; }
 }

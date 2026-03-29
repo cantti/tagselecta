@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.TagDataActions.Abstractions;
@@ -21,28 +20,17 @@ public class CompletionProvider : ICompletionProvider
 
     public IEnumerable<string> GetCompletions(string input, int cursorPos)
     {
-        if (IsCursorInsideDoubleQuotes(input, cursorPos))
+        var context = GetCursorContext(input, cursorPos);
+        if (context.DisableCompletion)
         {
             return [];
         }
 
-        // only consider text to the left of the cursor for completion
-        var leftOfCursor = input[..cursorPos];
-
-        // only complete words or after space. ignore things like &, =
-        if (input != "" && !Regex.IsMatch(leftOfCursor, @"[a-z\s]+$"))
-        {
-            return [];
-        }
-
-        // get last word
-        var word = Regex.Match(leftOfCursor, "[a-zA-Z]+$").Value;
-
-        var currentCommand = GetCurrentCommand(leftOfCursor);
+        var currentCommand = GetCurrentCommand(context.LeftOfCursor);
 
         return currentCommand.IsTyping
-            ? GetCommandCompletion(word)
-            : GetOptionCompletion(currentCommand.Command, word);
+            ? GetCommandCompletion(context.Token)
+            : GetOptionCompletion(currentCommand.Command, context.Token);
     }
 
     private void AddActions(IEnumerable<ITagDataAction> actions)
@@ -145,14 +133,14 @@ public class CompletionProvider : ICompletionProvider
         return (command, isTyping);
     }
 
-    private static bool IsCursorInsideDoubleQuotes(string input, int cursorPos)
+    private static CursorContext GetCursorContext(string input, int cursorPos)
     {
-        // We consider quotes up to (but not including) CursorPos.
-        // Escaped quotes \" do not toggle quote state.
+        var limit = Math.Clamp(cursorPos, 0, input.Length);
+        var leftOfCursor = input[..limit];
+
         var inQuotes = false;
         var escaped = false;
-
-        var limit = Math.Clamp(cursorPos, 0, input.Length);
+        var tokenStart = 0;
 
         for (var i = 0; i < limit; i++)
         {
@@ -173,11 +161,21 @@ public class CompletionProvider : ICompletionProvider
             if (ch == '"')
             {
                 inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (!inQuotes && char.IsWhiteSpace(ch))
+            {
+                tokenStart = i + 1;
             }
         }
 
-        return inQuotes;
+        var token = leftOfCursor[tokenStart..];
+        var disableCompletion = inQuotes || token.Contains('=');
+        return new CursorContext(leftOfCursor, token, disableCompletion);
     }
+
+    private record CursorContext(string LeftOfCursor, string Token, bool DisableCompletion);
 
     private record ActionInfo(List<string> Names, List<OptionInfo> Options);
 

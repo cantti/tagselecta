@@ -10,6 +10,8 @@ using TagSelecta.TagDataActions.Discogs.DiscogsApi;
 using TagSelecta.TagDataActions.Edit;
 using TagSelecta.TagDataActions.ExtractPicture;
 using TagSelecta.TagDataActions.Move;
+using TagSelecta.TagDataActions.MusicBrainz;
+using TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 using TagSelecta.TagDataActions.Split;
 using TagSelecta.TagDataActions.TitleCase;
 
@@ -27,6 +29,7 @@ public static class CommandRegistration
         AddAutoTrack(configurator, services);
         AddMove(configurator, services);
         AddFind(configurator, services);
+        AddMusicBrainz(configurator, services);
         AddTui(configurator, services);
     }
 
@@ -75,7 +78,6 @@ public static class CommandRegistration
             .AddHttpClient<DiscogsImageDownloader>()
             .AddHttpMessageHandler<DiscogsAuthHeaderHandler>();
 
-        services.AddTransient<IReleaseFetcher, ReleaseFetcher>();
         configurator
             .AddTagDataAction<DiscogsAction>(services)
             .WithDescription(
@@ -124,6 +126,18 @@ public static class CommandRegistration
             .AddCommand<FindCommand>("find")
             .WithDescription("Find files by metadata")
             .WithExample("find", ".", "-q", "\"title | string.downcase |  string.contains 'dub'\"");
+    }
+
+    private static void AddMusicBrainz(IConfigurator configurator, IServiceCollection services)
+    {
+        services
+            .AddRefitClient<IMusicBrainzApiClient>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://musicbrainz.org/ws/2"));
+        configurator
+            .AddTagDataAction<MusicBrainzAction>(services)
+            .WithDescription(
+                "Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search."
+            );
     }
 
     private static void AddTui(IConfigurator configurator, IServiceCollection services)

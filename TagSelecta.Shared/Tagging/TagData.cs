@@ -78,6 +78,33 @@ public class TagData
         }
     }
 
+    public void SetField(string key, string value)
+    {
+        key = key.NormalizeKey();
+        value = value.Trim();
+        var prop = typeof(TagData)
+            .GetProperties()
+            .SingleOrDefault(x =>
+                x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                && (x.PropertyType == typeof(string) || x.PropertyType == typeof(List<string>))
+            );
+        if (prop is not null)
+        {
+            if (prop.PropertyType == typeof(string))
+            {
+                prop.SetValue(this, value);
+            }
+            else
+            {
+                prop.SetValue(this, value.ToMulti());
+            }
+        }
+        else
+        {
+            SetExtraField(key, value);
+        }
+    }
+
     public TagData Clone()
     {
         return TagDataCloner.Clone(this);
