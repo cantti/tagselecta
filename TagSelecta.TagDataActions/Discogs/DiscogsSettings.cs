@@ -9,10 +9,4 @@ public class DiscogsSettings : TagDataActionSettings
     [CommandOption("--url|-u", true)]
     [Description("Discogs release URL")]
     public required string Url { get; set; }
-
-    [CommandOption("--fields|-f")]
-    [Description(
-        "Fields to update from Discogs release. If not specified, all values will be updated"
-    )]
-    public string? Fields { get; set; }
 }

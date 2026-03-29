@@ -1,25 +1,10 @@
-using Refit;
+using Newtonsoft.Json.Linq;
 
 namespace TagSelecta.TagDataActions.Discogs.DiscogsApi;
 
-[Headers(
-    "User-Agent: TagSelecta/1.0 +https://github.com/cantti/tagselecta",
-    "Authorization: Discogs"
-)]
 public interface IDiscogsApi
 {
-    [Get("/releases/{id}")]
-    Task<Release> GetRelease(int id);
+    Task<JToken?> GetRelease(int id, CancellationToken token);
 
-    [Get("/masters/{id}")]
-    Task<Master> GetMaster(int id);
-
-    [Get("/masters/{id}/versions")]
-    Task<MasterVersionList> GetMasterVersions(int id);
-
-    [Get("/database/search")]
-    Task<SearchResult> Search(string type, [AliasAs("q")] string query);
-
-    [Get("")]
-    Task<HttpResponseMessage> DownloadImage(string url);
+    Task<JToken?> GetMaster(int id, CancellationToken token);
 }

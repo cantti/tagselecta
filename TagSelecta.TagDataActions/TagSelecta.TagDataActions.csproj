@@ -12,6 +12,5 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Spectre.Console.Cli" />
-    <PackageReference Include="Refit.HttpClientFactory" />
   </ItemGroup>
 </Project>
