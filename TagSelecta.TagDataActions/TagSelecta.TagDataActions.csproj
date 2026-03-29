@@ -9,8 +9,8 @@
     <ProjectReference Include="..\TagSelecta.TagDataActions.Abstractions\TagSelecta.TagDataActions.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JsonPath.Net" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Spectre.Console.Cli" />
   </ItemGroup>
 </Project>

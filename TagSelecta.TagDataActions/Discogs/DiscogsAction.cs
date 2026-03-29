@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using TagLib;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.IO;
@@ -18,7 +18,7 @@ public class DiscogsAction(
     DiscogsConfig discogsConfig
 ) : TagDataAction<DiscogsSettings>
 {
-    private JToken? _release;
+    private string? _release;
     private byte[]? _releaseImage;
 
     public override async Task<bool> BeforeExecuteAsync(
@@ -69,7 +69,7 @@ public class DiscogsAction(
             .ToList();
         var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);
 
-        var tracks = _release.SelectTokens("$.tracklist[?(@.type_=='track')]", false).ToList();
+        var tracks = JsonPathValueResolver.GetNodes(_release, "$.tracklist[?(@.type_=='track')]");
 
         if (trackIndex > tracks.Count - 1)
         {
@@ -95,7 +95,7 @@ public class DiscogsAction(
         context.Target.UpdateTagData(tagData);
     }
 
-    private static string GetMappedValue(DiscogsFieldMapEntry entry, JToken release, int trackIndex)
+    private static string GetMappedValue(DiscogsFieldMapEntry entry, string release, int trackIndex)
     {
         if (entry.Value.Equals("auto", StringComparison.OrdinalIgnoreCase))
         {
@@ -107,7 +107,7 @@ public class DiscogsAction(
             : JsonPathValueResolver.GetValue(release, entry.Value);
     }
 
-    private static string GetAutoValue(string fieldName, JToken release, int trackIndex)
+    private static string GetAutoValue(string fieldName, string release, int trackIndex)
     {
         return fieldName.ToLowerInvariant() switch
         {
@@ -123,23 +123,23 @@ public class DiscogsAction(
         };
     }
 
-    private static List<string> GetTrackArtists(JToken release, int trackIndex)
+    private static List<string> GetTrackArtists(string release, int trackIndex)
     {
         if (trackIndex < 0)
         {
             return [];
         }
 
-        var tracks = release.SelectTokens("$.tracklist[?(@.type_=='track')]", false).ToList();
+        var tracks = JsonPathValueResolver.GetNodes(release, "$.tracklist[?(@.type_=='track')]");
         if (trackIndex >= tracks.Count)
         {
             return [];
         }
 
-        return GetArtists(tracks[trackIndex]);
+        return tracks[trackIndex] is null ? [] : GetArtists(tracks[trackIndex]!.ToJsonString());
     }
 
-    private static List<string> GetArtists(JToken token)
+    private static List<string> GetArtists(string token)
     {
         return JsonPathValueResolver
             .GetValues(token, "$.artists[*].name")
@@ -149,15 +149,15 @@ public class DiscogsAction(
             .ToList();
     }
 
-    private static int GetMainReleaseId(JToken master)
+    private static int GetMainReleaseId(string master)
     {
-        var value = master.SelectToken("$.main_release", false)?.Value<int?>();
-        if (value is null)
+        var value = JsonPathValueResolver.GetValue(master, "$.main_release");
+        if (!int.TryParse(value, out var releaseId))
         {
             throw new TagSelectaException("Master release id not found");
         }
 
-        return value.Value;
+        return releaseId;
     }
 
     private static string? RemoveTrailingNumberParentheses(string? input)

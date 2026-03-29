@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Linq;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
@@ -16,7 +15,7 @@ public class MusicBrainzAction(
 )
     : TagDataAction<MusicBrainzSettings>
 {
-    private JToken? _release;
+    private string? _release;
 
     public override async Task<bool> BeforeExecuteAsync(
         MusicBrainzSettings settings,
@@ -45,7 +44,7 @@ public class MusicBrainzAction(
             .ToList();
 
         var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);
-        var trackCount = _release.SelectTokens("$.media[*].tracks[*]", false).Count();
+        var trackCount = JsonPathValueResolver.Count(_release, "$.media[*].tracks[*]");
 
         foreach (var entry in musicBrainzConfig.FieldMap)
         {
@@ -56,12 +55,7 @@ public class MusicBrainzAction(
         context.Target.UpdateTagData(tagData);
     }
 
-    private static string GetMappedValue(
-        MusicBrainzFieldMapEntry entry,
-        JToken release,
-        int trackIndex,
-        int trackCount
-    )
+    private static string GetMappedValue(MusicBrainzFieldMapEntry entry, string release, int trackIndex, int trackCount)
     {
         if (entry.Value.Equals("auto", StringComparison.OrdinalIgnoreCase))
         {

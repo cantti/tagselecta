@@ -1,21 +1,21 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace TagSelecta.TagDataActions.Discogs.DiscogsApi;
 
 public class DiscogsApiClient(HttpClient httpClient) : IDiscogsApi
 {
-    public Task<JToken?> GetRelease(int id, CancellationToken token)
+    public Task<string?> GetRelease(int id, CancellationToken token)
     {
         return GetJson($"releases/{id}", token);
     }
 
-    public Task<JToken?> GetMaster(int id, CancellationToken token)
+    public Task<string?> GetMaster(int id, CancellationToken token)
     {
         return GetJson($"masters/{id}", token);
     }
 
-    private async Task<JToken?> GetJson(string path, CancellationToken token)
+    private async Task<string?> GetJson(string path, CancellationToken token)
     {
         using var response = await httpClient.GetAsync(path, token);
         if (!response.IsSuccessStatusCode)
@@ -26,9 +26,10 @@ public class DiscogsApiClient(HttpClient httpClient) : IDiscogsApi
         var content = await response.Content.ReadAsStringAsync(token);
         try
         {
-            return JToken.Parse(content);
+            _ = JsonNode.Parse(content);
+            return content;
         }
-        catch (JsonReaderException ex)
+        catch (JsonException ex)
         {
             throw new InvalidOperationException("Discogs response is not valid JSON.", ex);
         }
