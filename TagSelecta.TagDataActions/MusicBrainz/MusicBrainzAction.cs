@@ -1,42 +1,21 @@
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
+using TagSelecta.TagDataActions.Json;
 using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
 namespace TagSelecta.TagDataActions.MusicBrainz;
 
 [TagDataActionName("musicbrainz", "mb")]
-public class MusicBrainzAction(IMusicBrainzApiClient musicBrainzApiClient, IAudioFileScanner fileScanner)
+public class MusicBrainzAction(
+    IMusicBrainzApiClient musicBrainzApiClient,
+    IAudioFileScanner fileScanner,
+    MusicBrainzConfig musicBrainzConfig
+)
     : TagDataAction<MusicBrainzSettings>
 {
-    private static readonly (string TagField, string JsonPath)[] FieldMap =
-    [
-        ("album", "$['title']"),
-        ("albumartist", "$['artist-credit'][0]['artist']['name']"),
-        ("artist", "$['artist-credit'][0]['artist']['name']"),
-        ("title", "$['media'][*]['tracks'][*]['title']"),
-        ("genre", "$['release-group']['genres'][*]['name']"),
-        ("date", "$['date']"),
-        ("label", "$['label-info'][0]['label']['name']"),
-        ("catalognumber", "$['label-info'][0]['catalog-number']"),
-        ("comment", "$['disambiguation']"),
-        ("musicbrainz_release_id", "$['id']"),
-        ("musicbrainz_country", "$['country']"),
-        ("musicbrainz_status", "$['status']"),
-        ("musicbrainz_quality", "$['quality']"),
-        ("musicbrainz_barcode", "$['barcode']"),
-        ("musicbrainz_asin", "$['asin']"),
-        ("musicbrainz_packaging", "$['packaging']"),
-        ("musicbrainz_language", "$['text-representation']['language']"),
-        ("musicbrainz_script", "$['text-representation']['script']"),
-        ("musicbrainz_coverart_count", "$['cover-art-archive']['count']"),
-        ("musicbrainz_coverart_front", "$['cover-art-archive']['front']"),
-        ("musicbrainz_coverart_back", "$['cover-art-archive']['back']"),
-    ];
-
     private JToken? _release;
 
     public override async Task<bool> BeforeExecuteAsync(
@@ -66,64 +45,41 @@ public class MusicBrainzAction(IMusicBrainzApiClient musicBrainzApiClient, IAudi
             .ToList();
 
         var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);
+        var trackCount = _release.SelectTokens("$.media[*].tracks[*]", false).Count();
 
-        foreach (var (tagField, jsonPath) in FieldMap)
+        foreach (var entry in musicBrainzConfig.FieldMap)
         {
-            if (tagField == "title")
-            {
-                var titles = _release!
-                    .SelectTokens(jsonPath, false)
-                    .Select(JTokenToString)
-                    .Where(static x => !string.IsNullOrWhiteSpace(x))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-
-                tagData.SetField(
-                    tagField,
-                    trackIndex >= 0 && trackIndex < titles.Count ? titles[trackIndex] : string.Empty
-                );
-                continue;
-            }
-
-            tagData.SetField(tagField, GetReleaseValue(_release!, jsonPath));
+            var value = GetMappedValue(entry, _release, trackIndex, trackCount);
+            tagData.SetField(entry.FieldName, value);
         }
 
         context.Target.UpdateTagData(tagData);
     }
 
-    private static string GetReleaseValue(JToken release, string path)
+    private static string GetMappedValue(
+        MusicBrainzFieldMapEntry entry,
+        JToken release,
+        int trackIndex,
+        int trackCount
+    )
     {
-        return string.Join(
-            "; ",
-            release
-                .SelectTokens(path, false)
-                .Select(JTokenToString)
-                .Where(static x => !string.IsNullOrWhiteSpace(x))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-        );
-    }
-
-    private static string JTokenToString(JToken? token)
-    {
-        var valueToken = token;
-        if (valueToken is null)
+        if (entry.Value.Equals("auto", StringComparison.OrdinalIgnoreCase))
         {
-            return string.Empty;
+            return GetAutoValue(entry.FieldName, trackIndex, trackCount);
         }
 
-        return valueToken.Type switch
+        return entry.PerTrack
+            ? JsonPathValueResolver.GetIndexedValue(release, entry.Value, trackIndex)
+            : JsonPathValueResolver.GetValue(release, entry.Value);
+    }
+
+    private static string GetAutoValue(string fieldName, int trackIndex, int trackCount)
+    {
+        return fieldName.ToLowerInvariant() switch
         {
-            JTokenType.Null => string.Empty,
-            JTokenType.Undefined => string.Empty,
-            JTokenType.String => valueToken.Value<string>() ?? string.Empty,
-            JTokenType.Array => string.Join(
-                "; ",
-                valueToken
-                    .Children()
-                    .Select(JTokenToString)
-                    .Where(static x => !string.IsNullOrWhiteSpace(x))
-            ),
-            _ => valueToken.ToString(Formatting.None),
+            "track" => trackIndex >= 0 ? (trackIndex + 1).ToString() : string.Empty,
+            "tracktotal" => trackCount > 0 ? trackCount.ToString() : string.Empty,
+            _ => string.Empty,
         };
     }
 }

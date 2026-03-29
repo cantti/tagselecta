@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TagSelecta.Commands.Tui;
 using TagSelecta.Commands.Tui.TuiCommands;
 using TagSelecta.TagDataActions.Discogs;
+using TagSelecta.TagDataActions.MusicBrainz;
 
 namespace TagSelecta.App.Config;
 
@@ -22,6 +23,7 @@ public static class DependencyInjection
             }
         );
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));
+        services.AddSingleton(CreateMusicBrainzConfig(configModel.MusicBrainz));
         return services;
     }
 
@@ -36,6 +38,23 @@ public static class DependencyInjection
         {
             FieldMap = discogsSection
                 .FieldMap.Select(x => new DiscogsFieldMapEntry(x.Key, x.Value, perTrackFields.Contains(x.Key)))
+                .ToList(),
+        };
+    }
+
+    private static MusicBrainzConfig CreateMusicBrainzConfig(MusicBrainzSection musicBrainzSection)
+    {
+        var perTrackFields = new HashSet<string>(
+            musicBrainzSection.PerTrackFields,
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        return new MusicBrainzConfig
+        {
+            FieldMap = musicBrainzSection
+                .FieldMap.Select(x =>
+                    new MusicBrainzFieldMapEntry(x.Key, x.Value, perTrackFields.Contains(x.Key))
+                )
                 .ToList(),
         };
     }

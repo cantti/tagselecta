@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TagLib;
 using TagSelecta.Shared.Exceptions;
@@ -7,6 +6,7 @@ using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;
+using TagSelecta.TagDataActions.Json;
 
 namespace TagSelecta.TagDataActions.Discogs;
 
@@ -46,7 +46,7 @@ public class DiscogsAction(
             return false;
         }
 
-        var imageUrl = GetReleaseValue(_release, "$.images[0].uri");
+        var imageUrl = JsonPathValueResolver.GetValue(_release, "$.images[0].uri");
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
             _releaseImage = await discogsImageDownloader.DownloadAsync(imageUrl);
@@ -95,32 +95,6 @@ public class DiscogsAction(
         context.Target.UpdateTagData(tagData);
     }
 
-    private static string GetReleaseValue(JToken token, string path)
-    {
-        return token
-            .SelectTokens(path, false)
-            .Select(JTokenToString)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToJoined();
-    }
-
-    private static string GetIndexedReleaseValue(JToken token, string path, int index)
-    {
-        if (index < 0)
-        {
-            return string.Empty;
-        }
-
-        var values = token
-            .SelectTokens(path, false)
-            .Select(JTokenToString)
-            .Where(static x => !string.IsNullOrWhiteSpace(x))
-            .ToList();
-
-        return index < values.Count ? values[index] : string.Empty;
-    }
-
     private static string GetMappedValue(DiscogsFieldMapEntry entry, JToken release, int trackIndex)
     {
         if (entry.Value.Equals("auto", StringComparison.OrdinalIgnoreCase))
@@ -129,8 +103,8 @@ public class DiscogsAction(
         }
 
         return entry.PerTrack
-            ? GetIndexedReleaseValue(release, entry.Value, trackIndex)
-            : GetReleaseValue(release, entry.Value);
+            ? JsonPathValueResolver.GetIndexedValue(release, entry.Value, trackIndex)
+            : JsonPathValueResolver.GetValue(release, entry.Value);
     }
 
     private static string GetAutoValue(string fieldName, JToken release, int trackIndex)
@@ -167,20 +141,11 @@ public class DiscogsAction(
 
     private static List<string> GetArtists(JToken token)
     {
-        return GetReleaseValues(token, "$.artists[*].name")
+        return JsonPathValueResolver
+            .GetValues(token, "$.artists[*].name")
             .Select(RemoveTrailingNumberParentheses)
             .Where(static x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x!)
-            .ToList();
-    }
-
-    private static List<string> GetReleaseValues(JToken token, string path)
-    {
-        return token
-            .SelectTokens(path, false)
-            .Select(JTokenToString)
-            .Where(static x => !string.IsNullOrWhiteSpace(x))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
     }
 
@@ -193,29 +158,6 @@ public class DiscogsAction(
         }
 
         return value.Value;
-    }
-
-    private static string JTokenToString(JToken? token)
-    {
-        if (token is null)
-        {
-            return string.Empty;
-        }
-
-        return token.Type switch
-        {
-            JTokenType.Null => string.Empty,
-            JTokenType.Undefined => string.Empty,
-            JTokenType.String => token.Value<string>() ?? string.Empty,
-            JTokenType.Array => string.Join(
-                "; ",
-                token
-                    .Children()
-                    .Select(JTokenToString)
-                    .Where(static x => !string.IsNullOrWhiteSpace(x))
-            ),
-            _ => token.ToString(Formatting.None),
-        };
     }
 
     private static string? RemoveTrailingNumberParentheses(string? input)
