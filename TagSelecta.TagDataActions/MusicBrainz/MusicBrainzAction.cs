@@ -1,26 +1,43 @@
-using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TagSelecta.Shared.Exceptions;
+using TagSelecta.Shared.IO;
+using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
 namespace TagSelecta.TagDataActions.MusicBrainz;
 
 [TagDataActionName("musicbrainz", "mb")]
-public class MusicBrainzAction(IMusicBrainzApiClient musicBrainzApiClient)
+public class MusicBrainzAction(IMusicBrainzApiClient musicBrainzApiClient, IAudioFileScanner fileScanner)
     : TagDataAction<MusicBrainzSettings>
 {
     private static readonly (string TagField, string JsonPath)[] FieldMap =
     [
-        ("album", "title"),
-        ("albumartist", "artist-credit[0].artist.name"),
-        ("artist", "artist-credit[0].artist.name"),
-        ("date", "date"),
-        ("label", "label-info[0].label.name"),
-        ("catalognumber", "label-info[0].catalog-number"),
-        ("comment", "disambiguation"),
+        ("album", "$['title']"),
+        ("albumartist", "$['artist-credit'][0]['artist']['name']"),
+        ("artist", "$['artist-credit'][0]['artist']['name']"),
+        ("title", "$['media'][*]['tracks'][*]['title']"),
+        ("genre", "$['release-group']['genres'][*]['name']"),
+        ("date", "$['date']"),
+        ("label", "$['label-info'][0]['label']['name']"),
+        ("catalognumber", "$['label-info'][0]['catalog-number']"),
+        ("comment", "$['disambiguation']"),
+        ("musicbrainz_release_id", "$['id']"),
+        ("musicbrainz_country", "$['country']"),
+        ("musicbrainz_status", "$['status']"),
+        ("musicbrainz_quality", "$['quality']"),
+        ("musicbrainz_barcode", "$['barcode']"),
+        ("musicbrainz_asin", "$['asin']"),
+        ("musicbrainz_packaging", "$['packaging']"),
+        ("musicbrainz_language", "$['text-representation']['language']"),
+        ("musicbrainz_script", "$['text-representation']['script']"),
+        ("musicbrainz_coverart_count", "$['cover-art-archive']['count']"),
+        ("musicbrainz_coverart_front", "$['cover-art-archive']['front']"),
+        ("musicbrainz_coverart_back", "$['cover-art-archive']['back']"),
     ];
 
-    private JsonElement? _release;
+    private JToken? _release;
 
     public override async Task<bool> BeforeExecuteAsync(
         MusicBrainzSettings settings,
@@ -28,7 +45,7 @@ public class MusicBrainzAction(IMusicBrainzApiClient musicBrainzApiClient)
     )
     {
         _release = await musicBrainzApiClient.GetRelease(
-            "edf5b60c-4888-4faf-9d6c-a204b84d4e79",
+            "10f5fd34-470d-46f8-b364-7e2ddfc765e5",
             token
         );
         return _release is not null;
@@ -43,138 +60,70 @@ public class MusicBrainzAction(IMusicBrainzApiClient musicBrainzApiClient)
 
         var tagData = context.Target.CurrentTagData;
 
+        var directoryFiles = fileScanner
+            .Search([context.Target.BackupPath.DirectoryName()])
+            .Order()
+            .ToList();
+
+        var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);
+
         foreach (var (tagField, jsonPath) in FieldMap)
         {
-            tagData.SetField(tagField, GetReleaseValue(_release.Value, jsonPath));
+            if (tagField == "title")
+            {
+                var titles = _release!
+                    .SelectTokens(jsonPath, false)
+                    .Select(JTokenToString)
+                    .Where(static x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                tagData.SetField(
+                    tagField,
+                    trackIndex >= 0 && trackIndex < titles.Count ? titles[trackIndex] : string.Empty
+                );
+                continue;
+            }
+
+            tagData.SetField(tagField, GetReleaseValue(_release!, jsonPath));
         }
 
         context.Target.UpdateTagData(tagData);
     }
 
-    private static string GetReleaseValue(JsonElement release, string path)
+    private static string GetReleaseValue(JToken release, string path)
     {
-        var value = ResolvePathValue(release, path);
-        return value is null ? string.Empty : JsonElementToString(value.Value);
+        return string.Join(
+            "; ",
+            release
+                .SelectTokens(path, false)
+                .Select(JTokenToString)
+                .Where(static x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        );
     }
 
-    private static JsonElement? ResolvePathValue(JsonElement current, string path)
+    private static string JTokenToString(JToken? token)
     {
-        if (string.IsNullOrWhiteSpace(path))
+        var valueToken = token;
+        if (valueToken is null)
         {
-            return null;
+            return string.Empty;
         }
 
-        var segments = path.Split('.', StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var rawSegment in segments)
+        return valueToken.Type switch
         {
-            var segment = rawSegment.Trim();
-            var bracketStart = segment.IndexOf('[');
-            var propertyName = bracketStart >= 0 ? segment[..bracketStart] : segment;
-
-            if (!string.IsNullOrWhiteSpace(propertyName))
-            {
-                if (!TryGetPropertyCaseInsensitive(current, propertyName, out current))
-                {
-                    return null;
-                }
-            }
-
-            if (bracketStart >= 0)
-            {
-                var bracketEnd = segment.IndexOf(']', bracketStart + 1);
-
-                if (bracketEnd < 0 || bracketEnd != segment.Length - 1)
-                {
-                    return null;
-                }
-
-                var indexText = segment.Substring(bracketStart + 1, bracketEnd - bracketStart - 1);
-
-                if (!int.TryParse(indexText, out var index))
-                {
-                    return null;
-                }
-
-                if (!TryGetArrayElement(current, index, out current))
-                {
-                    return null;
-                }
-            }
-        }
-
-        return current;
-    }
-
-    private static bool TryGetPropertyCaseInsensitive(
-        JsonElement element,
-        string propertyName,
-        out JsonElement value
-    )
-    {
-        if (element.ValueKind != JsonValueKind.Object)
-        {
-            value = default;
-            return false;
-        }
-
-        if (element.TryGetProperty(propertyName, out value))
-        {
-            return true;
-        }
-
-        foreach (var property in element.EnumerateObject())
-        {
-            if (property.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
-            {
-                value = property.Value;
-                return true;
-            }
-        }
-
-        value = default;
-        return false;
-    }
-
-    private static bool TryGetArrayElement(JsonElement element, int index, out JsonElement value)
-    {
-        if (element.ValueKind != JsonValueKind.Array || index < 0)
-        {
-            value = default;
-            return false;
-        }
-
-        var i = 0;
-        foreach (var item in element.EnumerateArray())
-        {
-            if (i == index)
-            {
-                value = item;
-                return true;
-            }
-
-            i++;
-        }
-
-        value = default;
-        return false;
-    }
-
-    private static string JsonElementToString(JsonElement element)
-    {
-        return element.ValueKind switch
-        {
-            JsonValueKind.String => element.GetString() ?? string.Empty,
-            JsonValueKind.Null => string.Empty,
-            JsonValueKind.Undefined => string.Empty,
-            JsonValueKind.Array => string.Join(
+            JTokenType.Null => string.Empty,
+            JTokenType.Undefined => string.Empty,
+            JTokenType.String => valueToken.Value<string>() ?? string.Empty,
+            JTokenType.Array => string.Join(
                 "; ",
-                element
-                    .EnumerateArray()
-                    .Select(JsonElementToString)
+                valueToken
+                    .Children()
+                    .Select(JTokenToString)
                     .Where(static x => !string.IsNullOrWhiteSpace(x))
             ),
-            _ => element.GetRawText(),
+            _ => valueToken.ToString(Formatting.None),
         };
     }
 }

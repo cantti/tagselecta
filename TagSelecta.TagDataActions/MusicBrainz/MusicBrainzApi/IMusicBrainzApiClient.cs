@@ -1,8 +1,8 @@
-using System.Text.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
 public interface IMusicBrainzApiClient
 {
-    Task<JsonElement?> GetRelease(string id, CancellationToken token);
+    Task<JToken?> GetRelease(string id, CancellationToken token);
 }

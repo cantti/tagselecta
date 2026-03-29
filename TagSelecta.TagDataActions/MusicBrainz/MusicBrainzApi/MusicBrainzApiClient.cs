@@ -1,13 +1,14 @@
-using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
 public class MusicBrainzApiClient(HttpClient httpClient) : IMusicBrainzApiClient
 {
-    public async Task<JsonElement?> GetRelease(string id, CancellationToken token)
+    public async Task<JToken?> GetRelease(string id, CancellationToken token)
     {
         using var response = await httpClient.GetAsync(
-            $"release/{Uri.EscapeDataString(id)}?inc=artist-credits+labels+discids+recordings&fmt=json",
+            $"release/{Uri.EscapeDataString(id)}?inc=artist-credits+labels+discids+recordings+release-groups+genres&fmt=json",
             token
         );
 
@@ -16,13 +17,13 @@ public class MusicBrainzApiClient(HttpClient httpClient) : IMusicBrainzApiClient
             return null;
         }
 
-        await using var stream = await response.Content.ReadAsStreamAsync(token);
+        var content = await response.Content.ReadAsStringAsync(token);
+
         try
         {
-            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: token);
-            return document.RootElement.Clone();
+            return JToken.Parse(content);
         }
-        catch (JsonException ex)
+        catch (JsonReaderException ex)
         {
             throw new InvalidOperationException(
                 "MusicBrainz response is not valid JSON. Check request URL and response content.",
