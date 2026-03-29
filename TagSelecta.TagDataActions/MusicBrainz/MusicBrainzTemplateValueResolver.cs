@@ -44,7 +44,7 @@ public static class MusicBrainzTemplateValueResolver
     private sealed class MusicBrainzTemplateModel
     {
         public required Release Release { get; init; }
-        public required IReadOnlyList<Track> Tracks { get; init; }
+        public required List<Track> Tracks { get; init; }
         public required int Index { get; init; }
     }
 }
