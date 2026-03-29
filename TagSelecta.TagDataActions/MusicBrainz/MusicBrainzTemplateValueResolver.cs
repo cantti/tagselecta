@@ -2,19 +2,15 @@ using Scriban;
 using Scriban.Runtime;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.Tagging;
-using TagSelecta.TagDataActions.Discogs.DiscogsApi;
+using TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
-namespace TagSelecta.TagDataActions.Discogs;
+namespace TagSelecta.TagDataActions.MusicBrainz;
 
-public static class DiscogsTemplateValueResolver
+public static class MusicBrainzTemplateValueResolver
 {
-    public static IReadOnlyList<ReleaseTrack> GetTracks(Release release)
+    public static IReadOnlyList<Track> GetTracks(Release release)
     {
-        return release
-                .TrackList?.Where(x =>
-                    string.Equals(x.Type, "track", StringComparison.OrdinalIgnoreCase)
-                )
-                .ToList() ?? [];
+        return release.Media?.SelectMany(x => x.Tracks ?? []).ToList() ?? [];
     }
 
     public static string GetValue(string template, Release release, int index)
@@ -22,9 +18,9 @@ public static class DiscogsTemplateValueResolver
         MemberRenamerDelegate memberRenamer = member => member.Name.ToLowerInvariant();
 
         var scriptObject = new ScriptObject();
-        scriptObject.Import(typeof(DiscogsFunctions));
+        scriptObject.Import(typeof(MusicBrainzFunctions));
         scriptObject.Import(
-            new DiscogsTemplateModel
+            new MusicBrainzTemplateModel
             {
                 Release = release,
                 Tracks = GetTracks(release),
@@ -32,8 +28,7 @@ public static class DiscogsTemplateValueResolver
             }
         );
 
-        var context = new TemplateContext();
-        context.MemberRenamer = memberRenamer;
+        var context = new TemplateContext { MemberRenamer = memberRenamer };
         context.PushGlobal(scriptObject);
 
         var parsedTemplate = Template.Parse(template);
@@ -46,15 +41,15 @@ public static class DiscogsTemplateValueResolver
         return result.Trim();
     }
 
-    private sealed class DiscogsTemplateModel
+    private sealed class MusicBrainzTemplateModel
     {
         public required Release Release { get; init; }
-        public required IReadOnlyList<ReleaseTrack> Tracks { get; init; }
+        public required IReadOnlyList<Track> Tracks { get; init; }
         public required int Index { get; init; }
     }
 }
 
-public static class DiscogsFunctions
+public static class MusicBrainzFunctions
 {
     public static string Joined(IEnumerable<object> input)
     {

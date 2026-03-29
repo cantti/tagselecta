@@ -1,9 +1,18 @@
+using System.Text.Json.Serialization;
+
 namespace TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
 public class Label
 {
-    public string id { get; set; }
-    public string name { get; set; }
-    public string disambiguation { get; set; }
-    public object label_code { get; set; }
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("disambiguation")]
+    public string? Disambiguation { get; set; }
+
+    [JsonPropertyName("label_code")]
+    public object? LabelCode { get; set; }
 }

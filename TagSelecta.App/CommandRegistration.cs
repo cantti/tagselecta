@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
 using Spectre.Console.Cli;
@@ -131,18 +132,9 @@ public static class CommandRegistration
 
     private static void AddMusicBrainz(IConfigurator configurator, IServiceCollection services)
     {
-        services.AddHttpClient<IMusicBrainzApiClient, MusicBrainzApiClient>(c =>
-        {
-            c.BaseAddress = new Uri("https://musicbrainz.org/ws/2/");
-            c.DefaultRequestHeaders.UserAgent.Clear();
-            c.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TagSelecta", "1.0"));
-            c.DefaultRequestHeaders.UserAgent.Add(
-                new ProductInfoHeaderValue("(+https://github.com/cantti/tagselecta)")
-            );
-            c.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json")
-            );
-        });
+        services
+            .AddRefitClient<IMusicBrainzApiClient>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://musicbrainz.org/ws/2"));
         configurator
             .AddTagDataAction<MusicBrainzAction>(services)
             .WithDescription(

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
-public class Artist
+public class Genre
 {
     [JsonPropertyName("id")]
     public string? Id { get; set; }
@@ -10,9 +10,6 @@ public class Artist
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
-    [JsonPropertyName("sort-name")]
-    public string? SortName { get; set; }
-
-    [JsonPropertyName("disambiguation")]
-    public string? Disambiguation { get; set; }
+    [JsonPropertyName("count")]
+    public int Count { get; set; }
 }
