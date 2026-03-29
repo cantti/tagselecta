@@ -6,7 +6,7 @@ namespace TagSelecta.TagDataActions.MusicBrainz;
 
 public class MusicBrainzSettings : TagDataActionSettings
 {
-    // [CommandOption("--url|-u", true)]
-    // [Description("MusicBrainz release URL")]
-    // public required string Url { get; set; }
+    [CommandOption("--url|-u", true)]
+    [Description("MusicBrainz release URL or release id")]
+    public required string Url { get; set; }
 }
