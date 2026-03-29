@@ -9,15 +9,46 @@ using TagSelecta.TagDataActions.Discogs.DiscogsApi;
 namespace TagSelecta.TagDataActions.Discogs;
 
 [TagDataActionName("discogs")]
-public class DiscogsAction(
-    IDiscogsApi discogsApi,
-    DiscogsImageDownloader discogsImageDownloader,
-    IAudioFileScanner fileScanner,
-    DiscogsConfig discogsConfig
-) : TagDataAction<DiscogsSettings>
+public class DiscogsAction : TagDataAction<DiscogsSettings>
 {
+    private readonly IDiscogsApi _discogsApi;
+    private readonly DiscogsImageDownloader _discogsImageDownloader;
+
+    private readonly List<DiscogsFieldMapEntry> _fieldMap =
+    [
+        new("album", "{{ release.title }}"),
+        new("date", "{{ release.year }}"),
+        new("label", "{{ release.labels | array.map 'name' | joined }}"),
+        new("catalognumber", "{{ release.labels | array.map 'catno' | joined }}"),
+        new("genre", "{{ release.styles | joined }}"),
+        new("albumartist", "{{ release.artists | array.map 'name' | joined }}"),
+        new(
+            "artist",
+            "{{ if tracks[index].artists && tracks[index].artists.size > 0; tracks[index].artists | array.map 'name' | joined; else; release.artists | array.map 'name' | joined; end }}"
+        ),
+        new("title", "{{ tracks[index].title }}"),
+        new("track", "{{ index + 1 }}"),
+        new("tracktotal", "{{ tracks.size }}"),
+        new("discogs_release_id", "{{ release.id }}"),
+    ];
+
+    private readonly IAudioFileScanner _fileScanner;
+
     private Release? _release;
     private byte[]? _releaseImage;
+
+    public DiscogsAction(
+        IDiscogsApi discogsApi,
+        DiscogsImageDownloader discogsImageDownloader,
+        IAudioFileScanner fileScanner,
+        DiscogsConfig discogsConfig
+    )
+    {
+        _discogsApi = discogsApi;
+        _discogsImageDownloader = discogsImageDownloader;
+        _fileScanner = fileScanner;
+        MergeFieldMap(discogsConfig.FieldMap);
+    }
 
     public override async Task<bool> BeforeExecuteAsync(
         DiscogsSettings settings,
@@ -28,11 +59,11 @@ public class DiscogsAction(
         var releaseId = urlId;
         if (urlType == "master")
         {
-            var master = await discogsApi.GetMaster(urlId);
+            var master = await _discogsApi.GetMaster(urlId);
             releaseId = master.MainRelease;
         }
 
-        _release = await discogsApi.GetRelease(releaseId);
+        _release = await _discogsApi.GetRelease(releaseId);
 
         if (_release is null)
         {
@@ -42,7 +73,7 @@ public class DiscogsAction(
         var imageUrl = _release.Images?.FirstOrDefault()?.Uri ?? string.Empty;
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
-            _releaseImage = await discogsImageDownloader.DownloadAsync(imageUrl);
+            _releaseImage = await _discogsImageDownloader.DownloadAsync(imageUrl);
         }
 
         return true;
@@ -56,7 +87,7 @@ public class DiscogsAction(
         }
 
         var tagData = context.Target.CurrentTagData;
-        var directoryFiles = fileScanner
+        var directoryFiles = _fileScanner
             .Search([context.Target.BackupPath.DirectoryName()])
             .Order()
             .ToList();
@@ -68,12 +99,7 @@ public class DiscogsAction(
             return;
         }
 
-        if (trackIndex < 0)
-        {
-            return;
-        }
-
-        foreach (var entry in discogsConfig.FieldMap)
+        foreach (var entry in _fieldMap)
         {
             var value = DiscogsTemplateValueResolver.GetValue(entry.Value, _release, trackIndex);
             tagData.SetField(entry.FieldName, value);
@@ -93,5 +119,23 @@ public class DiscogsAction(
         return match.Success
             ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))
             : throw new TagSelectaException("Error parsing discogs url");
+    }
+
+    private void MergeFieldMap(IReadOnlyList<DiscogsFieldMapEntry> overrides)
+    {
+        foreach (var entry in overrides)
+        {
+            var index = _fieldMap.FindIndex(x =>
+                x.FieldName.Equals(entry.FieldName, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (index >= 0)
+            {
+                _fieldMap[index] = entry;
+                continue;
+            }
+
+            _fieldMap.Add(entry);
+        }
     }
 }

@@ -8,15 +8,6 @@ namespace TagSelecta.TagDataActions.Discogs;
 
 public static class DiscogsTemplateValueResolver
 {
-    public static IReadOnlyList<ReleaseTrack> GetTracks(Release release)
-    {
-        return release
-                .TrackList?.Where(x =>
-                    string.Equals(x.Type, "track", StringComparison.OrdinalIgnoreCase)
-                )
-                .ToList() ?? [];
-    }
-
     public static string GetValue(string template, Release release, int index)
     {
         MemberRenamerDelegate memberRenamer = member => member.Name.ToLowerInvariant();
@@ -32,8 +23,7 @@ public static class DiscogsTemplateValueResolver
             }
         );
 
-        var context = new TemplateContext();
-        context.MemberRenamer = memberRenamer;
+        var context = new TemplateContext { MemberRenamer = memberRenamer };
         context.PushGlobal(scriptObject);
 
         var parsedTemplate = Template.Parse(template);
@@ -46,18 +36,27 @@ public static class DiscogsTemplateValueResolver
         return result.Trim();
     }
 
+    public static List<ReleaseTrack> GetTracks(Release release)
+    {
+        return release
+                .TrackList?.Where(x =>
+                    string.Equals(x.Type, "track", StringComparison.OrdinalIgnoreCase)
+                )
+                .ToList() ?? [];
+    }
+
     private sealed class DiscogsTemplateModel
     {
         public required Release Release { get; init; }
-        public required IReadOnlyList<ReleaseTrack> Tracks { get; init; }
+        public required List<ReleaseTrack> Tracks { get; init; }
         public required int Index { get; init; }
     }
-}
 
-public static class DiscogsFunctions
-{
-    public static string Joined(IEnumerable<object> input)
+    private static class DiscogsFunctions
     {
-        return input.Select(x => x.ToString()).ToJoined();
+        public static string Joined(IEnumerable<object> input)
+        {
+            return input.Select(x => x.ToString()).ToJoined();
+        }
     }
 }

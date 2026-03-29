@@ -8,7 +8,7 @@ namespace TagSelecta.TagDataActions.MusicBrainz;
 
 public static class MusicBrainzTemplateValueResolver
 {
-    public static IReadOnlyList<Track> GetTracks(Release release)
+    public static List<Track> GetTracks(Release release)
     {
         return release.Media?.SelectMany(x => x.Tracks ?? []).ToList() ?? [];
     }
@@ -47,12 +47,12 @@ public static class MusicBrainzTemplateValueResolver
         public required List<Track> Tracks { get; init; }
         public required int Index { get; init; }
     }
-}
 
-public static class MusicBrainzFunctions
-{
-    public static string Joined(IEnumerable<object> input)
+    private static class MusicBrainzFunctions
     {
-        return input.Select(x => x.ToString()).ToJoined();
+        public static string Joined(IEnumerable<object> input)
+        {
+            return input.Select(x => x.ToString()).ToJoined();
+        }
     }
 }
