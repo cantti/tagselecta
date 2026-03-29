@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TagLib;
 using TagSelecta.Shared.Exceptions;
@@ -18,8 +19,6 @@ public class DiscogsAction(
 {
     private const string AutoValue = "auto";
 
-    private sealed record FieldMapEntry(string FieldName, string Value, bool PerTrack = false);
-
     private static readonly FieldMapEntry[] FieldMap =
     [
         new("album", "$['title']"),
@@ -28,9 +27,9 @@ public class DiscogsAction(
         new("catalognumber", "$['labels'][0]['catno']"),
         new("genre", "$['styles'][*]"),
         new("albumartist", AutoValue),
-        new("artist", AutoValue, PerTrack: true),
-        new("title", "$['tracklist'][?(@['type_']=='track')]['title']", PerTrack: true),
-        new("track", "$['tracklist'][?(@['type_']=='track')]['position']", PerTrack: true),
+        new("artist", AutoValue, true),
+        new("title", "$['tracklist'][?(@['type_']=='track')]['title']", true),
+        new("track", "$['tracklist'][?(@['type_']=='track')]['position']", true),
         new("discogs_release_id", "$['id']"),
     ];
 
@@ -231,7 +230,7 @@ public class DiscogsAction(
                     .Select(JTokenToString)
                     .Where(static x => !string.IsNullOrWhiteSpace(x))
             ),
-            _ => token.ToString(Newtonsoft.Json.Formatting.None),
+            _ => token.ToString(Formatting.None),
         };
     }
 
@@ -254,4 +253,6 @@ public class DiscogsAction(
             ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))
             : throw new TagSelectaException("Error parsing discogs url");
     }
+
+    private sealed record FieldMapEntry(string FieldName, string Value, bool PerTrack = false);
 }
