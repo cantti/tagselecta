@@ -5,6 +5,7 @@ using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;
+using TagSelecta.TagDataActions.Discogs.DiscogsApi.ReleaseModels;
 
 namespace TagSelecta.TagDataActions.Discogs;
 
@@ -60,7 +61,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         if (urlType == "master")
         {
             var master = await _discogsApi.GetMaster(urlId);
-            releaseId = master.MainRelease;
+            releaseId = master.MainRelease ?? throw new TagSelectaException("No master release");
         }
 
         _release = await _discogsApi.GetRelease(releaseId);

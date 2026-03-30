@@ -2,7 +2,7 @@ using Scriban;
 using Scriban.Runtime;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.Tagging;
-using TagSelecta.TagDataActions.Discogs.DiscogsApi;
+using TagSelecta.TagDataActions.Discogs.DiscogsApi.ReleaseModels;
 
 namespace TagSelecta.TagDataActions.Discogs;
 
@@ -36,7 +36,7 @@ public static class DiscogsTemplateValueResolver
         return result.Trim();
     }
 
-    public static List<ReleaseTrack> GetTracks(Release release)
+    public static List<Track> GetTracks(Release release)
     {
         return release
                 .TrackList?.Where(x =>
@@ -48,7 +48,7 @@ public static class DiscogsTemplateValueResolver
     private sealed class DiscogsTemplateModel
     {
         public required Release Release { get; init; }
-        public required List<ReleaseTrack> Tracks { get; init; }
+        public required List<Track> Tracks { get; init; }
         public required int Index { get; init; }
     }
 

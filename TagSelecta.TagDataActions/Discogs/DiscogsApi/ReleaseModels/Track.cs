@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace TagSelecta.TagDataActions.Discogs.DiscogsApi;
+namespace TagSelecta.TagDataActions.Discogs.DiscogsApi.ReleaseModels;
 
-public class ReleaseTrack
+public class Track
 {
     [JsonPropertyName("title")]
     public string? Title { get; set; }
@@ -17,5 +17,5 @@ public class ReleaseTrack
     public string? Position { get; set; }
 
     [JsonPropertyName("artists")]
-    public List<ReleaseArtist>? Artists { get; set; }
+    public List<Artist>? Artists { get; set; }
 }

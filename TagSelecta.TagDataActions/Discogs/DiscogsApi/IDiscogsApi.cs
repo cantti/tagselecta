@@ -1,4 +1,6 @@
 using Refit;
+using TagSelecta.TagDataActions.Discogs.DiscogsApi.MasterModels;
+using TagSelecta.TagDataActions.Discogs.DiscogsApi.ReleaseModels;
 
 namespace TagSelecta.TagDataActions.Discogs.DiscogsApi;
 
@@ -13,13 +15,4 @@ public interface IDiscogsApi
 
     [Get("/masters/{id}")]
     Task<Master> GetMaster(int id);
-
-    [Get("/masters/{id}/versions")]
-    Task<MasterVersionList> GetMasterVersions(int id);
-
-    [Get("/database/search")]
-    Task<SearchResult> Search(string type, [AliasAs("q")] string query);
-
-    [Get("")]
-    Task<HttpResponseMessage> DownloadImage(string url);
 }
