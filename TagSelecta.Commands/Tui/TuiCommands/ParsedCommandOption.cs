@@ -1,3 +1,13 @@
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
-public record ParsedCommandOption(string Key, string Value);
+public class ParsedCommandOption
+{
+    public ParsedCommandOption(string key, string value)
+    {
+        Key = key;
+        Value = value;
+    }
+
+    public string Key { get; }
+    public string Value { get; }
+}

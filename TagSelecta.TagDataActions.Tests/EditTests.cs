@@ -79,18 +79,18 @@ public class EditTests
         // Assert
         var currentTagData = item.CurrentTagData;
         Assert.Equal(settings.Album, currentTagData.Album);
-        Assert.Equal(settings.AlbumArtist.ToMulti(), currentTagData.AlbumArtist);
-        Assert.Equal(settings.Artist.ToMulti(), currentTagData.Artist);
+        Assert.Equal(settings.AlbumArtist.SplitTagValues(), currentTagData.AlbumArtist);
+        Assert.Equal(settings.Artist.SplitTagValues(), currentTagData.Artist);
         Assert.Equal(settings.Bpm, currentTagData.Bpm);
         Assert.Equal(settings.CatalogNumber, currentTagData.CatalogNumber);
         Assert.Equal(settings.Comment, currentTagData.Comment);
-        Assert.Equal(settings.Composer.ToMulti(), currentTagData.Composer);
+        Assert.Equal(settings.Composer.SplitTagValues(), currentTagData.Composer);
         Assert.Equal(settings.Conductor, currentTagData.Conductor);
         Assert.Equal(settings.Copyright, currentTagData.Copyright);
         Assert.Equal(settings.Date, currentTagData.Date);
         Assert.Equal(settings.Disc, currentTagData.Disc);
         Assert.Equal(settings.DiscTotal, currentTagData.DiscTotal);
-        Assert.Equal(settings.Genre.ToMulti(), currentTagData.Genre);
+        Assert.Equal(settings.Genre.SplitTagValues(), currentTagData.Genre);
         Assert.Equal(settings.Isrc, currentTagData.Isrc);
         Assert.Equal(settings.Label, currentTagData.Label);
         Assert.Equal(settings.Publisher, currentTagData.Publisher);
@@ -99,10 +99,10 @@ public class EditTests
         Assert.Equal(settings.TrackTotal, currentTagData.TrackTotal);
 
         // assert extra
-        Assert.Equal(2, currentTagData.Extra.Count);
-        Assert.Equal("original_field", currentTagData.Extra[0].Key);
-        Assert.Equal("original_value", currentTagData.Extra[0].Text);
-        Assert.Equal("test_field", currentTagData.Extra[1].Key);
-        Assert.Equal("test_value", currentTagData.Extra[1].Text);
+        Assert.Equal(2, currentTagData.Fields.Count);
+        Assert.Equal("original_field", currentTagData.Fields[0].Key);
+        Assert.Equal("original_value", currentTagData.Fields[0].Text);
+        Assert.Equal("test_field", currentTagData.Fields[1].Key);
+        Assert.Equal("test_value", currentTagData.Fields[1].Text);
     }
 }

@@ -48,9 +48,9 @@ public class TagDataClonerTests
         Assert.Equal(original.Picture.Count, clone.Picture.Count);
         Assert.NotSame(original.Picture[0], clone.Picture[0]);
         Assert.Equal(original.Picture[0].Data, clone.Picture[0].Data);
-        Assert.Equal(original.Extra.Count, clone.Extra.Count);
-        Assert.NotSame(original.Extra[0], clone.Extra[0]);
-        Assert.Equal(original.Extra[0].Key, clone.Extra[0].Key);
-        Assert.Equal(original.Extra[0].Text, clone.Extra[0].Text);
+        Assert.Equal(original.Fields.Count, clone.Fields.Count);
+        Assert.NotSame(original.Fields[0], clone.Fields[0]);
+        Assert.Equal(original.Fields[0].Key, clone.Fields[0].Key);
+        Assert.Equal(original.Fields[0].Text, clone.Fields[0].Text);
     }
 }

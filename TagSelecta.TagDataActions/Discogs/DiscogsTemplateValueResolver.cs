@@ -56,7 +56,7 @@ public static class DiscogsTemplateValueResolver
     {
         public static string Joined(IEnumerable<object> input)
         {
-            return input.Select(x => x.ToString()).ToJoined();
+            return input.Select(x => x.ToString()).JoinTagValues();
         }
     }
 }

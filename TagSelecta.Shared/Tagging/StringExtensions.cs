@@ -4,13 +4,12 @@ namespace TagSelecta.Shared.Tagging;
 
 public static class StringListExtensions
 {
-    // todo custom separator in settings
-    public static string ToJoined(this IEnumerable<string?> strings)
+    public static string JoinTagValues(this IEnumerable<string?> strings)
     {
         return string.Join("; ", strings);
     }
 
-    public static List<string> ToMulti(this string str)
+    public static List<string> SplitTagValues(this string str)
     {
         return str.Split(";").Select(x => x.Trim()).ToList();
     }

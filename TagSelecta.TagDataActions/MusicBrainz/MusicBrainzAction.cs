@@ -7,7 +7,7 @@ using TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 
 namespace TagSelecta.TagDataActions.MusicBrainz;
 
-[TagDataActionName("musicbrainz", "mb")]
+[TagDataActionInfo("musicbrainz", "mb")]
 public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 {
     private readonly List<MusicBrainzFieldMapEntry> _fieldMap =
@@ -101,7 +101,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
                 _release,
                 trackIndex
             );
-            tagData.SetField(entry.FieldName, value);
+            tagData.SetValue(entry.FieldName, value, SetValueOptions.AutoSplit);
         }
 
         context.Target.UpdateTagData(tagData);

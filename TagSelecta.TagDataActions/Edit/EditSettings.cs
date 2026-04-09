@@ -1,107 +1,108 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
+using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Edit;
 
 public class EditSettings : TagDataActionSettings
 {
-    [CommandOption($"--{Fields.Album}|-l")]
+    [CommandOption($"--{FieldName.Album}|-l")]
     [Description("Album name.")]
     public string? Album { get; set; }
 
-    [CommandOption($"--{Fields.AlbumArtist}|-A")]
+    [CommandOption($"--{FieldName.AlbumArtist}|-A")]
     [Description(
         "One or more album artists. Multiple values can be provided using a ';' separator."
     )]
     public string? AlbumArtist { get; set; }
 
-    [CommandOption($"--{Fields.Artist}|-a")]
+    [CommandOption($"--{FieldName.Artist}|-a")]
     [Description("One or more artists. Multiple values can be provided using a ';' separator")]
     public string? Artist { get; set; }
 
-    [CommandOption($"--{Fields.Bpm}")]
+    [CommandOption($"--{FieldName.Bpm}")]
     [Description("Beat per minutes")]
     public string? Bpm { get; set; }
 
-    [CommandOption($"--{Fields.CatalogNumber}")]
+    [CommandOption($"--{FieldName.CatalogNumber}")]
     [Description("Catalog number.")]
     public string? CatalogNumber { get; set; }
 
-    [CommandOption($"--{Fields.Comment}|-c")]
+    [CommandOption($"--{FieldName.Comment}|-c")]
     [Description("Comment or notes.")]
     public string? Comment { get; set; }
 
-    [CommandOption($"--{Fields.Composer}|-C")]
+    [CommandOption($"--{FieldName.Composer}|-C")]
     [Description("Composer.")]
     public string? Composer { get; set; }
 
-    [CommandOption($"--{Fields.Conductor}")]
+    [CommandOption($"--{FieldName.Conductor}")]
     [Description("Conductor.")]
     public string? Conductor { get; set; }
 
-    [CommandOption($"--{Fields.Copyright}")]
+    [CommandOption($"--{FieldName.Copyright}")]
     [Description("Copyright.")]
     public string? Copyright { get; set; }
 
-    [CommandOption($"--{Fields.Date}|-y")]
+    [CommandOption($"--{FieldName.Date}|-y")]
     [Description("Release date.")]
     public string? Date { get; set; }
 
-    [CommandOption($"--{Fields.Disc}|-d")]
+    [CommandOption($"--{FieldName.Disc}|-d")]
     [Description("Disc number.")]
     public string? Disc { get; set; }
 
-    [CommandOption($"--{Fields.DiscTotal}|-D")]
+    [CommandOption($"--{FieldName.DiscTotal}|-D")]
     [Description("Total number of discs.")]
     public string? DiscTotal { get; set; }
 
-    [CommandOption($"--{Fields.Genre}|-g")]
+    [CommandOption($"--{FieldName.Genre}|-g")]
     [Description("One or more genres. Multiple values can be provided using a ';' separator")]
     public string? Genre { get; set; }
 
-    [CommandOption($"--{Fields.Isrc}")]
+    [CommandOption($"--{FieldName.Isrc}")]
     [Description("International standard recording code")]
     public string? Isrc { get; set; }
 
-    [CommandOption($"--{Fields.Label}")]
+    [CommandOption($"--{FieldName.Label}")]
     [Description("Record label.")]
     public string? Label { get; set; }
 
-    [CommandOption($"--{Fields.Publisher}")]
+    [CommandOption($"--{FieldName.Publisher}")]
     [Description("Publisher.")]
     public string? Publisher { get; set; }
 
-    [CommandOption($"--{Fields.Title}|-t")]
+    [CommandOption($"--{FieldName.Title}|-t")]
     [Description("Track title.")]
     public string? Title { get; set; }
 
-    [CommandOption($"--{Fields.Track}|-n")]
+    [CommandOption($"--{FieldName.Track}|-n")]
     [Description("Track number.")]
     public string? Track { get; set; }
 
-    [CommandOption($"--{Fields.TrackTotal}|-N")]
+    [CommandOption($"--{FieldName.TrackTotal}|-N")]
     [Description("Total number of tracks.")]
     public string? TrackTotal { get; set; }
 
-    [CommandOption($"--{Fields.Key}|-k")]
+    [CommandOption($"--key|-k")]
     [Description("Extra field key key. Must be used together with --value.")]
     public string[] Key { get; set; } = [];
 
-    [CommandOption($"--{Fields.Value}|-v")]
+    [CommandOption($"--value|-v")]
     public string[] Value { get; set; } = [];
 
-    [CommandOption("--clearextra")]
-    [Description("Clear all other extra fields.")]
-    public bool ClearExtra { get; set; }
+    [CommandOption("--clear")]
+    [Description("Clear all other fields.")]
+    public bool Clear { get; set; }
 
-    [CommandOption($"--{Fields.Picture}|-p")]
+    [CommandOption($"--picture|-p")]
     [Description(
         "Path or url to a picture. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)."
     )]
     public string[]? Picture { get; set; }
 
-    [CommandOption($"--{Fields.PictureType}")]
+    [CommandOption($"--picturetype|-P")]
     [Description(
         "Type of each picture provided. Specify multiple times to match the order of the pictures. This option is optional.\nCommon values: FrontCover, BackCover, Artist, Other."
     )]

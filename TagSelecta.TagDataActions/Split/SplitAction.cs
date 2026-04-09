@@ -1,18 +1,29 @@
+using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Split;
 
-[TagDataActionName("split")]
+[TagDataActionInfo("split")]
 public class SplitAction : TagDataAction<SplitSettings>
 {
     protected override void Execute(TagDataActionExecuteContext<SplitSettings> context)
     {
         var tagData = context.Target.CurrentTagData;
         var separator = context.Settings.Separator;
-        tagData.Artist = Split(tagData.Artist, separator);
-        tagData.AlbumArtist = Split(tagData.AlbumArtist, separator);
-        tagData.Composer = Split(tagData.Composer, separator);
-        tagData.Genre = Split(tagData.Genre, separator);
+
+        string[] fields =
+        [
+            FieldName.Artist,
+            FieldName.AlbumArtist,
+            FieldName.Composer,
+            FieldName.Genre,
+        ];
+
+        foreach (var field in fields)
+        {
+            tagData.SetValue(field, Split(tagData.GetValue(field), separator));
+        }
+
         context.Target.UpdateTagData(tagData);
     }
 

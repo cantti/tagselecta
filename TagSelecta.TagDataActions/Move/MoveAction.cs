@@ -3,7 +3,7 @@ using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Move;
 
-[TagDataActionName("move", "mv")]
+[TagDataActionInfo("move", "mv")]
 public class MoveAction : TagDataAction<MoveSettings>
 {
     protected override void Execute(TagDataActionExecuteContext<MoveSettings> context)

@@ -14,7 +14,7 @@ public sealed class TagDataActionFactory : ITagDataActionFactory
         foreach (var action in actions)
         {
             var type = action.GetType();
-            var attr = type.GetCustomAttribute<TagDataActionNameAttribute>();
+            var attr = type.GetCustomAttribute<TagDataActionInfoAttribute>();
             if (attr is null)
             {
                 continue;

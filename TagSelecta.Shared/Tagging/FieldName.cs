@@ -1,6 +1,6 @@
-namespace TagSelecta.TagDataActions;
+namespace TagSelecta.Shared.Tagging;
 
-public static class Fields
+public static class FieldName
 {
     public const string Album = "album";
     public const string AlbumArtist = "albumartist";
@@ -21,8 +21,32 @@ public static class Fields
     public const string Title = "title";
     public const string Track = "track";
     public const string TrackTotal = "tracktotal";
-    public const string Picture = "picture";
-    public const string PictureType = "picturetype";
-    public const string Key = "key";
-    public const string Value = "value";
+
+    private static readonly string[] _all =
+    [
+        Album,
+        AlbumArtist,
+        Artist,
+        Bpm,
+        CatalogNumber,
+        Comment,
+        Composer,
+        Conductor,
+        Copyright,
+        Date,
+        Disc,
+        DiscTotal,
+        Genre,
+        Isrc,
+        Label,
+        Publisher,
+        Title,
+        Track,
+        TrackTotal,
+    ];
+
+    public static IReadOnlyList<string> All()
+    {
+        return _all;
+    }
 }
