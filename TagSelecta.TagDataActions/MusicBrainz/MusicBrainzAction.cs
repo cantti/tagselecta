@@ -19,7 +19,6 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
             "{{ if tracks[index].artistcredit && tracks[index].artistcredit.size > 0; tracks[index].artistcredit | array.map 'name' | joined; else; release.artistcredit | array.map 'name' | joined; end }}"
         ),
         new("catalognumber", "{{ release.labelinfo | array.map 'catalognumber' | joined }}"),
-        new("comment", "{{ release.disambiguation }}"),
         new("date", "{{ release.date }}"),
         new("genre", "{{ release.releasegroup.genres | array.map 'name' | joined }}"),
         new("label", "{{ release.labelinfo | array.map 'label' | array.map 'name' | joined }}"),
@@ -57,6 +56,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 
     private static string GetReleaseId(string url)
     {
+        url = "https://musicbrainz.org/release/aa7845c8-79e3-4149-93ac-3968d7951439";
         if (Guid.TryParse(url, out var guid))
         {
             return guid.ToString();

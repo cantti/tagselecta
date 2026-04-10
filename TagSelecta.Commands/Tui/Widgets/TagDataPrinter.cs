@@ -14,7 +14,7 @@ public static class TagDataPrinter
 
         var table = new Table();
         table.Border(TableBorder.None);
-        table.AddColumn("", c => c.Width(20));
+        table.AddColumn("", c => c.Width(null));
         table.AddColumn("");
         table.HideHeaders();
 
