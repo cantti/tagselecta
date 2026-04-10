@@ -25,10 +25,6 @@ public class EditSettings : TagDataActionSettings
     [Description("Beat per minutes")]
     public string? Bpm { get; set; }
 
-    [CommandOption($"--{FieldName.CatalogNumber}")]
-    [Description("Catalog number.")]
-    public string? CatalogNumber { get; set; }
-
     [CommandOption($"--{FieldName.Comment}|-c")]
     [Description("Comment or notes.")]
     public string? Comment { get; set; }
@@ -64,10 +60,6 @@ public class EditSettings : TagDataActionSettings
     [CommandOption($"--{FieldName.Isrc}")]
     [Description("International standard recording code")]
     public string? Isrc { get; set; }
-
-    [CommandOption($"--{FieldName.Label}")]
-    [Description("Record label.")]
-    public string? Label { get; set; }
 
     [CommandOption($"--{FieldName.Publisher}")]
     [Description("Publisher.")]

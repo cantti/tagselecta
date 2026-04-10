@@ -7,8 +7,10 @@ Example:
 ```
 :edit artist="Artist 1" title="Track Name"
 ```
+
 The `edit` action updates tag fields on the selected audio files.
-Any option you pass will **overwrite** the existing value for that field (after template formatting, if supported by your config). Options you don’t pass are left unchanged.
+Any option you pass will **overwrite** the existing value for that field (after template formatting, if supported by
+your config). Options you don’t pass are left unchanged.
 
 Some fields accept multiple values (artists, genres, etc.). Provide multiple values by separating them with a semicolon:
 
@@ -17,11 +19,12 @@ Some fields accept multiple values (artists, genres, etc.). Provide multiple val
 
 ### Standard tag fields
 
+Standard tag fields have autocomplete suggestions in UI and stored in the standard text frames.
+
 - `album` (`l`): Album name. Example: `album="Test Album"`
 - `albumartist` (`A`): One or more album artists. Example: `albumartist="Artist 1; Artist 2"`
 - `artist` (`a`): One or more artists. Example: `artist="Artist 1; Artist 2"`
 - `bpm`: Beats per minute. Example: `bpm=128`
-- `catalognumber`: Catalog number. Example: `catalognumber="ABC-001"`
 - `comment` (`c`): Comment or notes. Example: `comment="Ripped from vinyl"`
 - `composer` (`C`): Composer. Example: `composer="A; B"`
 - `conductor`: Conductor. Example: `conductor="John Doe"`
@@ -31,18 +34,20 @@ Some fields accept multiple values (artists, genres, etc.). Provide multiple val
 - `disctotal` (`D`): Total number of discs. Example: `disctotal=2`
 - `genre` (`g`): One or more genres. Example: `genre="House; Techno"`
 - `isrc`: International Standard Recording Code. Example: `isrc="GBXXX0100001"`
-- `label`: Record label. Example: `label="Warp"`
 - `publisher`: Publisher. Example: `publisher="Warp Records"`
 - `title` (`t`): Track title. Example: `title="Track Name"`
 - `track` (`n`): Track number. Example: `track=5`
 - `tracktotal` (`N`): Total number of tracks. Example: `tracktotal=12`
- 
-### Extra fields
 
-- `--key key1 --value value1` (`-k key1 -v value1`): Set a field by key. If the key matches a known built-in tag field, that field is updated; otherwise it becomes a extra field. Example: `key=url value=https://example.com`. Can be used multiple times.
-- `clearextra`: Clear all extra fields.
+### Other fields
 
-> Tip: `--key`/`--value` is useful for scripting or for fields not exposed as dedicated options.
+Other fields can be set similar to standard fields. Example: `label=Recorded at Home`, `music_brainz_recording_id=1234567890abcdef`.
+
+### Clear fields
+
+To clear a field, assign an empty value. Example: `artist=""`.
+
+To remove all fields, use the `clear` option.
 
 ### Pictures (cover art)
 
@@ -53,3 +58,36 @@ Some fields accept multiple values (artists, genres, etc.). Provide multiple val
 - If you provide multiple `--picturetype` values, they are matched by index to `--picture`.
 - If you provide fewer types than pictures, the first provided type may be reused.
 - If no type is provided (or parsing fails), the default type is `FrontCover`.
+
+### Field mapping
+
+TagSelecta uses normalized field names (lowercase), then maps them to format-specific tag fields.
+
+| TagSelecta field | ID3v2 (MP3)                                               | FLAC/OGG (Xiph Comment) |
+|------------------|-----------------------------------------------------------|-------------------------|
+| `album`          | `TALB`                                                    | `album`                 |
+| `albumartist`    | `TPE2`                                                    | `albumartist`           |
+| `artist`         | `TPE1`                                                    | `artist`                |
+| `bpm`            | `TBPM`                                                    | `bpm`                   |
+| `comment`        | `COMM`                                                    | `comment`               |
+| `composer`       | `TCOM`                                                    | `composer`              |
+| `conductor`      | `TPE3`                                                    | `conductor`             |
+| `copyright`      | `TCOP`                                                    | `copyright`             |
+| `date`           | `TDRC`                                                    | `date`                  |
+| `disc`           | `TPOS` (value part)                                       | `discnumber`            |
+| `disctotal`      | `TPOS` (total part)                                       | `disctotal`             |
+| `genre`          | `TCON`                                                    | `genre`                 |
+| `isrc`           | `TSRC`                                                    | `isrc`                  |
+| `publisher`      | `TPUB`                                                    | `organization`          |
+| `title`          | `TIT2`                                                    | `title`                 |
+| `track`          | `TRCK` (value part)                                       | `tracknumber`           |
+| `tracktotal`     | `TRCK` (total part)                                       | `tracktotal`            |
+| `label`          | `TXXX(label)`                                             | `label`                 |
+| `catalognumber`  | `TXXX(catalognumber)`                                     | `catalognumber`         |
+
+Notes:
+
+- Multi-value fields (like `artist`, `albumartist`, `composer`, `genre`) are stored as multiple values.
+- Unknown/non-standard fields are stored as:
+    - ID3v2: `TXXX` (description = field name)
+    - FLAC/OGG: Xiph comment field with the same key
