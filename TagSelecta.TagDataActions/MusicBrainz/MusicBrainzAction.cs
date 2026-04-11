@@ -73,7 +73,6 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 
     private static string GetReleaseId(string url)
     {
-        url = "https://musicbrainz.org/release/e640ff45-e487-46f7-97b7-3a49523fe258";
         if (Guid.TryParse(url, out var guid))
         {
             return guid.ToString();
