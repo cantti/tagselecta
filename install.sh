@@ -1,45 +1,60 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALL_DIR="${1:-}"
+ARG="${1:-}"
+INSTALL_DIR="$HOME/.local/bin"
 
-if [[ -z "$INSTALL_DIR" ]]; then
-  echo "Usage: $0 <install_dir>"
-  exit 1
+if [[ "$ARG" == "--help" || "$ARG" == "-h" ]]; then
+	echo "Usage: $0 [--system|<install_dir>]"
+	echo "  default: $HOME/.local/bin"
+	echo "  --system: /usr/local/bin (may require sudo)"
+	exit 0
+fi
+
+if [[ "$ARG" == "--system" ]]; then
+	INSTALL_DIR="/usr/local/bin"
+elif [[ -n "$ARG" ]]; then
+	INSTALL_DIR="$ARG"
 fi
 
 REPO="cantti/tagselecta"
 
-mkdir -p "$INSTALL_DIR"
+if ! mkdir -p "$INSTALL_DIR" 2>/dev/null; then
+	echo "Cannot create install dir: $INSTALL_DIR"
+	if [[ "$INSTALL_DIR" == "/usr/local/bin" ]]; then
+		echo "Try: sudo bash install.sh --system"
+	fi
+	exit 1
+fi
 
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 
 case "$OS" in
 linux)
-  OS="linux"
-  ;;
+	OS="linux"
+	;;
 darwin)
-  OS="osx"
-  ;;
+	OS="osx"
+	;;
 *)
-  echo "Unsupported OS: $OS"
-  exit 1
-  ;;
+	echo "Unsupported OS: $OS"
+	exit 1
+	;;
 esac
 
 ARCH=$(uname -m)
 
 case "$ARCH" in
 x86_64 | amd64)
-  ARCH="x64"
-  ;;
+	ARCH="x64"
+	;;
 arm64 | aarch64)
-  ARCH="arm64"
-  ;;
+	ARCH="arm64"
+	;;
 *)
-  echo "Unsupported architecture: $ARCH"
-  exit 1
-  ;;
+	echo "Unsupported architecture: $ARCH"
+	exit 1
+	;;
 esac
 
 # Expected asset format: tagselecta-<os>-<arch>.zip
@@ -55,8 +70,8 @@ JSON=$(curl -sL "$API_URL")
 DOWNLOAD_URL=$(echo "$JSON" | grep "browser_download_url" | cut -d '"' -f 4 | grep "$ASSET_PREFIX" || true)
 
 if [[ -z "$DOWNLOAD_URL" ]]; then
-  echo "No matching asset found for platform: $ASSET_PREFIX"
-  exit 1
+	echo "No matching asset found for platform: $ASSET_PREFIX"
+	exit 1
 fi
 
 FILENAME=$(basename "$DOWNLOAD_URL")
@@ -74,11 +89,19 @@ echo "Installing into $INSTALL_DIR..."
 BINARY_PATH=$(find "$TMPDIR" -type f -maxdepth 3 -name "tagselecta" | head -n 1)
 
 if [[ -z "$BINARY_PATH" ]]; then
-  echo "Error: Could not find the tagselecta binary in the archive."
-  exit 1
+	echo "Error: Could not find the tagselecta binary in the archive."
+	exit 1
 fi
 
 echo "Installing tagselecta → $INSTALL_DIR/tagselecta"
+if [[ ! -w "$INSTALL_DIR" ]]; then
+	echo "Install dir is not writable: $INSTALL_DIR"
+	if [[ "$INSTALL_DIR" == "/usr/local/bin" ]]; then
+		echo "Try: sudo bash install.sh --system"
+	fi
+	exit 1
+fi
+
 cp "$BINARY_PATH" "$INSTALL_DIR/tagselecta"
 chmod +x "$INSTALL_DIR/tagselecta"
 

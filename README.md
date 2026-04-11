@@ -69,14 +69,16 @@ You can install the latest release automatically using the provided installer sc
 it):
 
 ```sh
-wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | bash -s "$HOME/.local/bin"
+wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | bash
 ```
 
-This will:
+This installs to `$HOME/.local/bin` by default.
 
-* download the latest release,
-* extract it,
-* install it into the directory you provide (default recommended: `$HOME/.local/bin`).
+For system-wide install:
+
+```sh
+wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | sudo bash -s -- --system
+```
 
 ### Option 3. Install from AUR (Arch Linux)
 
