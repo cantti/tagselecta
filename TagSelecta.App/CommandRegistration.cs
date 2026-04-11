@@ -125,7 +125,12 @@ public static class CommandRegistration
         configurator
             .AddCommand<FindCommand>("find")
             .WithDescription("Find files by metadata")
-            .WithExample("find", ".", "-q", "\"title | string.downcase |  string.contains 'dub'\"");
+            .WithExample(
+                "find",
+                ".",
+                "-q",
+                "\"{{ title | string.downcase |  string.contains 'dub' }}\""
+            );
     }
 
     private static void AddMusicBrainz(IConfigurator configurator, IServiceCollection services)
