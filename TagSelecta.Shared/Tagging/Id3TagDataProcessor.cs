@@ -22,13 +22,13 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
         tagData.SetValue(FieldName.Conductor, ReadValue("TPE3"));
         tagData.SetValue(FieldName.Copyright, ReadValue("TCOP"));
         tagData.SetValue(FieldName.Date, ReadValue("TDRC"));
-        tagData.SetValue(FieldName.Disc, disc.Value);
+        tagData.SetValue(FieldName.DiscNumber, disc.Value);
         tagData.SetValue(FieldName.DiscTotal, disc.Total);
         tagData.SetValue(FieldName.Genre, ReadValue("TCON"));
         tagData.SetValue(FieldName.Isrc, ReadValue("TSRC"));
         tagData.SetValue(FieldName.Publisher, ReadValue("TPUB"));
         tagData.SetValue(FieldName.Title, ReadValue("TIT2"));
-        tagData.SetValue(FieldName.Track, track.Value);
+        tagData.SetValue(FieldName.TrackNumber, track.Value);
         tagData.SetValue(FieldName.TrackTotal, track.Total);
 
         var userTextFields = id3v2.GetFrames<UserTextInformationFrame>();
@@ -64,7 +64,7 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
         WriteValue("TDRC", data.GetValue(FieldName.Date));
         WriteValueWithTotal(
             "TPOS",
-            data.GetValueFirst(FieldName.Disc),
+            data.GetValueFirst(FieldName.DiscNumber),
             data.GetValueFirst(FieldName.DiscTotal)
         );
         WriteValue("TCON", data.GetValue(FieldName.Genre));
@@ -73,7 +73,7 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
         WriteValue("TIT2", data.GetValue(FieldName.Title));
         WriteValueWithTotal(
             "TRCK",
-            data.GetValueFirst(FieldName.Track),
+            data.GetValueFirst(FieldName.TrackNumber),
             data.GetValueFirst(FieldName.TrackTotal)
         );
         id3v2.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();

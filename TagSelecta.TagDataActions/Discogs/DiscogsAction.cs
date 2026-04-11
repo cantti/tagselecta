@@ -106,7 +106,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
             tagData.SetValue(entry.FieldName, value.SplitTagValuesIfNeeded(entry.FieldName));
         }
 
-        tagData.RemoveField(FieldName.Disc);
+        tagData.RemoveField(FieldName.DiscNumber);
         tagData.RemoveField(FieldName.DiscTotal);
 
         tagData.Picture = [new Picture(_releaseImage)];

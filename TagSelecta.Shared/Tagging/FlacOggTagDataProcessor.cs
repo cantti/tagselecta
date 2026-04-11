@@ -34,17 +34,8 @@ public class FlacOggTagDataProcessor : TagDataProcessor
                 continue;
             }
 
-            // map xiph fields to standard fields
-            var field = normKey switch
-            {
-                "discnumber" => FieldName.Disc,
-                "tracknumber" => FieldName.Track,
-                "organization" => FieldName.Publisher,
-                _ => normKey,
-            };
-
             var values = xiph.GetField(key) ?? [];
-            tagData.SetValue(field, values.ToList());
+            tagData.SetValue(normKey, values.ToList());
         }
 
         var pictures = flac is not null ? flac.Pictures : xiph.Pictures;
@@ -61,14 +52,7 @@ public class FlacOggTagDataProcessor : TagDataProcessor
 
         foreach (var field in data.Fields)
         {
-            var key = field.Key switch
-            {
-                FieldName.Disc => "discnumber",
-                FieldName.Track => "tracknumber",
-                FieldName.Publisher => "organization",
-                _ => field.Key,
-            };
-            xiph.SetField(key, field.Text.ToArray());
+            xiph.SetField(field.Key, field.Text.ToArray());
         }
 
         var pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
@@ -80,28 +64,5 @@ public class FlacOggTagDataProcessor : TagDataProcessor
         {
             xiph.Pictures = pictures;
         }
-    }
-
-    private string ReadField(string key)
-    {
-        var data = xiph.GetField(key);
-        return data?.JoinTagValues() ?? "";
-    }
-
-    private List<string> ReadFieldMulti(string key)
-    {
-        var data = xiph.GetField(key);
-        return data?.ToList() ?? [];
-    }
-
-    private void ClearUnusedFields()
-    {
-        // foreach (var key in xiph)
-        // {
-        //     if (!_usedXiphFields.Contains(key))
-        //     {
-        //         xiph.RemoveField(key);
-        //     }
-        // }
     }
 }

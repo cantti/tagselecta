@@ -21,13 +21,13 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
         FieldName.Conductor,
         FieldName.Copyright,
         FieldName.Date,
-        FieldName.Disc,
+        FieldName.DiscNumber,
         FieldName.DiscTotal,
         FieldName.Genre,
         FieldName.Isrc,
         FieldName.Publisher,
         FieldName.Title,
-        FieldName.Track,
+        FieldName.TrackNumber,
         FieldName.TrackTotal,
     ];
 

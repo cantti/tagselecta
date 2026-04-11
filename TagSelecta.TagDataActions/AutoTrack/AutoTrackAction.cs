@@ -17,11 +17,11 @@ public class AutoTrackAction(IAudioFileScanner fileScanner) : TagDataAction<Auto
         var track = (
             directoryFiles.ToList().FindIndex(x => x == context.Target.BackupPath) + 1
         ).ToString();
-        tagData.SetValue(FieldName.Track, track);
+        tagData.SetValue(FieldName.TrackNumber, track);
         tagData.SetValue(FieldName.TrackTotal, directoryFiles.Count.ToString());
         if (!context.Settings.KeepDisk)
         {
-            tagData.RemoveField(FieldName.Disc);
+            tagData.RemoveField(FieldName.DiscNumber);
             tagData.RemoveField(FieldName.DiscTotal);
         }
 

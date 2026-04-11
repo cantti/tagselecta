@@ -28,11 +28,11 @@ public class TagDataClonerTests
         original.SetValue(FieldName.Artist, ["ArtistA"]);
         original.SetValue(FieldName.Comment, "Some comment");
         original.SetValue(FieldName.Composer, ["Composer1"]);
-        original.SetValue(FieldName.Disc, "1");
+        original.SetValue(FieldName.DiscNumber, "1");
         original.SetValue(FieldName.DiscTotal, "2");
         original.SetValue(FieldName.Genre, ["Genre1", "Genre2"]);
         original.SetValue(FieldName.Title, "Test Title");
-        original.SetValue(FieldName.Track, "5");
+        original.SetValue(FieldName.TrackNumber, "5");
         original.SetValue(FieldName.TrackTotal, "10");
         original.SetValue(FieldName.Date, "2022");
         original.SetValue("label", "Test Label");
@@ -49,11 +49,11 @@ public class TagDataClonerTests
             FieldName.Comment,
             FieldName.Composer,
             FieldName.Date,
-            FieldName.Disc,
+            FieldName.DiscNumber,
             FieldName.DiscTotal,
             FieldName.Genre,
             FieldName.Title,
-            FieldName.Track,
+            FieldName.TrackNumber,
             FieldName.TrackTotal,
             "label",
             "catalognumber",

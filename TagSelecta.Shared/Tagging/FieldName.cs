@@ -11,13 +11,13 @@ public static class FieldName
     public const string Conductor = "conductor";
     public const string Copyright = "copyright";
     public const string Date = "date";
-    public const string Disc = "disc";
+    public const string DiscNumber = "discnumber";
     public const string DiscTotal = "disctotal";
     public const string Genre = "genre";
     public const string Isrc = "isrc";
     public const string Publisher = "publisher";
     public const string Title = "title";
-    public const string Track = "track";
+    public const string TrackNumber = "tracknumber";
     public const string TrackTotal = "tracktotal";
 
     private static readonly string[] _all =
@@ -31,13 +31,13 @@ public static class FieldName
         Conductor,
         Copyright,
         Date,
-        Disc,
+        DiscNumber,
         DiscTotal,
         Genre,
         Isrc,
         Publisher,
         Title,
-        Track,
+        TrackNumber,
         TrackTotal,
     ];
 

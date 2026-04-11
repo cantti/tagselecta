@@ -7,17 +7,17 @@ namespace TagSelecta.TagDataActions.Edit;
 
 public class EditSettings : TagDataActionSettings
 {
-    [CommandOption($"--{FieldName.Album}|-l")]
+    [CommandOption($"--{FieldName.Album}")]
     [Description("Album name.")]
     public string? Album { get; set; }
 
-    [CommandOption($"--{FieldName.AlbumArtist}|-A")]
+    [CommandOption($"--{FieldName.AlbumArtist}")]
     [Description(
         "One or more album artists. Multiple values can be provided using a ';' separator."
     )]
     public string? AlbumArtist { get; set; }
 
-    [CommandOption($"--{FieldName.Artist}|-a")]
+    [CommandOption($"--{FieldName.Artist}")]
     [Description("One or more artists. Multiple values can be provided using a ';' separator")]
     public string? Artist { get; set; }
 
@@ -25,11 +25,11 @@ public class EditSettings : TagDataActionSettings
     [Description("Beat per minutes")]
     public string? Bpm { get; set; }
 
-    [CommandOption($"--{FieldName.Comment}|-c")]
+    [CommandOption($"--{FieldName.Comment}")]
     [Description("Comment or notes.")]
     public string? Comment { get; set; }
 
-    [CommandOption($"--{FieldName.Composer}|-C")]
+    [CommandOption($"--{FieldName.Composer}")]
     [Description("Composer.")]
     public string? Composer { get; set; }
 
@@ -41,19 +41,19 @@ public class EditSettings : TagDataActionSettings
     [Description("Copyright.")]
     public string? Copyright { get; set; }
 
-    [CommandOption($"--{FieldName.Date}|-y")]
+    [CommandOption($"--{FieldName.Date}")]
     [Description("Release date.")]
     public string? Date { get; set; }
 
-    [CommandOption($"--{FieldName.Disc}|-d")]
+    [CommandOption($"--{FieldName.DiscNumber}")]
     [Description("Disc number.")]
-    public string? Disc { get; set; }
+    public string? DiscNumber { get; set; }
 
-    [CommandOption($"--{FieldName.DiscTotal}|-D")]
+    [CommandOption($"--{FieldName.DiscTotal}")]
     [Description("Total number of discs.")]
     public string? DiscTotal { get; set; }
 
-    [CommandOption($"--{FieldName.Genre}|-g")]
+    [CommandOption($"--{FieldName.Genre}")]
     [Description("One or more genres. Multiple values can be provided using a ';' separator")]
     public string? Genre { get; set; }
 
@@ -65,15 +65,15 @@ public class EditSettings : TagDataActionSettings
     [Description("Publisher.")]
     public string? Publisher { get; set; }
 
-    [CommandOption($"--{FieldName.Title}|-t")]
+    [CommandOption($"--{FieldName.Title}")]
     [Description("Track title.")]
     public string? Title { get; set; }
 
-    [CommandOption($"--{FieldName.Track}|-n")]
+    [CommandOption($"--{FieldName.TrackNumber}")]
     [Description("Track number.")]
-    public string? Track { get; set; }
+    public string? TrackNumber { get; set; }
 
-    [CommandOption($"--{FieldName.TrackTotal}|-N")]
+    [CommandOption($"--{FieldName.TrackTotal}")]
     [Description("Total number of tracks.")]
     public string? TrackTotal { get; set; }
 
@@ -88,7 +88,7 @@ public class EditSettings : TagDataActionSettings
     [Description("Clear all other fields.")]
     public bool Clear { get; set; }
 
-    [CommandOption("--picture|-p")]
+    [CommandOption("--picture")]
     [Description(
         "Path or url to a picture. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)."
     )]
