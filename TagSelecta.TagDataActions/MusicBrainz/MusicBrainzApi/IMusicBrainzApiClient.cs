@@ -8,6 +8,6 @@ namespace TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 )]
 public interface IMusicBrainzApiClient
 {
-    [Get("/release/{id}?inc=artist-credits+labels+discids+recordings+release-groups+genres")]
+    [Get("/release/{id}?inc=artist-credits+labels+discids+recordings+isrcs+release-groups+genres")]
     Task<Release> GetRelease(string id);
 }

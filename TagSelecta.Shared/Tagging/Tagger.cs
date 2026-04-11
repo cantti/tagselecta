@@ -38,7 +38,7 @@ public class Tagger : ITagger
         if (mime.Contains("mpeg") || mime.Contains("mp3") || mime.Contains("wav"))
         {
             var id3v2 = (Tag)tfile.GetTag(TagTypes.Id3v2, true);
-            return new Id3TagDataProcessor(id3v2);
+            return new Id3TagDataProcessor(id3v2, tfile);
         }
 
         if (mime.Contains("flac"))

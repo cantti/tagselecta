@@ -21,4 +21,7 @@ public class Recording
 
     [JsonPropertyName("artist-credit")]
     public List<ArtistCredit>? ArtistCredit { get; set; }
+
+    [JsonPropertyName("isrcs")]
+    public List<string>? Isrcs { get; set; }
 }

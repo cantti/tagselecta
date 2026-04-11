@@ -8,7 +8,7 @@ public class Media
     public List<Disc>? Discs { get; set; }
 
     [JsonPropertyName("position")]
-    public int Position { get; set; }
+    public int? Position { get; set; }
 
     [JsonPropertyName("title")]
     public string? Title { get; set; }
@@ -20,10 +20,10 @@ public class Media
     public string? Format { get; set; }
 
     [JsonPropertyName("track-count")]
-    public int TrackCount { get; set; }
+    public int? TrackCount { get; set; }
 
     [JsonPropertyName("track-offset")]
-    public int TrackOffset { get; set; }
+    public int? TrackOffset { get; set; }
 
     [JsonPropertyName("tracks")]
     public List<Track>? Tracks { get; set; }

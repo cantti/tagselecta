@@ -18,7 +18,7 @@ public static class TagDataPrinter
         table.AddColumn("");
         table.HideHeaders();
 
-        AddFieldComparison(table, "path", f.BackupPath, f.CurrentPath);
+        AddFieldComparison(table, "Path", f.BackupPath, f.CurrentPath);
 
         foreach (
             var key in backupTagData
@@ -75,7 +75,7 @@ public static class TagDataPrinter
 
     private static void AddFieldComparison(
         Table table,
-        string label,
+        string key,
         string value1,
         string value2,
         bool? eq = null
@@ -86,7 +86,30 @@ public static class TagDataPrinter
             return;
         }
 
-        var labelText = new Text(label.ToSpacedWords(), new Style(Color.Blue));
+        var keyPretty = key switch
+        {
+            FieldName.Album => "Album",
+            FieldName.AlbumArtist => "Album Artist",
+            FieldName.Artist => "Artist",
+            FieldName.Bpm => "BPM",
+            FieldName.Comment => "Comment",
+            FieldName.Composer => "Composer",
+            FieldName.Conductor => "Conductor",
+            FieldName.Copyright => "Copyright",
+            FieldName.Date => "Date",
+            FieldName.DiscNumber => "Disc Number",
+            FieldName.DiscTotal => "Disc Total",
+            FieldName.Genre => "Genre",
+            FieldName.Isrc => "ISRC",
+            FieldName.Publisher => "Publisher",
+            FieldName.Title => "Title",
+            FieldName.TrackNumber => "Track Number",
+            FieldName.TrackTotal => "Track Total",
+            _ => key,
+        };
+
+        var keyCol = new Text(keyPretty, new Style(Color.Blue));
+
         var elements = new List<IRenderable>();
         if (eq ?? value1 == value2)
         {
@@ -111,7 +134,7 @@ public static class TagDataPrinter
         }
 
         var cols = new Columns(elements) { Expand = false };
-        table.AddRow(labelText, cols);
+        table.AddRow(keyCol, cols);
     }
 
     private static string PictureToStr(Picture? pic)

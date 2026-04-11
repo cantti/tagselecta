@@ -1,10 +1,11 @@
 using TagLib;
 using TagLib.Id3v2;
+using File = TagLib.File;
 using Tag = TagLib.Id3v2.Tag;
 
 namespace TagSelecta.Shared.Tagging;
 
-public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
+public class Id3TagDataProcessor(Tag id3v2, File tfile) : TagDataProcessor
 {
     public override TagData Read()
     {
@@ -52,6 +53,9 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
 
     public override void Write(TagData data)
     {
+        // keep id3v2 only
+        tfile.RemoveTags(TagTypes.Id3v1);
+
         id3v2.Version = 4;
         WriteValue("TALB", data.GetValue(FieldName.Album));
         WriteValue("TPE2", data.GetValue(FieldName.AlbumArtist));
