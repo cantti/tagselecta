@@ -22,25 +22,17 @@ public class AutoTrackTests
 
         var item1 = new TestTarget(
             "file1.mp3",
-            new TagData
-            {
-                Disc = "1",
-                DiscTotal = "1",
-                Track = "",
-                TrackTotal = "",
-            }
+            new TagData()
         );
+        item1.CurrentTagData.SetValue(FieldName.Disc, "1");
+        item1.CurrentTagData.SetValue(FieldName.DiscTotal, "1");
 
         var item2 = new TestTarget(
             "file2.mp3",
-            new TagData
-            {
-                Disc = "1",
-                DiscTotal = "1",
-                Track = "",
-                TrackTotal = "",
-            }
+            new TagData()
         );
+        item2.CurrentTagData.SetValue(FieldName.Disc, "1");
+        item2.CurrentTagData.SetValue(FieldName.DiscTotal, "1");
 
         // Act
         await action.Execute(
@@ -55,13 +47,13 @@ public class AutoTrackTests
         // Assert
         var currentTagData1 = item1.CurrentTagData;
         var currentTagData2 = item2.CurrentTagData;
-        Assert.Equal("1", currentTagData1.Track);
-        Assert.Equal("2", currentTagData1.TrackTotal);
-        Assert.Equal("1", currentTagData1.Disc);
-        Assert.Equal("1", currentTagData1.DiscTotal);
-        Assert.Equal("2", currentTagData2.Track);
-        Assert.Equal("2", currentTagData2.TrackTotal);
-        Assert.Equal("1", currentTagData2.Disc);
-        Assert.Equal("1", currentTagData2.DiscTotal);
+        Assert.Equal("1", currentTagData1.GetValueFirst(FieldName.Track));
+        Assert.Equal("2", currentTagData1.GetValueFirst(FieldName.TrackTotal));
+        Assert.Equal("1", currentTagData1.GetValueFirst(FieldName.Disc));
+        Assert.Equal("1", currentTagData1.GetValueFirst(FieldName.DiscTotal));
+        Assert.Equal("2", currentTagData2.GetValueFirst(FieldName.Track));
+        Assert.Equal("2", currentTagData2.GetValueFirst(FieldName.TrackTotal));
+        Assert.Equal("1", currentTagData2.GetValueFirst(FieldName.Disc));
+        Assert.Equal("1", currentTagData2.GetValueFirst(FieldName.DiscTotal));
     }
 }

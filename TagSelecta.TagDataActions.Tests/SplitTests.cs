@@ -13,7 +13,8 @@ public class SplitTests
         // Arrange
         ITagDataAction action = new SplitAction();
         var settings = new SplitSettings();
-        var tagData = new TagData { Artist = ["Artist1; Artist2"] };
+        var tagData = new TagData();
+        tagData.SetValue(FieldName.Artist, ["Artist1; Artist2"]);
         var item = new TestTarget("file.mp3", tagData);
 
         // Act
@@ -24,7 +25,7 @@ public class SplitTests
 
         // Assert
         var newTagData = item.CurrentTagData;
-        Assert.Equal("Artist1", newTagData.Artist[0]);
-        Assert.Equal("Artist2", newTagData.Artist[1]);
+        Assert.Equal("Artist1", newTagData.GetValue(FieldName.Artist)[0]);
+        Assert.Equal("Artist2", newTagData.GetValue(FieldName.Artist)[1]);
     }
 }

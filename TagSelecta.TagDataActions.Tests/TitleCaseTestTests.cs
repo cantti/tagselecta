@@ -15,7 +15,9 @@ public class TitleCaseTests
 
         var settings = new TitleCaseSettings();
 
-        var tagData = new TagData { Title = "test title", Artist = ["test artist"] };
+        var tagData = new TagData();
+        tagData.SetValue(FieldName.Title, "test title");
+        tagData.SetValue(FieldName.Artist, ["test artist"]);
 
         var item = new TestTarget("file.mp3", tagData);
 
@@ -27,7 +29,7 @@ public class TitleCaseTests
 
         // Assert
         var newTagData = item.CurrentTagData;
-        Assert.Equal("Test Title", newTagData.Title);
-        Assert.Equal("Test Artist", newTagData.Artist[0]);
+        Assert.Equal("test title", newTagData.GetValueFirst(FieldName.Title));
+        Assert.Equal("test artist", newTagData.GetValue(FieldName.Artist)[0]);
     }
 }
