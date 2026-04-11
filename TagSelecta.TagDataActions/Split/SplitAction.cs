@@ -11,6 +11,7 @@ public class SplitAction : TagDataAction<SplitSettings>
         var tagData = context.Target.CurrentTagData;
         var separator = context.Settings.Separator;
 
+        // todo make this configurable
         string[] fields =
         [
             FieldName.Artist,
