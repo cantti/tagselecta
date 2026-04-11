@@ -14,7 +14,7 @@ public static class StringListExtensions
 
     public static string JoinTagValues(this IEnumerable<string?> strings)
     {
-        return string.Join("; ", strings);
+        return string.Join("; ", strings.Where(x => !string.IsNullOrWhiteSpace(x)));
     }
 
     public static List<string> SplitTagValues(this string str)

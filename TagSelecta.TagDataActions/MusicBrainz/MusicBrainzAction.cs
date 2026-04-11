@@ -19,13 +19,30 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
             "{{ if tracks[index].artistcredit && tracks[index].artistcredit.size > 0; tracks[index].artistcredit | array.map 'name' | joined; else; release.artistcredit | array.map 'name' | joined; end }}"
         ),
         new(FieldName.Date, "{{ release.date }}"),
+        new(FieldName.DiscNumber, "{{ tracks[index].discnumber }}"),
+        new(FieldName.DiscTotal, "{{ tracks[index].disctotal }}"),
         new(FieldName.Genre, "{{ release.releasegroup.genres | array.map 'name' | joined }}"),
+        new(FieldName.Isrc, "{{ tracks[index].recording.isrcs | joined }}"),
         new(FieldName.Title, "{{ tracks[index].title }}"),
-        new(FieldName.TrackNumber, "{{ index + 1 }}"),
-        new(FieldName.TrackTotal, "{{ tracks.size }}"),
+        new(FieldName.TrackNumber, "{{ tracks[index].tracknumber }}"),
+        new(FieldName.TrackTotal, "{{ tracks[index].tracktotal }}"),
         new("label", "{{ release.labelinfo | array.map 'label' | array.map 'name' | joined }}"),
         new("catalognumber", "{{ release.labelinfo | array.map 'catalognumber' | joined }}"),
-        new("musicbrainz_release_id", "{{ release.id }}"),
+        new(
+            "musicbrainz album artist id",
+            "{{ release.artistcredit | array.map 'artist' | array.map 'id' | joined }}"
+        ),
+        new("musicbrainz album id", "{{ release.id }}"),
+        new("musicbrainz album release country", "{{ release.country }}"),
+        new("musicbrainz album status", "{{ release.status }}"),
+        new("musicbrainz album type", "{{ release.releasegroup.primarytype }}"),
+        new(
+            "musicbrainz artist id",
+            "{{ if tracks[index].artistcredit && tracks[index].artistcredit.size > 0; tracks[index].artistcredit | array.map 'artist' | array.map 'id' | joined; else; release.artistcredit | array.map 'artist' | array.map 'id' | joined; end }}"
+        ),
+        new("musicbrainz release track id", "{{ tracks[index].id }}"),
+        new("musicbrainz release group id", "{{ release.releasegroup.id }}"),
+        new("barcode", "{{ release.barcode }}"),
     ];
 
     private readonly IAudioFileScanner _fileScanner;
@@ -56,7 +73,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 
     private static string GetReleaseId(string url)
     {
-        url = "https://musicbrainz.org/release/4fea565d-9d19-494c-8177-9dd24aa24a9d";
+        url = "https://musicbrainz.org/release/e640ff45-e487-46f7-97b7-3a49523fe258";
         if (Guid.TryParse(url, out var guid))
         {
             return guid.ToString();
