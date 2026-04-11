@@ -5,7 +5,7 @@ using File = System.IO.File;
 
 namespace TagSelecta.TagDataActions.ExtractPicture;
 
-[TagDataActionName("extractpicture")]
+[TagDataActionInfo("extractpicture")]
 public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 {
     private readonly List<PictureType> _types = [];
@@ -14,7 +14,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
     {
         if (settings.Type is not null)
         {
-            var typesStr = settings.Type.ToMulti();
+            var typesStr = settings.Type.SplitTagValues();
             foreach (var typeStr in typesStr)
             {
                 if (Enum.TryParse<PictureType>(typeStr, out var type))

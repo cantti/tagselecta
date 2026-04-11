@@ -1,55 +1,12 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using TagLib;
-using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
 public static class TagDataPrinter
 {
-    public static IRenderable PrintTagData(TagDataActionTarget f)
-    {
-        var tagData = f.CurrentTagData;
-        var table = new Table();
-        table.Border(TableBorder.None);
-        table.AddColumn("", c => c.Width(20));
-        table.AddColumn("");
-        table.HideHeaders();
-        AddField(table, "Path", f.CurrentPath);
-        foreach (
-            var prop in typeof(TagData)
-                .GetProperties()
-                .Where(p => p.Name != nameof(TagData.Picture))
-                .Where(p => p.Name != nameof(TagData.Extra))
-        )
-        {
-            AddField(table, prop.Name, ConvertValue(prop.GetValue(tagData), prop.PropertyType));
-        }
-
-        if (tagData.Extra.Count > 0)
-        {
-            table.AddEmptyRow();
-            table.AddRow("[i]Extra:[/]");
-            foreach (var extra in tagData.Extra)
-            {
-                AddField(table, extra.Key, extra.Text);
-            }
-        }
-
-        if (tagData.Picture.Count > 0)
-        {
-            table.AddEmptyRow();
-            table.AddRow("[i]Pictures:[/]");
-            foreach (var picture in tagData.Picture)
-            {
-                AddField(table, picture.Type.ToString(), PictureToStr(picture));
-            }
-        }
-
-        return table;
-    }
-
     public static IRenderable PrintComparison(TagDataActionTarget f)
     {
         var tagData = f.CurrentTagData;
@@ -57,45 +14,24 @@ public static class TagDataPrinter
 
         var table = new Table();
         table.Border(TableBorder.None);
-        table.AddColumn("", c => c.Width(20));
+        table.AddColumn("", c => c.Width(null));
         table.AddColumn("");
         table.HideHeaders();
 
-        AddFieldComparison(table, "Path", f.BackupPath, f.CurrentPath);
+        AddFieldComparison(table, "path", f.BackupPath, f.CurrentPath);
 
         foreach (
-            var prop in typeof(TagData)
-                .GetProperties()
-                .Where(p => p.Name != nameof(TagData.Picture))
-                .Where(p => p.Name != nameof(TagData.Extra))
+            var key in backupTagData
+                .Fields.Select(x => x.Key)
+                .Union(tagData.Fields.Select(x => x.Key))
+                .Order()
         )
         {
-            AddFieldComparison(
-                table,
-                prop.Name,
-                ConvertValue(prop.GetValue(backupTagData), prop.PropertyType),
-                ConvertValue(prop.GetValue(tagData), prop.PropertyType)
+            var value1 = ListToStr(
+                backupTagData.Fields.SingleOrDefault(x => x.Key == key)?.Text ?? []
             );
-        }
-
-        var extraKeys = backupTagData
-            .Extra.Select(x => x.Key)
-            .Union(tagData.Extra.Select(x => x.Key))
-            .ToList();
-        if (extraKeys.Count > 0)
-        {
-            table.AddEmptyRow();
-            table.AddRow("[i]Extra:[/]");
-            foreach (
-                var key in backupTagData
-                    .Extra.Select(x => x.Key)
-                    .Union(tagData.Extra.Select(x => x.Key))
-            )
-            {
-                var value1 = backupTagData.Extra.SingleOrDefault(x => x.Key == key)?.Text ?? "";
-                var value2 = tagData.Extra.SingleOrDefault(x => x.Key == key)?.Text ?? "";
-                AddFieldComparison(table, key, value1, value2);
-            }
+            var value2 = ListToStr(tagData.Fields.SingleOrDefault(x => x.Key == key)?.Text ?? []);
+            AddFieldComparison(table, key, value1, value2);
         }
 
         if (backupTagData.Picture.Count > 0 || tagData.Picture.Count > 0)
@@ -135,16 +71,6 @@ public static class TagDataPrinter
         }
 
         return table;
-    }
-
-    private static void AddField(Table table, string label, string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return;
-        }
-
-        table.AddRow($"[blue]{label.ToSpacedWords().EscapeMarkup()}[/]", value.EscapeMarkup());
     }
 
     private static void AddFieldComparison(
@@ -196,25 +122,5 @@ public static class TagDataPrinter
     private static string ListToStr(List<string> list)
     {
         return string.Join("\n", list);
-    }
-
-    private static string ConvertValue(object? value, Type type)
-    {
-        if (value is null)
-        {
-            return string.Empty;
-        }
-
-        if (type == typeof(string))
-        {
-            return (string)value;
-        }
-
-        if (type == typeof(List<string>))
-        {
-            return ListToStr((List<string>)value);
-        }
-
-        throw new TagSelectaException($"Unsupported property type: {type}");
     }
 }

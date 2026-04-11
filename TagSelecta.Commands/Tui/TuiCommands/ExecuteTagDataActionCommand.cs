@@ -24,7 +24,13 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         context.Print($"Starting {parsedCommand.Name} action..");
 
-        var settings = CreateSettings(action, parsedCommand.Options);
+        var actionAttr = action.GetType().GetCustomAttribute<TagDataActionInfoAttribute>()!;
+
+        var settings = CreateSettings(
+            action,
+            parsedCommand.Options,
+            actionAttr.AllowRemainingArguments
+        );
 
         await action.BeforeExecute(settings, token);
 
@@ -46,7 +52,8 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
     private static TagDataActionSettings CreateSettings(
         ITagDataAction action,
-        ParsedCommandOption[] options
+        ParsedCommandOption[] options,
+        bool allowRemainingArguments
     )
     {
         var settingsType = GetSettingsTypeFromAction(action.GetType());
@@ -104,9 +111,18 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         if (argList.Count > 0)
         {
-            throw new TagSelectaException(
-                $"Unknown arguments: {string.Join(", ", argList.Select(x => x.Key))}"
-            );
+            if (allowRemainingArguments)
+            {
+                baseSettings.Remaining.AddRange(
+                    argList.Select(x => new RemainingArgument(x.Key, x.Value))
+                );
+            }
+            else
+            {
+                throw new TagSelectaException(
+                    $"Unknown arguments: {string.Join(", ", argList.Select(x => x.Key))}"
+                );
+            }
         }
 
         var validationResult = baseSettings.Validate();

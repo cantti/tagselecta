@@ -7,30 +7,28 @@ using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Edit;
 
-[TagDataActionName("edit", "e")]
+[TagDataActionInfo("edit", "e", AllowRemainingArguments = true)]
 public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
 {
-    private static readonly string[] StandardFieldsToApply =
+    private static readonly string[] _standardFieldsToApply =
     [
-        StandardFields.Album,
-        StandardFields.AlbumArtist,
-        StandardFields.Artist,
-        StandardFields.Bpm,
-        StandardFields.CatalogNumber,
-        StandardFields.Comment,
-        StandardFields.Composer,
-        StandardFields.Conductor,
-        StandardFields.Copyright,
-        StandardFields.Date,
-        StandardFields.Disc,
-        StandardFields.DiscTotal,
-        StandardFields.Genre,
-        StandardFields.Isrc,
-        StandardFields.Label,
-        StandardFields.Publisher,
-        StandardFields.Title,
-        StandardFields.Track,
-        StandardFields.TrackTotal,
+        FieldName.Album,
+        FieldName.AlbumArtist,
+        FieldName.Artist,
+        FieldName.Bpm,
+        FieldName.Comment,
+        FieldName.Composer,
+        FieldName.Conductor,
+        FieldName.Copyright,
+        FieldName.Date,
+        FieldName.Disc,
+        FieldName.DiscTotal,
+        FieldName.Genre,
+        FieldName.Isrc,
+        FieldName.Publisher,
+        FieldName.Title,
+        FieldName.Track,
+        FieldName.TrackTotal,
     ];
 
     public override async Task ExecuteAsync(
@@ -51,9 +49,9 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
             context.Target.BackupPath
         );
 
-        if (context.Settings.ClearExtra)
+        if (context.Settings.Clear)
         {
-            tagData.ClearExtraFields();
+            tagData.Clear();
         }
 
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -63,7 +61,8 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
             .Where(x => x.PropertyType == typeof(string))
             .ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
-        foreach (var field in StandardFieldsToApply)
+        // add fields from properties
+        foreach (var field in _standardFieldsToApply)
         {
             if (!settingProperties.TryGetValue(field, out var property))
             {
@@ -81,20 +80,29 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
 
             var valueStr = (string)value;
 
-            values[field] = formatter.Format(valueStr);
+            values[field] = valueStr;
         }
 
+        // add values from key/value pairs
         for (var i = 0; i < context.Settings.Key.Length; i++)
         {
             var key = context.Settings.Key[i].NormalizeKey();
-            var value = context.Settings.Value[i].Trim();
-            value = formatter.Format(value);
+            var value = context.Settings.Value[i];
+            values[key] = value;
+        }
+
+        // add remaining values
+        foreach (var remaining in context.Settings.Remaining)
+        {
+            var key = remaining.Key.NormalizeKey();
+            var value = remaining.Value;
             values[key] = value;
         }
 
         foreach (var (key, value) in values)
         {
-            tagData.SetField(key, value);
+            var formattedValue = formatter.Format(value);
+            tagData.SetValue(key, formattedValue.SplitTagValuesIfNeeded(key));
         }
 
         await SetPicture(context, tagData, token);

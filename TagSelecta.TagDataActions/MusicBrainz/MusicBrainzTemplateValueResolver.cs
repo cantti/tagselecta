@@ -1,3 +1,4 @@
+using System.Collections;
 using Scriban;
 using Scriban.Runtime;
 using TagSelecta.Shared.Exceptions;
@@ -50,9 +51,10 @@ public static class MusicBrainzTemplateValueResolver
 
     private static class MusicBrainzFunctions
     {
-        public static string Joined(IEnumerable<object> input)
+        public static string? Joined(IEnumerable? input)
         {
-            return input.Select(x => x.ToString()).ToJoined();
+            var list = input?.Cast<string?>() ?? [];
+            return list.JoinTagValues();
         }
     }
 }

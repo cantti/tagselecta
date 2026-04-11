@@ -37,7 +37,7 @@ public class CompletionProvider : ICompletionProvider
     {
         foreach (var action in actions)
         {
-            var nameAttribute = action.GetType().GetCustomAttribute<TagDataActionNameAttribute>();
+            var nameAttribute = action.GetType().GetCustomAttribute<TagDataActionInfoAttribute>();
             if (nameAttribute is null)
             {
                 continue;

@@ -4,15 +4,27 @@ namespace TagSelecta.Shared.Tagging;
 
 public static class StringListExtensions
 {
-    // todo custom separator in settings
-    public static string ToJoined(this IEnumerable<string?> strings)
+    private static readonly string[] _multiValueFields =
+    [
+        FieldName.AlbumArtist,
+        FieldName.Artist,
+        FieldName.Composer,
+        FieldName.Genre,
+    ];
+
+    public static string JoinTagValues(this IEnumerable<string?> strings)
     {
         return string.Join("; ", strings);
     }
 
-    public static List<string> ToMulti(this string str)
+    public static List<string> SplitTagValues(this string str)
     {
         return str.Split(";").Select(x => x.Trim()).ToList();
+    }
+
+    public static List<string> SplitTagValuesIfNeeded(this string str, string key)
+    {
+        return _multiValueFields.Contains(key) ? str.SplitTagValues() : [str];
     }
 
     public static string NormalizeKey(this string? value)

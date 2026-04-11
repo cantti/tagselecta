@@ -18,7 +18,9 @@ public class MoveTests
             Template = "{{ year }} - {{album}}/{{filename}}.{{ext}}",
         };
 
-        var tagData = new TagData { Date = "1990", Album = "Test Album" };
+        var tagData = new TagData();
+        tagData.SetValue(FieldName.Date, "1990");
+        tagData.SetValue(FieldName.Album, "Test Album");
 
         var item = new TestTarget("/file.mp3", tagData);
 
@@ -43,7 +45,9 @@ public class MoveTests
             Template = "../{{ year }} - {{album}}/{{filename}}.{{ext}}",
         };
 
-        var tagData = new TagData { Date = "1990", Album = "Test Album" };
+        var tagData = new TagData();
+        tagData.SetValue(FieldName.Date, "1990");
+        tagData.SetValue(FieldName.Album, "Test Album");
 
         var item = new TestTarget("/dir/file.mp3", tagData);
 

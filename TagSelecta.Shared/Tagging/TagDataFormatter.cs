@@ -9,50 +9,32 @@ namespace TagSelecta.Shared.Tagging;
 public class TagDataFormatter
 {
     private readonly bool _sanitize;
-    private readonly TagDataForTemplate _tagDataForTemplate;
+    private readonly Dictionary<string, string> _tagDataForTemplate;
 
     public TagDataFormatter(TagData tagData, string path, bool sanitize = false)
     {
         _sanitize = sanitize;
-        _tagDataForTemplate = new TagDataForTemplate
+        _tagDataForTemplate = new Dictionary<string, string>();
+        foreach (var field in tagData.Fields)
         {
-            Path = S(path),
-            FileName = S(Path.GetFileNameWithoutExtension(path)),
-            Ext = S(Path.GetExtension(path).TrimStart('.')),
-            Album = S(tagData.Album),
-            AlbumArtist = S(tagData.AlbumArtist.ToJoined()),
-            AlbumArtists = tagData.AlbumArtist.Select(S).ToList(),
-            Artist = S(tagData.Artist.ToJoined()),
-            Artists = tagData.Artist.Select(S).ToList(),
-            Bpm = S(tagData.Bpm),
-            CatalogNumber = S(tagData.CatalogNumber),
-            Comment = S(tagData.Comment),
-            Composer = S(tagData.Composer.ToJoined()),
-            Composers = tagData.Composer.Select(S).ToList(),
-            Conductor = S(tagData.Conductor),
-            Copyright = S(tagData.Copyright),
-            Date = S(tagData.Date),
-            Disc = S(tagData.Disc),
-            DiscTotal = S(tagData.DiscTotal),
-            Genre = S(tagData.Genre.ToJoined()),
-            Genres = tagData.Genre.Select(S).ToList(),
-            Isrc = S(tagData.Isrc),
-            Label = S(tagData.Label),
-            Publisher = S(tagData.Publisher),
-            Title = S(tagData.Title),
-            Track = S(tagData.Track),
-            TrackTotal = S(tagData.TrackTotal),
-            Year = DateTime.TryParseExact(
-                tagData.Date,
+            _tagDataForTemplate.Add(field.Key, S(field.Text.JoinTagValues()));
+        }
+
+        _tagDataForTemplate.Add("path", S(path));
+        _tagDataForTemplate.Add("filename", S(Path.GetFileNameWithoutExtension(path)));
+        _tagDataForTemplate.Add("ext", S(Path.GetExtension(path).TrimStart('.')));
+        _tagDataForTemplate.Add(
+            "year",
+            DateTime.TryParseExact(
+                tagData.GetValueFirst(FieldName.Date),
                 ["yyyy", "yyyy-MM-dd", "yyyy/MM/dd"],
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out var d
             )
                 ? d.Year.ToString()
-                : "",
-            Extra = tagData.Extra.ToDictionary(x => x.Key, x => S(x.Text)),
-        };
+                : ""
+        );
     }
 
     private string S(string input)

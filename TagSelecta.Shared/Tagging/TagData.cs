@@ -4,105 +4,71 @@ namespace TagSelecta.Shared.Tagging;
 
 public class TagData
 {
-    private readonly List<ExtraField> _extra = [];
-    public string Album { get; set; } = "";
-
-    public List<string> AlbumArtist { get; set; } = [];
-
-    public List<string> Artist { get; set; } = [];
-
-    public string Bpm { get; set; } = "";
-
-    public string CatalogNumber { get; set; } = "";
-
-    public string Comment { get; set; } = "";
-
-    public List<string> Composer { get; set; } = [];
-
-    public string Conductor { get; set; } = "";
-
-    public string Copyright { get; set; } = "";
-
-    public string Date { get; set; } = "";
-
-    public string Disc { get; set; } = "";
-
-    public string DiscTotal { get; set; } = "";
-
-    public List<string> Genre { get; set; } = [];
-
-    public string Isrc { get; set; } = "";
-
-    public string Label { get; set; } = "";
-
-    public string Publisher { get; set; } = "";
-
-    public string Title { get; set; } = "";
-
-    public string Track { get; set; } = "";
-
-    public string TrackTotal { get; set; } = "";
+    private readonly List<TagField> _fields = [];
 
     public List<Picture> Picture { get; set; } = [];
-    public IReadOnlyList<ExtraField> Extra => _extra.OrderBy(cf => cf.Key).ToList();
 
-    public void ClearExtraFields()
+    public IReadOnlyList<TagField> Fields =>
+        _fields.OrderBy(cf => cf.Key).Select(x => new TagField(x.Key, x.Text)).ToList();
+
+    public void Clear()
     {
-        _extra.Clear();
+        _fields.Clear();
+        Picture.Clear();
     }
 
-    public void SetExtraField(string key, string value)
+    public void SetValue(string key, IEnumerable<string> value)
     {
         key = key.NormalizeKey();
+        var valueList = value.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
-        var index = _extra.FindIndex(cf => cf.Key == key);
+        var index = _fields.FindIndex(cf => cf.Key == key);
 
-        if (string.IsNullOrWhiteSpace(value))
+        if (valueList.Count == 0)
         {
             if (index >= 0)
             {
-                _extra.RemoveAt(index);
+                _fields.RemoveAt(index);
             }
         }
         else
         {
-            var replacement = new ExtraField(key, value);
+            var replacement = new TagField(key, valueList);
             if (index < 0)
             {
-                _extra.Add(replacement);
+                _fields.Add(replacement);
             }
             else
             {
-                _extra[index] = replacement;
+                _fields[index] = replacement;
             }
         }
     }
 
-    public void SetField(string key, string value)
+    public void SetValue(string key, string value)
+    {
+        SetValue(key, [value]);
+    }
+
+    public void RemoveField(string key)
     {
         key = key.NormalizeKey();
-        value = value.Trim();
-        var prop = typeof(TagData)
-            .GetProperties()
-            .SingleOrDefault(x =>
-                x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)
-                && (x.PropertyType == typeof(string) || x.PropertyType == typeof(List<string>))
-            );
-        if (prop is not null)
+        var index = _fields.FindIndex(cf => cf.Key == key);
+        if (index >= 0)
         {
-            if (prop.PropertyType == typeof(string))
-            {
-                prop.SetValue(this, value);
-            }
-            else
-            {
-                prop.SetValue(this, value.ToMulti());
-            }
+            _fields.RemoveAt(index);
         }
-        else
-        {
-            SetExtraField(key, value);
-        }
+    }
+
+    public List<string> GetValue(string key)
+    {
+        key = key.NormalizeKey();
+        return _fields.Find(cf => cf.Key == key)?.Text ?? [];
+    }
+
+    public string GetValueFirst(string key)
+    {
+        return GetValue(key).FirstOrDefault() ?? "";
     }
 
     public TagData Clone()

@@ -17,7 +17,7 @@ public static class CommandConfiguratorExtensions
     {
         // find TagDataActionAttribute
         var attr =
-            typeof(TAction).GetCustomAttribute<TagDataActionNameAttribute>()
+            typeof(TAction).GetCustomAttribute<TagDataActionInfoAttribute>()
             ?? throw new TagSelectaException("TagDataActionAttribute not found");
 
         // extract TSettings from TAction

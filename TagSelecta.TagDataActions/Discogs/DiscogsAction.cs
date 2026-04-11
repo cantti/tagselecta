@@ -9,7 +9,7 @@ using TagSelecta.TagDataActions.Discogs.DiscogsApi.ReleaseModels;
 
 namespace TagSelecta.TagDataActions.Discogs;
 
-[TagDataActionName("discogs")]
+[TagDataActionInfo("discogs")]
 public class DiscogsAction : TagDataAction<DiscogsSettings>
 {
     private readonly IDiscogsApi _discogsApi;
@@ -103,11 +103,12 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         foreach (var entry in _fieldMap)
         {
             var value = DiscogsTemplateValueResolver.GetValue(entry.Value, _release, trackIndex);
-            tagData.SetField(entry.FieldName, value);
+            tagData.SetValue(entry.FieldName, value.SplitTagValuesIfNeeded(entry.FieldName));
         }
 
-        tagData.Disc = "";
-        tagData.DiscTotal = "";
+        tagData.RemoveField(FieldName.Disc);
+        tagData.RemoveField(FieldName.DiscTotal);
+
         tagData.Picture = [new Picture(_releaseImage)];
 
         context.Target.UpdateTagData(tagData);
