@@ -28,6 +28,7 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - `:autotrack` command to automatically set track number and total tracks based on disc and disc total
 - `:discogs` command to update album metadata from Discogs release
 - `find` command to find files by metadata (CLI only)
+- Proper support for multi-value fields (`artist`, `albumartist`, `composer`, `genre`) across tag formats
 - Recursive directory scanning
 - Macros support
 - Preview of changes before applying them
