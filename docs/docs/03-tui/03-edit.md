@@ -12,7 +12,7 @@ The `edit` action updates tag fields on the selected audio files.
 Any option you pass will **overwrite** the existing value for that field (after template formatting, if supported by
 your config). Options you don’t pass are left unchanged.
 
-Some fields accept multiple values (albumartist, artist, composer, genre). Provide multiple values by separating them with a semicolon:
+Some fields accept multiple values (`albumartist`, `artist`, `composer`, `genre`). Provide multiple values by separating them with a semicolon:
 
 - `artist="Artist 1; Artist 2"`
 - `genre="House; Deep House"`
