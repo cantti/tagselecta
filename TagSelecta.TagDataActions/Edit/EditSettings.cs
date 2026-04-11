@@ -77,24 +77,24 @@ public class EditSettings : TagDataActionSettings
     [Description("Total number of tracks.")]
     public string? TrackTotal { get; set; }
 
-    [CommandOption($"--key|-k")]
+    [CommandOption("--key|-k")]
     [Description("Extra field key key. Must be used together with --value.")]
     public string[] Key { get; set; } = [];
 
-    [CommandOption($"--value|-v")]
+    [CommandOption("--value|-v")]
     public string[] Value { get; set; } = [];
 
     [CommandOption("--clear")]
     [Description("Clear all other fields.")]
     public bool Clear { get; set; }
 
-    [CommandOption($"--picture|-p")]
+    [CommandOption("--picture|-p")]
     [Description(
         "Path or url to a picture. Use this option multiple times to include multiple images (e.g., -p path1 -p path2)."
     )]
     public string[]? Picture { get; set; }
 
-    [CommandOption($"--picturetype|-P")]
+    [CommandOption("--picturetype|-P")]
     [Description(
         "Type of each picture provided. Specify multiple times to match the order of the pictures. This option is optional.\nCommon values: FrontCover, BackCover, Artist, Other."
     )]

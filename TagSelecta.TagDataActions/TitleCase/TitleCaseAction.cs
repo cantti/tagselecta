@@ -1,5 +1,4 @@
 using System.Globalization;
-using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.TitleCase;
@@ -14,6 +13,7 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
         {
             tagData.SetValue(field.Key, field.Text.Select(ToTitleCase).ToList());
         }
+
         context.Target.UpdateTagData(tagData);
     }
 

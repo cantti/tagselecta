@@ -19,6 +19,7 @@ public class TagDataFormatter
         {
             _tagDataForTemplate.Add(field.Key, S(field.Text.JoinTagValues()));
         }
+
         _tagDataForTemplate.Add("path", S(path));
         _tagDataForTemplate.Add("filename", S(Path.GetFileNameWithoutExtension(path)));
         _tagDataForTemplate.Add("ext", S(Path.GetExtension(path).TrimStart('.')));

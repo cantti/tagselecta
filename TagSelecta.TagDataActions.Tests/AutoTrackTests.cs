@@ -20,17 +20,11 @@ public class AutoTrackTests
 
         var settings = new AutoTrackSettings { KeepDisk = true };
 
-        var item1 = new TestTarget(
-            "file1.mp3",
-            new TagData()
-        );
+        var item1 = new TestTarget("file1.mp3", new TagData());
         item1.CurrentTagData.SetValue(FieldName.Disc, "1");
         item1.CurrentTagData.SetValue(FieldName.DiscTotal, "1");
 
-        var item2 = new TestTarget(
-            "file2.mp3",
-            new TagData()
-        );
+        var item2 = new TestTarget("file2.mp3", new TagData());
         item2.CurrentTagData.SetValue(FieldName.Disc, "1");
         item2.CurrentTagData.SetValue(FieldName.DiscTotal, "1");
 

@@ -11,6 +11,7 @@ public static class TagDataCloner
         {
             clone.SetValue(field.Key, field.Text);
         }
+
         return clone;
     }
 

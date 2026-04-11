@@ -72,11 +72,17 @@ public class EditTests
         // Assert
         var currentTagData = item.CurrentTagData;
         Assert.Equal(settings.Album, currentTagData.GetValueFirst(FieldName.Album));
-        Assert.Equal(settings.AlbumArtist!.SplitTagValues(), currentTagData.GetValue(FieldName.AlbumArtist));
+        Assert.Equal(
+            settings.AlbumArtist!.SplitTagValues(),
+            currentTagData.GetValue(FieldName.AlbumArtist)
+        );
         Assert.Equal(settings.Artist!.SplitTagValues(), currentTagData.GetValue(FieldName.Artist));
         Assert.Equal(settings.Bpm, currentTagData.GetValueFirst(FieldName.Bpm));
         Assert.Equal(settings.Comment, currentTagData.GetValueFirst(FieldName.Comment));
-        Assert.Equal(settings.Composer!.SplitTagValues(), currentTagData.GetValue(FieldName.Composer));
+        Assert.Equal(
+            settings.Composer!.SplitTagValues(),
+            currentTagData.GetValue(FieldName.Composer)
+        );
         Assert.Equal(settings.Conductor, currentTagData.GetValueFirst(FieldName.Conductor));
         Assert.Equal(settings.Copyright, currentTagData.GetValueFirst(FieldName.Copyright));
         Assert.Equal(settings.Date, currentTagData.GetValueFirst(FieldName.Date));

@@ -58,6 +58,7 @@ public class FlacOggTagDataProcessor : TagDataProcessor
         {
             xiph.RemoveField(key);
         }
+
         foreach (var field in data.Fields)
         {
             var key = field.Key switch
@@ -69,6 +70,7 @@ public class FlacOggTagDataProcessor : TagDataProcessor
             };
             xiph.SetField(key, field.Text.ToArray());
         }
+
         var pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
         if (flac is not null)
         {
