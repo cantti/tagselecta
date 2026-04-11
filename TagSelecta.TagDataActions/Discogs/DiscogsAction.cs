@@ -17,19 +17,19 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
 
     private readonly List<DiscogsFieldMapEntry> _fieldMap =
     [
-        new("album", "{{ release.title }}"),
-        new("date", "{{ release.year }}"),
-        new("label", "{{ release.labels | array.map 'name' | joined }}"),
-        new("catalognumber", "{{ release.labels | array.map 'catno' | joined }}"),
-        new("genre", "{{ release.styles | joined }}"),
-        new("albumartist", "{{ release.artists | array.map 'name' | joined }}"),
+        new(FieldName.Album, "{{ release.title }}"),
+        new(FieldName.Date, "{{ release.year }}"),
+        new(FieldName.Genre, "{{ release.styles | joined }}"),
+        new(FieldName.AlbumArtist, "{{ release.artists | array.map 'name' | joined }}"),
         new(
-            "artist",
+            FieldName.Artist,
             "{{ if tracks[index].artists && tracks[index].artists.size > 0; tracks[index].artists | array.map 'name' | joined; else; release.artists | array.map 'name' | joined; end }}"
         ),
-        new("title", "{{ tracks[index].title }}"),
-        new("track", "{{ index + 1 }}"),
-        new("tracktotal", "{{ tracks.size }}"),
+        new(FieldName.Title, "{{ tracks[index].title }}"),
+        new(FieldName.TrackNumber, "{{ index + 1 }}"),
+        new(FieldName.TrackTotal, "{{ tracks.size }}"),
+        new("catalognumber", "{{ release.labels | array.map 'catno' | joined }}"),
+        new("label", "{{ release.labels | array.map 'name' | joined }}"),
         new("discogs_release_id", "{{ release.id }}"),
     ];
 

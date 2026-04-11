@@ -12,19 +12,19 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 {
     private readonly List<MusicBrainzFieldMapEntry> _fieldMap =
     [
-        new("album", "{{ release.title }}"),
-        new("albumartist", "{{ release.artistcredit | array.map 'name' | joined }}"),
+        new(FieldName.Album, "{{ release.title }}"),
+        new(FieldName.AlbumArtist, "{{ release.artistcredit | array.map 'name' | joined }}"),
         new(
-            "artist",
+            FieldName.Artist,
             "{{ if tracks[index].artistcredit && tracks[index].artistcredit.size > 0; tracks[index].artistcredit | array.map 'name' | joined; else; release.artistcredit | array.map 'name' | joined; end }}"
         ),
-        new("catalognumber", "{{ release.labelinfo | array.map 'catalognumber' | joined }}"),
-        new("date", "{{ release.date }}"),
-        new("genre", "{{ release.releasegroup.genres | array.map 'name' | joined }}"),
+        new(FieldName.Date, "{{ release.date }}"),
+        new(FieldName.Genre, "{{ release.releasegroup.genres | array.map 'name' | joined }}"),
+        new(FieldName.Title, "{{ tracks[index].title }}"),
+        new(FieldName.TrackNumber, "{{ index + 1 }}"),
+        new(FieldName.TrackTotal, "{{ tracks.size }}"),
         new("label", "{{ release.labelinfo | array.map 'label' | array.map 'name' | joined }}"),
-        new("title", "{{ tracks[index].title }}"),
-        new("track", "{{ index + 1 }}"),
-        new("tracktotal", "{{ tracks.size }}"),
+        new("catalognumber", "{{ release.labelinfo | array.map 'catalognumber' | joined }}"),
         new("musicbrainz_release_id", "{{ release.id }}"),
     ];
 
@@ -56,7 +56,6 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 
     private static string GetReleaseId(string url)
     {
-        url = "https://musicbrainz.org/release/aa7845c8-79e3-4149-93ac-3968d7951439";
         if (Guid.TryParse(url, out var guid))
         {
             return guid.ToString();
