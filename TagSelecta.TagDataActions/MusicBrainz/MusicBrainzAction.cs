@@ -101,7 +101,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
                 _release,
                 trackIndex
             );
-            tagData.SetValue(entry.FieldName, value, SetValueOptions.AutoSplit);
+            tagData.SetValue(entry.FieldName, value.SplitTagValuesIfNeeded(entry.FieldName));
         }
 
         context.Target.UpdateTagData(tagData);

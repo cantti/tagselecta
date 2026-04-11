@@ -103,7 +103,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         foreach (var entry in _fieldMap)
         {
             var value = DiscogsTemplateValueResolver.GetValue(entry.Value, _release, trackIndex);
-            tagData.SetValue(entry.FieldName, value, SetValueOptions.AutoSplit);
+            tagData.SetValue(entry.FieldName, value.SplitTagValuesIfNeeded(entry.FieldName));
         }
 
         tagData.RemoveField(FieldName.Disc);

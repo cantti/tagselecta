@@ -102,7 +102,7 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
         foreach (var (key, value) in values)
         {
             var formattedValue = formatter.Format(value);
-            tagData.SetValue(key, formattedValue, SetValueOptions.AutoSplit);
+            tagData.SetValue(key, formattedValue.SplitTagValuesIfNeeded(key));
         }
 
         await SetPicture(context, tagData, token);

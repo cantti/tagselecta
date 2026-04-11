@@ -2,23 +2,8 @@ using TagLib;
 
 namespace TagSelecta.Shared.Tagging;
 
-[Flags]
-public enum SetValueOptions
-{
-    None = 0,
-    AutoSplit = 1,
-}
-
 public class TagData
 {
-    private readonly string[] _multiValueFields =
-    [
-        FieldName.AlbumArtist,
-        FieldName.Artist,
-        FieldName.Composer,
-        FieldName.Genre,
-    ];
-
     private readonly List<TagField> _fields = [];
 
     public List<Picture> Picture { get; set; } = [];
@@ -31,22 +16,10 @@ public class TagData
         Picture.Clear();
     }
 
-    public void SetValue(
-        string key,
-        IEnumerable<string> value,
-        SetValueOptions options = SetValueOptions.None
-    )
+    public void SetValue(string key, IEnumerable<string> value)
     {
         key = key.NormalizeKey();
         var valueList = value.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-
-        if (options.HasFlag(SetValueOptions.AutoSplit) && _multiValueFields.Contains(key))
-        {
-            valueList = valueList
-                .SelectMany(x => x.SplitTagValues())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToList();
-        }
 
         var index = _fields.FindIndex(cf => cf.Key == key);
 
@@ -59,11 +32,7 @@ public class TagData
         }
         else
         {
-            // if the field is not multi-value, only allow one value
-            var replacement = new TagField(
-                key,
-                _multiValueFields.Contains(key) ? valueList : [valueList.First()]
-            );
+            var replacement = new TagField(key, valueList);
             if (index < 0)
             {
                 _fields.Add(replacement);
@@ -75,9 +44,9 @@ public class TagData
         }
     }
 
-    public void SetValue(string key, string value, SetValueOptions options = SetValueOptions.None)
+    public void SetValue(string key, string value)
     {
-        SetValue(key, [value], options);
+        SetValue(key, [value]);
     }
 
     public void RemoveField(string key)

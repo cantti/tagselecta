@@ -13,21 +13,21 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
         var disc = GetTextValueAndTotal("TPOS");
         var track = GetTextValueAndTotal("TRCK");
 
-        tagData.SetValue(FieldName.Album, id3v2.Album);
-        tagData.SetValue(FieldName.AlbumArtist, id3v2.AlbumArtists);
-        tagData.SetValue(FieldName.Artist, id3v2.Performers);
-        tagData.SetValue(FieldName.Bpm, GetText("TBPM"));
+        tagData.SetValue(FieldName.Album, ReadValue("TALB"));
+        tagData.SetValue(FieldName.AlbumArtist, ReadValue("TPE2"));
+        tagData.SetValue(FieldName.Artist, ReadValue("TPE1"));
+        tagData.SetValue(FieldName.Bpm, ReadValue("TBPM"));
         tagData.SetValue(FieldName.Comment, id3v2.Comment);
-        tagData.SetValue(FieldName.Composer, id3v2.Composers);
-        tagData.SetValue(FieldName.Conductor, id3v2.Conductor);
-        tagData.SetValue(FieldName.Copyright, id3v2.Copyright);
-        tagData.SetValue(FieldName.Date, GetText("TDRC"));
+        tagData.SetValue(FieldName.Composer, ReadValue("TCOM"));
+        tagData.SetValue(FieldName.Conductor, ReadValue("TPE3"));
+        tagData.SetValue(FieldName.Copyright, ReadValue("TCOP"));
+        tagData.SetValue(FieldName.Date, ReadValue("TDRC"));
         tagData.SetValue(FieldName.Disc, disc.Value);
         tagData.SetValue(FieldName.DiscTotal, disc.Total);
-        tagData.SetValue(FieldName.Genre, id3v2.Genres);
-        tagData.SetValue(FieldName.Isrc, id3v2.ISRC);
-        tagData.SetValue(FieldName.Publisher, id3v2.Publisher);
-        tagData.SetValue(FieldName.Title, id3v2.Title);
+        tagData.SetValue(FieldName.Genre, ReadValue("TCON"));
+        tagData.SetValue(FieldName.Isrc, ReadValue("TSRC"));
+        tagData.SetValue(FieldName.Publisher, ReadValue("TPUB"));
+        tagData.SetValue(FieldName.Title, ReadValue("TIT2"));
         tagData.SetValue(FieldName.Track, track.Value);
         tagData.SetValue(FieldName.TrackTotal, track.Total);
 
@@ -53,25 +53,25 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
     public override void Write(TagData data)
     {
         id3v2.Version = 4;
-        id3v2.Album = data.GetValueFirst(FieldName.Album);
-        id3v2.AlbumArtists = data.GetValue(FieldName.AlbumArtist).ToArray();
-        id3v2.Performers = data.GetValue(FieldName.Artist).ToArray();
-        WriteText("TBPM", data.GetValueFirst(FieldName.Bpm));
+        WriteValue("TALB", data.GetValue(FieldName.Album));
+        WriteValue("TPE2", data.GetValue(FieldName.AlbumArtist));
+        WriteValue("TPE1", data.GetValue(FieldName.Artist));
+        WriteValue("TBPM", data.GetValue(FieldName.Bpm));
         id3v2.Comment = data.GetValueFirst(FieldName.Comment);
-        id3v2.Composers = data.GetValue(FieldName.Composer).ToArray();
-        id3v2.Conductor = data.GetValueFirst(FieldName.Conductor);
-        id3v2.Copyright = data.GetValueFirst(FieldName.Copyright);
-        WriteText("TDRC", data.GetValueFirst(FieldName.Date));
-        WriteTextValueAndTotal(
+        WriteValue("TCOM", data.GetValue(FieldName.Composer));
+        WriteValue("TPE3", data.GetValue(FieldName.Conductor));
+        WriteValue("TCOP", data.GetValue(FieldName.Copyright));
+        WriteValue("TDRC", data.GetValue(FieldName.Date));
+        WriteValueWithTotal(
             "TPOS",
             data.GetValueFirst(FieldName.Disc),
             data.GetValueFirst(FieldName.DiscTotal)
         );
-        id3v2.Genres = data.GetValue(FieldName.Genre).ToArray();
-        id3v2.ISRC = data.GetValueFirst(FieldName.Isrc);
-        id3v2.Publisher = data.GetValueFirst(FieldName.Publisher);
-        id3v2.Title = data.GetValueFirst(FieldName.Title);
-        WriteTextValueAndTotal(
+        WriteValue("TCON", data.GetValue(FieldName.Genre));
+        WriteValue("TSRC", data.GetValue(FieldName.Isrc));
+        WriteValue("TPUB", data.GetValue(FieldName.Publisher));
+        WriteValue("TIT2", data.GetValue(FieldName.Title));
+        WriteValueWithTotal(
             "TRCK",
             data.GetValueFirst(FieldName.Track),
             data.GetValueFirst(FieldName.TrackTotal)
@@ -84,20 +84,20 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
         }
     }
 
-    private string GetText(string ident)
+    private List<string> ReadValue(string ident)
     {
         var frame = TextInformationFrame.Get(id3v2, ident, false);
-        return frame == null ? "" : frame.Text.JoinTagValues();
+        return frame == null ? [] : frame.Text.ToList();
     }
 
-    private void WriteText(string ident, string text)
+    private void WriteValue(string ident, List<string> text)
     {
-        id3v2.SetTextFrame(ident, text);
+        id3v2.SetTextFrame(ident, text.ToArray());
     }
 
     private (string Value, string Total) GetTextValueAndTotal(string ident)
     {
-        var raw = GetText(ident);
+        var raw = ReadValue(ident).FirstOrDefault();
 
         if (string.IsNullOrWhiteSpace(raw))
         {
@@ -112,7 +112,7 @@ public class Id3TagDataProcessor(Tag id3v2) : TagDataProcessor
         return (value, total);
     }
 
-    private void WriteTextValueAndTotal(string ident, string value, string total)
+    private void WriteValueWithTotal(string ident, string value, string total)
     {
         var text = string.IsNullOrEmpty(total) ? value : $"{value}/{total}";
 
