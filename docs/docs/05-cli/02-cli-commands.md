@@ -8,14 +8,15 @@ USAGE:
     tagselecta [OPTIONS] <COMMAND>
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k 
-description -v test
-    tagselecta edit song.mp3 -c 'url=https://github.com'
-    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
-Artists" "-i" }}'
-    tagselecta discogs path-to-album -r 
+    tagselecta edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' 
+--key description --value test
+    tagselecta edit song.mp3 --comment 'url=https://github.com'
+    tagselecta edit song.mp3 --artist '{{ artist | regex.replace "^VA$" 
+"Various Artists" "-i" }}'
+    tagselecta discogs . --url 
 https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
-    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
+    tagselecta find . --query "{{ title | string.downcase |  string.contains
+'dub' }}"
 
 OPTIONS:
     -h, --help       Prints help information   
@@ -49,11 +50,11 @@ USAGE:
     tagselecta edit <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k 
-description -v test
-    tagselecta edit song.mp3 -c 'url=https://github.com'
-    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various 
-Artists" "-i" }}'
+    tagselecta edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' 
+--key description --value test
+    tagselecta edit song.mp3 --comment 'url=https://github.com'
+    tagselecta edit song.mp3 --artist '{{ artist | regex.replace "^VA$" 
+"Various Artists" "-i" }}'
 
 ARGUMENTS:
     <path>     
@@ -84,7 +85,7 @@ OPTIONS:
     -k, --key             Extra field key key. Must be used together with       
                           --value                                               
     -v, --value                                                                 
-        --clear           Clear all other fields                                
+        --clear           Clear all fields                                      
         --picture         Path or url to a picture. Use this option multiple    
                           times to include multiple images (e.g., -p path1 -p   
                           path2)                                                
@@ -206,9 +207,8 @@ USAGE:
     tagselecta discogs <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta discogs path-to-album -r 
+    tagselecta discogs . --url 
 https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
-    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
 
 ARGUMENTS:
     <path>     
@@ -229,7 +229,7 @@ USAGE:
     tagselecta find <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta find . -q "{{ title | string.downcase |  string.contains 
+    tagselecta find . --query "{{ title | string.downcase |  string.contains
 'dub' }}"
 
 ARGUMENTS:
