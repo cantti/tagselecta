@@ -130,7 +130,7 @@ public static class TagDataPrinter
 
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(value1))
             {
-                elements.Add(new Text("➔"));
+                elements.Add(new Text(">"));
             }
 
             if (!string.IsNullOrEmpty(value2))

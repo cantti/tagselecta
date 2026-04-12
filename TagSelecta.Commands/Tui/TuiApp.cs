@@ -271,9 +271,7 @@ public class TuiApp(
             ("?", "Keymap help"),
         };
         var cols1 = new List<IRenderable>();
-        cols1.AddRange(
-            keys.Select(x => new Markup($"[bold blue]{x.Key}[/] ➔ {x.Action}")).ToList()
-        );
+        cols1.AddRange(keys.Select(x => new Markup($"[bold blue]{x.Key}[/] {x.Action}")).ToList());
         cols1.Add(
             new Markup("[bold blue]Documentation[/]: [link]https://cantti.github.io/tagselecta[/]")
         );
