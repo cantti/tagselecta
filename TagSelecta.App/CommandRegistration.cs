@@ -44,20 +44,20 @@ public static class CommandRegistration
             .WithExample(
                 "edit",
                 "song.mp3",
-                "-t",
+                "--title",
                 "'Song 1'",
-                "-a",
+                "--artist",
                 "'Artist1;Artist 2'",
-                "-k",
+                "--key",
                 "description",
-                "-v",
+                "--value",
                 "test"
             )
-            .WithExample("edit", "song.mp3", "-c", "'url=https://github.com'")
+            .WithExample("edit", "song.mp3", "--comment", "'url=https://github.com'")
             .WithExample(
                 "edit",
                 "song.mp3",
-                "-a",
+                "--artist",
                 "'{{ artist | regex.replace \"^VA$\" \"Various Artists\" \"-i\" }}'"
             );
     }
@@ -85,11 +85,10 @@ public static class CommandRegistration
             )
             .WithExample(
                 "discogs",
-                "path-to-album",
-                "-r",
+                ".",
+                "--url",
                 "https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots"
-            )
-            .WithExample("discogs", "path-to-album", "-q", "King Tubby Dub From The Roots");
+            );
     }
 
     private static void AddExtractPicture(IConfigurator configurator, IServiceCollection services)
@@ -128,7 +127,7 @@ public static class CommandRegistration
             .WithExample(
                 "find",
                 ".",
-                "-q",
+                "--query",
                 "\"{{ title | string.downcase |  string.contains 'dub' }}\""
             );
     }

@@ -85,7 +85,7 @@ public class EditSettings : TagDataActionSettings
     public string[] Value { get; set; } = [];
 
     [CommandOption("--clear")]
-    [Description("Clear all other fields.")]
+    [Description("Clear all fields.")]
     public bool Clear { get; set; }
 
     [CommandOption("--picture")]
