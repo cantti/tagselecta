@@ -10,27 +10,6 @@ namespace TagSelecta.TagDataActions.Edit;
 [TagDataActionInfo("edit", "e", AllowRemainingArguments = true)]
 public class EditAction(IDownloader downloader, EditConfig config) : TagDataAction<EditSettings>
 {
-    private static readonly string[] _standardFieldsToApply =
-    [
-        FieldName.Album,
-        FieldName.AlbumArtist,
-        FieldName.Artist,
-        FieldName.Bpm,
-        FieldName.Comment,
-        FieldName.Composer,
-        FieldName.Conductor,
-        FieldName.Copyright,
-        FieldName.Date,
-        FieldName.DiscNumber,
-        FieldName.DiscTotal,
-        FieldName.Genre,
-        FieldName.Isrc,
-        FieldName.Publisher,
-        FieldName.Title,
-        FieldName.TrackNumber,
-        FieldName.TrackTotal,
-    ];
-
     public override async Task ExecuteAsync(
         TagDataActionExecuteContext<EditSettings> context,
         CancellationToken token
@@ -56,7 +35,9 @@ public class EditAction(IDownloader downloader, EditConfig config) : TagDataActi
 
         if (!config.KeepId3v1)
         {
-            tagData.Tags.Remove(nameof(TagTypes.Id3v1));
+            tagData.Tags.RemoveAll(x =>
+                x.Equals(nameof(TagTypes.Id3v1), StringComparison.OrdinalIgnoreCase)
+            );
         }
 
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -67,7 +48,7 @@ public class EditAction(IDownloader downloader, EditConfig config) : TagDataActi
             .ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
         // add fields from properties
-        foreach (var field in _standardFieldsToApply)
+        foreach (var field in FieldName.All())
         {
             if (!settingProperties.TryGetValue(field, out var property))
             {
