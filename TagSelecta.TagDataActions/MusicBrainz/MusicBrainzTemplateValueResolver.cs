@@ -26,11 +26,10 @@ public static class MusicBrainzTemplateValueResolver
             {
                 var track = mediaTracks[trackIndex];
                 var trackNumber =
-                    track.Position is > 0
-                        ? track.Position.Value
-                        : int.TryParse(track.Number, out var parsedNumber) && parsedNumber > 0
-                            ? parsedNumber
-                            : trackIndex + 1;
+                    track.Position is > 0 ? track.Position.Value
+                    : int.TryParse(track.Number, out var parsedNumber) && parsedNumber > 0
+                        ? parsedNumber
+                    : trackIndex + 1;
 
                 tracks.Add(
                     new TrackTemplateModel

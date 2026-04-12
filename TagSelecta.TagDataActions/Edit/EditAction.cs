@@ -8,7 +8,7 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.Edit;
 
 [TagDataActionInfo("edit", "e", AllowRemainingArguments = true)]
-public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
+public class EditAction(IDownloader downloader, EditConfig config) : TagDataAction<EditSettings>
 {
     private static readonly string[] _standardFieldsToApply =
     [
@@ -52,6 +52,11 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
         if (context.Settings.Clear)
         {
             tagData.Clear();
+        }
+
+        if (!config.KeepId3v1)
+        {
+            tagData.Tags.Remove(nameof(TagTypes.Id3v1));
         }
 
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

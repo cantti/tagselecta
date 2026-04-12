@@ -4,17 +4,7 @@ namespace TagSelecta.App.Config;
 
 public static class ConfigReader
 {
-    private const string DefaultConfig = """
-        [general]
-        debug = false
-        file_list_ratio = 0.3
-        auto_completion_enabled = true
-        tree_enabled = false
-
-        [macros]
-        reggae="edit genre=\"Reggae\""
-
-        """;
+    private const string DefaultConfig = "";
 
     public static ConfigModel Read()
     {

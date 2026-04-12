@@ -1,9 +1,6 @@
 using TagLib;
-using TagLib.Flac;
-using TagLib.Ogg;
 using TagSelecta.Shared.Exceptions;
 using File = TagLib.File;
-using Tag = TagLib.Id3v2.Tag;
 
 namespace TagSelecta.Shared.Tagging;
 
@@ -12,8 +9,21 @@ public class Tagger : ITagger
     public TagData ReadTags(string file)
     {
         using var tfile = File.Create(file);
+        // taglib create id3v1 tag if it doesn't exist
+        // so we need to remove tags not on disk
+        tfile.RemoveTags(tfile.TagTypes & ~tfile.TagTypesOnDisk);
         var processor = CreateProcessor(tfile);
         var tagData = processor.Read();
+        tagData.Tags = Enum.GetValues<TagTypes>()
+            .Where(x =>
+                x != TagTypes.None
+                && x != TagTypes.AllTags
+                && (int)x > 0
+                && ((int)x & ((int)x - 1)) == 0
+                && tfile.TagTypes.HasFlag(x)
+            )
+            .Select(x => x.ToString())
+            .ToList();
         return tagData;
     }
 
@@ -25,33 +35,17 @@ public class Tagger : ITagger
         tfile.Save();
     }
 
-    public void RemoveTags(string file)
-    {
-        using var tfile = File.Create(file);
-        tfile.RemoveTags(TagTypes.AllTags);
-        tfile.Save();
-    }
-
     private static TagDataProcessor CreateProcessor(File tfile)
     {
         var mime = tfile.MimeType.ToLowerInvariant();
         if (mime.Contains("mpeg") || mime.Contains("mp3") || mime.Contains("wav"))
         {
-            var id3v2 = (Tag)tfile.GetTag(TagTypes.Id3v2, true);
-            return new Id3TagDataProcessor(id3v2, tfile);
+            return new Id3TagDataProcessor(tfile);
         }
 
-        if (mime.Contains("flac"))
+        if (mime.Contains("flac") || mime.Contains("ogg"))
         {
-            var xiph = (XiphComment)tfile.GetTag(TagTypes.Xiph, true);
-            var flac = (Metadata)tfile.GetTag(TagTypes.FlacMetadata, true);
-            return new FlacOggTagDataProcessor(xiph, flac);
-        }
-
-        if (mime.Contains("ogg"))
-        {
-            var xiph = (XiphComment)tfile.GetTag(TagTypes.Xiph, true);
-            return new FlacOggTagDataProcessor(xiph);
+            return new FlacOggTagDataProcessor(tfile);
         }
 
         throw new TagSelectaException($"Unsupported format: {mime}");

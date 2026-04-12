@@ -11,6 +11,8 @@ public class TagData
     public IReadOnlyList<TagField> Fields =>
         _fields.OrderBy(cf => cf.Key).Select(x => new TagField(x.Key, x.Text)).ToList();
 
+    public List<string> Tags { get; set; } = [];
+
     public void Clear()
     {
         _fields.Clear();

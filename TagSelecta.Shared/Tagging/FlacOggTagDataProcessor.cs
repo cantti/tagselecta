@@ -1,31 +1,31 @@
 using TagLib;
 using TagLib.Flac;
 using TagLib.Ogg;
+using File = TagLib.File;
 using Picture = TagLib.Picture;
 
 namespace TagSelecta.Shared.Tagging;
 
 public class FlacOggTagDataProcessor : TagDataProcessor
 {
-    private readonly Metadata? flac;
-    private readonly XiphComment xiph;
+    private readonly Metadata? _flac;
+    private readonly XiphComment _xiph;
 
-    public FlacOggTagDataProcessor(XiphComment xiph, Metadata flac)
+    public FlacOggTagDataProcessor(File tfile)
     {
-        this.flac = flac;
-        this.xiph = xiph;
-    }
-
-    public FlacOggTagDataProcessor(XiphComment xiph)
-    {
-        this.xiph = xiph;
+        var mime = tfile.MimeType.ToLowerInvariant();
+        _xiph = (XiphComment)tfile.GetTag(TagTypes.Xiph, true);
+        if (mime.Contains("flac"))
+        {
+            _flac = (Metadata)tfile.GetTag(TagTypes.FlacMetadata, true);
+        }
     }
 
     public override TagData Read()
     {
         var tagData = new TagData();
 
-        foreach (var key in xiph)
+        foreach (var key in _xiph)
         {
             var normKey = key.NormalizeKey();
 
@@ -34,35 +34,35 @@ public class FlacOggTagDataProcessor : TagDataProcessor
                 continue;
             }
 
-            var values = xiph.GetField(key) ?? [];
+            var values = _xiph.GetField(key) ?? [];
             tagData.SetValue(normKey, values.ToList());
         }
 
-        var pictures = flac is not null ? flac.Pictures : xiph.Pictures;
+        var pictures = _flac is not null ? _flac.Pictures : _xiph.Pictures;
         tagData.Picture = pictures.Select(x => new Picture(x)).ToList();
         return tagData;
     }
 
     public override void Write(TagData data)
     {
-        foreach (var key in xiph)
+        foreach (var key in _xiph)
         {
-            xiph.RemoveField(key);
+            _xiph.RemoveField(key);
         }
 
         foreach (var field in data.Fields)
         {
-            xiph.SetField(field.Key, field.Text.ToArray());
+            _xiph.SetField(field.Key, field.Text.ToArray());
         }
 
         var pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
-        if (flac is not null)
+        if (_flac is not null)
         {
-            flac.Pictures = pictures;
+            _flac.Pictures = pictures;
         }
         else
         {
-            xiph.Pictures = pictures;
+            _xiph.Pictures = pictures;
         }
     }
 }

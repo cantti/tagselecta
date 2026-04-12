@@ -19,6 +19,12 @@ public static class TagDataPrinter
         table.HideHeaders();
 
         AddFieldComparison(table, "Path", f.BackupPath, f.CurrentPath);
+        AddFieldComparison(
+            table,
+            "Tags",
+            backupTagData.Tags.JoinTagValues(),
+            tagData.Tags.JoinTagValues()
+        );
 
         foreach (
             var key in backupTagData

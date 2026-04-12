@@ -16,7 +16,9 @@ public static class TagDataComparer
             return false;
         }
 
-        return PictureListEq(a.Picture, b.Picture) && FieldListEq(a.Fields, b.Fields);
+        return PictureListEq(a.Picture, b.Picture)
+            && FieldListEq(a.Fields, b.Fields)
+            && a.Tags.SequenceEqual(b.Tags);
     }
 
     private static bool PictureListEq(List<Picture>? a, List<Picture>? b)

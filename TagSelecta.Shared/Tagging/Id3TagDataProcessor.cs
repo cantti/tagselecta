@@ -1,12 +1,20 @@
 using TagLib;
 using TagLib.Id3v2;
 using File = TagLib.File;
-using Tag = TagLib.Id3v2.Tag;
 
 namespace TagSelecta.Shared.Tagging;
 
-public class Id3TagDataProcessor(Tag id3v2, File tfile) : TagDataProcessor
+public class Id3TagDataProcessor : TagDataProcessor
 {
+    private readonly File _tfile;
+    private readonly TagLib.Id3v2.Tag id3v2;
+
+    public Id3TagDataProcessor(File tfile)
+    {
+        _tfile = tfile;
+        id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
+    }
+
     public override TagData Read()
     {
         var tagData = new TagData();
@@ -53,9 +61,6 @@ public class Id3TagDataProcessor(Tag id3v2, File tfile) : TagDataProcessor
 
     public override void Write(TagData data)
     {
-        // keep id3v2 only
-        tfile.RemoveTags(TagTypes.Id3v1);
-
         id3v2.Version = 4;
         WriteValue("TALB", data.GetValue(FieldName.Album));
         WriteValue("TPE2", data.GetValue(FieldName.AlbumArtist));
@@ -86,6 +91,29 @@ public class Id3TagDataProcessor(Tag id3v2, File tfile) : TagDataProcessor
         {
             WriteUserText(field.Key, field.Text.JoinTagValues());
         }
+
+        FixId3V1(data);
+    }
+
+    private void FixId3V1(TagData data)
+    {
+        // do nothing if there is no id3v1 tag
+        if (!_tfile.TagTypes.HasFlag(TagTypes.Id3v1))
+        {
+            return;
+        }
+
+        // always remove old id3v1 tag first
+        _tfile.RemoveTags(TagTypes.Id3v1);
+
+        // if user removed id3v1 tag that is enough
+        if (!data.Tags.Any(x => x.Equals(nameof(TagTypes.Id3v1), StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
+        // recreate id3v1 tag otherwise. Taglib will populate id3v1 tag with data from id3v2 tag
+        var id3v1 = (TagLib.Id3v1.Tag)_tfile.GetTag(TagTypes.Id3v1, true);
     }
 
     private List<string> ReadValue(string ident)
@@ -148,7 +176,7 @@ public class Id3TagDataProcessor(Tag id3v2, File tfile) : TagDataProcessor
         var frame = UserTextInformationFrame.Get(
             id3v2,
             key,
-            Tag.DefaultEncoding,
+            TagLib.Id3v2.Tag.DefaultEncoding,
             true,
             false //taglib uses case sensitive by default
         );
