@@ -8,7 +8,7 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.Edit;
 
 [TagDataActionInfo("edit", "e", AllowRemainingArguments = true)]
-public class EditAction(IDownloader downloader, EditConfig config) : TagDataAction<EditSettings>
+public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
 {
     public override async Task ExecuteAsync(
         TagDataActionExecuteContext<EditSettings> context,
@@ -31,13 +31,6 @@ public class EditAction(IDownloader downloader, EditConfig config) : TagDataActi
         if (context.Settings.Clear)
         {
             tagData.Clear();
-        }
-
-        if (!config.KeepId3v1)
-        {
-            tagData.Tags.RemoveAll(x =>
-                x.Equals(nameof(TagTypes.Id3v1), StringComparison.OrdinalIgnoreCase)
-            );
         }
 
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

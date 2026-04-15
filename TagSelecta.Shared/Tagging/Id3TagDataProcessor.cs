@@ -7,11 +7,13 @@ namespace TagSelecta.Shared.Tagging;
 public class Id3TagDataProcessor : TagDataProcessor
 {
     private readonly File _tfile;
+    private readonly TaggerConfig _config;
     private readonly TagLib.Id3v2.Tag id3v2;
 
-    public Id3TagDataProcessor(File tfile)
+    public Id3TagDataProcessor(File tfile, TaggerConfig config)
     {
         _tfile = tfile;
+        _config = config;
         id3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
     }
 
@@ -92,10 +94,10 @@ public class Id3TagDataProcessor : TagDataProcessor
             WriteUserText(field.Key, field.Text.JoinTagValues());
         }
 
-        FixId3V1(data);
+        FixId3V1();
     }
 
-    private void FixId3V1(TagData data)
+    private void FixId3V1()
     {
         // do nothing if there is no id3v1 tag
         if (!_tfile.TagTypes.HasFlag(TagTypes.Id3v1))
@@ -106,13 +108,13 @@ public class Id3TagDataProcessor : TagDataProcessor
         // always remove old id3v1 tag first
         _tfile.RemoveTags(TagTypes.Id3v1);
 
-        // if user removed id3v1 tag that is enough
-        if (!data.Tags.Any(x => x.Equals(nameof(TagTypes.Id3v1), StringComparison.OrdinalIgnoreCase)))
+        // if keep id3v1 is disabled, do nothing
+        if (!_config.KeepId3v1)
         {
             return;
         }
 
-        // recreate id3v1 tag otherwise. Taglib will populate id3v1 tag with data from id3v2 tag
+        // recreate id3v1 tag otherwise. Taglib will populate id3v1 tag with the data from id3v2 tag
         var id3v1 = (TagLib.Id3v1.Tag)_tfile.GetTag(TagTypes.Id3v1, true);
     }
 

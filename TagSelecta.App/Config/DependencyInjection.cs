@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TagSelecta.Commands.Tui;
 using TagSelecta.Commands.Tui.TuiCommands;
+using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Discogs;
 using TagSelecta.TagDataActions.Edit;
 using TagSelecta.TagDataActions.MusicBrainz;
@@ -25,7 +26,7 @@ public static class DependencyInjection
         );
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));
         services.AddSingleton(CreateMusicBrainzConfig(configModel.MusicBrainz));
-        services.AddSingleton(CreateEditConfig(configModel.General));
+        services.AddSingleton(CreateTaggerConfig(configModel.General));
         return services;
     }
 
@@ -49,8 +50,8 @@ public static class DependencyInjection
         };
     }
 
-    private static EditConfig CreateEditConfig(GeneralSection generalSection)
+    private static TaggerConfig CreateTaggerConfig(GeneralSection generalSection)
     {
-        return new EditConfig { KeepId3v1 = generalSection.KeepId3v1 };
+        return new TaggerConfig { KeepId3v1 = generalSection.KeepId3v1 };
     }
 }

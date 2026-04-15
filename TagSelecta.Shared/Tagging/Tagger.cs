@@ -4,7 +4,7 @@ using File = TagLib.File;
 
 namespace TagSelecta.Shared.Tagging;
 
-public class Tagger : ITagger
+public class Tagger(TaggerConfig taggerConfig) : ITagger
 {
     public TagData ReadTags(string file)
     {
@@ -14,16 +14,6 @@ public class Tagger : ITagger
         tfile.RemoveTags(tfile.TagTypes & ~tfile.TagTypesOnDisk);
         var processor = CreateProcessor(tfile);
         var tagData = processor.Read();
-        tagData.Tags = Enum.GetValues<TagTypes>()
-            .Where(x =>
-                x != TagTypes.None
-                && x != TagTypes.AllTags
-                && (int)x > 0
-                && ((int)x & ((int)x - 1)) == 0
-                && tfile.TagTypes.HasFlag(x)
-            )
-            .Select(x => x.ToString())
-            .ToList();
         return tagData;
     }
 
@@ -35,12 +25,12 @@ public class Tagger : ITagger
         tfile.Save();
     }
 
-    private static TagDataProcessor CreateProcessor(File tfile)
+    private TagDataProcessor CreateProcessor(File tfile)
     {
         var mime = tfile.MimeType.ToLowerInvariant();
         if (mime.Contains("mpeg") || mime.Contains("mp3") || mime.Contains("wav"))
         {
-            return new Id3TagDataProcessor(tfile);
+            return new Id3TagDataProcessor(tfile, taggerConfig);
         }
 
         if (mime.Contains("flac") || mime.Contains("ogg"))
