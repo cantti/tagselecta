@@ -214,9 +214,9 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help    Prints help information                          
-        --yes     Skip confirmation before writing changes to files
-    -r, --release     Discogs release or master URL. Required
+    -h, --help       Prints help information                          
+        --yes        Skip confirmation before writing changes to files
+    -r, --release    Discogs release or master URL. Required
 ```
 
 ### Find command
