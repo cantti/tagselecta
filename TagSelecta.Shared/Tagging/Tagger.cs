@@ -1,4 +1,3 @@
-using TagLib;
 using TagSelecta.Shared.Exceptions;
 using File = TagLib.File;
 

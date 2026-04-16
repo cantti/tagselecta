@@ -12,6 +12,8 @@ namespace TagSelecta.TagDataActions.MusicBrainz;
 [TagDataActionInfo("musicbrainz", "mb")]
 public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 {
+    private readonly IDownloader _downloader;
+
     private readonly List<MusicBrainzFieldMapEntry> _fieldMap =
     [
         new(FieldName.Album, "{{ release.title }}"),
@@ -48,7 +50,6 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
     ];
 
     private readonly IAudioFileScanner _fileScanner;
-    private readonly IDownloader _downloader;
     private readonly IMusicBrainzApiClient _musicBrainzApiClient;
 
     private Release? _release;

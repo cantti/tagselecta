@@ -3,7 +3,6 @@ using TagSelecta.Commands.Tui;
 using TagSelecta.Commands.Tui.TuiCommands;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Discogs;
-using TagSelecta.TagDataActions.Edit;
 using TagSelecta.TagDataActions.MusicBrainz;
 
 namespace TagSelecta.App.Config;

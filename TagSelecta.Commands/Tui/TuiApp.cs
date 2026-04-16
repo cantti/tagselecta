@@ -201,6 +201,7 @@ public class TuiApp(
                     // min size supported by spectre layout
                     filesContentHeight = 1;
                 }
+
                 children.Add(
                     new Layout(filesLayoutKey)
                         .Size(filesContentHeight)

@@ -6,8 +6,8 @@ namespace TagSelecta.Shared.Tagging;
 
 public class Id3TagDataProcessor : TagDataProcessor
 {
-    private readonly File _tfile;
     private readonly TaggerConfig _config;
+    private readonly File _tfile;
     private readonly TagLib.Id3v2.Tag id3v2;
 
     public Id3TagDataProcessor(File tfile, TaggerConfig config)
