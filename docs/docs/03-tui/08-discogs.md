@@ -1,7 +1,13 @@
 # Discogs command
 
+Download metadata from Discogs.
+
 ```sh
 :discogs url="https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots"
 ```
 
-Set album metadata from Discogs.com. Use `url` option to specify the release URL.
+`url` can point to:
+- a **release** URL (`.../release/<id>`)
+- a **master** URL (`.../master/<id>`) — TagSelecta uses the main release
+
+Field mapping can be customized using [settings](../06-settings.md).
