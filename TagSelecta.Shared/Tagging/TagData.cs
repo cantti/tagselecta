@@ -66,11 +66,6 @@ public class TagData
         return _fields.Find(cf => cf.Key == key)?.Text ?? [];
     }
 
-    public string GetValueFirst(string key)
-    {
-        return GetValue(key).FirstOrDefault() ?? "";
-    }
-
     public TagData Clone()
     {
         return TagDataCloner.Clone(this);

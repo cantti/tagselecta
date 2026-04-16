@@ -41,13 +41,13 @@ public class AutoTrackTests
         // Assert
         var currentTagData1 = item1.CurrentTagData;
         var currentTagData2 = item2.CurrentTagData;
-        Assert.Equal("1", currentTagData1.GetValueFirst(FieldName.TrackNumber));
-        Assert.Equal("2", currentTagData1.GetValueFirst(FieldName.TrackTotal));
-        Assert.Equal("1", currentTagData1.GetValueFirst(FieldName.DiscNumber));
-        Assert.Equal("1", currentTagData1.GetValueFirst(FieldName.DiscTotal));
-        Assert.Equal("2", currentTagData2.GetValueFirst(FieldName.TrackNumber));
-        Assert.Equal("2", currentTagData2.GetValueFirst(FieldName.TrackTotal));
-        Assert.Equal("1", currentTagData2.GetValueFirst(FieldName.DiscNumber));
-        Assert.Equal("1", currentTagData2.GetValueFirst(FieldName.DiscTotal));
+        Assert.Equal(["1"], currentTagData1.GetValue(FieldName.TrackNumber));
+        Assert.Equal(["2"], currentTagData1.GetValue(FieldName.TrackTotal));
+        Assert.Equal(["1"], currentTagData1.GetValue(FieldName.DiscNumber));
+        Assert.Equal(["1"], currentTagData1.GetValue(FieldName.DiscTotal));
+        Assert.Equal(["2"], currentTagData2.GetValue(FieldName.TrackNumber));
+        Assert.Equal(["2"], currentTagData2.GetValue(FieldName.TrackTotal));
+        Assert.Equal(["1"], currentTagData2.GetValue(FieldName.DiscNumber));
+        Assert.Equal(["1"], currentTagData2.GetValue(FieldName.DiscTotal));
     }
 }

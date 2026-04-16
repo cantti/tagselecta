@@ -71,31 +71,25 @@ public class EditTests
 
         // Assert
         var currentTagData = item.CurrentTagData;
-        Assert.Equal(settings.Album, currentTagData.GetValueFirst(FieldName.Album));
-        Assert.Equal(
-            settings.AlbumArtist!.SplitTagValues(),
-            currentTagData.GetValue(FieldName.AlbumArtist)
-        );
+        Assert.Equal([settings.Album], currentTagData.GetValue(FieldName.Album));
+        Assert.Equal([settings.AlbumArtist], currentTagData.GetValue(FieldName.AlbumArtist));
         Assert.Equal(settings.Artist!.SplitTagValues(), currentTagData.GetValue(FieldName.Artist));
-        Assert.Equal(settings.Bpm, currentTagData.GetValueFirst(FieldName.Bpm));
-        Assert.Equal(settings.Comment, currentTagData.GetValueFirst(FieldName.Comment));
-        Assert.Equal(
-            settings.Composer!.SplitTagValues(),
-            currentTagData.GetValue(FieldName.Composer)
-        );
-        Assert.Equal(settings.Conductor, currentTagData.GetValueFirst(FieldName.Conductor));
-        Assert.Equal(settings.Copyright, currentTagData.GetValueFirst(FieldName.Copyright));
-        Assert.Equal(settings.Date, currentTagData.GetValueFirst(FieldName.Date));
-        Assert.Equal(settings.DiscNumber, currentTagData.GetValueFirst(FieldName.DiscNumber));
-        Assert.Equal(settings.DiscTotal, currentTagData.GetValueFirst(FieldName.DiscTotal));
-        Assert.Equal(settings.Genre!.SplitTagValues(), currentTagData.GetValue(FieldName.Genre));
-        Assert.Equal(settings.Isrc, currentTagData.GetValueFirst(FieldName.Isrc));
-        Assert.Equal(settings.Publisher, currentTagData.GetValueFirst(FieldName.Publisher));
-        Assert.Equal(settings.Title, currentTagData.GetValueFirst(FieldName.Title));
-        Assert.Equal(settings.TrackNumber, currentTagData.GetValueFirst(FieldName.TrackNumber));
-        Assert.Equal(settings.TrackTotal, currentTagData.GetValueFirst(FieldName.TrackTotal));
-        Assert.Equal(settings.Value[0], currentTagData.GetValueFirst(settings.Key[0]));
-        Assert.Equal("Original Label", currentTagData.GetValueFirst("label"));
-        Assert.Equal("Original Catalog Number", currentTagData.GetValueFirst("catalognumber"));
+        Assert.Equal([settings.Bpm], currentTagData.GetValue(FieldName.Bpm));
+        Assert.Equal([settings.Comment], currentTagData.GetValue(FieldName.Comment));
+        Assert.Equal([settings.Composer], currentTagData.GetValue(FieldName.Composer));
+        Assert.Equal([settings.Conductor], currentTagData.GetValue(FieldName.Conductor));
+        Assert.Equal([settings.Copyright], currentTagData.GetValue(FieldName.Copyright));
+        Assert.Equal([settings.Date], currentTagData.GetValue(FieldName.Date));
+        Assert.Equal([settings.DiscNumber], currentTagData.GetValue(FieldName.DiscNumber));
+        Assert.Equal([settings.DiscTotal], currentTagData.GetValue(FieldName.DiscTotal));
+        Assert.Equal([settings.Genre], currentTagData.GetValue(FieldName.Genre));
+        Assert.Equal([settings.Isrc], currentTagData.GetValue(FieldName.Isrc));
+        Assert.Equal([settings.Publisher], currentTagData.GetValue(FieldName.Publisher));
+        Assert.Equal([settings.Title], currentTagData.GetValue(FieldName.Title));
+        Assert.Equal([settings.TrackNumber], currentTagData.GetValue(FieldName.TrackNumber));
+        Assert.Equal([settings.TrackTotal], currentTagData.GetValue(FieldName.TrackTotal));
+        Assert.Equal([settings.Value[0]], currentTagData.GetValue(settings.Key[0]));
+        Assert.Equal(["Original Label"], currentTagData.GetValue("label"));
+        Assert.Equal(["Original Catalog Number"], currentTagData.GetValue("catalognumber"));
     }
 }

@@ -26,7 +26,7 @@ public class TagDataFormatter
         _tagDataForTemplate.Add(
             "year",
             DateTime.TryParseExact(
-                tagData.GetValueFirst(FieldName.Date),
+                tagData.GetValue(FieldName.Date).FirstOrDefault(),
                 ["yyyy", "yyyy-MM-dd", "yyyy/MM/dd"],
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,

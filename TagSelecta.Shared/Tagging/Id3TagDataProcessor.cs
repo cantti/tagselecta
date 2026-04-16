@@ -68,15 +68,15 @@ public class Id3TagDataProcessor : TagDataProcessor
         WriteValue("TPE2", data.GetValue(FieldName.AlbumArtist));
         WriteValue("TPE1", data.GetValue(FieldName.Artist));
         WriteValue("TBPM", data.GetValue(FieldName.Bpm));
-        id3v2.Comment = data.GetValueFirst(FieldName.Comment);
+        id3v2.Comment = data.GetValue(FieldName.Comment).JoinTagValues();
         WriteValue("TCOM", data.GetValue(FieldName.Composer));
         WriteValue("TPE3", data.GetValue(FieldName.Conductor));
         WriteValue("TCOP", data.GetValue(FieldName.Copyright));
         WriteValue("TDRC", data.GetValue(FieldName.Date));
         WriteValueWithTotal(
             "TPOS",
-            data.GetValueFirst(FieldName.DiscNumber),
-            data.GetValueFirst(FieldName.DiscTotal)
+            data.GetValue(FieldName.DiscNumber).JoinTagValues(),
+            data.GetValue(FieldName.DiscTotal).JoinTagValues()
         );
         WriteValue("TCON", data.GetValue(FieldName.Genre));
         WriteValue("TSRC", data.GetValue(FieldName.Isrc));
@@ -84,8 +84,8 @@ public class Id3TagDataProcessor : TagDataProcessor
         WriteValue("TIT2", data.GetValue(FieldName.Title));
         WriteValueWithTotal(
             "TRCK",
-            data.GetValueFirst(FieldName.TrackNumber),
-            data.GetValueFirst(FieldName.TrackTotal)
+            data.GetValue(FieldName.TrackNumber).JoinTagValues(),
+            data.GetValue(FieldName.TrackTotal).JoinTagValues()
         );
         id3v2.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
         ClearUserTextFrames();

@@ -29,7 +29,7 @@ public class TitleCaseTests
 
         // Assert
         var newTagData = item.CurrentTagData;
-        Assert.Equal("test title", newTagData.GetValueFirst(FieldName.Title));
-        Assert.Equal("test artist", newTagData.GetValue(FieldName.Artist)[0]);
+        Assert.Equal(["Test Title"], newTagData.GetValue(FieldName.Title));
+        Assert.Equal(["Test Artist"], newTagData.GetValue(FieldName.Artist));
     }
 }
