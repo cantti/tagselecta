@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
+using TagLib;
 using TagSelecta.Shared.Exceptions;
+using TagSelecta.Shared.Http;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
@@ -46,18 +48,22 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
     ];
 
     private readonly IAudioFileScanner _fileScanner;
+    private readonly IDownloader _downloader;
     private readonly IMusicBrainzApiClient _musicBrainzApiClient;
 
     private Release? _release;
+    private byte[]? _releaseImage;
 
     public MusicBrainzAction(
         IMusicBrainzApiClient musicBrainzApiClient,
         IAudioFileScanner fileScanner,
+        IDownloader downloader,
         MusicBrainzConfig musicBrainzConfig
     )
     {
         _musicBrainzApiClient = musicBrainzApiClient;
         _fileScanner = fileScanner;
+        _downloader = downloader;
         MergeFieldMap(musicBrainzConfig.FieldMap);
     }
 
@@ -68,6 +74,20 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
     {
         var releaseId = GetReleaseId(settings.Release);
         _release = await _musicBrainzApiClient.GetRelease(releaseId);
+
+        if (_release?.CoverArtArchive?.Front == true)
+        {
+            var coverUrl = $"https://coverartarchive.org/release/{releaseId}/front";
+            try
+            {
+                _releaseImage = await _downloader.Download(coverUrl, token);
+            }
+            catch
+            {
+                _releaseImage = null;
+            }
+        }
+
         return _release is not null;
     }
 
@@ -118,6 +138,12 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
                 trackIndex
             );
             tagData.SetValue(entry.FieldName, value.SplitTagValuesIfNeeded(entry.FieldName));
+        }
+
+        if (_releaseImage is { Length: > 0 })
+        {
+            var cover = new Picture(_releaseImage) { Type = PictureType.FrontCover };
+            tagData.Picture = [cover];
         }
 
         context.Target.UpdateTagData(tagData);
