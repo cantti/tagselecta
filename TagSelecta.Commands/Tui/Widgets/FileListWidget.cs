@@ -25,6 +25,11 @@ public class FileListWidget(
 
         var linesToPrint = Math.Min(windowSize, filesList.Count - windowStart);
 
+        if (linesToPrint < 0)
+        {
+            linesToPrint = 0;
+        }
+
         var items = new List<IRenderable>();
 
         for (var i = 0; i < linesToPrint; i++)

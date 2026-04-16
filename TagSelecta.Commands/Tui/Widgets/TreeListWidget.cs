@@ -27,6 +27,11 @@ public class TreeListWidget(
 
         var linesToPrint = Math.Min(windowSize, treeLines.Count - windowStart);
 
+        if (linesToPrint < 0)
+        {
+            linesToPrint = 0;
+        }
+
         var items = new List<IRenderable>(linesToPrint);
 
         for (var i = 0; i < linesToPrint; i++)

@@ -196,6 +196,11 @@ public class TuiApp(
                         - fileListPadding
                     ) * config.FileListRatio
                 );
+                if (filesContentHeight < 1)
+                {
+                    // min size supported by spectre layout
+                    filesContentHeight = 1;
+                }
                 children.Add(
                     new Layout(filesLayoutKey)
                         .Size(filesContentHeight)
