@@ -66,23 +66,23 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
         CancellationToken token
     )
     {
-        var releaseId = GetReleaseId(settings.Url);
+        var releaseId = GetReleaseId(settings.Release);
         _release = await _musicBrainzApiClient.GetRelease(releaseId);
         return _release is not null;
     }
 
-    private static string GetReleaseId(string url)
+    private static string GetReleaseId(string release)
     {
-        if (Guid.TryParse(url, out var guid))
+        if (Guid.TryParse(release, out var guid))
         {
             return guid.ToString();
         }
 
         var pattern = @"/release/([\d\w-]+)";
-        var match = Regex.Match(url, pattern);
+        var match = Regex.Match(release, pattern);
         if (!match.Success)
         {
-            throw new TagSelectaException("Error parsing MusicBrainz url");
+            throw new TagSelectaException("Error parsing MusicBrainz release");
         }
 
         return match.Groups[1].Value;

@@ -13,7 +13,7 @@ EXAMPLES:
     tagselecta edit song.mp3 --comment 'url=https://github.com'
     tagselecta edit song.mp3 --artist '{{ artist | regex.replace "^VA$" 
 "Various Artists" "-i" }}'
-    tagselecta discogs . --url 
+    tagselecta discogs . --release 
 https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta find . --query "{{ title | string.downcase |  string.contains
 'dub' }}"
@@ -207,7 +207,7 @@ USAGE:
     tagselecta discogs <path> [OPTIONS]
 
 EXAMPLES:
-    tagselecta discogs . --url 
+    tagselecta discogs . --release 
 https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
 
 ARGUMENTS:
@@ -216,7 +216,7 @@ ARGUMENTS:
 OPTIONS:
     -h, --help    Prints help information                          
         --yes     Skip confirmation before writing changes to files
-    -u, --url     Discogs release URL. Required
+    -r, --release     Discogs release or master URL. Required
 ```
 
 ### Find command

@@ -39,7 +39,7 @@ public class CommandHelpWidget : Renderable
             ),
             ($"[bold {commandColor}]:extractpicture[/]", "Extract picture"),
             (
-                $"[bold {commandColor}]:discogs[/] url=[{valueColor}]\"https://www.discogs.com/master/...\"[/]",
+                $"[bold {commandColor}]:discogs[/] release=[{valueColor}]\"https://www.discogs.com/master/...\"[/]",
                 "Discogs"
             ),
             ($"[bold {commandColor}]:macro[/] [{valueColor}]<name>[/]", "Execute macro"),

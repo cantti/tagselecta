@@ -59,7 +59,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         CancellationToken token
     )
     {
-        var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Url);
+        var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Release);
         var releaseId = urlId;
         if (urlType == "master")
         {
@@ -123,7 +123,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         var match = Regex.Match(input, pattern);
         return match.Success
             ? (match.Groups[1].Value, int.Parse(match.Groups[2].Value))
-            : throw new TagSelectaException("Error parsing discogs url");
+            : throw new TagSelectaException("Error parsing discogs release");
     }
 
     private void MergeFieldMap(IReadOnlyList<DiscogsFieldMapEntry> overrides)

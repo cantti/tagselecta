@@ -6,7 +6,7 @@ namespace TagSelecta.TagDataActions.Discogs;
 
 public class DiscogsSettings : TagDataActionSettings
 {
-    [CommandOption("--url|-u", true)]
-    [Description("Discogs release URL")]
-    public required string Url { get; set; }
+    [CommandOption("--release|-r", true)]
+    [Description("Discogs release or master URL")]
+    public required string Release { get; set; }
 }

@@ -86,7 +86,7 @@ public static class CommandRegistration
             .WithExample(
                 "discogs",
                 ".",
-                "--url",
+                "--release",
                 "https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots"
             );
     }

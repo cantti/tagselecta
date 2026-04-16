@@ -12,7 +12,7 @@ EXAMPLES:
     tagselecta.dll edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' --key description --value test
     tagselecta.dll edit song.mp3 --comment 'url=https://github.com'
     tagselecta.dll edit song.mp3 --artist '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}'
-    tagselecta.dll discogs . --url https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta.dll discogs . --release https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
     tagselecta.dll find . --query "{{ title | string.downcase |  string.contains 'dub' }}"
 
 OPTIONS:
@@ -31,4 +31,3 @@ COMMANDS:
     musicbrainz <path>       Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search
     ui <path>                Interactive UI (TUI)
 ```
-

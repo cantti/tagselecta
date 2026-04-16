@@ -35,7 +35,7 @@ public static class DependencyInjection
         return new DiscogsConfig
         {
             FieldMap = discogsSection
-                .FieldMap.Select(x => new DiscogsFieldMapEntry(x.Key, x.Value))
+                .Map.Select(x => new DiscogsFieldMapEntry(x.Key, x.Value))
                 .ToList(),
         };
     }
@@ -45,7 +45,7 @@ public static class DependencyInjection
         return new MusicBrainzConfig
         {
             FieldMap = musicBrainzSection
-                .FieldMap.Select(x => new MusicBrainzFieldMapEntry(x.Key, x.Value))
+                .Map.Select(x => new MusicBrainzFieldMapEntry(x.Key, x.Value))
                 .ToList(),
         };
     }

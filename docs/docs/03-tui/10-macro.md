@@ -9,7 +9,7 @@ Example:
 ```toml
 [macros]
 reggae="edit genre=Reggae"
-clean="edit clearextra comment=\"\" && autotrack"
+clear="edit clear"
 ```
 
 To call a macro use `:macro <name>` (`:m <name>`) command.

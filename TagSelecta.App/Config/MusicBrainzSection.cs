@@ -2,5 +2,5 @@ namespace TagSelecta.App.Config;
 
 public class MusicBrainzSection
 {
-    public Dictionary<string, string> FieldMap { get; set; } = new();
+    public Dictionary<string, string> Map { get; set; } = new();
 }
