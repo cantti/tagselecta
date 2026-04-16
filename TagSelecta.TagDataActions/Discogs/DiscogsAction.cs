@@ -19,7 +19,10 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
     [
         new(FieldName.Album, "{{ release.title }}"),
         new(FieldName.Date, "{{ release.year }}"),
-        new(FieldName.Genre, "{{ release.styles | joined }}"),
+        new(
+            FieldName.Genre,
+            "{{ if release.styles && release.styles.size > 0; release.styles | joined; else; release.genres | joined; end }}"
+        ),
         new(FieldName.AlbumArtist, "{{ release.artists | array.map 'name' | joined }}"),
         new(
             FieldName.Artist,
