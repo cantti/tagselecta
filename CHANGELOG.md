@@ -1,3 +1,29 @@
+## [2.0.0] - 2026-04-17
+
+### Features
+
+- Add musicbrainz support, rework discogs to use scriban template engine (#13)
+- More discogs models
+- [**breaking**] Make extra field editing simpler and unify tag storage (#14)
+- [**breaking**] Rename disc/track fields to discnumber/tracknumber and drop most edit short flags
+- Update installer
+- Improve musicbrainz mapping (#15)
+- Improve id3v1 handling, add new setting `keep_id3v1`
+
+### Fixes
+
+- Require {{ }} in find command
+- Fix deploy pages
+
+### Docs
+
+- Auto-update changelog
+- Docs update
+- Auto-update docs
+- Docs update
+- Auto-update docs
+- Auto-update docs
+
 ## [1.4.0] - 2026-03-28
 
 ### Features
