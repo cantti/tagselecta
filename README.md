@@ -44,24 +44,35 @@ automating tasks.
 
 You can install TagSelecta in one of these ways:
 
-1. **Download release (manual):** download from GitHub Releases and place the binary in your `PATH`.
-2. **Install script (automatic):** use the provided script to download and install the latest release.
-3. **AUR package (Arch Linux):** install `tagselecta-bin` with an AUR helper like `yay` or `paru`.
+1. **Homebrew tap:** install via Homebrew from `cantti/homebrew-tagselecta`.
+2. **AUR package (Arch Linux):** install `tagselecta-bin` with an AUR helper like `yay` or `paru`.
+3. **Install script (automatic):** use the provided script to download and install the latest release.
+4. **Download release (manual):** download from GitHub Releases and place the binary in your `PATH`.
 
-### Option 1. Download Release (Manual Install)
+### Option 1. Install via Homebrew
 
-1. Go to the **[Releases page](https://github.com/cantti/tagselecta/releases)**
-2. Download the latest archive for your system
-3. Extract it
-4. Move the binary into your preferred location (for example):
+If you use Homebrew, install TagSelecta from the tap:
 
 ```sh
-mv tagselecta "$HOME/.local/bin"
+brew tap cantti/tagselecta
+brew install tagselecta
 ```
 
-Ensure `"$HOME/.local/bin"` is in your `PATH`.
+### Option 2. Install from AUR (Arch Linux)
 
-### Option 2. Install via Script (Automatic Install)
+If you use Arch Linux (or an Arch-based distro), you can install the AUR package:
+
+```sh
+yay -S tagselecta-bin
+```
+
+Or with `paru`:
+
+```sh
+paru -S tagselecta-bin
+```
+
+### Option 3. Install via Script (Automatic Install)
 
 > Tip: the same script can be used to update the installed version.
 
@@ -80,19 +91,19 @@ For system-wide install:
 wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | sudo bash -s -- --system
 ```
 
-### Option 3. Install from AUR (Arch Linux)
+### Option 4. Download Release (Manual Install)
 
-If you use Arch Linux (or an Arch-based distro), you can install the AUR package:
-
-```sh
-yay -S tagselecta-bin
-```
-
-Or with `paru`:
+1. Go to the **[Releases page](https://github.com/cantti/tagselecta/releases)**
+2. Download the latest archive for your system
+3. Extract it
+4. Move the binary into your preferred location (for example):
 
 ```sh
-paru -S tagselecta-bin
+mv tagselecta "$HOME/.local/bin"
 ```
+
+Ensure `"$HOME/.local/bin"` is in your `PATH`.
+
 
 ## Getting started
 
@@ -164,33 +175,29 @@ Basic syntax:
 
 ```
 USAGE:
-    tagselecta [OPTIONS] <COMMAND>
+    tagselecta.dll [OPTIONS] <COMMAND>
 
 EXAMPLES:
-    tagselecta edit song.mp3 -t 'Song 1' -a 'Artist1;Artist 2' -k
-description -v test
-    tagselecta edit song.mp3 -c 'url=https://github.com'
-    tagselecta edit song.mp3 -a '{{ artist | regex.replace "^VA$" "Various
-Artists" "-i" }}'
-    tagselecta discogs path-to-album -r
-https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
-    tagselecta discogs path-to-album -q King Tubby Dub From The Roots
+    tagselecta.dll edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' --key description --value test
+    tagselecta.dll edit song.mp3 --comment 'url=https://github.com'
+    tagselecta.dll edit song.mp3 --artist '{{ artist | regex.replace "^VA$" "Various Artists" "-i" }}'
+    tagselecta.dll discogs . --release https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
+    tagselecta.dll find . --query "{{ title | string.downcase |  string.contains 'dub' }}"
 
 OPTIONS:
     -h, --help       Prints help information
     -v, --version    Prints version information
 
 COMMANDS:
-    edit <path>              Edit tags (read/write). To edit extra fields, use
-                             the --key key1 --value value1 options
+    edit <path>              Edit tags (read/write). To edit extra fields, use the --key key1 --value value1 options
     extractpicture <path>    Extract pictures to files
     titlecase <path>         Convert all fields to title case
     split <path>             Split artists, album artists and composers
-    discogs <path>           Update album from discogs. You can pass discogs
-                             release id (not master) or query to search
+    discogs <path>           Update album from discogs. You can pass discogs release id (not master) or query to search
     autotrack <path>         Auto track
     move <path>              Move (rename) files to another directory
     find <path>              Find files by metadata
+    musicbrainz <path>       Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search
     ui <path>                Interactive UI (TUI)
 ```
 
