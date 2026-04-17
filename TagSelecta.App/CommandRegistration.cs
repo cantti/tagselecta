@@ -38,7 +38,7 @@ public static class CommandRegistration
         configurator
             .AddTagDataAction<EditAction>(services)
             .WithDescription(
-                "Edit tags (read/write). To edit extra fields, use the --key key1 --value value1 options."
+                "Edit tags (read/write). To edit any field, use the --key key1 --value value1 options."
             )
             // Basic examples
             .WithExample(

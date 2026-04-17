@@ -78,10 +78,11 @@ public class EditSettings : TagDataActionSettings
     public string? TrackTotal { get; set; }
 
     [CommandOption("--key|-k")]
-    [Description("Extra field key key. Must be used together with --value.")]
+    [Description("Extra field key. Must be used together with --value.")]
     public string[] Key { get; set; } = [];
 
     [CommandOption("--value|-v")]
+    [Description("Extra field value. Must be used together with --key.")]
     public string[] Value { get; set; } = [];
 
     [CommandOption("--clear")]

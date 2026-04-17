@@ -11,9 +11,7 @@ public class CommandHelpWidget : Renderable
             new SectionHeaderWidget("Command help:"),
             CommandHelp(),
             Text.Empty,
-            EditableFieldsHelp(),
-            Text.Empty,
-            TemplateFieldsHelp()
+            EditableFieldsHelp()
         );
         return content.Render(options, maxWidth);
     }
@@ -39,8 +37,12 @@ public class CommandHelpWidget : Renderable
             ),
             ($"[bold {commandColor}]:extractpicture[/]", "Extract picture"),
             (
-                $"[bold {commandColor}]:discogs[/] release=[{valueColor}]\"https://www.discogs.com/master/...\"[/]",
+                $"[bold {commandColor}]:discogs[/] release=[{valueColor}]\"https://www.discogs.com/release/...\"[/]",
                 "Discogs"
+            ),
+            (
+                $"[bold {commandColor}]:musicbrainz[/] release=[{valueColor}]\"https://musicbrainz.org/release/...\"[/]",
+                "MusicBrainz"
             ),
             ($"[bold {commandColor}]:macro[/] [{valueColor}]<name>[/]", "Execute macro"),
         };
@@ -58,60 +60,24 @@ public class CommandHelpWidget : Renderable
     {
         var fields = new[]
         {
-            "artist(a)",
-            "albumartist(A)",
-            "album(l)",
-            "title(t)",
-            "track(n)",
-            "tracktotal(N)",
-            "disc(d)",
-            "disctotal(D)",
-            "date(y)",
-            "genre(g)",
-            "comment(c)",
-            "composer(C)",
-            "bpm",
-            "conductor",
-            "copyright",
-            "isrc",
-            "publisher",
-            "picture(p)",
-            "picturetype",
-        };
-        return new Markup($"[bold {Color.Blue}]Editable fields[/]: {string.Join(", ", fields)}");
-    }
-
-    private static IRenderable TemplateFieldsHelp()
-    {
-        var fields = new[]
-        {
-            "path",
-            "filename",
-            "ext",
             "album",
             "albumartist",
-            "albumartists",
             "artist",
-            "artists",
             "bpm",
             "comment",
             "composer",
-            "composers",
             "conductor",
             "copyright",
             "date",
-            "disc",
+            "discnumber",
             "disctotal",
             "genre",
-            "genres",
             "isrc",
             "publisher",
             "title",
-            "track",
+            "tracknumber",
             "tracktotal",
-            "year",
-            "extra.key1",
         };
-        return new Markup($"[bold {Color.Blue}]Template fields[/]: {string.Join(", ", fields)}");
+        return new Markup($"[bold {Color.Blue}]Standard fields[/]: {string.Join(", ", fields)}");
     }
 }

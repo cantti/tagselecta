@@ -20,7 +20,7 @@ OPTIONS:
     -v, --version    Prints version information
 
 COMMANDS:
-    edit <path>              Edit tags (read/write). To edit extra fields, use the --key key1 --value value1 options
+    edit <path>              Edit tags (read/write). To edit any field, use the --key key1 --value value1 options
     extractpicture <path>    Extract pictures to files
     titlecase <path>         Convert all fields to title case
     split <path>             Split artists, album artists and composers
