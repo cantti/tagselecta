@@ -54,39 +54,6 @@ jobs:
         with:
           name: tagselecta-${{ matrix.rid }}
           path: artifacts/tagselecta-${{ matrix.rid }}.zip
-  changelog:
-    name: Generate changelog
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Generate changelog
-        uses: orhun/git-cliff-action@v4
-        with:
-          config: cliff.toml -o CHANGELOG.md
-          args: --verbose
-      - name: Check if changelog was updated
-        id: git_diff
-        run: |
-          if git diff --quiet CHANGELOG.md; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-      - name: Commit and push changes
-        if: steps.git_diff.outputs.changed == 'true'
-        run: |
-          git switch main
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
-          git commit -m "docs: auto-update changelog"
-          git push
   release-body:
     name: Generate release body
     needs: build
