@@ -1,4 +1,4 @@
-## Install
+# Install
 
 You can install TagSelecta in one of these ways:
 
@@ -7,7 +7,7 @@ You can install TagSelecta in one of these ways:
 3. **Install script (automatic):** use the provided script to download and install the latest release.
 4. **Download release (manual):** download from GitHub Releases and place the binary in your `PATH`.
 
-### Option 1. Install via Homebrew
+## Option 1. Install via Homebrew
 
 If you use Homebrew, install TagSelecta from the tap:
 
@@ -16,7 +16,7 @@ brew tap cantti/tagselecta
 brew install tagselecta
 ```
 
-### Option 2. Install from AUR (Arch Linux)
+## Option 2. Install from AUR (Arch Linux)
 
 If you use Arch Linux (or an Arch-based distro), you can install the AUR package:
 
@@ -30,7 +30,7 @@ Or with `paru`:
 paru -S tagselecta-bin
 ```
 
-### Option 3. Install via Script (Automatic Install)
+## Option 3. Install via Script (Automatic Install)
 
 > Tip: the same script can be used to update the installed version.
 
@@ -49,7 +49,7 @@ For system-wide install:
 wget -qO- https://raw.githubusercontent.com/cantti/tagselecta/main/install.sh | sudo bash -s -- --system
 ```
 
-### Option 4. Download Release (Manual Install)
+## Option 4. Download Release (Manual Install)
 
 1. Go to the **[Releases page](https://github.com/cantti/tagselecta/releases)**
 2. Download the latest archive for your system
