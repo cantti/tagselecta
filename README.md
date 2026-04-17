@@ -1,5 +1,7 @@
 # TagSelecta
 
+Website and documentation: [cantti.github.io/tagselecta](https://cantti.github.io/tagselecta)
+
 <img width="1820" height="947" alt="TagSelecta TUI" src="./docs/static/tagselecta.png" />
 
 TagSelecta is a cross-platform, opinionated command-line tool for managing audio file metadata (tags).
@@ -203,7 +205,7 @@ COMMANDS:
 
 ## Read More
 
-https://cantti.github.io/tagselecta
+[Official website](https://cantti.github.io/tagselecta)
 
 ## Roadmap
 
