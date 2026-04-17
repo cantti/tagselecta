@@ -23,8 +23,8 @@ OPTIONS:
     -v, --version    Prints version information
 
 COMMANDS:
-    edit <path>              Edit tags (read/write). To edit any field, use  
-                             the --key key1 --value value1 options              
+    edit <path>              Edit tags (read/write). To edit any field, use the 
+                             --key key1 --value value1 options                  
     extractpicture <path>    Extract pictures to files                          
     titlecase <path>         Convert all fields to title case                   
     split <path>             Split artists, album artists and composers         
@@ -82,9 +82,8 @@ OPTIONS:
         --title           Track title                                           
         --tracknumber     Track number                                          
         --tracktotal      Total number of tracks                                
-    -k, --key             Extra field key key. Must be used together with       
-                          --value                                               
-    -v, --value                                                                 
+    -k, --key             Extra field key. Must be used together with --value   
+    -v, --value           Extra field value. Must be used together with --key   
         --clear           Clear all fields                                      
         --picture         Path or url to a picture. Use this option multiple    
                           times to include multiple images (e.g., -p path1 -p   
