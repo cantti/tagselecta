@@ -1,3 +1,10 @@
+## [2.0.1] - 2026-04-17
+
+### Docs
+
+- Auto-update changelog
+- Docs update
+
 ## [2.0.0] - 2026-04-17
 
 ### Features
