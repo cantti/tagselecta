@@ -166,7 +166,10 @@ public class TuiApp(
         const int statusBarHeight = 1;
         const int commandBarHeight = 1;
         var children = new List<Layout>();
-        children.Add(new Layout(headerLayoutKey).Size(headerSize).Update(RenderHeader()));
+        if (config.HeaderVisible)
+        {
+            children.Add(new Layout(headerLayoutKey).Size(headerSize).Update(RenderHeader()));
+        }
         if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
         {
             children.Add(

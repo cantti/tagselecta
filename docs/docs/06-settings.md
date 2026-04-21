@@ -24,6 +24,12 @@ auto_completion_enabled = true
 # enable tree view by default
 tree_enabled = false
 
+# preserve id3v1 tags
+keep_id3v1 = false
+
+# show header in tui mode (app name and common shortcuts)
+header_visible = true
+
 [macros]
 # example of macro. You can add as many as you want similarly.
 reggae="edit genre=\"Reggae\""

@@ -7,4 +7,6 @@ public class GeneralSection
     public double FileListRatio { get; set; } = 0.3;
     public bool AutoCompletionEnabled { get; set; } = true;
     public bool TreeEnabled { get; set; } = true;
+
+    public bool HeaderVisible { get; set; } = true;
 }

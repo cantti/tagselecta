@@ -21,6 +21,7 @@ public static class DependencyInjection
                 FileListRatio = configModel.General.FileListRatio,
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
                 TreeEnabled = configModel.General.TreeEnabled,
+                HeaderVisible = configModel.General.HeaderVisible,
             }
         );
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));
