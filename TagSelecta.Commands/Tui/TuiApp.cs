@@ -163,12 +163,14 @@ public class TuiApp(
         const string statusLayoutKey = "status";
         const string filesLayoutKey = "files";
         const int headerSize = 3;
+        var actualHeaderSize = 0;
         const int statusBarHeight = 1;
         const int commandBarHeight = 1;
         var children = new List<Layout>();
         if (config.HeaderVisible)
         {
-            children.Add(new Layout(headerLayoutKey).Size(headerSize).Update(RenderHeader()));
+            actualHeaderSize = headerSize;
+            children.Add(new Layout(headerLayoutKey).Size(actualHeaderSize).Update(RenderHeader()));
         }
         if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
         {
@@ -179,7 +181,10 @@ public class TuiApp(
                     : PictureEnabled
                         ? new PictureWidget(
                             FocusedFile,
-                            console.Profile.Height - headerSize - statusBarHeight - commandBarHeight
+                            console.Profile.Height
+                                - actualHeaderSize
+                                - statusBarHeight
+                                - commandBarHeight
                         )
                     : Text.Empty
                 )
@@ -193,7 +198,7 @@ public class TuiApp(
                 var filesContentHeight = (int)(
                     (
                         Console.WindowHeight
-                        - headerSize
+                        - actualHeaderSize
                         - statusBarHeight
                         - commandBarHeight
                         - fileListPadding
