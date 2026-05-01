@@ -161,7 +161,7 @@ Very useful command is `move` (`mv`) to rename and move files.
 Example:
 
 ```sh
-:move template="../{{ date }} - {{ album }}/{{ pad(track) }}. {{ title }}.{{ext}}"
+:move template="../{{ date }} - {{ album }}/{{ pad(tracknumber) }}. {{ title }}.{{ext}}"
 ```
 
 **Notes**
