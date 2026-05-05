@@ -18,6 +18,7 @@ public class TuiApp(
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private readonly Lock _printLock = new();
+    private int _isDirty = 1;
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
     private Task _currentCommandTask = Task.CompletedTask;
@@ -52,6 +53,7 @@ public class TuiApp(
     public void SetCommandPromptText(string text)
     {
         inputHandler.SetText(text);
+        Invalidate();
     }
 
     public void Quit()
@@ -65,6 +67,8 @@ public class TuiApp(
         {
             _statusMessage = markupMessage;
         }
+
+        Invalidate();
     }
 
     public override async Task<int> ExecuteAsync(
@@ -111,7 +115,7 @@ public class TuiApp(
     private Task StartUiLoop(Channel<ConsoleKeyInfo> channel)
     {
         const int activeTickMs = 16;
-        const int idleTickMs = 150;
+        const int idleTickMs = 200;
         const int activeWindowMs = 300;
 
         return console
@@ -123,8 +127,6 @@ public class TuiApp(
 
                 while (!_cts.Token.IsCancellationRequested)
                 {
-                    ctx.UpdateTarget(DrawLayout());
-
                     var hadInput = false;
                     while (channel.Reader.TryRead(out var key))
                     {
@@ -139,13 +141,30 @@ public class TuiApp(
                     if (hadInput)
                     {
                         activeUntil = DateTime.UtcNow.AddMilliseconds(activeWindowMs);
+                        Invalidate();
+                    }
+
+                    if (TryConsumeDirty())
+                    {
                         ctx.UpdateTarget(DrawLayout());
                     }
 
                     var isActive = DateTime.UtcNow < activeUntil;
-                    await Task.Delay(isActive ? activeTickMs : idleTickMs, _cts.Token);
+                    var delayTask = Task.Delay(isActive ? activeTickMs : idleTickMs, _cts.Token);
+                    var waitForInputTask = channel.Reader.WaitToReadAsync(_cts.Token).AsTask();
+                    await Task.WhenAny(delayTask, waitForInputTask);
                 }
             });
+    }
+
+    private void Invalidate()
+    {
+        Interlocked.Exchange(ref _isDirty, 1);
+    }
+
+    private bool TryConsumeDirty()
+    {
+        return Interlocked.Exchange(ref _isDirty, 0) == 1;
     }
 
     private Task StartInputLoop(Channel<ConsoleKeyInfo> channel)
@@ -382,8 +401,11 @@ public class TuiApp(
             {
                 Print(ex.Message);
             }
-
-            hotkeys.Bind("esc", "escape");
+            finally
+            {
+                hotkeys.Bind("esc", "escape");
+                Invalidate();
+            }
         });
     }
 }
