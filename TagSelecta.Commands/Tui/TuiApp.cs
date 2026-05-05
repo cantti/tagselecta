@@ -110,25 +110,40 @@ public class TuiApp(
 
     private Task StartUiLoop(Channel<ConsoleKeyInfo> channel)
     {
+        const int activeTickMs = 16;
+        const int idleTickMs = 150;
+        const int activeWindowMs = 300;
+
         return console
             .Live(new Panel("Starting..."))
             .AutoClear(true)
             .StartAsync(async ctx =>
             {
+                var activeUntil = DateTime.UtcNow;
+
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     ctx.UpdateTarget(DrawLayout());
+
+                    var hadInput = false;
                     while (channel.Reader.TryRead(out var key))
                     {
+                        hadInput = true;
+
                         if (inputHandler.ProcessKey(key, out var request))
                         {
                             await DispatchCommand(request);
                         }
+                    }
 
+                    if (hadInput)
+                    {
+                        activeUntil = DateTime.UtcNow.AddMilliseconds(activeWindowMs);
                         ctx.UpdateTarget(DrawLayout());
                     }
 
-                    await Task.Delay(33, _cts.Token);
+                    var isActive = DateTime.UtcNow < activeUntil;
+                    await Task.Delay(isActive ? activeTickMs : idleTickMs, _cts.Token);
                 }
             });
     }
