@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Spectre.Console.Cli" />
     <PackageReference Include="Spectre.Console.ImageSharp" />
+    <PackageReference Include="Sprache" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />

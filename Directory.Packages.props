@@ -16,6 +16,7 @@
     <PackageVersion Include="Scriban" Version="7.1.0" />
     <PackageVersion Include="Spectre.Console.Cli" Version="0.53.1" />
     <PackageVersion Include="Spectre.Console.ImageSharp" Version="0.53.1" />
+    <PackageVersion Include="Sprache" Version="2.3.1" />
     <PackageVersion Include="TagLibSharp" Version="2.3.0" />
     <PackageVersion Include="Tomlyn" Version="0.20.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1" />

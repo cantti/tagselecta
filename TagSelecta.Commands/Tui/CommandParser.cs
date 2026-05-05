@@ -1,165 +1,56 @@
-using System.Text;
+using Sprache;
 using TagSelecta.Commands.Tui.TuiCommands;
 
 namespace TagSelecta.Commands.Tui;
 
 public static class CommandParser
 {
-    public static bool TryParse(string input, out ParsedCommand[] parsedCommands)
+    private static readonly Parser<string> _quotedValue =
+        from open in Parse.Char('"')
+        from value in Parse.CharExcept('"').Many().Text()
+        from close in Parse.Char('"')
+        select value;
+
+    private static readonly Parser<string> _unquotedValue = Parse
+        .CharExcept(" &")
+        .AtLeastOnce()
+        .Text();
+
+    private static readonly Parser<ParsedCommand> _parsedCommand = (
+        from commandName in Parse.Letter.AtLeastOnce().Text()
+        from space in Parse.WhiteSpace.Many()
+        from commandOption in _commandOption.Or(_commandOptionNoValue).Many()
+        select new ParsedCommand(commandName, commandOption.ToArray())
+    ).Token();
+
+    private static readonly Parser<IEnumerable<ParsedCommand>> _parsedCommands =
+        _parsedCommand.DelimitedBy(Parse.String("&&").Token());
+
+    private static readonly Parser<ParsedCommandOption> _commandOption = (
+        from key in Parse.LetterOrDigit.AtLeastOnce().Text()
+        from eq in Parse.Char('=')
+        from value in _quotedValue.Or(_unquotedValue)
+        select new ParsedCommandOption(key, value)
+    ).Token();
+
+    private static readonly Parser<ParsedCommandOption> _commandOptionNoValue = (
+        from key in Parse.LetterOrDigit.AtLeastOnce().Text()
+        select new ParsedCommandOption(key, "")
+    ).Token();
+
+    public static bool TryParse(string input, out List<ParsedCommand> parsedCommands)
     {
-        parsedCommands = null!;
+        parsedCommands = [];
 
-        if (string.IsNullOrWhiteSpace(input))
+        var result = _parsedCommands.TryParse(input);
+
+        if (!result.WasSuccessful)
         {
             return false;
         }
 
-        var commandTexts = SplitCommands(input);
-        if (commandTexts.Count == 0)
-        {
-            return false;
-        }
+        parsedCommands = result.Value.ToList();
 
-        var commands = new List<ParsedCommand>(commandTexts.Count);
-
-        foreach (var commandText in commandTexts)
-        {
-            var parts = Tokenize(commandText);
-            if (parts.Count == 0)
-            {
-                return false;
-            }
-
-            var name = parts[0];
-            var options = new List<ParsedCommandOption>();
-
-            for (var i = 1; i < parts.Count; i++)
-            {
-                var part = parts[i];
-
-                var eq = part.IndexOf('=');
-                if (eq > 0)
-                {
-                    var key = part[..eq];
-                    var value = part[(eq + 1)..];
-                    options.Add(new ParsedCommandOption(key, value));
-                }
-                else
-                {
-                    options.Add(new ParsedCommandOption(part, ""));
-                }
-            }
-
-            commands.Add(new ParsedCommand(name, options.ToArray()));
-        }
-
-        parsedCommands = commands.ToArray();
         return true;
-    }
-
-    public static bool TryParseSingle(string input, out ParsedCommand parsedCommand)
-    {
-        parsedCommand = null!;
-
-        if (!TryParse(input, out var parsedCommands))
-        {
-            return false;
-        }
-
-        if (parsedCommands.Length != 1)
-        {
-            return false;
-        }
-
-        parsedCommand = parsedCommands[0];
-        return true;
-    }
-
-    private static List<string> SplitCommands(string input)
-    {
-        // Splits on && that are OUTSIDE quotes.
-        // Example: command1 a=b && command2 a=b
-        var commands = new List<string>();
-        var current = new StringBuilder();
-        var inQuotes = false;
-
-        for (var i = 0; i < input.Length; i++)
-        {
-            var c = input[i];
-
-            if (c == '"' && (i == 0 || input[i - 1] != '\\'))
-            {
-                inQuotes = !inQuotes;
-                current.Append(c);
-                continue;
-            }
-
-            if (!inQuotes && c == '&' && i + 1 < input.Length && input[i + 1] == '&')
-            {
-                var text = current.ToString().Trim();
-                if (!string.IsNullOrEmpty(text))
-                {
-                    commands.Add(text);
-                }
-
-                current.Clear();
-                i++; // skip second '&'
-                continue;
-            }
-
-            current.Append(c);
-        }
-
-        var last = current.ToString().Trim();
-        if (!string.IsNullOrEmpty(last))
-        {
-            commands.Add(last);
-        }
-
-        return commands;
-    }
-
-    private static List<string> Tokenize(string input)
-    {
-        var tokens = new List<string>();
-        var current = new StringBuilder();
-        var inQuotes = false;
-
-        for (var i = 0; i < input.Length; i++)
-        {
-            var c = input[i];
-
-            if (c == '"' && (i == 0 || input[i - 1] != '\\'))
-            {
-                inQuotes = !inQuotes;
-                continue;
-            }
-
-            if (char.IsWhiteSpace(c) && !inQuotes)
-            {
-                if (current.Length > 0)
-                {
-                    tokens.Add(current.ToString());
-                    current.Clear();
-                }
-            }
-            else
-            {
-                current.Append(c);
-            }
-        }
-
-        if (current.Length > 0)
-        {
-            tokens.Add(current.ToString());
-        }
-
-        // unescape \" to "
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            tokens[i] = tokens[i].Replace("\\\"", "\"");
-        }
-
-        return tokens;
     }
 }

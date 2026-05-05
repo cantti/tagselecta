@@ -52,7 +52,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
     private static TagDataActionSettings CreateSettings(
         ITagDataAction action,
-        ParsedCommandOption[] options,
+        IEnumerable<ParsedCommandOption> options,
         bool allowRemainingArguments
     )
     {
