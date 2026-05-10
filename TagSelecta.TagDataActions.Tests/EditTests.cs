@@ -92,4 +92,21 @@ public class EditTests
         Assert.Equal(["Original Label"], currentTagData.GetValue("label"));
         Assert.Equal(["Original Catalog Number"], currentTagData.GetValue("catalognumber"));
     }
+
+    [Fact]
+    public void EditSettingsContainsAllFieldNames()
+    {
+        var properties = typeof(EditSettings).GetProperties();
+        var propertyNames = new HashSet<string>(
+            properties.Select(x => x.Name),
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        var missing = FieldName.All().Where(field => !propertyNames.Contains(field)).ToList();
+
+        Assert.True(
+            missing.Count == 0,
+            $"EditSettings is missing fields: {string.Join(", ", missing)}"
+        );
+    }
 }

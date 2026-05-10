@@ -10,7 +10,9 @@ public static class CommandParser
         from esc in Parse.Chars('\\', '"', ' ', '=')
         select esc;
 
-    private static readonly Parser<char> _unQuotedChar = _escapedChar.Or(Parse.CharExcept(" =\\\""));
+    private static readonly Parser<char> _unQuotedChar = _escapedChar.Or(
+        Parse.CharExcept(" =\\\"&")
+    );
 
     private static readonly Parser<string> _quoted =
         from open in Parse.Char('"')
@@ -21,7 +23,7 @@ public static class CommandParser
     private static readonly Parser<ParsedCommand> _parsedCommand = (
         from commandName in Parse.Letter.AtLeastOnce().Text()
         from space in Parse.WhiteSpace.Many()
-        from commandOption in _commandOption.Many()
+        from commandOption in _commandOption.Or(_commandOptionFlag).Many()
         select new ParsedCommand(commandName, commandOption.ToArray())
     ).Token();
 
@@ -34,6 +36,11 @@ public static class CommandParser
         from eq in Parse.Char('=')
         from value in _quoted.Or(_unQuotedChar.Many().Text())
         select new ParsedCommandOption(key, value)
+    ).Token();
+
+    private static readonly Parser<ParsedCommandOption> _commandOptionFlag = (
+        from key in _quoted.Or(_unQuotedChar.AtLeastOnce().Text())
+        select new ParsedCommandOption(key, "true")
     ).Token();
 
     public static bool TryParse(string input, out List<ParsedCommand> parsedCommands)

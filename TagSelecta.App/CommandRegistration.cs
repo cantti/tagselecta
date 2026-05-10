@@ -5,6 +5,7 @@ using TagSelecta.Commands;
 using TagSelecta.Commands.Cli.Find;
 using TagSelecta.Commands.Tui;
 using TagSelecta.TagDataActions.AutoTrack;
+using TagSelecta.TagDataActions.ClearExcept;
 using TagSelecta.TagDataActions.Discogs;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;
 using TagSelecta.TagDataActions.Edit;
@@ -30,6 +31,7 @@ public static class CommandRegistration
         AddMove(configurator, services);
         AddFind(configurator, services);
         AddMusicBrainz(configurator, services);
+        AddClearExcept(configurator, services);
         AddTui(configurator, services);
     }
 
@@ -142,6 +144,11 @@ public static class CommandRegistration
             .WithDescription(
                 "Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search."
             );
+    }
+
+    private static void AddClearExcept(IConfigurator configurator, IServiceCollection services)
+    {
+        configurator.AddTagDataAction<ClearExceptAction>(services);
     }
 
     private static void AddTui(IConfigurator configurator, IServiceCollection services)

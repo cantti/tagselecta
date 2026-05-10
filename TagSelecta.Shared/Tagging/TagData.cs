@@ -14,6 +14,10 @@ public class TagData
     public void Clear()
     {
         _fields.Clear();
+    }
+
+    public void ClearPicture()
+    {
         Picture.Clear();
     }
 

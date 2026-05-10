@@ -43,14 +43,7 @@ public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
         // add fields from properties
         foreach (var field in FieldName.All())
         {
-            if (!settingProperties.TryGetValue(field, out var property))
-            {
-                throw new TagSelectaException(
-                    $"EditSettings does not contain standard field '{field}'."
-                );
-            }
-
-            var value = property.GetValue(context.Settings);
+            var value = settingProperties[field].GetValue(context.Settings);
 
             if (value is null)
             {
