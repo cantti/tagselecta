@@ -148,7 +148,12 @@ public static class CommandRegistration
 
     private static void AddClearExcept(IConfigurator configurator, IServiceCollection services)
     {
-        configurator.AddTagDataAction<ClearExceptAction>(services);
+        configurator
+            .AddTagDataAction<ClearExceptAction>(services)
+            .WithDescription(
+                "Clear all tag fields except the specified ones and optionally keep the picture."
+            )
+            .WithExample("clearexcept", "song.mp3", "--title", "--artist", "--picture");
     }
 
     private static void AddTui(IConfigurator configurator, IServiceCollection services)
