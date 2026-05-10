@@ -10,7 +10,7 @@ using TagSelecta.TagDataActions.MusicBrainz.MusicBrainzApi;
 namespace TagSelecta.TagDataActions.MusicBrainz;
 
 [TagDataActionInfo("musicbrainz", "mb")]
-public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
+public class MusicBrainzAction : ITagDataAction<MusicBrainzSettings>
 {
     private readonly IDownloader _downloader;
 
@@ -68,7 +68,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
         MergeFieldMap(musicBrainzConfig.FieldMap);
     }
 
-    public override async Task<bool> BeforeExecuteAsync(
+    public async Task<bool> BeforeExecute(
         MusicBrainzSettings settings,
         CancellationToken token
     )
@@ -109,7 +109,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
         return match.Groups[1].Value;
     }
 
-    protected override void Execute(TagDataActionExecuteContext<MusicBrainzSettings> context)
+    public Task Execute(TagDataActionExecuteContext<MusicBrainzSettings> context, CancellationToken token)
     {
         if (_release is null)
         {
@@ -128,7 +128,7 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
 
         if (trackIndex < 0 || trackIndex > tracks.Count - 1)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         foreach (var entry in _fieldMap)
@@ -148,6 +148,8 @@ public class MusicBrainzAction : TagDataAction<MusicBrainzSettings>
         }
 
         context.Target.UpdateTagData(tagData);
+
+        return Task.CompletedTask;
     }
 
     private void MergeFieldMap(IReadOnlyList<MusicBrainzFieldMapEntry> overrides)

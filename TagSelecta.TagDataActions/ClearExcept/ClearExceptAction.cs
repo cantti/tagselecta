@@ -5,9 +5,14 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.ClearExcept;
 
 [TagDataActionInfo("clearexcept", AllowRemainingArguments = true)]
-public class ClearExceptAction : TagDataAction<ClearExceptSettings>
+public class ClearExceptAction : ITagDataAction<ClearExceptSettings>
 {
-    protected override void Execute(TagDataActionExecuteContext<ClearExceptSettings> context)
+    public Task<bool> BeforeExecute(ClearExceptSettings settings, CancellationToken token)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task Execute(TagDataActionExecuteContext<ClearExceptSettings> context, CancellationToken token)
     {
         var tagData = context.Target.CurrentTagData;
         var fieldsToKeep = BuildFieldsToKeep(context.Settings);
@@ -26,6 +31,8 @@ public class ClearExceptAction : TagDataAction<ClearExceptSettings>
         }
 
         context.Target.UpdateTagData(tagData);
+
+        return Task.CompletedTask;
     }
 
     private static HashSet<string> BuildFieldsToKeep(ClearExceptSettings settings)

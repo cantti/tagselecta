@@ -4,9 +4,14 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.Split;
 
 [TagDataActionInfo("split")]
-public class SplitAction : TagDataAction<SplitSettings>
+public class SplitAction : ITagDataAction<SplitSettings>
 {
-    protected override void Execute(TagDataActionExecuteContext<SplitSettings> context)
+    public Task<bool> BeforeExecute(SplitSettings settings, CancellationToken token)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task Execute(TagDataActionExecuteContext<SplitSettings> context, CancellationToken token)
     {
         var tagData = context.Target.CurrentTagData;
         var separator = context.Settings.Separator;
@@ -26,6 +31,8 @@ public class SplitAction : TagDataAction<SplitSettings>
         }
 
         context.Target.UpdateTagData(tagData);
+
+        return Task.CompletedTask;
     }
 
     private static List<string> Split(List<string> input, string[] settingsSeparator)

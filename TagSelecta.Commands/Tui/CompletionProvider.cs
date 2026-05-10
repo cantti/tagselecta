@@ -1,6 +1,5 @@
 using System.Reflection;
 using Spectre.Console.Cli;
-using TagSelecta.Shared.Exceptions;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.Commands.Tui;
@@ -56,7 +55,7 @@ public class CompletionProvider : ICompletionProvider
             // use only full names for command completion
             _commands.Add(nameAttribute.Name);
 
-            var settingsType = GetSettingsTypeFromAction(action.GetType());
+            var settingsType = TagDataActionTypeResolver.GetSettingsType(action.GetType());
             var props = settingsType.GetProperties();
             List<OptionInfo> options = [];
             foreach (var prop in props)
@@ -86,26 +85,6 @@ public class CompletionProvider : ICompletionProvider
         }
 
         _actions = _actions.OrderBy(x => x.Names[0]).ToList();
-    }
-
-    private static Type GetSettingsTypeFromAction(Type? actionType)
-    {
-        while (actionType != null)
-        {
-            if (
-                actionType.IsGenericType
-                && actionType.GetGenericTypeDefinition() == typeof(TagDataAction<>)
-            )
-            {
-                return actionType.GetGenericArguments()[0];
-            }
-
-            actionType = actionType.BaseType!;
-        }
-
-        throw new TagSelectaException(
-            $"{actionType} does not inherit from TagDataAction<TSettings>"
-        );
     }
 
     private IEnumerable<string> GetCommandCompletion(string word)

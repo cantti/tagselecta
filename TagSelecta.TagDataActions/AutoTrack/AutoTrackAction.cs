@@ -5,9 +5,17 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.AutoTrack;
 
 [TagDataActionInfo("autotrack")]
-public class AutoTrackAction(IAudioFileScanner fileScanner) : TagDataAction<AutoTrackSettings>
+public class AutoTrackAction(IAudioFileScanner fileScanner) : ITagDataAction<AutoTrackSettings>
 {
-    protected override void Execute(TagDataActionExecuteContext<AutoTrackSettings> context)
+    public Task<bool> BeforeExecute(AutoTrackSettings settings, CancellationToken token)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task Execute(
+        TagDataActionExecuteContext<AutoTrackSettings> context,
+        CancellationToken token
+    )
     {
         var tagData = context.Target.CurrentTagData;
         var directoryFiles = fileScanner
@@ -26,5 +34,7 @@ public class AutoTrackAction(IAudioFileScanner fileScanner) : TagDataAction<Auto
         }
 
         context.Target.UpdateTagData(tagData);
+
+        return Task.CompletedTask;
     }
 }

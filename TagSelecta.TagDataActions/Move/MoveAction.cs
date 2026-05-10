@@ -4,9 +4,14 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.Move;
 
 [TagDataActionInfo("move", "mv")]
-public class MoveAction : TagDataAction<MoveSettings>
+public class MoveAction : ITagDataAction<MoveSettings>
 {
-    protected override void Execute(TagDataActionExecuteContext<MoveSettings> context)
+    public Task<bool> BeforeExecute(MoveSettings settings, CancellationToken token)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task Execute(TagDataActionExecuteContext<MoveSettings> context, CancellationToken token)
     {
         var dir = Path.GetDirectoryName(context.Target.BackupPath)!;
         var formatter = new TagDataFormatter(
@@ -30,5 +35,7 @@ public class MoveAction : TagDataAction<MoveSettings>
         }
 
         context.Target.UpdatePath(newPath, moveOptions);
+
+        return Task.CompletedTask;
     }
 }

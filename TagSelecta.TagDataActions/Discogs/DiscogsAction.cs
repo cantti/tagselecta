@@ -10,7 +10,7 @@ using TagSelecta.TagDataActions.Discogs.DiscogsApi.ReleaseModels;
 namespace TagSelecta.TagDataActions.Discogs;
 
 [TagDataActionInfo("discogs")]
-public class DiscogsAction : TagDataAction<DiscogsSettings>
+public class DiscogsAction : ITagDataAction<DiscogsSettings>
 {
     private readonly IDiscogsApi _discogsApi;
     private readonly DiscogsImageDownloader _discogsImageDownloader;
@@ -54,7 +54,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         MergeFieldMap(discogsConfig.FieldMap);
     }
 
-    public override async Task<bool> BeforeExecuteAsync(
+    public async Task<bool> BeforeExecute(
         DiscogsSettings settings,
         CancellationToken token
     )
@@ -83,7 +83,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         return true;
     }
 
-    protected override void Execute(TagDataActionExecuteContext<DiscogsSettings> context)
+    public Task Execute(TagDataActionExecuteContext<DiscogsSettings> context, CancellationToken token)
     {
         if (_release is null)
         {
@@ -100,7 +100,7 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
 
         if (trackIndex > tracks.Count - 1)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         foreach (var entry in _fieldMap)
@@ -115,6 +115,8 @@ public class DiscogsAction : TagDataAction<DiscogsSettings>
         tagData.Picture = [new Picture(_releaseImage)];
 
         context.Target.UpdateTagData(tagData);
+
+        return Task.CompletedTask;
     }
 
     private static (string Type, int Id) GetDiscogsReleaseInfo(string input)

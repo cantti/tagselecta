@@ -6,11 +6,11 @@ using File = System.IO.File;
 namespace TagSelecta.TagDataActions.ExtractPicture;
 
 [TagDataActionInfo("extractpicture")]
-public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
+public class ExtractPictureAction : ITagDataAction<ExtractPictureSettings>
 {
     private readonly List<PictureType> _types = [];
 
-    protected override bool BeforeExecute(ExtractPictureSettings settings)
+    public Task<bool> BeforeExecute(ExtractPictureSettings settings, CancellationToken token)
     {
         if (settings.Type is not null)
         {
@@ -24,10 +24,10 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
             }
         }
 
-        return true;
+        return Task.FromResult(true);
     }
 
-    protected override void Execute(TagDataActionExecuteContext<ExtractPictureSettings> context)
+    public Task Execute(TagDataActionExecuteContext<ExtractPictureSettings> context, CancellationToken token)
     {
         var tagData = context.Target.CurrentTagData;
         var dir = Path.GetDirectoryName(context.Target.BackupPath)!;
@@ -96,5 +96,7 @@ public class ExtractPictureAction : TagDataAction<ExtractPictureSettings>
 
             File.WriteAllBytes(filePath, picture.Data.ToArray());
         }
+
+        return Task.CompletedTask;
     }
 }

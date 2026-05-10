@@ -4,9 +4,14 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.TitleCase;
 
 [TagDataActionInfo("titlecase")]
-public class TitleCaseAction : TagDataAction<TitleCaseSettings>
+public class TitleCaseAction : ITagDataAction<TitleCaseSettings>
 {
-    protected override void Execute(TagDataActionExecuteContext<TitleCaseSettings> context)
+    public Task<bool> BeforeExecute(TitleCaseSettings settings, CancellationToken token)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task Execute(TagDataActionExecuteContext<TitleCaseSettings> context, CancellationToken token)
     {
         var tagData = context.Target.CurrentTagData;
         foreach (var field in tagData.Fields)
@@ -15,6 +20,8 @@ public class TitleCaseAction : TagDataAction<TitleCaseSettings>
         }
 
         context.Target.UpdateTagData(tagData);
+
+        return Task.CompletedTask;
     }
 
     private static string ToTitleCase(string input)

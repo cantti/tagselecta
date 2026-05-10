@@ -56,7 +56,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         bool allowRemainingArguments
     )
     {
-        var settingsType = GetSettingsTypeFromAction(action.GetType());
+        var settingsType = TagDataActionTypeResolver.GetSettingsType(action.GetType());
         var baseSettings = (TagDataActionSettings)(
             Activator.CreateInstance(settingsType)
             ?? throw new TagSelectaException("Failed to create settings instance")
@@ -148,23 +148,4 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         return baseSettings;
     }
 
-    private static Type GetSettingsTypeFromAction(Type? actionType)
-    {
-        while (actionType != null)
-        {
-            if (
-                actionType.IsGenericType
-                && actionType.GetGenericTypeDefinition() == typeof(TagDataAction<>)
-            )
-            {
-                return actionType.GetGenericArguments()[0];
-            }
-
-            actionType = actionType.BaseType!;
-        }
-
-        throw new TagSelectaException(
-            $"{actionType} does not inherit from TagDataAction<TSettings>"
-        );
-    }
 }

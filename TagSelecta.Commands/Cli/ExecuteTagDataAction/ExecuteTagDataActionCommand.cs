@@ -7,7 +7,7 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.Commands.Cli.ExecuteTagDataAction;
 
 public class ExecuteTagDataActionCommand<TSettings>(
-    TagDataAction<TSettings> action,
+    ITagDataAction<TSettings> action,
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
     IFileSystem fs,
@@ -28,7 +28,7 @@ public class ExecuteTagDataActionCommand<TSettings>(
                 return 1;
             }
 
-            if (!await action.BeforeExecuteAsync(settings, ct))
+            if (!await action.BeforeExecute(settings, ct))
             {
                 return 0;
             }

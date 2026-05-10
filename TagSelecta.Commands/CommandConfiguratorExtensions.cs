@@ -21,10 +21,10 @@ public static class CommandConfiguratorExtensions
             ?? throw new TagSelectaException("TagDataActionAttribute not found");
 
         // extract TSettings from TAction
-        var settingsType = GetSettingsTypeFromAction(typeof(TAction));
+        var settingsType = TagDataActionTypeResolver.GetSettingsType(typeof(TAction));
 
         // make TagDataAction<TSettings>
-        var actionType = typeof(TagDataAction<>).MakeGenericType(settingsType);
+        var actionType = typeof(ITagDataAction<>).MakeGenericType(settingsType);
 
         // make TagDataCommand<TSettings>
         var commandType = typeof(ExecuteTagDataActionCommand<>).MakeGenericType(settingsType);
@@ -57,23 +57,4 @@ public static class CommandConfiguratorExtensions
         return commandConfigurator;
     }
 
-    private static Type GetSettingsTypeFromAction(Type? actionType)
-    {
-        while (actionType != null)
-        {
-            if (
-                actionType.IsGenericType
-                && actionType.GetGenericTypeDefinition() == typeof(TagDataAction<>)
-            )
-            {
-                return actionType.GetGenericArguments()[0];
-            }
-
-            actionType = actionType.BaseType!;
-        }
-
-        throw new TagSelectaException(
-            $"{actionType} does not inherit from TagDataAction<TSettings>"
-        );
-    }
 }

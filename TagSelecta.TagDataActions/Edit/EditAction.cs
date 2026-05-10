@@ -8,9 +8,14 @@ using TagSelecta.TagDataActions.Abstractions;
 namespace TagSelecta.TagDataActions.Edit;
 
 [TagDataActionInfo("edit", "e", AllowRemainingArguments = true)]
-public class EditAction(IDownloader downloader) : TagDataAction<EditSettings>
+public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
 {
-    public override async Task ExecuteAsync(
+    public Task<bool> BeforeExecute(EditSettings settings, CancellationToken token)
+    {
+        return Task.FromResult(true);
+    }
+
+    public async Task Execute(
         TagDataActionExecuteContext<EditSettings> context,
         CancellationToken token
     )
