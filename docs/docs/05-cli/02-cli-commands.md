@@ -36,6 +36,8 @@ COMMANDS:
     musicbrainz <path>       Update album from musicbrainz. You can pass        
                              musicbrainz release id (not master) or query to    
                              search                                             
+    clearexcept <path>       Clear all tag fields except the specified ones and 
+                             optionally keep the picture                        
     ui <path>                Interactive UI (TUI)
 ```
 
