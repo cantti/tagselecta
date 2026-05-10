@@ -1,4 +1,4 @@
-# MusicBrainz command
+# Musicbrainz command
 
 Download metadata from MusicBrainz.
 
