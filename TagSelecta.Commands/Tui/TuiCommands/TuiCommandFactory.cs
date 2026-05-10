@@ -5,7 +5,7 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 
 public class TuiCommandFactory : ITuiCommandFactory
 {
-    private readonly List<(string[] Names, ITuiCommand command)> _commands = [];
+    private readonly List<TuiCommandDescriptor> _commands = [];
 
     public TuiCommandFactory(IServiceProvider provider)
     {
@@ -19,20 +19,32 @@ public class TuiCommandFactory : ITuiCommandFactory
                 continue;
             }
 
-            _commands.Add((attr.Names, command));
+            _commands.Add(
+                new TuiCommandDescriptor(
+                    attr.Names,
+                    () => provider.GetServices<ITuiCommand>().Single(x => x.GetType() == type),
+                    command.GetType()
+                )
+            );
         }
     }
 
     public ITuiCommand Create(string name)
     {
-        var command = _commands.SingleOrDefault(c => c.Names.Contains(name));
-        if (command == default)
-        {
-            command = _commands.Single(c =>
-                c.command.GetType() == typeof(ExecuteTagDataActionCommand)
-            );
-        }
+        var command =
+            _commands.SingleOrDefault(c => c.Names.Contains(name))
+            ?? _commands.Single(c => c.Type == typeof(ExecuteTagDataActionCommand));
+        return command.Command.Invoke();
+    }
 
-        return command.command;
+    private class TuiCommandDescriptor(
+        IEnumerable<string> names,
+        Func<ITuiCommand> command,
+        Type type
+    )
+    {
+        public IReadOnlyList<string> Names { get; } = names.ToList();
+        public Func<ITuiCommand> Command { get; } = command;
+        public Type Type { get; } = type;
     }
 }
