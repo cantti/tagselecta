@@ -14,7 +14,8 @@ public class TuiApp(
     ITuiCommandFactory commandFactory,
     TuiAppConfig config,
     InputHandler inputHandler,
-    HotkeyMap hotkeys
+    HotkeyMap hotkeys,
+    ICompletionProvider completionProvider
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private readonly Lock _printLock = new();
@@ -96,6 +97,10 @@ public class TuiApp(
                 .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
+            completionProvider.AddFieldNameOptions(
+                Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
+            );
+
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
             _ = StartInputLoop(channel);
             await StartUiLoop(channel);
@@ -117,6 +122,9 @@ public class TuiApp(
         const int activeTickMs = 16;
         const int idleTickMs = 200;
         const int activeWindowMs = 300;
+
+        var lastConsoleWidth = Console.WindowWidth;
+        var lastConsoleHeight = Console.WindowHeight;
 
         return console
             .Live(new Panel("Starting..."))
@@ -141,6 +149,15 @@ public class TuiApp(
                     if (hadInput)
                     {
                         activeUntil = DateTime.UtcNow.AddMilliseconds(activeWindowMs);
+                        Invalidate();
+                    }
+                    else if (
+                        lastConsoleWidth != Console.WindowWidth
+                        || lastConsoleHeight != Console.WindowHeight
+                    )
+                    {
+                        lastConsoleWidth = Console.WindowWidth;
+                        lastConsoleHeight = Console.WindowHeight;
                         Invalidate();
                     }
 

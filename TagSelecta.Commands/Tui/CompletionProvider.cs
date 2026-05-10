@@ -33,6 +33,16 @@ public class CompletionProvider : ICompletionProvider
             : GetOptionCompletion(currentCommand.Command, context.Token);
     }
 
+    public void AddFieldNameOptions(IEnumerable<string> options)
+    {
+        // todo find better way to add field names only to edit command
+        // completion provider should not know about "edit" command
+        var action = _actions.Single(x => x.Names.Contains("edit"));
+        var existingOptions = action.Options.Select(x => x.Name).ToHashSet();
+        var optionsToAdd = options.Where(x => !existingOptions.Contains(x));
+        action.Options.AddRange(optionsToAdd.Select(x => new OptionInfo(x, false)));
+    }
+
     private void AddActions(IEnumerable<ITagDataAction> actions)
     {
         foreach (var action in actions)
@@ -106,11 +116,17 @@ public class CompletionProvider : ICompletionProvider
     private IEnumerable<string> GetOptionCompletion(string currentCommand, string word)
     {
         var action = _actions.FirstOrDefault(a => a.Names.Contains(currentCommand));
+        var unescapedWord = UnescapeKeyToken(word);
         return action is null
             ? []
             : action
-                .Options.Where(o => o.Name.StartsWith(word))
-                .Select(x => !x.IsFlag ? $"{x.Name[word.Length..]}=" : x.Name[word.Length..]);
+                .Options.Where(o => o.Name.StartsWith(unescapedWord))
+                .Select(x =>
+                {
+                    var suffix = x.Name[unescapedWord.Length..];
+                    var escapedSuffix = EscapeKeyToken(suffix);
+                    return !x.IsFlag ? $"{escapedSuffix}=" : escapedSuffix;
+                });
     }
 
     private (string Command, bool IsTyping) GetCurrentCommand(string leftOfCursor)
@@ -180,4 +196,41 @@ public class CompletionProvider : ICompletionProvider
     private record ActionInfo(List<string> Names, List<OptionInfo> Options);
 
     private record OptionInfo(string Name, bool IsFlag);
+
+    private static string EscapeKeyToken(string value)
+    {
+        return value.Replace("\\", "\\\\").Replace(" ", "\\ ");
+    }
+
+    private static string UnescapeKeyToken(string value)
+    {
+        var result = new char[value.Length];
+        var idx = 0;
+        var escaped = false;
+
+        foreach (var ch in value)
+        {
+            if (escaped)
+            {
+                result[idx++] = ch;
+                escaped = false;
+                continue;
+            }
+
+            if (ch == '\\')
+            {
+                escaped = true;
+                continue;
+            }
+
+            result[idx++] = ch;
+        }
+
+        if (escaped)
+        {
+            result[idx++] = '\\';
+        }
+
+        return new string(result, 0, idx);
+    }
 }

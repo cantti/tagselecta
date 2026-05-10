@@ -86,29 +86,7 @@ public static class TagDataPrinter
             return;
         }
 
-        var keyPretty = key switch
-        {
-            FieldName.Album => "Album",
-            FieldName.AlbumArtist => "Album Artist",
-            FieldName.Artist => "Artist",
-            FieldName.Bpm => "BPM",
-            FieldName.Comment => "Comment",
-            FieldName.Composer => "Composer",
-            FieldName.Conductor => "Conductor",
-            FieldName.Copyright => "Copyright",
-            FieldName.Date => "Date",
-            FieldName.DiscNumber => "Disc Number",
-            FieldName.DiscTotal => "Disc Total",
-            FieldName.Genre => "Genre",
-            FieldName.Isrc => "ISRC",
-            FieldName.Publisher => "Publisher",
-            FieldName.Title => "Title",
-            FieldName.TrackNumber => "Track Number",
-            FieldName.TrackTotal => "Track Total",
-            _ => key,
-        };
-
-        var keyCol = new Text(keyPretty, new Style(Color.Blue));
+        var keyCol = new Text(key, new Style(Color.Blue));
 
         var elements = new List<IRenderable>();
         if (eq ?? value1 == value2)

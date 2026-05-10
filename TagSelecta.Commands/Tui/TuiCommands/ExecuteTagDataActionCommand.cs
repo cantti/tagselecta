@@ -99,7 +99,20 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             }
             else if (prop.PropertyType == typeof(bool))
             {
-                prop.SetValue(baseSettings, matchedArgs[0].Value is "true" or "1" or "");
+                var value = matchedArgs[0].Value;
+                switch (value)
+                {
+                    case "true" or "1":
+                        prop.SetValue(baseSettings, true);
+                        break;
+                    case "false" or "0":
+                        prop.SetValue(baseSettings, false);
+                        break;
+                    default:
+                        throw new TagSelectaException(
+                            $"Invalid value '{value}' for '{matchedArgs[0].Key}'. Expected true/false or 1/0."
+                        );
+                }
             }
             else
             {

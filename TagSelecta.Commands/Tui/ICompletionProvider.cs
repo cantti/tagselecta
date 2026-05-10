@@ -10,4 +10,6 @@ public interface ICompletionProvider
     /// <param name="completionIndex"></param>
     /// <returns></returns>
     IEnumerable<string> GetCompletions(string input, int cursorPos);
+
+    void AddFieldNameOptions(IEnumerable<string> options);
 }

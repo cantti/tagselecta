@@ -8,7 +8,7 @@ public class CommandParserTests
     public void TryParse_ValidSingleCommandWithOptions_ReturnsParsedCommand()
     {
         var success = CommandParser.TryParse(
-            "write key=title value=\"Hello World\" force",
+            "write key=title value=\"Hello World\" force=true music\\ brainz\\ id=123 flag\\ with\\ space=false",
             out var parsedCommands
         );
 
@@ -17,13 +17,15 @@ public class CommandParserTests
 
         var command = parsedCommands[0];
         Assert.Equal("write", command.Name);
-        Assert.Equal(3, command.Options.Count);
+        Assert.Equal(5, command.Options.Count);
 
         var options = command.Options;
-        Assert.Equal(3, options.Count);
+        Assert.Equal(5, options.Count);
         Assert.Equal("title", options.Single(x => x.Key == "key").Value);
         Assert.Equal("Hello World", options.Single(x => x.Key == "value").Value);
-        Assert.Equal(string.Empty, options.Single(x => x.Key == "force").Value);
+        Assert.Equal("123", options.Single(x => x.Key == "music brainz id").Value);
+        Assert.Equal("true", options.Single(x => x.Key == "force").Value);
+        Assert.Equal("false", options.Single(x => x.Key == "flag with space").Value);
     }
 
     [Fact]

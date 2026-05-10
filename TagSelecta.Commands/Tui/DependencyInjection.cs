@@ -33,7 +33,7 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommand, VersionCommand>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
         services.AddTransient<IGithubClient, GithubClient>();
-        services.AddTransient<ICompletionProvider, CompletionProvider>();
+        services.AddSingleton<ICompletionProvider, CompletionProvider>();
         services.AddTransient<InputHandler>();
         services.AddSingleton<HotkeyMap>();
 
