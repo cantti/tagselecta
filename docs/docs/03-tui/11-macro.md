@@ -9,7 +9,7 @@ Example:
 ```toml
 [macros]
 reggae="edit genre=Reggae"
-clear="edit clear"
+move="move t=\"../{{ year }} - {{ album }}/{{ discnumber ? pad(discnumber) + '.' : '' }}{{ pad(tracknumber) }}. {{ title }}.{{ ext }}\""
 ```
 
 To call a macro use `:macro <name>` (`:m <name>`) command.
