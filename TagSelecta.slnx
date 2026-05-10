@@ -5,6 +5,7 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="TagSelecta.App/TagSelecta.App.csproj" />
+  <Project Path="TagSelecta.Commands.Tests/TagSelecta.Commands.Tests.csproj" />
   <Project Path="TagSelecta.Commands\TagSelecta.Commands.csproj" />
   <Project Path="TagSelecta.Shared.Tests/TagSelecta.Shared.Tests.csproj" />
   <Project Path="TagSelecta.Shared/TagSelecta.Shared.csproj" />
