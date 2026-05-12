@@ -5,6 +5,7 @@ using TagSelecta.Commands;
 using TagSelecta.Commands.Cli.Find;
 using TagSelecta.Commands.Tui;
 using TagSelecta.TagDataActions.AutoTrack;
+using TagSelecta.TagDataActions.Clear;
 using TagSelecta.TagDataActions.ClearExcept;
 using TagSelecta.TagDataActions.Discogs;
 using TagSelecta.TagDataActions.Discogs.DiscogsApi;
@@ -32,6 +33,7 @@ public static class CommandRegistration
         AddFind(configurator, services);
         AddMusicBrainz(configurator, services);
         AddClearExcept(configurator, services);
+        AddClear(configurator, services);
         AddTui(configurator, services);
     }
 
@@ -154,6 +156,14 @@ public static class CommandRegistration
                 "Clear all tag fields except the specified ones and optionally keep the picture."
             )
             .WithExample("clearexcept", "song.mp3", "--title", "--artist", "--picture");
+    }
+
+    private static void AddClear(IConfigurator configurator, IServiceCollection services)
+    {
+        configurator
+            .AddTagDataAction<ClearAction>(services)
+            .WithDescription("Clear specified tag fields")
+            .WithExample("clear", "song.mp3", "--title", "--artist", "--picture");
     }
 
     private static void AddTui(IConfigurator configurator, IServiceCollection services)

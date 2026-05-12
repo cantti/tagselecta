@@ -2,9 +2,9 @@ using Spectre.Console.Cli;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
-namespace TagSelecta.TagDataActions.ClearExcept;
+namespace TagSelecta.TagDataActions.Clear;
 
-public class ClearExceptSettings : TagDataActionSettings
+public class ClearSettings : TagDataActionSettings
 {
     [CommandOption($"--{FieldName.Album}")]
     public bool Album { get; set; }

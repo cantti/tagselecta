@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
+using TagSelecta.Commands.Tui.Completion;
 using TagSelecta.Commands.Tui.TuiCommands;
 using TagSelecta.Commands.Tui.Widgets;
 using TagSelecta.Shared.IO;
@@ -97,7 +98,7 @@ public class TuiApp(
                 .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
-            completionProvider.AddFieldNameOptions(
+            completionProvider.GenerateCompletions(
                 Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
             );
 

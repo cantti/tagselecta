@@ -1,3 +1,5 @@
+using TagSelecta.Commands.Tui.Completion;
+
 namespace TagSelecta.Commands.Tui;
 
 public class InputHandler(HotkeyMap hotkeys, ICompletionProvider completionProvider)

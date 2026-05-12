@@ -10,6 +10,8 @@ namespace TagSelecta.TagDataActions.Edit;
 [TagDataActionInfo("edit", "e", AllowRemainingArguments = true)]
 public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
 {
+    public FieldNameCompletion FieldNameCompletion => FieldNameCompletion.String;
+
     public Task<bool> BeforeExecute(EditSettings settings, CancellationToken token)
     {
         return Task.FromResult(true);

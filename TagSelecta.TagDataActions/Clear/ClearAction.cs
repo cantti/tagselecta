@@ -1,35 +1,32 @@
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
-namespace TagSelecta.TagDataActions.ClearExcept;
+namespace TagSelecta.TagDataActions.Clear;
 
-[TagDataActionInfo("clearexcept", AllowRemainingArguments = true)]
-public class ClearExceptAction : ITagDataAction<ClearExceptSettings>
+[TagDataActionInfo("clear", AllowRemainingArguments = true)]
+public class ClearAction : ITagDataAction<ClearSettings>
 {
     public FieldNameCompletion FieldNameCompletion => FieldNameCompletion.Boolean;
 
-    public Task<bool> BeforeExecute(ClearExceptSettings settings, CancellationToken token)
+    public Task<bool> BeforeExecute(ClearSettings settings, CancellationToken token)
     {
         return Task.FromResult(true);
     }
 
-    public Task Execute(
-        TagDataActionExecuteContext<ClearExceptSettings> context,
-        CancellationToken token
-    )
+    public Task Execute(TagDataActionExecuteContext<ClearSettings> context, CancellationToken token)
     {
         var tagData = context.Target.CurrentTagData;
-        var fieldsToKeep = BuildFieldsToKeep(context.Settings);
+        var fieldsToRemove = BuildFieldsToRemove(context.Settings);
 
         foreach (var field in tagData.Fields)
         {
-            if (!fieldsToKeep.Contains(field.Key))
+            if (fieldsToRemove.Contains(field.Key))
             {
                 tagData.SetValue(field.Key, "");
             }
         }
 
-        if (!context.Settings.Picture)
+        if (context.Settings.Picture)
         {
             tagData.ClearPicture();
         }
@@ -39,11 +36,11 @@ public class ClearExceptAction : ITagDataAction<ClearExceptSettings>
         return Task.CompletedTask;
     }
 
-    private static HashSet<string> BuildFieldsToKeep(ClearExceptSettings settings)
+    private static HashSet<string> BuildFieldsToRemove(ClearSettings settings)
     {
         var fieldsToKeep = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        var settingProperties = typeof(ClearExceptSettings)
+        var settingProperties = typeof(ClearSettings)
             .GetProperties()
             .Where(x => x.PropertyType == typeof(bool))
             .ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);

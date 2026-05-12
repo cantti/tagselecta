@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TagSelecta.Commands.Github;
+using TagSelecta.Commands.Tui.Completion;
 using TagSelecta.Commands.Tui.TuiCommands;
 
 namespace TagSelecta.Commands.Tui;

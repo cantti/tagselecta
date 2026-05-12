@@ -1,4 +1,4 @@
-namespace TagSelecta.Commands.Tui;
+namespace TagSelecta.Commands.Tui.Completion;
 
 public interface ICompletionProvider
 {
@@ -11,5 +11,5 @@ public interface ICompletionProvider
     /// <returns></returns>
     IEnumerable<string> GetCompletions(string input, int cursorPos);
 
-    void AddFieldNameOptions(IEnumerable<string> options);
+    void GenerateCompletions(IEnumerable<string> fieldNames);
 }

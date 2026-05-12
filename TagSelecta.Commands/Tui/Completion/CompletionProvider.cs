@@ -2,19 +2,76 @@ using System.Reflection;
 using Spectre.Console.Cli;
 using TagSelecta.TagDataActions.Abstractions;
 
-namespace TagSelecta.Commands.Tui;
+namespace TagSelecta.Commands.Tui.Completion;
 
 public class CompletionProvider : ICompletionProvider
 {
-    private readonly List<string> _commands = [];
-    private List<ActionInfo> _actions = [];
+    private readonly IEnumerable<ITagDataAction> _tagDataActions;
+
+    private List<CompletionSpec> _completionSpecs = [];
 
     public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
     {
-        AddActions(tagDataActions);
+        _tagDataActions = tagDataActions;
+    }
 
-        // todo find way to add tui commands
-        _commands.Add("version");
+    public void GenerateCompletions(IEnumerable<string> fieldNames)
+    {
+        foreach (var action in _tagDataActions)
+        {
+            var nameAttribute = action.GetType().GetCustomAttribute<TagDataActionInfoAttribute>();
+            if (nameAttribute is null)
+            {
+                continue;
+            }
+
+            var settingsType = TagDataActionTypeResolver.GetSettingsType(action.GetType());
+            var settingsProps = settingsType.GetProperties();
+            List<OptionSpec> options = [];
+            foreach (var prop in settingsProps)
+            {
+                var attr = prop.GetCustomAttribute<CommandOptionAttribute>();
+                if (attr is null)
+                {
+                    continue;
+                }
+
+                // use only long names for option completion and ignore "yes"
+                options.AddRange(
+                    attr.LongNames.Where(x =>
+                            !x.Equals(
+                                nameof(TagDataActionSettings.Yes),
+                                StringComparison.CurrentCultureIgnoreCase
+                            )
+                        )
+                        .Select(x => new OptionSpec(x, prop.PropertyType == typeof(bool)))
+                );
+            }
+
+            if (action.FieldNameCompletion != FieldNameCompletion.Disabled)
+            {
+                options.AddRange(
+                    fieldNames
+                        .Where(x => options.All(x2 => x2.Name != x))
+                        .Select(x => new OptionSpec(
+                            x,
+                            action.FieldNameCompletion == FieldNameCompletion.Boolean
+                        ))
+                );
+            }
+
+            List<string> names = [nameAttribute.Name];
+            if (nameAttribute.Alias is not null)
+            {
+                names.Add(nameAttribute.Alias);
+            }
+
+            _completionSpecs.Add(new CompletionSpec(names, options));
+        }
+
+        _completionSpecs = _completionSpecs.OrderBy(x => x.Names[0]).ToList();
+
+        _completionSpecs.Add(new CompletionSpec(["version"], []));
     }
 
     public IEnumerable<string> GetCompletions(string input, int cursorPos)
@@ -32,79 +89,30 @@ public class CompletionProvider : ICompletionProvider
             : GetOptionCompletion(currentCommand.Command, context.Token);
     }
 
-    public void AddFieldNameOptions(IEnumerable<string> options)
-    {
-        // todo find better way to add field names only to edit command
-        // completion provider should not know about "edit" command
-        var action = _actions.Single(x => x.Names.Contains("edit"));
-        var existingOptions = action.Options.Select(x => x.Name).ToHashSet();
-        var optionsToAdd = options.Where(x => !existingOptions.Contains(x));
-        action.Options.AddRange(optionsToAdd.Select(x => new OptionInfo(x, false)));
-    }
-
-    private void AddActions(IEnumerable<ITagDataAction> actions)
-    {
-        foreach (var action in actions)
-        {
-            var nameAttribute = action.GetType().GetCustomAttribute<TagDataActionInfoAttribute>();
-            if (nameAttribute is null)
-            {
-                continue;
-            }
-
-            // use only full names for command completion
-            _commands.Add(nameAttribute.Name);
-
-            var settingsType = TagDataActionTypeResolver.GetSettingsType(action.GetType());
-            var props = settingsType.GetProperties();
-            List<OptionInfo> options = [];
-            foreach (var prop in props)
-            {
-                var attr = prop.GetCustomAttribute<CommandOptionAttribute>();
-                if (attr is null)
-                {
-                    continue;
-                }
-
-                // use only long names for option completion and ignore "yes"
-                options.AddRange(
-                    attr.LongNames.Where(x => x != nameof(TagDataActionSettings.Yes).ToLower())
-                        .Select(x => new OptionInfo(x, prop.PropertyType == typeof(bool)))
-                );
-            }
-
-            options = options.OrderBy(x => x.Name).ToList();
-
-            List<string> names = [nameAttribute.Name];
-            if (nameAttribute.Alias is not null)
-            {
-                names.Add(nameAttribute.Alias);
-            }
-
-            _actions.Add(new ActionInfo(names, options));
-        }
-
-        _actions = _actions.OrderBy(x => x.Names[0]).ToList();
-    }
-
     private IEnumerable<string> GetCommandCompletion(string word)
     {
-        return _commands.Where(c => c.StartsWith(word)).Select(x => x[word.Length..]);
+        return _completionSpecs
+            // use only long names
+            .Select(x => x.Names[0])
+            .Where(c => c.StartsWith(word))
+            .OrderBy(x => x)
+            .Select(x => x[word.Length..]);
     }
 
     private IEnumerable<string> GetOptionCompletion(string currentCommand, string word)
     {
-        var action = _actions.FirstOrDefault(a => a.Names.Contains(currentCommand));
+        var action = _completionSpecs.FirstOrDefault(a => a.Names.Contains(currentCommand));
         var unescapedWord = UnescapeKeyToken(word);
         return action is null
             ? []
             : action
                 .Options.Where(o => o.Name.StartsWith(unescapedWord))
+                .OrderBy(x => x.Name)
                 .Select(x =>
                 {
                     var suffix = x.Name[unescapedWord.Length..];
                     var escapedSuffix = EscapeKeyToken(suffix);
-                    return !x.IsFlag ? $"{escapedSuffix}=" : escapedSuffix;
+                    return !x.Boolean ? $"{escapedSuffix}=" : escapedSuffix;
                 });
     }
 
@@ -169,12 +177,6 @@ public class CompletionProvider : ICompletionProvider
         var disableCompletion = inQuotes || token.Contains('=');
         return new CursorContext(leftOfCursor, token, disableCompletion);
     }
-
-    private record CursorContext(string LeftOfCursor, string Token, bool DisableCompletion);
-
-    private record ActionInfo(List<string> Names, List<OptionInfo> Options);
-
-    private record OptionInfo(string Name, bool IsFlag);
 
     private static string EscapeKeyToken(string value)
     {
