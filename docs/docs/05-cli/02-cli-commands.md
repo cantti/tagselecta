@@ -38,6 +38,7 @@ COMMANDS:
                              search                                             
     clearexcept <path>       Clear all tag fields except the specified ones and 
                              optionally keep the picture                        
+    clear <path>             Clear specified tag fields                         
     ui <path>                Interactive UI (TUI)
 ```
 
