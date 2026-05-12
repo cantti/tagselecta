@@ -8,7 +8,7 @@ public class CompletionProvider : ICompletionProvider
 {
     private readonly IEnumerable<ITagDataAction> _tagDataActions;
 
-    private List<CompletionSpec> _completionSpecs = [];
+    private readonly List<CompletionSpec> _completionSpecs = [];
 
     public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
     {
@@ -27,7 +27,9 @@ public class CompletionProvider : ICompletionProvider
 
             var settingsType = TagDataActionTypeResolver.GetSettingsType(action.GetType());
             var settingsProps = settingsType.GetProperties();
+
             List<OptionSpec> options = [];
+
             foreach (var prop in settingsProps)
             {
                 var attr = prop.GetCustomAttribute<CommandOptionAttribute>();
@@ -60,16 +62,15 @@ public class CompletionProvider : ICompletionProvider
                 );
             }
 
-            List<string> names = [nameAttribute.Name];
+            List<string> commandNames = [nameAttribute.Name];
+
             if (nameAttribute.Alias is not null)
             {
-                names.Add(nameAttribute.Alias);
+                commandNames.Add(nameAttribute.Alias);
             }
 
-            _completionSpecs.Add(new CompletionSpec(names, options));
+            _completionSpecs.Add(new CompletionSpec(commandNames, options));
         }
-
-        _completionSpecs = _completionSpecs.OrderBy(x => x.Names[0]).ToList();
 
         _completionSpecs.Add(new CompletionSpec(["version"], []));
     }
@@ -93,7 +94,7 @@ public class CompletionProvider : ICompletionProvider
     {
         return _completionSpecs
             // use only long names
-            .Select(x => x.Names[0])
+            .Select(x => x.Command[0])
             .Where(c => c.StartsWith(word))
             .OrderBy(x => x)
             .Select(x => x[word.Length..]);
@@ -101,7 +102,7 @@ public class CompletionProvider : ICompletionProvider
 
     private IEnumerable<string> GetOptionCompletion(string currentCommand, string word)
     {
-        var action = _completionSpecs.FirstOrDefault(a => a.Names.Contains(currentCommand));
+        var action = _completionSpecs.FirstOrDefault(a => a.Command.Contains(currentCommand));
         var unescapedWord = UnescapeKeyToken(word);
         return action is null
             ? []

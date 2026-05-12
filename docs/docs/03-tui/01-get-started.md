@@ -17,7 +17,9 @@ Use `tab` or `space` to select file. Use `esc` to unselect.
 
 ## Edit tags
 
-Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`. Value can be in double quotes if it contains spaces.
+Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`.
+Value can be in double quotes if it contains spaces. 
+Boolean options can be specified as just the option name (e.g., `option` instead of `option=true`).
 Exception is `:macro` (`:m`) command which has just one argument: `:macro <macro_name>`.
 
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.

@@ -29,6 +29,7 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - `:split` command to split artists, album artists and composers
 - `:autotrack` command to automatically set track number and total tracks based on disc and disc total
 - `:discogs` command to update album metadata from Discogs release
+- `:clear` command to clear specified tag fields
 - `:clearexcept` command to clear all tag fields except the ones explicitly kept
 - `find` command to find files by metadata (CLI only)
 - Proper support for multi-value fields (`artist`, `albumartist`, `composer`, `genre`) across tag formats
@@ -129,6 +130,7 @@ Use `tab` or `space` to select file. Use `esc` to unselect.
 
 Commands are executed using command mode (`:`). All command have the following format: `:command <option>=<value>`.
 Value can be in double quotes if it contains spaces.
+Boolean options can be specified as just the option name (e.g., `option` instead of `option=true`).
 Exception is `:macro` (`:m`) command which has just one argument: `:macro <macro_name>`.
 
 Try running `:edit genre=Reggae`. This will edit genre field for selected files.

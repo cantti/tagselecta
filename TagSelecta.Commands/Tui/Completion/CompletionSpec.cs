@@ -1,3 +1,3 @@
 namespace TagSelecta.Commands.Tui.Completion;
 
-public record CompletionSpec(List<string> Names, List<OptionSpec> Options);
+public record CompletionSpec(List<string> Command, List<OptionSpec> Options);
