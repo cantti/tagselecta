@@ -19,8 +19,8 @@ public class CompletionProvider : ICompletionProvider
     {
         foreach (var action in _tagDataActions)
         {
-            var nameAttribute = action.GetType().GetCustomAttribute<TagDataActionInfoAttribute>();
-            if (nameAttribute is null)
+            var infoAttribute = action.GetType().GetCustomAttribute<TagDataActionInfoAttribute>();
+            if (infoAttribute is null)
             {
                 continue;
             }
@@ -50,23 +50,23 @@ public class CompletionProvider : ICompletionProvider
                 );
             }
 
-            if (action.FieldNameCompletion != FieldNameCompletion.Disabled)
+            if (infoAttribute.FieldNameCompletion != FieldNameCompletion.Disabled)
             {
                 options.AddRange(
                     fieldNames
                         .Where(x => options.All(x2 => x2.Name != x))
                         .Select(x => new OptionSpec(
                             x,
-                            action.FieldNameCompletion == FieldNameCompletion.Boolean
+                            infoAttribute.FieldNameCompletion == FieldNameCompletion.Boolean
                         ))
                 );
             }
 
-            List<string> commandNames = [nameAttribute.Name];
+            List<string> commandNames = [infoAttribute.Name];
 
-            if (nameAttribute.Alias is not null)
+            if (infoAttribute.Alias is not null)
             {
-                commandNames.Add(nameAttribute.Alias);
+                commandNames.Add(infoAttribute.Alias);
             }
 
             _completionSpecs.Add(new CompletionSpec(commandNames, options));

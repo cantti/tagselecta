@@ -3,11 +3,13 @@ using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Clear;
 
-[TagDataActionInfo("clear", AllowRemainingArguments = true)]
+[TagDataActionInfo(
+    "clear",
+    AllowRemainingArguments = true,
+    FieldNameCompletion = FieldNameCompletion.Boolean
+)]
 public class ClearAction : ITagDataAction<ClearSettings>
 {
-    public FieldNameCompletion FieldNameCompletion => FieldNameCompletion.Boolean;
-
     public Task<bool> BeforeExecute(ClearSettings settings, CancellationToken token)
     {
         return Task.FromResult(true);

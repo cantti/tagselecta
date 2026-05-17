@@ -6,4 +6,12 @@ public class TagDataActionInfoAttribute(string name, string? alias = null) : Att
     public string Name { get; } = name;
     public string? Alias { get; } = alias;
     public bool AllowRemainingArguments { get; set; }
+    public FieldNameCompletion FieldNameCompletion { get; set; } = FieldNameCompletion.Disabled;
+}
+
+public enum FieldNameCompletion
+{
+    Disabled,
+    Boolean,
+    String,
 }

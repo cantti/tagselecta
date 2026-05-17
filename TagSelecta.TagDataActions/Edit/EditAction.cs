@@ -7,11 +7,14 @@ using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Edit;
 
-[TagDataActionInfo("edit", "e", AllowRemainingArguments = true)]
+[TagDataActionInfo(
+    "edit",
+    "e",
+    AllowRemainingArguments = true,
+    FieldNameCompletion = FieldNameCompletion.String
+)]
 public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
 {
-    public FieldNameCompletion FieldNameCompletion => FieldNameCompletion.String;
-
     public Task<bool> BeforeExecute(EditSettings settings, CancellationToken token)
     {
         return Task.FromResult(true);
