@@ -211,13 +211,11 @@ public class TuiApp(
     {
         const string headerLayoutKey = "navigation";
         const string tagDataLayoutKey = "body";
-        const string commandLayoutKey = "command";
         const string statusLayoutKey = "status";
         const string filesLayoutKey = "files";
         const int headerSize = 3;
         var actualHeaderSize = 0;
         const int statusBarHeight = 1;
-        const int commandBarHeight = 1;
         var children = new List<Layout>();
         if (config.HeaderVisible)
         {
@@ -233,10 +231,7 @@ public class TuiApp(
                     : PictureEnabled
                         ? new PictureWidget(
                             FocusedFile,
-                            console.Profile.Height
-                                - actualHeaderSize
-                                - statusBarHeight
-                                - commandBarHeight
+                            console.Profile.Height - actualHeaderSize - statusBarHeight
                         )
                     : Text.Empty
                 )
@@ -248,13 +243,8 @@ public class TuiApp(
             {
                 const int fileListPadding = 1;
                 var filesContentHeight = (int)(
-                    (
-                        Console.WindowHeight
-                        - actualHeaderSize
-                        - statusBarHeight
-                        - commandBarHeight
-                        - fileListPadding
-                    ) * config.FileListRatio
+                    (Console.WindowHeight - actualHeaderSize - statusBarHeight - fileListPadding)
+                    * config.FileListRatio
                 );
                 if (filesContentHeight < 1)
                 {
@@ -289,11 +279,6 @@ public class TuiApp(
         children.Add(
             new Layout(statusLayoutKey)
                 .Size(statusBarHeight)
-                .Update(new StatusWidget(_statusMessage))
-        );
-        children.Add(
-            new Layout(commandLayoutKey)
-                .Size(statusBarHeight)
                 .Update(
                     inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(
@@ -301,7 +286,7 @@ public class TuiApp(
                             inputHandler.CursorPos,
                             inputHandler.Completion
                         )
-                        : Text.Empty
+                        : new StatusWidget(_statusMessage)
                 )
         );
         var layout = new Layout("root").SplitRows(children.ToArray());

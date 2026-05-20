@@ -18,28 +18,35 @@ public class CommandPromptWidget : Renderable
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        var cursorPos = Math.Clamp(_cursorPos, 0, _text.Length);
-        var fullText = _text[..cursorPos] + _completion + _text[cursorPos..] + " ";
-        var cursorPosInFullText = Math.Clamp(cursorPos, 0, fullText.Length - 1);
+        var fullText = ":" + _text[.._cursorPos] + _completion + _text[_cursorPos..] + " ";
+        var cursorPos = _cursorPos + 1; // compensate :
 
-        var cols = new List<IRenderable> { new Text(":") };
+        var completionEnd = cursorPos + _completion.Length;
+        if (completionEnd >= maxWidth)
+        {
+            var windowStart = completionEnd - maxWidth + 1;
+            cursorPos -= windowStart;
+            fullText = fullText.Substring(windowStart, Math.Min(maxWidth, fullText.Length));
+        }
 
-        AddTextSegment(cols, fullText[..cursorPosInFullText], TokenKind.Default);
-        AddTextSegment(cols, fullText[cursorPosInFullText].ToString(), TokenKind.Cursor);
+        var cols = new List<IRenderable>();
+
+        AddTextSegment(cols, fullText[..cursorPos], TokenKind.Default);
+        AddTextSegment(cols, fullText[cursorPos].ToString(), TokenKind.Cursor);
 
         if (_completion.Length > 0)
         {
             var afterCompletionStart = cursorPos + _completion.Length;
             AddTextSegment(
                 cols,
-                fullText[(cursorPosInFullText + 1)..afterCompletionStart],
+                fullText[(cursorPos + 1)..afterCompletionStart],
                 TokenKind.Completion
             );
             AddTextSegment(cols, fullText[afterCompletionStart..], TokenKind.Default);
         }
         else
         {
-            AddTextSegment(cols, fullText[(cursorPosInFullText + 1)..], TokenKind.Default);
+            AddTextSegment(cols, fullText[(cursorPos + 1)..], TokenKind.Default);
         }
 
         return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
