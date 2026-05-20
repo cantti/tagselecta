@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddTransient<ITuiCommand, OpenPictureCommand>();
         services.AddTransient<ITuiCommand, OpenDocs>();
         services.AddTransient<ITuiCommand, VersionCommand>();
+        services.AddTransient<ITuiCommand, OpenCommand>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
         services.AddTransient<IGithubClient, GithubClient>();
         services.AddSingleton<ICompletionProvider, CompletionProvider>();

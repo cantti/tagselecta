@@ -1,3 +1,5 @@
+using TagSelecta.TagDataActions.Abstractions;
+
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
 public interface ITuiCommandContext
@@ -16,4 +18,5 @@ public interface ITuiCommandContext
     void Quit();
     void Print(string markupMessage);
     void SetCommandPromptText(string text);
+    void SetFiles(IEnumerable<TagDataActionTarget> files);
 }

@@ -4,6 +4,6 @@ namespace TagSelecta.Commands.Tui;
 
 public class TuiSettings : CommandSettings
 {
-    [CommandArgument(0, "<path>")]
+    [CommandArgument(0, "[path]")]
     public string[] Path { get; set; } = [];
 }

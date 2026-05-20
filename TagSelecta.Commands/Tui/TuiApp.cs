@@ -6,6 +6,7 @@ using TagSelecta.Commands.Tui.Completion;
 using TagSelecta.Commands.Tui.TuiCommands;
 using TagSelecta.Commands.Tui.Widgets;
 using TagSelecta.Shared.IO;
+using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.Commands.Tui;
 
@@ -71,6 +72,14 @@ public class TuiApp(
         }
 
         Invalidate();
+    }
+
+    public void SetFiles(IEnumerable<TagDataActionTarget> files)
+    {
+        Files = files.ToList();
+        completionProvider.GenerateCompletions(
+            Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
+        );
     }
 
     public override async Task<int> ExecuteAsync(

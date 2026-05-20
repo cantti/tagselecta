@@ -73,6 +73,7 @@ public class CompletionProvider : ICompletionProvider
         }
 
         _completionSpecs.Add(new CompletionSpec(["version"], []));
+        _completionSpecs.Add(new CompletionSpec(["open"], []));
     }
 
     public IEnumerable<string> GetCompletions(string input, int cursorPos)
