@@ -1,16 +1,10 @@
-using TagSelecta.Commands.Tui.Completion;
-using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
 [TuiCommand("open", "o")]
-public class OpenCommand(
-    IAudioFileScanner audioFileScanner,
-    ITagger tagger,
-    ICompletionProvider completionProvider
-) : ITuiCommand
+public class OpenCommand(IAudioFileScanner audioFileScanner, ITagger tagger) : ITuiCommand
 {
     public Task ExecuteAsync(
         ITuiCommandContext context,
@@ -24,8 +18,8 @@ public class OpenCommand(
 
         for (var i = 0; i < paths.Count; i++)
         {
-            var path = paths[i];
             token.ThrowIfCancellationRequested();
+            var path = paths[i];
             try
             {
                 var tagData = tagger.ReadTags(path);
