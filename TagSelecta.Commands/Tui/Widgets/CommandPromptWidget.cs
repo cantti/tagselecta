@@ -26,7 +26,11 @@ public class CommandPromptWidget : Renderable
         {
             var windowStart = completionEnd - maxWidth + 1;
             cursorPos -= windowStart;
-            fullText = fullText.Substring(windowStart, Math.Min(maxWidth, fullText.Length));
+            fullText = fullText.Substring(windowStart, maxWidth);
+        }
+        else
+        {
+            fullText = fullText.Substring(0, Math.Min(maxWidth, fullText.Length));
         }
 
         var cols = new List<IRenderable>();
