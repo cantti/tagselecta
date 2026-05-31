@@ -3,6 +3,7 @@ using System.Text;
 using Scriban;
 using Scriban.Runtime;
 using TagSelecta.Shared.Exceptions;
+using TagSelecta.Shared.IO;
 
 namespace TagSelecta.Shared.Tagging;
 
@@ -21,8 +22,8 @@ public class TagDataFormatter
         }
 
         _tagDataForTemplate.Add("path", S(path));
-        _tagDataForTemplate.Add("filename", S(Path.GetFileNameWithoutExtension(path)));
-        _tagDataForTemplate.Add("ext", S(Path.GetExtension(path).TrimStart('.')));
+        _tagDataForTemplate.Add("filename", S(PathUtils.GetFileNameWithoutExtension(path)));
+        _tagDataForTemplate.Add("ext", S(PathUtils.GetExtension(path).TrimStart('.')));
         _tagDataForTemplate.Add(
             "year",
             DateTime.TryParseExact(
@@ -45,7 +46,7 @@ public class TagDataFormatter
         }
 
         var s = input.Replace('/', '_').Replace('\\', '_');
-        var invalid = Path.GetInvalidFileNameChars();
+        var invalid = PathUtils.GetInvalidFileNameChars();
         var sb = new StringBuilder(s.Length);
         foreach (var ch in s)
         {

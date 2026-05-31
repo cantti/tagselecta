@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using TagLib;
+using TagSelecta.Shared.IO;
 using File = System.IO.File;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
@@ -52,7 +53,7 @@ public class OpenPictureCommand : ITuiCommand
             extension = "." + extension;
         }
 
-        var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}{extension}");
+        var filePath = PathUtils.Combine(PathUtils.GetTempPath(), $"{Guid.NewGuid():N}{extension}");
         File.WriteAllBytes(filePath, imageBytes);
 
         Process.Start(new ProcessStartInfo { FileName = filePath, UseShellExecute = true });

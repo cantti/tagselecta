@@ -42,10 +42,10 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
         var files = new List<string>();
         foreach (var path in paths)
         {
-            var fullPath = Path.GetFullPath(path);
+            var fullPath = PathUtils.ExpandToFullPath(path);
             if (File.Exists(fullPath))
             {
-                if (AllowedExtensions.Contains(Path.GetExtension(fullPath).ToLower()))
+                if (AllowedExtensions.Contains(PathUtils.GetExtension(fullPath).ToLower()))
                 {
                     files.Add(fullPath);
                 }
@@ -62,14 +62,14 @@ public class AudioFileScanner(IAnsiConsole console, ITagger tagger) : IAudioFile
                             .GetFiles(fullPath, "*", searchOption)
                             .Where(f =>
                             {
-                                var fileName = Path.GetFileName(f);
+                                var fileName = PathUtils.GetFileName(f);
                                 var dirName = new DirectoryInfo(
-                                    Path.GetDirectoryName(f) ?? string.Empty
+                                    PathUtils.GetDirectoryName(f) ?? string.Empty
                                 ).Name;
                                 return !fileName.StartsWith('.')
                                     && !dirName.StartsWith('.')
                                     && AllowedExtensions.Contains(
-                                        Path.GetExtension(f).ToLowerInvariant()
+                                        PathUtils.GetExtension(f).ToLowerInvariant()
                                     );
                             })
                             .Order(),

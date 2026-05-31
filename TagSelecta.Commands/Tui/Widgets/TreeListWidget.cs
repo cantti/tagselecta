@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using TagSelecta.Shared.IO;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
@@ -96,14 +97,14 @@ public class TreeListWidget(
                     allPaths.Add(current);
                 }
 
-                var parent = Path.GetDirectoryName(current);
+                var parent = PathUtils.GetDirectoryName(current);
                 if (parent is null)
                 {
                     break;
                 }
 
                 // stop when reached root
-                var root = Path.GetPathRoot(current);
+                var root = PathUtils.GetPathRoot(current);
                 if (root is not null && string.Equals(parent, root, _pathComparer))
                 {
                     if (seen.Add(parent))
@@ -122,7 +123,7 @@ public class TreeListWidget(
         var childrenByParent = new Dictionary<string, List<string>>(sc);
         foreach (var path in allPaths)
         {
-            var parent = Path.GetDirectoryName(path);
+            var parent = PathUtils.GetDirectoryName(path);
             if (parent is null)
             {
                 continue;
@@ -138,7 +139,7 @@ public class TreeListWidget(
         }
 
         var roots = allPaths
-            .Where(p => string.Equals(p, Path.GetPathRoot(p), _pathComparer))
+            .Where(p => string.Equals(p, PathUtils.GetPathRoot(p), _pathComparer))
             .Distinct(sc)
             .OrderBy(p => p, sc)
             .ToList();
@@ -154,11 +155,11 @@ public class TreeListWidget(
 
         void AddNode(string path, int depth)
         {
-            var root = Path.GetPathRoot(path);
+            var root = PathUtils.GetPathRoot(path);
             var name =
                 root is not null && string.Equals(path, root, _pathComparer)
                     ? root
-                    : Path.GetFileName(path);
+                    : PathUtils.GetFileName(path);
 
             fileByPath.TryGetValue(path, out var file);
 

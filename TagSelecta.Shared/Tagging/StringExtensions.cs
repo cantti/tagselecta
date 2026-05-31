@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using TagSelecta.Shared.IO;
 
 namespace TagSelecta.Shared.Tagging;
 
@@ -54,7 +55,7 @@ public static class StringListExtensions
 
     public static string DirectoryName(this string path)
     {
-        return Path.GetDirectoryName(path)
+        return PathUtils.GetDirectoryName(path)
             ?? throw new InvalidOperationException(
                 "Unable to determine the directory name for the provided path."
             );

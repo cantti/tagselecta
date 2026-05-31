@@ -1,3 +1,5 @@
+using TagSelecta.Shared.IO;
+
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
 [TuiCommand("selectdir")]
@@ -14,9 +16,9 @@ public class SelectDirCommand : ITuiCommand
             return Task.CompletedTask;
         }
 
-        var dir = Path.GetDirectoryName(context.FocusedFile.BackupPath);
+        var dir = PathUtils.GetDirectoryName(context.FocusedFile.BackupPath);
         var filesToSelect = context
-            .Files.Where(x => Path.GetDirectoryName(x.BackupPath) == dir && !x.IsSelected)
+            .Files.Where(x => PathUtils.GetDirectoryName(x.BackupPath) == dir && !x.IsSelected)
             .ToList();
         foreach (var file in filesToSelect)
         {

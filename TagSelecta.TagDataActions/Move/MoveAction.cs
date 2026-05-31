@@ -1,3 +1,4 @@
+using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
@@ -13,7 +14,7 @@ public class MoveAction : ITagDataAction<MoveSettings>
 
     public Task Execute(TagDataActionExecuteContext<MoveSettings> context, CancellationToken token)
     {
-        var dir = Path.GetDirectoryName(context.Target.BackupPath)!;
+        var dir = PathUtils.GetDirectoryName(context.Target.BackupPath)!;
         var formatter = new TagDataFormatter(
             // todo check logic and document
             // if user edited tags we want to use the new tagdata when moving files
@@ -22,7 +23,7 @@ public class MoveAction : ITagDataAction<MoveSettings>
             true
         );
         var newName = formatter.Format(context.Settings.Template);
-        var newPath = Path.GetFullPath(newName, dir);
+        var newPath = PathUtils.GetFullPath(newName, dir);
         var moveOptions = MoveOptions.None;
         if (context.Settings.KeepEmptyDirectories)
         {

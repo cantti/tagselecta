@@ -14,7 +14,7 @@ public class FileSystem : IFileSystem
 
     public bool Exists(string path)
     {
-        return Path.Exists(path);
+        return PathUtils.Exists(path);
     }
 
     public bool IsDirectoryEmpty(string path)

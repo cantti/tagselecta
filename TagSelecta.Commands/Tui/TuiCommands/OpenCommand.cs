@@ -13,7 +13,7 @@ public class OpenCommand(IAudioFileScanner audioFileScanner, ITagger tagger) : I
     )
     {
         var files = new List<TagDataActionTarget>();
-        var inputPaths = parsedCommand.Options.Select(x => Path.GetFullPath(x.Key));
+        var inputPaths = parsedCommand.Options.Select(x => x.Key);
         var paths = audioFileScanner.Search(inputPaths, true);
 
         for (var i = 0; i < paths.Count; i++)

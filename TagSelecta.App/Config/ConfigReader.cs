@@ -1,3 +1,4 @@
+using TagSelecta.Shared.IO;
 using Tomlyn;
 
 namespace TagSelecta.App.Config;
@@ -25,25 +26,25 @@ public static class ConfigReader
         if (OperatingSystem.IsWindows())
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            baseConfigDir = Path.Combine(appData, appName);
+            baseConfigDir = PathUtils.Combine(appData, appName);
         }
         else
         {
             var xdg = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
             if (!string.IsNullOrWhiteSpace(xdg))
             {
-                baseConfigDir = Path.Combine(xdg, appName);
+                baseConfigDir = PathUtils.Combine(xdg, appName);
             }
             else
             {
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                baseConfigDir = Path.Combine(home, ".config", appName);
+                baseConfigDir = PathUtils.Combine(home, ".config", appName);
             }
         }
 
         Directory.CreateDirectory(baseConfigDir);
 
-        var path = Path.Combine(baseConfigDir, fileName);
+        var path = PathUtils.Combine(baseConfigDir, fileName);
         if (!File.Exists(path))
         {
             File.WriteAllText(path, DefaultConfig);

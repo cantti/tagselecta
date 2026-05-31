@@ -107,6 +107,11 @@ public class TuiApp(
                 .Select(x => new TagDataActionTarget(x.Path, x.TagData))
                 .ToList();
 
+            if (!Files.Any())
+            {
+                Print("No audio files found. Try :open <path> or tagselecta ui <path>.");
+            }
+
             completionProvider.GenerateCompletions(
                 Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
             );
@@ -369,6 +374,9 @@ public class TuiApp(
 
     private async Task DispatchCommand(string commandText)
     {
+        // clear old message
+        Print("");
+
         var isCancelRequest = commandText == "cancel";
 
         if (isCancelRequest && _currentCommandCts is not null)

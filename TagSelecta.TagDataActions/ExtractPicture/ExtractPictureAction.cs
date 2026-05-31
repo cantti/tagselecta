@@ -1,4 +1,5 @@
 using TagLib;
+using TagSelecta.Shared.IO;
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 using File = System.IO.File;
@@ -27,10 +28,13 @@ public class ExtractPictureAction : ITagDataAction<ExtractPictureSettings>
         return Task.FromResult(true);
     }
 
-    public Task Execute(TagDataActionExecuteContext<ExtractPictureSettings> context, CancellationToken token)
+    public Task Execute(
+        TagDataActionExecuteContext<ExtractPictureSettings> context,
+        CancellationToken token
+    )
     {
         var tagData = context.Target.CurrentTagData;
-        var dir = Path.GetDirectoryName(context.Target.BackupPath)!;
+        var dir = PathUtils.GetDirectoryName(context.Target.BackupPath)!;
         var pictures = tagData
             .Picture.Where(x => _types.Count == 0 || _types.Contains(x.Type))
             .OrderBy(x =>
@@ -61,11 +65,11 @@ public class ExtractPictureAction : ITagDataAction<ExtractPictureSettings>
             if (!string.IsNullOrWhiteSpace(output))
             {
                 // Detect if output file contains extension
-                var userExt = Path.GetExtension(output);
+                var userExt = PathUtils.GetExtension(output);
 
                 if (!string.IsNullOrEmpty(userExt))
                 {
-                    baseName = Path.GetFileNameWithoutExtension(output);
+                    baseName = PathUtils.GetFileNameWithoutExtension(output);
                     finalExt = userExt;
                 }
                 else
@@ -81,7 +85,7 @@ public class ExtractPictureAction : ITagDataAction<ExtractPictureSettings>
             }
 
             var fileName = baseName + finalExt;
-            var filePath = Path.Combine(dir, fileName);
+            var filePath = PathUtils.Combine(dir, fileName);
 
             if (!context.Settings.Override)
             {
@@ -89,7 +93,7 @@ public class ExtractPictureAction : ITagDataAction<ExtractPictureSettings>
                 while (File.Exists(filePath))
                 {
                     var numberedName = $"{baseName}({counter}){finalExt}";
-                    filePath = Path.Combine(dir, numberedName);
+                    filePath = PathUtils.Combine(dir, numberedName);
                     counter++;
                 }
             }
