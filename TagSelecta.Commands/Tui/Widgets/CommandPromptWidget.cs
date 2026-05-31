@@ -25,12 +25,12 @@ public class CommandPromptWidget : Renderable
         if (completionEnd >= maxWidth)
         {
             var windowStart = completionEnd - maxWidth + 1;
+            fullText = fullText[windowStart..(windowStart + maxWidth)];
             cursorPos -= windowStart;
-            fullText = fullText.Substring(windowStart, maxWidth);
         }
         else
         {
-            fullText = fullText.Substring(0, Math.Min(maxWidth, fullText.Length));
+            fullText = fullText[..Math.Min(maxWidth, fullText.Length)];
         }
 
         var cols = new List<IRenderable>();
