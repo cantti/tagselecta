@@ -116,6 +116,14 @@ public class TuiApp(
                 Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
             );
 
+            if (config.SelectAllOnStartup)
+            {
+                foreach (var file in Files)
+                {
+                    file.IsSelected = true;
+                }
+            }
+
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
             _ = StartInputLoop(channel);
             await StartUiLoop(channel);

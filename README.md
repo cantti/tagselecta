@@ -167,9 +167,11 @@ Example:
 :move template="../{{ date }} - {{ album }}/{{ pad(tracknumber) }}. {{ title }}.{{ext}}"
 ```
 
+Explore other commands on the [official website](https://cantti.github.io/tagselecta/).
+
 **Notes**
 
-Most command and option have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for
+Most commands and options have aliases. For example, `:e` is an alias for `:edit`, `:mv t=` is an alias for
 `:move template=` and so on.
 
 ## CLI Usage
@@ -212,4 +214,4 @@ COMMANDS:
 
 ## Roadmap
 
-See `ROADMAP.md` for planned improvements.
+See `ROADMAP.md` for planned improvements

@@ -1,3 +1,2 @@
-- select all on open tui option
 - autocomplete for macros
 - execute command on open

@@ -10,7 +10,7 @@ Default is generated on the first run.
 
 Below is an example of the config file with comments.
 
-```ini
+```toml
 [general]
 # debug mode
 debug = false
@@ -29,6 +29,12 @@ keep_id3v1 = false
 
 # show header in tui mode (app name and common shortcuts)
 header_visible = true
+
+# show header in tui mode (app name and common shortcuts)
+header_visible = true
+
+# select all files on startup
+select_all_on_startup = false
 
 [macros]
 # example of macro. You can add as many as you want similarly.
