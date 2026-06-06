@@ -34,9 +34,14 @@ The program is primarily designed for use in TUI mode. However, the CLI mode is 
 - `:split` command to split artists, album artists and composers
 - `:autotrack` command to automatically set track number and total tracks based on disc and disc total
 - `:discogs` command to update album metadata from Discogs release
+- `:musicbrainz` command to update album metadata from Musicbrainz release
+- `:clear` command to clear specified tag fields
+- `:clearexcept` command to clear all tag fields except the ones explicitly kept
 - `find` command to find files by metadata (CLI only)
+- Proper support for multi-value fields (`artist`, `albumartist`, `composer`, `genre`) across tag formats
 - Recursive directory scanning
 - Macros support
 - Preview of changes before applying them
 - Tree view of files
 - Command history and autocompletion
+- Startup command that runs automatically when the TUI starts

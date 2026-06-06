@@ -29,6 +29,7 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - `:split` command to split artists, album artists and composers
 - `:autotrack` command to automatically set track number and total tracks based on disc and disc total
 - `:discogs` command to update album metadata from Discogs release
+- `:musicbrainz` command to update album metadata from Musicbrainz release
 - `:clear` command to clear specified tag fields
 - `:clearexcept` command to clear all tag fields except the ones explicitly kept
 - `find` command to find files by metadata (CLI only)
@@ -38,6 +39,7 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - Preview of changes before applying them
 - Tree view of files
 - Command history and autocompletion
+- Startup command that runs automatically when the TUI starts
 
 ## TUI vs CLI
 

@@ -6,8 +6,6 @@ Config file location:
 ~/.config/tagselecta/config.toml
 ```
 
-Default is generated on the first run.
-
 Below is an example of the config file with comments.
 
 ```toml
@@ -33,8 +31,8 @@ header_visible = true
 # show header in tui mode (app name and common shortcuts)
 header_visible = true
 
-# select all files on startup
-select_all_on_startup = false
+# command to run automatically on startup
+startup_command = "selectall && run reggae"
 
 [macros]
 # example of macro. You can add as many as you want similarly.

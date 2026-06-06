@@ -5,9 +5,9 @@ Split artists, album artists, composers, genres.
 Example:
 
 ```
-:split seperator=";" seperator="," 
+:split separator=";" separator="," 
 ```
 
 Options:
 
-- `seperator` (`s`):  Seperator. Can be used multiple times. Default: , ; feat.
+- `separator` (`s`):  Separator. Can be used multiple times. Default: , ; feat.
