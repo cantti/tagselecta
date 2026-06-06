@@ -109,8 +109,8 @@ OPTIONS:
 ### Extract Picture command
 
 ```
-/home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
+/home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 /home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 DESCRIPTION:
@@ -136,8 +136,8 @@ OPTIONS:
 ### Move command
 
 ```
-/home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
+/home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 /home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 DESCRIPTION:
@@ -207,8 +207,8 @@ OPTIONS:
 ### Auto Track command
 
 ```
-/home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
+/home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 /home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 DESCRIPTION:
@@ -229,8 +229,8 @@ OPTIONS:
 ### Discogs command
 
 ```
-/home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
+/home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx [/home/runner/work/tagselecta/tagselecta/TagSelecta.App/TagSelecta.App.csproj]
 /home/runner/work/tagselecta/tagselecta/TagSelecta.TagDataActions/TagSelecta.TagDataActions.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 /home/runner/work/tagselecta/tagselecta/TagSelecta.Shared/TagSelecta.Shared.csproj : warning NU1903: Package 'Scriban' 7.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-24c8-4792-22hx
 DESCRIPTION:
