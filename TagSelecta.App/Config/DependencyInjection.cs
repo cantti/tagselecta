@@ -22,7 +22,7 @@ public static class DependencyInjection
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
                 TreeEnabled = configModel.General.TreeEnabled,
                 HeaderVisible = configModel.General.HeaderVisible,
-                SelectAllOnStartup = configModel.General.SelectAllOnStartup,
+                StartupCommand = configModel.General.StartupCommand,
             }
         );
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));

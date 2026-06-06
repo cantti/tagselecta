@@ -9,4 +9,5 @@ public class GeneralSection
     public bool TreeEnabled { get; set; } = true;
     public bool HeaderVisible { get; set; } = true;
     public bool SelectAllOnStartup { get; set; } = false;
+    public string StartupCommand { get; set; } = "";
 }

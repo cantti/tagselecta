@@ -1,15 +1,9 @@
-using TagSelecta.Commands.Tui;
 using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
 
-public class MacroConfig
-{
-    public Dictionary<string, string> Macros { get; set; } = new();
-}
-
-[TuiCommand("macro", "m")]
-public class MacroCommand(MacroConfig config) : ITuiCommand
+[TuiCommand("run", "r")]
+public class RunMacroCommand(MacroConfig config, ITuiCommandDispatcher dispatcher) : ITuiCommand
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
@@ -18,8 +12,6 @@ public class MacroCommand(MacroConfig config) : ITuiCommand
     )
     {
         var macroName = parsedCommand.Options.FirstOrDefault()?.Key;
-
-        var run = parsedCommand.Options.Any(x => x is { Key: "run", Value: "true" or "1" or "" });
 
         if (string.IsNullOrWhiteSpace(macroName))
         {
@@ -37,6 +29,10 @@ public class MacroCommand(MacroConfig config) : ITuiCommand
             throw new TagSelectaException($"Unknown macro '{macroName}'. Available: {available}");
         }
 
-        context.SetCommandPromptText(macro);
+        var executed = await dispatcher.Execute(macro, context, token);
+        if (!executed)
+        {
+            context.Print($"Invalid macro: {macro}");
+        }
     }
 }

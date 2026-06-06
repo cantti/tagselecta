@@ -6,5 +6,5 @@ public class TuiAppConfig
     public bool AutoCompletionEnabled { get; init; }
     public bool TreeEnabled { get; init; }
     public bool HeaderVisible { get; init; }
-    public bool SelectAllOnStartup { get; init; }
+    public string StartupCommand { get; set; } = "";
 }

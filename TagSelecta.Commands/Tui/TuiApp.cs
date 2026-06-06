@@ -116,12 +116,9 @@ public class TuiApp(
                 Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
             );
 
-            if (config.SelectAllOnStartup)
+            if (!string.IsNullOrWhiteSpace(config.StartupCommand))
             {
-                foreach (var file in Files)
-                {
-                    file.IsSelected = true;
-                }
+                await DispatchCommand(config.StartupCommand);
             }
 
             var channel = Channel.CreateUnbounded<ConsoleKeyInfo>();
