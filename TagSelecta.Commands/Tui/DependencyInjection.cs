@@ -12,6 +12,7 @@ public static class DependencyInjection
         AddTuiCommands(services);
         services.AddTransient<ITagDataActionFactory, TagDataActionFactory>();
         services.AddTransient<ITuiCommandFactory, TuiCommandFactory>();
+        services.AddTransient<ITuiCommandDispatcher, TuiCommandDispatcher>();
         services.AddTransient<IGithubClient, GithubClient>();
         services.AddSingleton<ICompletionProvider, CompletionProvider>();
         services.AddTransient<InputHandler>();

@@ -13,7 +13,7 @@ namespace TagSelecta.Commands.Tui;
 public class TuiApp(
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
-    ITuiCommandFactory commandFactory,
+    ITuiCommandDispatcher commandDispatcher,
     TuiAppConfig config,
     InputHandler inputHandler,
     HotkeyMap hotkeys,
@@ -38,8 +38,6 @@ public class TuiApp(
         VisibleFiles.Any(x => x.IsSelected) ? VisibleFiles.Where(x => x.IsSelected)
         : FocusedFile is not null ? new[] { FocusedFile }
         : Enumerable.Empty<TagDataActionTarget>();
-
-    public ITuiCommandFactory CommandFactory => commandFactory;
 
     public int FocusedFileIndex { get; set; }
 
@@ -404,23 +402,21 @@ public class TuiApp(
 
         _currentCommandCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
 
-        if (!CommandParser.TryParse(commandText, out var commands))
-        {
-            Print($"Invalid command: {commandText}");
-            return;
-        }
-
         hotkeys.Bind("esc", "cancel");
 
         _currentCommandTask = Task.Run(async () =>
         {
             try
             {
-                foreach (var parsedCommand in commands)
+                var executed = await commandDispatcher.Execute(
+                    commandText,
+                    this,
+                    _currentCommandCts.Token
+                );
+
+                if (!executed)
                 {
-                    _currentCommandCts.Token.ThrowIfCancellationRequested();
-                    var command = commandFactory.Create(parsedCommand.Name);
-                    await command.ExecuteAsync(this, parsedCommand, _currentCommandCts.Token);
+                    Print($"Invalid command: {commandText}");
                 }
             }
             catch (OperationCanceledException)

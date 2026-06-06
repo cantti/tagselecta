@@ -6,24 +6,34 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 public class TuiCommandFactory : ITuiCommandFactory
 {
     private readonly List<TuiCommandDescriptor> _commands = [];
+    private readonly IServiceProvider _provider;
 
     public TuiCommandFactory(IServiceProvider provider)
     {
-        var commands = provider.GetServices<ITuiCommand>();
-        foreach (var command in commands)
-        {
-            var type = command.GetType();
-            var attr = type.GetCustomAttribute<TuiCommandAttribute>();
-            if (attr is null || attr.Names.Length == 0)
-            {
-                continue;
-            }
+        _provider = provider;
 
+        var commandTypes = typeof(ITuiCommand)
+            .Assembly.GetTypes()
+            .Where(type =>
+                type is { IsClass: true, IsAbstract: false }
+                && typeof(ITuiCommand).IsAssignableFrom(type)
+                && type.GetCustomAttribute<TuiCommandAttribute>() is not null
+            )
+            .Select(type => new
+            {
+                Type = type,
+                Attribute = type.GetCustomAttribute<TuiCommandAttribute>()!,
+            })
+            .ToList();
+
+        foreach (var entry in commandTypes)
+        {
             _commands.Add(
                 new TuiCommandDescriptor(
-                    attr.Names,
-                    () => provider.GetServices<ITuiCommand>().Single(x => x.GetType() == type),
-                    command.GetType()
+                    entry.Attribute.Names,
+                    () =>
+                        provider.GetServices<ITuiCommand>().Single(x => x.GetType() == entry.Type),
+                    entry.Type
                 )
             );
         }

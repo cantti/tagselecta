@@ -1,3 +1,4 @@
+using TagSelecta.Commands.Tui;
 using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
@@ -8,7 +9,7 @@ public class MacroConfig
 }
 
 [TuiCommand("macro", "m")]
-public class MacroCommand(MacroConfig config) : ITuiCommand
+public class MacroCommand(MacroConfig config, ITuiCommandDispatcher dispatcher) : ITuiCommand
 {
     public async Task ExecuteAsync(
         ITuiCommandContext context,
@@ -38,31 +39,15 @@ public class MacroCommand(MacroConfig config) : ITuiCommand
 
         if (run)
         {
-            await RunMacro(context, token, macro);
+            var executed = await dispatcher.Execute(macro, context, token);
+            if (!executed)
+            {
+                context.Print($"Invalid macro: {macro}");
+            }
         }
         else
         {
             context.SetCommandPromptText(macro);
-        }
-    }
-
-    private static async Task RunMacro(
-        ITuiCommandContext context,
-        CancellationToken token,
-        string macro
-    )
-    {
-        if (!CommandParser.TryParse(macro, out var commands))
-        {
-            context.Print($"Invalid macro: {macro}");
-            return;
-        }
-
-        foreach (var parsedCommand in commands)
-        {
-            token.ThrowIfCancellationRequested();
-            var macroCommand = context.CommandFactory.Create(parsedCommand.Name);
-            await macroCommand.ExecuteAsync(context, parsedCommand, token);
         }
     }
 }
