@@ -39,6 +39,8 @@ public class TuiApp(
         : FocusedFile is not null ? new[] { FocusedFile }
         : Enumerable.Empty<TagDataActionTarget>();
 
+    public ITuiCommandFactory CommandFactory => commandFactory;
+
     public int FocusedFileIndex { get; set; }
 
     public bool TreeEnabled { get; set; } = config.TreeEnabled;
