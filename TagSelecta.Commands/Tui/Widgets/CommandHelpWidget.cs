@@ -44,7 +44,8 @@ public class CommandHelpWidget : Renderable
                 $"[bold {commandColor}]:musicbrainz[/] release=\"https://musicbrainz.org/release/...\"",
                 "MusicBrainz"
             ),
-            ($"[bold {commandColor}]:macro[/] <name>", "Execute macro <name>"),
+            ($"[bold {commandColor}]:macro[/] <name>", "Insert macro <name> into command prompt"),
+            ($"[bold {commandColor}]:run[/] <name>", "Run macro <name> immediately"),
         };
         var result = new Grid();
         result.AddColumns(2);
