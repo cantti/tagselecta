@@ -17,6 +17,7 @@ public class CompletionProvider : ICompletionProvider
 
     public void GenerateCompletions(IEnumerable<string> fieldNames)
     {
+        var fieldNamesList = fieldNames.ToList();
         foreach (var action in _tagDataActions)
         {
             var infoAttribute = action.GetType().GetCustomAttribute<TagDataActionInfoAttribute>();
@@ -53,7 +54,7 @@ public class CompletionProvider : ICompletionProvider
             if (infoAttribute.FieldNameCompletion != FieldNameCompletion.Disabled)
             {
                 options.AddRange(
-                    fieldNames
+                    fieldNamesList
                         .Where(x => options.All(x2 => x2.Name != x))
                         .Select(x => new OptionSpec(
                             x,
