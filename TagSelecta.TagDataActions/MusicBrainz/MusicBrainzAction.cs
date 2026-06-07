@@ -68,10 +68,7 @@ public class MusicBrainzAction : ITagDataAction<MusicBrainzSettings>
         MergeFieldMap(musicBrainzConfig.FieldMap);
     }
 
-    public async Task<bool> BeforeExecute(
-        MusicBrainzSettings settings,
-        CancellationToken token
-    )
+    public async Task<bool> BeforeExecute(MusicBrainzSettings settings, CancellationToken token)
     {
         var releaseId = GetReleaseId(settings.Release);
         _release = await _musicBrainzApiClient.GetRelease(releaseId);
@@ -92,24 +89,10 @@ public class MusicBrainzAction : ITagDataAction<MusicBrainzSettings>
         return _release is not null;
     }
 
-    private static string GetReleaseId(string release)
-    {
-        if (Guid.TryParse(release, out var guid))
-        {
-            return guid.ToString();
-        }
-
-        var pattern = @"/release/([\d\w-]+)";
-        var match = Regex.Match(release, pattern);
-        if (!match.Success)
-        {
-            throw new TagSelectaException("Error parsing MusicBrainz release");
-        }
-
-        return match.Groups[1].Value;
-    }
-
-    public Task Execute(TagDataActionExecuteContext<MusicBrainzSettings> context, CancellationToken token)
+    public Task Execute(
+        TagDataActionExecuteContext<MusicBrainzSettings> context,
+        CancellationToken token
+    )
     {
         if (_release is null)
         {
@@ -150,6 +133,23 @@ public class MusicBrainzAction : ITagDataAction<MusicBrainzSettings>
         context.Target.UpdateTagData(tagData);
 
         return Task.CompletedTask;
+    }
+
+    private static string GetReleaseId(string release)
+    {
+        if (Guid.TryParse(release, out var guid))
+        {
+            return guid.ToString();
+        }
+
+        var pattern = @"/release/([\d\w-]+)";
+        var match = Regex.Match(release, pattern);
+        if (!match.Success)
+        {
+            throw new TagSelectaException("Error parsing MusicBrainz release");
+        }
+
+        return match.Groups[1].Value;
     }
 
     private void MergeFieldMap(IReadOnlyList<MusicBrainzFieldMapEntry> overrides)

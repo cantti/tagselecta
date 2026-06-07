@@ -64,6 +64,7 @@ public class EditTests
         var item = new TestTarget("file.mp3", tagData);
 
         // Act
+        await action.BeforeExecute(settings, CancellationToken.None);
         await action.Execute(
             new TagDataActionExecuteContext { Settings = settings, Target = item },
             CancellationToken.None

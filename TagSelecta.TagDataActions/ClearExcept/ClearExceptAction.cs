@@ -65,11 +65,6 @@ public class ClearExceptAction : ITagDataAction<ClearExceptSettings>
             fieldsToKeep.Add(key.NormalizeKey());
         }
 
-        foreach (var remaining in settings.Remaining)
-        {
-            fieldsToKeep.Add(remaining.Key.NormalizeKey());
-        }
-
         return fieldsToKeep;
     }
 }

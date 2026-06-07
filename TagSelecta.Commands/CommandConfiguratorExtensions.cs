@@ -56,5 +56,4 @@ public static class CommandConfiguratorExtensions
 
         return commandConfigurator;
     }
-
 }

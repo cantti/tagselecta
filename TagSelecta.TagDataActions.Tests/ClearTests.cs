@@ -14,14 +14,12 @@ public class ClearTests
         ITagDataAction action = new ClearAction();
 
         var settings = new ClearSettings { Album = true, Key = ["title"] };
-        settings.Remaining.Add(new RemainingArgument("publisher", ""));
 
         var tagData = new TagData();
         tagData.SetValue(FieldName.Album, "Album");
         tagData.SetValue(FieldName.Artist, "Artist");
         tagData.SetValue(FieldName.Title, "Title");
         tagData.SetValue("label", "Label");
-        tagData.SetValue("publisher", "Publisher");
 
         var item = new TestTarget("file.mp3", tagData);
 
@@ -37,7 +35,6 @@ public class ClearTests
         var currentTagData = item.CurrentTagData;
         Assert.Equal([], currentTagData.GetValue(FieldName.Album));
         Assert.Equal([], currentTagData.GetValue(FieldName.Title));
-        Assert.Equal([], currentTagData.GetValue("publisher"));
         Assert.Equal(["Artist"], currentTagData.GetValue(FieldName.Artist));
         Assert.Equal(["Label"], currentTagData.GetValue("label"));
     }

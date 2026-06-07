@@ -1,3 +1,4 @@
+using System.Reflection;
 using TagLib;
 using TagSelecta.Shared.Exceptions;
 using TagSelecta.Shared.Http;
@@ -15,8 +16,14 @@ namespace TagSelecta.TagDataActions.Edit;
 )]
 public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
 {
+    private Dictionary<string, PropertyInfo> _settingProperties = [];
+
     public Task<bool> BeforeExecute(EditSettings settings, CancellationToken token)
     {
+        _settingProperties = typeof(EditSettings)
+            .GetProperties()
+            .Where(x => x.PropertyType == typeof(string))
+            .ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
         return Task.FromResult(true);
     }
 
@@ -25,7 +32,7 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
         CancellationToken token
     )
     {
-        if (context.Settings.Value.Length != context.Settings.Key.Length)
+        if (context.Settings.Value.Count != context.Settings.Key.Count)
         {
             throw new TagSelectaException(
                 "The number of keys does not match the number of values."
@@ -45,15 +52,10 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
 
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        var settingProperties = typeof(EditSettings)
-            .GetProperties()
-            .Where(x => x.PropertyType == typeof(string))
-            .ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
-
         // add fields from properties
         foreach (var field in FieldName.All())
         {
-            var value = settingProperties[field].GetValue(context.Settings);
+            var value = _settingProperties[field].GetValue(context.Settings);
 
             if (value is null)
             {
@@ -66,18 +68,10 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
         }
 
         // add values from key/value pairs
-        for (var i = 0; i < context.Settings.Key.Length; i++)
+        for (var i = 0; i < context.Settings.Key.Count; i++)
         {
             var key = context.Settings.Key[i].NormalizeKey();
             var value = context.Settings.Value[i];
-            values[key] = value;
-        }
-
-        // add remaining values
-        foreach (var remaining in context.Settings.Remaining)
-        {
-            var key = remaining.Key.NormalizeKey();
-            var value = remaining.Value;
             values[key] = value;
         }
 

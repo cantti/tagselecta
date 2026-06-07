@@ -6,7 +6,6 @@ using TagSelecta.Commands.Tui.Completion;
 using TagSelecta.Commands.Tui.TuiCommands;
 using TagSelecta.Commands.Tui.Widgets;
 using TagSelecta.Shared.IO;
-using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.Commands.Tui;
 
@@ -21,10 +20,10 @@ public class TuiApp(
 ) : AsyncCommand<TuiSettings>, ITuiCommandContext
 {
     private readonly Lock _printLock = new();
-    private int _isDirty = 1;
     private CancellationTokenSource _cts = new();
     private CancellationTokenSource? _currentCommandCts;
     private Task _currentCommandTask = Task.CompletedTask;
+    private int _isDirty = 1;
     private string _statusMessage = "";
 
     public TagDataActionTarget? FocusedFile => VisibleFiles.ElementAtOrDefault(FocusedFileIndex);
@@ -36,8 +35,8 @@ public class TuiApp(
 
     public IEnumerable<TagDataActionTarget> SelectedFiles =>
         VisibleFiles.Any(x => x.IsSelected) ? VisibleFiles.Where(x => x.IsSelected)
-        : FocusedFile is not null ? new[] { FocusedFile }
-        : Enumerable.Empty<TagDataActionTarget>();
+        : FocusedFile is not null ? [FocusedFile]
+        : [];
 
     public int FocusedFileIndex { get; set; }
 
@@ -240,6 +239,7 @@ public class TuiApp(
             actualHeaderSize = headerSize;
             children.Add(new Layout(headerLayoutKey).Size(actualHeaderSize).Update(RenderHeader()));
         }
+
         if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
         {
             children.Add(

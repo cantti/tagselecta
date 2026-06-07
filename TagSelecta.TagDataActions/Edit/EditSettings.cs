@@ -79,11 +79,11 @@ public class EditSettings : TagDataActionSettings
 
     [CommandOption("--key|-k")]
     [Description("Extra field key. Must be used together with --value.")]
-    public string[] Key { get; set; } = [];
+    public List<string> Key { get; set; } = [];
 
     [CommandOption("--value|-v")]
     [Description("Extra field value. Must be used together with --key.")]
-    public string[] Value { get; set; } = [];
+    public List<string> Value { get; set; } = [];
 
     [CommandOption("--clear")]
     [Description("Clear all fields.")]

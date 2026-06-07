@@ -6,9 +6,8 @@ namespace TagSelecta.Commands.Tui.Completion;
 
 public class CompletionProvider : ICompletionProvider
 {
-    private readonly IEnumerable<ITagDataAction> _tagDataActions;
-
     private readonly List<CompletionSpec> _completionSpecs = [];
+    private readonly IEnumerable<ITagDataAction> _tagDataActions;
 
     public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
     {

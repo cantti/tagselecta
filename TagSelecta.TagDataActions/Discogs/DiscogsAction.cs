@@ -54,10 +54,7 @@ public class DiscogsAction : ITagDataAction<DiscogsSettings>
         MergeFieldMap(discogsConfig.FieldMap);
     }
 
-    public async Task<bool> BeforeExecute(
-        DiscogsSettings settings,
-        CancellationToken token
-    )
+    public async Task<bool> BeforeExecute(DiscogsSettings settings, CancellationToken token)
     {
         var (urlType, urlId) = GetDiscogsReleaseInfo(settings.Release);
         var releaseId = urlId;
@@ -83,7 +80,10 @@ public class DiscogsAction : ITagDataAction<DiscogsSettings>
         return true;
     }
 
-    public Task Execute(TagDataActionExecuteContext<DiscogsSettings> context, CancellationToken token)
+    public Task Execute(
+        TagDataActionExecuteContext<DiscogsSettings> context,
+        CancellationToken token
+    )
     {
         if (_release is null)
         {

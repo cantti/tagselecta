@@ -1,4 +1,3 @@
-using TagSelecta.Commands.Tui;
 using TagSelecta.Shared.Exceptions;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;

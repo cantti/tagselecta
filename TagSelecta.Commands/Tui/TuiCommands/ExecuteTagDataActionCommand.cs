@@ -64,49 +64,54 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         var argList = options.ToList();
 
-        var props = settingsType.GetProperties();
+        var settingsProps = settingsType.GetProperties();
 
-        foreach (var prop in props)
+        foreach (var settingProp in settingsProps)
         {
-            var attr = prop.GetCustomAttribute<CommandOptionAttribute>();
-            if (attr is null)
+            var commandOptionAttr = settingProp.GetCustomAttribute<CommandOptionAttribute>();
+
+            if (commandOptionAttr is null)
             {
                 continue;
             }
 
             var matchedArgs = argList
-                .Where(x => attr.LongNames.Contains(x.Key) || attr.ShortNames.Contains(x.Key))
+                .Where(x =>
+                    commandOptionAttr.LongNames.Contains(x.Key)
+                    || commandOptionAttr.ShortNames.Contains(x.Key)
+                )
                 .ToArray();
+
             if (matchedArgs.Length == 0)
             {
-                if (attr.IsRequired)
+                if (commandOptionAttr.IsRequired)
                 {
                     throw new TagSelectaException(
-                        $"Command is missing required argument '{attr.LongNames[0]}'"
+                        $"Command is missing required argument '{commandOptionAttr.LongNames[0]}'"
                     );
                 }
 
                 continue;
             }
 
-            if (prop.PropertyType == typeof(string))
+            if (settingProp.PropertyType == typeof(string))
             {
-                prop.SetValue(baseSettings, matchedArgs.First().Value);
+                settingProp.SetValue(baseSettings, matchedArgs.First().Value);
             }
-            else if (prop.PropertyType == typeof(string[]))
+            else if (settingProp.PropertyType == typeof(string[]))
             {
-                prop.SetValue(baseSettings, matchedArgs.Select(x => x.Value).ToArray());
+                settingProp.SetValue(baseSettings, matchedArgs.Select(x => x.Value).ToArray());
             }
-            else if (prop.PropertyType == typeof(bool))
+            else if (settingProp.PropertyType == typeof(bool))
             {
                 var value = matchedArgs[0].Value;
                 switch (value)
                 {
                     case "true" or "1":
-                        prop.SetValue(baseSettings, true);
+                        settingProp.SetValue(baseSettings, true);
                         break;
                     case "false" or "0":
-                        prop.SetValue(baseSettings, false);
+                        settingProp.SetValue(baseSettings, false);
                         break;
                     default:
                         throw new TagSelectaException(
@@ -116,7 +121,9 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             }
             else
             {
-                throw new TagSelectaException($"Unsupported property type: {prop.PropertyType}");
+                throw new TagSelectaException(
+                    $"Unsupported property type: {settingProp.PropertyType}"
+                );
             }
 
             argList.RemoveAll(x => matchedArgs.Any(matchedArg => matchedArg.Key == x.Key));
@@ -126,10 +133,34 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         {
             if (allowRemainingArguments)
             {
-                // todo: use key and values lists instead
-                baseSettings.Remaining.AddRange(
-                    argList.Select(x => new RemainingArgument(x.Key, x.Value))
-                );
+                var keyProp =
+                    settingsProps.SingleOrDefault(x => x.Name == "Key")
+                    ?? throw new TagSelectaException(
+                        "Action settings must define a 'Key' property when remaining arguments are allowed."
+                    );
+                if (keyProp.PropertyType != typeof(List<string>))
+                {
+                    throw new TagSelectaException(
+                        $"Action settings property 'Key' must be of type '{typeof(List<string>)}', but was '{keyProp.PropertyType}'."
+                    );
+                }
+
+                var keyList = (List<string>)keyProp.GetValue(baseSettings)!;
+                keyList.AddRange(argList.Select(x => x.Key));
+
+                var valueProp = settingsProps.SingleOrDefault(x => x.Name == "Value");
+                if (valueProp is not null)
+                {
+                    if (valueProp.PropertyType != typeof(List<string>))
+                    {
+                        throw new TagSelectaException(
+                            $"Action settings property 'Value' must be of type '{typeof(List<string>)}', but was '{valueProp.PropertyType}'."
+                        );
+                    }
+
+                    var valueList = (List<string>)valueProp.GetValue(baseSettings)!;
+                    valueList.AddRange(argList.Select(x => x.Value));
+                }
             }
             else
             {

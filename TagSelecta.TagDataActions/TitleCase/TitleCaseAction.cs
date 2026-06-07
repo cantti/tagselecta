@@ -11,7 +11,10 @@ public class TitleCaseAction : ITagDataAction<TitleCaseSettings>
         return Task.FromResult(true);
     }
 
-    public Task Execute(TagDataActionExecuteContext<TitleCaseSettings> context, CancellationToken token)
+    public Task Execute(
+        TagDataActionExecuteContext<TitleCaseSettings> context,
+        CancellationToken token
+    )
     {
         var tagData = context.Target.CurrentTagData;
         foreach (var field in tagData.Fields)

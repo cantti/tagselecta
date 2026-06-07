@@ -14,14 +14,12 @@ public class ClearExceptTests
         ITagDataAction action = new ClearExceptAction();
 
         var settings = new ClearExceptSettings { Album = true, Key = ["title"] };
-        settings.Remaining.Add(new RemainingArgument("publisher", ""));
 
         var tagData = new TagData();
         tagData.SetValue(FieldName.Album, "Album");
         tagData.SetValue(FieldName.Artist, "Artist");
         tagData.SetValue(FieldName.Title, "Title");
         tagData.SetValue("label", "Label");
-        tagData.SetValue("publisher", "Publisher");
 
         var item = new TestTarget("file.mp3", tagData);
 
@@ -37,7 +35,6 @@ public class ClearExceptTests
         var currentTagData = item.CurrentTagData;
         Assert.Equal(["Album"], currentTagData.GetValue(FieldName.Album));
         Assert.Equal(["Title"], currentTagData.GetValue(FieldName.Title));
-        Assert.Equal(["Publisher"], currentTagData.GetValue("publisher"));
         Assert.Equal([], currentTagData.GetValue(FieldName.Artist));
         Assert.Equal([], currentTagData.GetValue("label"));
     }

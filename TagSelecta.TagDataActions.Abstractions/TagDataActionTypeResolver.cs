@@ -22,8 +22,6 @@ public static class TagDataActionTypeResolver
             return interfaceMatch.GetGenericArguments()[0];
         }
 
-        throw new TagSelectaException(
-            $"{actionType} does not implement ITagDataAction<TSettings>"
-        );
+        throw new TagSelectaException($"{actionType} does not implement ITagDataAction<TSettings>");
     }
 }

@@ -58,7 +58,7 @@ public class ClearSettings : TagDataActionSettings
     public bool TrackTotal { get; set; }
 
     [CommandOption("--key|-k")]
-    public string[] Key { get; set; } = [];
+    public List<string> Key { get; set; } = [];
 
     [CommandOption("--picture")]
     public bool Picture { get; set; }
