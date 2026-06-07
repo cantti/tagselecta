@@ -10,8 +10,11 @@ namespace TagSelecta.TagDataActions.ClearExcept;
 )]
 public class ClearExceptAction : ITagDataAction<ClearExceptSettings>
 {
+    private HashSet<string> _fieldsToKeep = [];
+
     public Task<bool> BeforeExecute(ClearExceptSettings settings, CancellationToken token)
     {
+        _fieldsToKeep = BuildFieldsToKeep(settings);
         return Task.FromResult(true);
     }
 
@@ -21,11 +24,10 @@ public class ClearExceptAction : ITagDataAction<ClearExceptSettings>
     )
     {
         var tagData = context.Target.CurrentTagData;
-        var fieldsToKeep = BuildFieldsToKeep(context.Settings);
 
         foreach (var field in tagData.Fields)
         {
-            if (!fieldsToKeep.Contains(field.Key))
+            if (!_fieldsToKeep.Contains(field.Key))
             {
                 tagData.SetValue(field.Key, "");
             }

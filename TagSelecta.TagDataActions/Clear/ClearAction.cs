@@ -10,19 +10,21 @@ namespace TagSelecta.TagDataActions.Clear;
 )]
 public class ClearAction : ITagDataAction<ClearSettings>
 {
+    private HashSet<string> _fieldsToRemove = [];
+
     public Task<bool> BeforeExecute(ClearSettings settings, CancellationToken token)
     {
+        _fieldsToRemove = BuildFieldsToRemove(settings);
         return Task.FromResult(true);
     }
 
     public Task Execute(TagDataActionExecuteContext<ClearSettings> context, CancellationToken token)
     {
         var tagData = context.Target.CurrentTagData;
-        var fieldsToRemove = BuildFieldsToRemove(context.Settings);
 
         foreach (var field in tagData.Fields)
         {
-            if (fieldsToRemove.Contains(field.Key))
+            if (_fieldsToRemove.Contains(field.Key))
             {
                 tagData.SetValue(field.Key, "");
             }
