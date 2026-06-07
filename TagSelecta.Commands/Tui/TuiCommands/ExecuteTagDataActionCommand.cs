@@ -1,6 +1,7 @@
 using System.Reflection;
 using Spectre.Console.Cli;
 using TagSelecta.Shared.Exceptions;
+using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.Commands.Tui.TuiCommands;
@@ -98,25 +99,32 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
             {
                 settingProp.SetValue(baseSettings, matchedArgs.First().Value);
             }
-            else if (settingProp.PropertyType == typeof(string[]))
+            else if (
+                settingProp.PropertyType == typeof(string[])
+                || settingProp.PropertyType == typeof(List<string>)
+                || settingProp.PropertyType == typeof(IEnumerable<string>)
+            )
             {
-                settingProp.SetValue(baseSettings, matchedArgs.Select(x => x.Value).ToArray());
+                var values = matchedArgs.Select(x => x.Value).ToList();
+
+                settingProp.SetValue(
+                    baseSettings,
+                    settingProp.PropertyType == typeof(string[]) ? values.ToArray() : values
+                );
             }
             else if (settingProp.PropertyType == typeof(bool))
             {
                 var value = matchedArgs[0].Value;
-                switch (value)
+
+                if (value.TryParseBool(out var parsedValue))
                 {
-                    case "true" or "1":
-                        settingProp.SetValue(baseSettings, true);
-                        break;
-                    case "false" or "0":
-                        settingProp.SetValue(baseSettings, false);
-                        break;
-                    default:
-                        throw new TagSelectaException(
-                            $"Invalid value '{value}' for '{matchedArgs[0].Key}'. Expected true/false or 1/0."
-                        );
+                    settingProp.SetValue(baseSettings, parsedValue);
+                }
+                else
+                {
+                    throw new TagSelectaException(
+                        $"Invalid value '{value}' for '{matchedArgs[0].Key}'. Expected true/false or 1/0."
+                    );
                 }
             }
             else
@@ -133,33 +141,22 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         {
             if (allowRemainingArguments)
             {
-                var keyProp =
-                    settingsProps.SingleOrDefault(x => x.Name == "Key")
-                    ?? throw new TagSelectaException(
-                        "Action settings must define a 'Key' property when remaining arguments are allowed."
-                    );
-                if (keyProp.PropertyType != typeof(List<string>))
+                if (baseSettings is not ISettingsWithKey settingsWithKey)
                 {
                     throw new TagSelectaException(
-                        $"Action settings property 'Key' must be of type '{typeof(List<string>)}', but was '{keyProp.PropertyType}'."
+                        $"Action settings type '{baseSettings.GetType().Name}' must implement '{nameof(ISettingsWithKey)}' when remaining arguments are allowed."
                     );
                 }
 
-                var keyList = (List<string>)keyProp.GetValue(baseSettings)!;
-                keyList.AddRange(argList.Select(x => x.Key));
+                settingsWithKey.Key = settingsWithKey
+                    .Key.Concat(argList.Select(x => x.Key))
+                    .ToList();
 
-                var valueProp = settingsProps.SingleOrDefault(x => x.Name == "Value");
-                if (valueProp is not null)
+                if (baseSettings is ISettingsWithKeyValue settingsWithKeyValue)
                 {
-                    if (valueProp.PropertyType != typeof(List<string>))
-                    {
-                        throw new TagSelectaException(
-                            $"Action settings property 'Value' must be of type '{typeof(List<string>)}', but was '{valueProp.PropertyType}'."
-                        );
-                    }
-
-                    var valueList = (List<string>)valueProp.GetValue(baseSettings)!;
-                    valueList.AddRange(argList.Select(x => x.Value));
+                    settingsWithKeyValue.Value = settingsWithKeyValue
+                        .Value.Concat(argList.Select(x => x.Value))
+                        .ToList();
                 }
             }
             else

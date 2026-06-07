@@ -60,4 +60,20 @@ public static class StringListExtensions
                 "Unable to determine the directory name for the provided path."
             );
     }
+
+    public static bool TryParseBool(this string? value, out bool parsed)
+    {
+        switch (value?.Trim().ToLowerInvariant())
+        {
+            case "true" or "1":
+                parsed = true;
+                return true;
+            case "false" or "0":
+                parsed = false;
+                return true;
+            default:
+                parsed = false;
+                return false;
+        }
+    }
 }

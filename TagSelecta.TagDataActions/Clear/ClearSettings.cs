@@ -4,7 +4,7 @@ using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Clear;
 
-public class ClearSettings : TagDataActionSettings
+public class ClearSettings : TagDataActionSettings, ISettingsWithKey
 {
     [CommandOption($"--{FieldName.Album}")]
     public bool Album { get; set; }
@@ -58,7 +58,7 @@ public class ClearSettings : TagDataActionSettings
     public bool TrackTotal { get; set; }
 
     [CommandOption("--key|-k")]
-    public List<string> Key { get; set; } = [];
+    public IEnumerable<string> Key { get; set; } = [];
 
     [CommandOption("--picture")]
     public bool Picture { get; set; }

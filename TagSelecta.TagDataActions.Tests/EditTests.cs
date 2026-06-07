@@ -89,7 +89,10 @@ public class EditTests
         Assert.Equal([settings.Title], currentTagData.GetValue(FieldName.Title));
         Assert.Equal([settings.TrackNumber], currentTagData.GetValue(FieldName.TrackNumber));
         Assert.Equal([settings.TrackTotal], currentTagData.GetValue(FieldName.TrackTotal));
-        Assert.Equal([settings.Value[0]], currentTagData.GetValue(settings.Key[0]));
+        Assert.Equal(
+            [settings.Value.ElementAt(0)],
+            currentTagData.GetValue(settings.Key.ElementAt(0))
+        );
         Assert.Equal(["Original Label"], currentTagData.GetValue("label"));
         Assert.Equal(["Original Catalog Number"], currentTagData.GetValue("catalognumber"));
     }

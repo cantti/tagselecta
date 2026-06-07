@@ -32,7 +32,7 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
         CancellationToken token
     )
     {
-        if (context.Settings.Value.Count != context.Settings.Key.Count)
+        if (context.Settings.Key.Count() != context.Settings.Value.Count())
         {
             throw new TagSelectaException(
                 "The number of keys does not match the number of values."
@@ -68,10 +68,10 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
         }
 
         // add values from key/value pairs
-        for (var i = 0; i < context.Settings.Key.Count; i++)
+        for (var i = 0; i < context.Settings.Key.Count(); i++)
         {
-            var key = context.Settings.Key[i].NormalizeKey();
-            var value = context.Settings.Value[i];
+            var key = context.Settings.Key.ElementAt(i).NormalizeKey();
+            var value = context.Settings.Value.ElementAt(i);
             values[key] = value;
         }
 

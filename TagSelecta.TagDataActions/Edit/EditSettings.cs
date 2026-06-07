@@ -5,7 +5,7 @@ using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.TagDataActions.Edit;
 
-public class EditSettings : TagDataActionSettings
+public class EditSettings : TagDataActionSettings, ISettingsWithKeyValue
 {
     [CommandOption($"--{FieldName.Album}")]
     [Description("Album name.")]
@@ -79,11 +79,11 @@ public class EditSettings : TagDataActionSettings
 
     [CommandOption("--key|-k")]
     [Description("Extra field key. Must be used together with --value.")]
-    public List<string> Key { get; set; } = [];
+    public IEnumerable<string> Key { get; set; } = [];
 
     [CommandOption("--value|-v")]
     [Description("Extra field value. Must be used together with --key.")]
-    public List<string> Value { get; set; } = [];
+    public IEnumerable<string> Value { get; set; } = [];
 
     [CommandOption("--clear")]
     [Description("Clear all fields.")]
