@@ -102,18 +102,17 @@ public class TuiApp(
 
             AltScreen.Enter();
 
-            Files = audioFileScanner
-                .SearchAndRead(settings.Path, ct)
-                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
-                .ToList();
+            var scannerResult = audioFileScanner.SearchAndRead(settings.Path, ct);
 
-            if (!Files.Any())
+            if (scannerResult.Count == 0)
             {
                 Print("No audio files found. Try :open <path> or tagselecta ui <path>.");
             }
 
+            Files = scannerResult.Select(x => new TagDataActionTarget(x.Path, x.TagData)).ToList();
+
             completionProvider.GenerateCompletions(
-                Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
+                scannerResult.Select(x => x.TagData).SelectMany(x => x.Fields).Select(x => x.Key)
             );
 
             if (!string.IsNullOrWhiteSpace(config.StartupCommand))
