@@ -7,13 +7,13 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const string mdPath = "./docs/docs/05-cli/02-cli-commands.md";
+        const string mdPath = "./docs/docs/05-cli/03-cli-commands.md";
         string readme = File.ReadAllText(mdPath);
         readme = UpdateHelp(readme);
         File.WriteAllText(mdPath, readme);
     }
 
-    static string UpdateHelp(string readme)
+    static string UpdateHelp(string mdPath)
     {
         Console.WriteLine("Updating README.md CLI help section...\n");
 
@@ -23,18 +23,30 @@ internal class Program
         // Define all CLI commands to document
         var commands = new (string DisplayName, string CommandLine)[]
         {
-            ("Help", "run --project ./TagSelecta.App -- --help"),
-            ("Edit", "run --project ./TagSelecta.App -- edit --help"),
-            ("Extract Picture", "run --project ./TagSelecta.App -- extractpicture --help"),
-            ("Move", "run --project ./TagSelecta.App -- move --help"),
-            ("Split", "run --project ./TagSelecta.App -- split --help"),
-            ("Title case", "run --project ./TagSelecta.App -- titlecase --help"),
-            ("Auto Track", "run --project ./TagSelecta.App -- autotrack --help"),
-            ("Discogs", "run --project ./TagSelecta.App -- discogs --help"),
-            ("Find", "run --project ./TagSelecta.App -- find --help"),
+            ("Help", "run -p:WarningLevel=0 --project ./TagSelecta.App -- --help"),
+            ("Edit", "run -p:WarningLevel=0 --project ./TagSelecta.App -- edit --help"),
+            ("Move", "run -p:WarningLevel=0 --project ./TagSelecta.App -- move --help"),
+            ("Split", "run -p:WarningLevel=0 --project ./TagSelecta.App -- split --help"),
+            ("Title case", "run -p:WarningLevel=0 --project ./TagSelecta.App -- titlecase --help"),
+            ("Auto Track", "run -p:WarningLevel=0 --project ./TagSelecta.App -- autotrack --help"),
+            ("Find", "run -p:WarningLevel=0 --project ./TagSelecta.App -- find --help"),
+            ("Discogs", "run -p:WarningLevel=0 --project ./TagSelecta.App -- discogs --help"),
+            (
+                "MusicBrainz",
+                "run -p:WarningLevel=0 --project ./TagSelecta.App -- musicbrainz --help"
+            ),
+            ("Clear", "run -p:WarningLevel=0 --project ./TagSelecta.App -- clear --help"),
+            (
+                "ClearExcept",
+                "run -p:WarningLevel=0 --project ./TagSelecta.App -- clearexcept --help"
+            ),
+            (
+                "Extract Picture",
+                "run -p:WarningLevel=0 --project ./TagSelecta.App -- extractpicture --help"
+            ),
         };
 
-        // Generate new content for README
+        // Generate new content for md
         var sb = new StringBuilder();
         foreach (var (name, commandLine) in commands)
         {
@@ -48,24 +60,24 @@ internal class Program
             sb.AppendLine();
         }
 
-        Console.WriteLine("\nInserting all help outputs into README...");
+        Console.WriteLine("\nInserting all help outputs into md...");
 
-        if (!readme.Contains(helpStart) || !readme.Contains(helpEnd))
+        if (!mdPath.Contains(helpStart) || !mdPath.Contains(helpEnd))
         {
             throw new Exception(
-                "Markers <!-- start:cli-help --> and <!-- end:cli-help --> not found in README.md"
+                "Markers <!-- start:cli-help --> and <!-- end:cli-help --> not found in md"
             );
         }
 
         // Replace everything between markers
         string updated = Regex.Replace(
-            readme,
+            mdPath,
             $"{Regex.Escape(helpStart)}.*?{Regex.Escape(helpEnd)}",
             $"{helpStart}\n{sb}\n{helpEnd}",
             RegexOptions.Singleline
         );
 
-        Console.WriteLine("README.md updated successfully!");
+        Console.WriteLine("Markdown file updated successfully!");
 
         return updated;
     }
