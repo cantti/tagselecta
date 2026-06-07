@@ -126,6 +126,7 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
         {
             if (allowRemainingArguments)
             {
+                // todo: use key and values lists instead
                 baseSettings.Remaining.AddRange(
                     argList.Select(x => new RemainingArgument(x.Key, x.Value))
                 );
@@ -147,5 +148,4 @@ public class ExecuteTagDataActionCommand(ITagDataActionFactory actionFactory) : 
 
         return baseSettings;
     }
-
 }

@@ -1,19 +1,19 @@
 using TagSelecta.Shared.Tagging;
 using TagSelecta.TagDataActions.Abstractions;
-using TagSelecta.TagDataActions.ClearExcept;
+using TagSelecta.TagDataActions.Clear;
 using TagSelecta.TagDataActions.Tests.Utils;
 
 namespace TagSelecta.TagDataActions.Tests;
 
-public class ClearExceptTests
+public class ClearTests
 {
     [Fact]
-    public async Task ClearExceptTest()
+    public async Task ClearTest()
     {
         // Arrange
-        ITagDataAction action = new ClearExceptAction();
+        ITagDataAction action = new ClearAction();
 
-        var settings = new ClearExceptSettings { Album = true, Key = ["title"] };
+        var settings = new ClearSettings { Album = true, Key = ["title"] };
         settings.Remaining.Add(new RemainingArgument("publisher", ""));
 
         var tagData = new TagData();
@@ -35,17 +35,17 @@ public class ClearExceptTests
 
         // Assert
         var currentTagData = item.CurrentTagData;
-        Assert.Equal(["Album"], currentTagData.GetValue(FieldName.Album));
-        Assert.Equal(["Title"], currentTagData.GetValue(FieldName.Title));
-        Assert.Equal(["Publisher"], currentTagData.GetValue("publisher"));
-        Assert.Equal([], currentTagData.GetValue(FieldName.Artist));
-        Assert.Equal([], currentTagData.GetValue("label"));
+        Assert.Equal([], currentTagData.GetValue(FieldName.Album));
+        Assert.Equal([], currentTagData.GetValue(FieldName.Title));
+        Assert.Equal([], currentTagData.GetValue("publisher"));
+        Assert.Equal(["Artist"], currentTagData.GetValue(FieldName.Artist));
+        Assert.Equal(["Label"], currentTagData.GetValue("label"));
     }
 
     [Fact]
-    public void ClearExceptSettingsContainsAllFieldNames()
+    public void ClearSettingsContainsAllFieldNames()
     {
-        var properties = typeof(ClearExceptSettings).GetProperties();
+        var properties = typeof(ClearSettings).GetProperties();
         var propertyNames = new HashSet<string>(
             properties.Select(x => x.Name),
             StringComparer.OrdinalIgnoreCase
@@ -55,7 +55,7 @@ public class ClearExceptTests
 
         Assert.True(
             missing.Count == 0,
-            $"ClearExceptSettings is missing fields: {string.Join(", ", missing)}"
+            $"ClearSettings is missing fields: {string.Join(", ", missing)}"
         );
     }
 }
