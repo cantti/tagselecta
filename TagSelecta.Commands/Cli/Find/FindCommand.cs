@@ -10,7 +10,7 @@ public class FindCommand(IAnsiConsole console, IAudioFileScanner audioFileScanne
 {
     public override int Execute(CommandContext context, FindSettings settings, CancellationToken ct)
     {
-        var files = audioFileScanner.SearchAndRead(settings.Path, ct);
+        var files = audioFileScanner.SearchAndRead(settings.Path, !settings.NoRecursive, ct);
         foreach (var file in files)
         {
             var formatter = new TagDataFormatter(file.TagData, file.Path);

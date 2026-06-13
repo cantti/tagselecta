@@ -101,7 +101,11 @@ public class TuiApp(
 
             AltScreen.Enter();
 
-            var scannerResult = audioFileScanner.SearchAndRead(settings.Path, ct);
+            var scannerResult = audioFileScanner.SearchAndRead(
+                settings.Path,
+                !settings.NoRecursive,
+                ct
+            );
 
             if (scannerResult.Count == 0)
             {

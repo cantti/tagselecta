@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Spectre.Console.Cli;
 
 namespace TagSelecta.Commands.Tui;
@@ -6,4 +7,8 @@ public class TuiSettings : CommandSettings
 {
     [CommandArgument(0, "[path]")]
     public string[] Path { get; set; } = [];
+
+    [CommandOption("--no-recursive")]
+    [Description("Do not scan subdirectories.")]
+    public bool NoRecursive { get; set; }
 }

@@ -102,7 +102,7 @@ public class MusicBrainzAction : ITagDataAction<MusicBrainzSettings>
         var tagData = context.Target.CurrentTagData;
 
         var directoryFiles = _fileScanner
-            .Search([context.Target.BackupPath.DirectoryName()])
+            .Search([context.Target.BackupPath.DirectoryName()], false)
             .Order()
             .ToList();
 

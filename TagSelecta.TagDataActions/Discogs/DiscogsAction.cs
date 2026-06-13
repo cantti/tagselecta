@@ -92,7 +92,7 @@ public class DiscogsAction : ITagDataAction<DiscogsSettings>
 
         var tagData = context.Target.CurrentTagData;
         var directoryFiles = _fileScanner
-            .Search([context.Target.BackupPath.DirectoryName()])
+            .Search([context.Target.BackupPath.DirectoryName()], false)
             .Order()
             .ToList();
         var trackIndex = directoryFiles.FindIndex(x => x == context.Target.BackupPath);

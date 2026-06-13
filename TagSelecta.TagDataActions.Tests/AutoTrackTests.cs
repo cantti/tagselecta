@@ -14,7 +14,9 @@ public class AutoTrackTests
     {
         // Arrange
         var audioFileScanner = Substitute.For<IAudioFileScanner>();
-        audioFileScanner.Search(new List<string>()).ReturnsForAnyArgs(["file1.mp3", "file2.mp3"]);
+        audioFileScanner
+            .Search(new List<string>(), true)
+            .ReturnsForAnyArgs(["file1.mp3", "file2.mp3"]);
 
         ITagDataAction action = new AutoTrackAction(audioFileScanner);
 

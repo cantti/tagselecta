@@ -19,7 +19,7 @@ public class AutoTrackAction(IAudioFileScanner fileScanner) : ITagDataAction<Aut
     {
         var tagData = context.Target.CurrentTagData;
         var directoryFiles = fileScanner
-            .Search([context.Target.BackupPath.DirectoryName()])
+            .Search([context.Target.BackupPath.DirectoryName()], false)
             .Order()
             .ToList();
         var track = (
