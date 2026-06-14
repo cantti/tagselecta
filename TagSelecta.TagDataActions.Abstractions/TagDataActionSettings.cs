@@ -8,7 +8,7 @@ public abstract class TagDataActionSettings : CommandSettings
     [CommandArgument(0, "<path>")]
     public string[] Path { get; set; } = [];
 
-    [CommandOption("--no-recursive")]
+    [CommandOption("--norecursive")]
     [Description("Do not scan subdirectories.")]
     public bool NoRecursive { get; set; }
 

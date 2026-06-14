@@ -45,6 +45,10 @@ public class CompletionProvider : ICompletionProvider
                                 nameof(TagDataActionSettings.Yes),
                                 StringComparison.CurrentCultureIgnoreCase
                             )
+                            && !x.Equals(
+                                nameof(TagDataActionSettings.NoRecursive),
+                                StringComparison.CurrentCultureIgnoreCase
+                            )
                         )
                         .Select(x => new OptionSpec(x, prop.PropertyType == typeof(bool)))
                 );
