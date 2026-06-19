@@ -27,7 +27,7 @@ jobs:
       - name: Check if README changed
         id: git_diff
         run: |
-          if git diff --quiet ./docs/docs/05-cli/02-cli-commands.md; then
+          if git diff --quiet ./docs/docs/05-cli/03-cli-commands.md; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -39,7 +39,7 @@ jobs:
           git switch main
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add ./docs/docs/05-cli/02-cli-commands.md
+          git add ./docs/docs/05-cli/03-cli-commands.md
           git commit -m "docs: auto-update docs"
           git push
 
