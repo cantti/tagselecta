@@ -33,6 +33,7 @@ public class TuiApp(
     public IEnumerable<TagDataActionTarget> VisibleFiles =>
         Files.Where(x => !FilterEnabled || x.HasChanges);
 
+    // todo fix logic
     public IEnumerable<TagDataActionTarget> SelectedFiles =>
         VisibleFiles.Any(x => x.IsSelected) ? VisibleFiles.Where(x => x.IsSelected)
         : FocusedFile is not null ? [FocusedFile]
