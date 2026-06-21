@@ -65,7 +65,7 @@ public static class StringListExtensions
     {
         switch (value?.Trim().ToLowerInvariant())
         {
-            case "true" or "1":
+            case "true" or "1" or "":
                 parsed = true;
                 return true;
             case "false" or "0":

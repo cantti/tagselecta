@@ -40,7 +40,7 @@ public static class CommandParser
 
     private static readonly Parser<ParsedCommandOption> _commandOptionFlag = (
         from key in _quoted.Or(_unQuotedChar.AtLeastOnce().Text())
-        select new ParsedCommandOption(key, "true")
+        select new ParsedCommandOption(key, "")
     ).Token();
 
     public static bool TryParse(string input, out List<ParsedCommand> parsedCommands)
