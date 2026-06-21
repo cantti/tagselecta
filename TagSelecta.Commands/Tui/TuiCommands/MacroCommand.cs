@@ -18,8 +18,6 @@ public class MacroCommand(MacroConfig config) : ITuiCommand
     {
         var macroName = parsedCommand.Options.FirstOrDefault()?.Key;
 
-        var run = parsedCommand.Options.Any(x => x is { Key: "run", Value: "true" or "1" or "" });
-
         if (string.IsNullOrWhiteSpace(macroName))
         {
             throw new TagSelectaException("Macro name is required.");
