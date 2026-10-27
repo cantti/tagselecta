@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rid: [linux-x64, win-x64, osx-x64, osx-arm64, linux-arm64]
+        rid: [linux-x64, win-x64, osx-x64, osx-arm64, linux-arm64, linux-bionic-arm64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
