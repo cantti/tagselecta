@@ -1,5 +1,4 @@
 using Spectre.Console;
-using Spectre.Console.Advanced;
 
 namespace TagSelecta.Commands.Tui;
 

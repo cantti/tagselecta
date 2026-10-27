@@ -11,8 +11,8 @@
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="9.0.2" />
     <PackageVersion Include="Scriban" Version="7.2.3" />
-    <PackageVersion Include="Spectre.Console.Cli" Version="0.53.1" />
-    <PackageVersion Include="Spectre.Console.ImageSharp" Version="0.53.1" />
+    <PackageVersion Include="Spectre.Console.Cli" Version="0.57.2 " />
+    <PackageVersion Include="Spectre.Console.ImageSharp" Version="0.57.2 " />
     <PackageVersion Include="Sprache" Version="2.3.1" />
     <PackageVersion Include="TagLibSharp" Version="2.3.0" />
     <PackageVersion Include="Tomlyn" Version="0.20.0" />

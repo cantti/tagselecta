@@ -54,7 +54,7 @@ public class FileListWidget(
         }
 
         IRenderable content = new Rows(
-            new SectionHeaderWidget($"Files ({filesList.Count}):"),
+            new SectionHeaderWidget($"Files ({filesList.Count}) - [e] toggle, [t] tree view:"),
             new Rows(items)
         );
 
