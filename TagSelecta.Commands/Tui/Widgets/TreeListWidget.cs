@@ -42,12 +42,12 @@ public class TreeListWidget(
 
             var selectedMarker = treeLine.File is not null
                 ? treeLine.File.IsSelected
-                    ? "[x]"
-                    : "[ ]"
+                    ? "* "
+                    : "  "
                 : "   ";
 
             var indent = new string(' ', treeLine.Depth * 2);
-            var prefix = treeLine.File is null ? "▸ " : "  ";
+            var prefix = treeLine.File is null ? "/" : " ";
 
             var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
             text = text.Substring(0, Math.Min(text.Length, maxWidth)).PadRight(maxWidth);
@@ -63,7 +63,7 @@ public class TreeListWidget(
         }
 
         IRenderable content = new Rows(
-            new SectionHeaderWidget($"Files ({_files.Count}) - [e] toggle, [t] list view:"),
+            new SectionHeaderWidget($"Files ({_files.Count}):"),
             new Rows(items)
         );
 

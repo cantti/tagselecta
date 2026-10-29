@@ -235,14 +235,16 @@ public class TuiApp(
         const string tagDataLayoutKey = "body";
         const string statusLayoutKey = "status";
         const string filesLayoutKey = "files";
-        const int headerSize = 3;
+        const int headerSize = 1;
         var actualHeaderSize = 0;
         const int statusBarHeight = 1;
         var children = new List<Layout>();
         if (config.HeaderVisible)
         {
             actualHeaderSize = headerSize;
-            children.Add(new Layout(headerLayoutKey).Size(actualHeaderSize).Update(RenderHeader()));
+            children.Add(
+                new Layout(headerLayoutKey).Size(actualHeaderSize).Update(new HeaderWidget())
+            );
         }
 
         if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
@@ -283,12 +285,12 @@ public class TuiApp(
                                 ? new TreeListWidget(
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentHeight - 2
+                                    filesContentHeight - 1
                                 )
                                 : new FileListWidget(
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentHeight - 2
+                                    filesContentHeight - 1
                                 )
                         )
                 );
@@ -334,25 +336,6 @@ public class TuiApp(
         }
 
         return true;
-    }
-
-    private IRenderable RenderHeader()
-    {
-        var keys = new List<(string Key, string Action)>
-        {
-            ("q", "Quit"),
-            ("h", "Command help"),
-            ("?", "Keymap help"),
-        };
-        var cols1 = new List<IRenderable>();
-        cols1.AddRange(keys.Select(x => new Markup($"[bold blue]{x.Key}[/] {x.Action}")).ToList());
-        cols1.Add(
-            new Markup("[bold blue]Documentation[/]: [link]https://cantti.github.io/tagselecta[/]")
-        );
-        return new Rows(
-            new SectionHeaderWidget("Tagselecta"),
-            new Columns(cols1) { Padding = new Padding(2, 0, 2, 0), Expand = false }
-        );
     }
 
     private void BindHotkeys()

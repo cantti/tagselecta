@@ -7,8 +7,22 @@ public class SectionHeaderWidget(string text) : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
+        string visibleText;
+        if (text.Length > maxWidth)
+        {
+            visibleText = text[..maxWidth];
+        }
+        else
+        {
+            visibleText = text.PadRight(maxWidth);
+        }
+
         return (
-            (IRenderable)new Text(text, new Style(Color.Yellow, Color.Default, Decoration.Bold))
+            (IRenderable)
+                new Text(
+                    visibleText,
+                    new Style(Color.Yellow, Color.Default, Decoration.Invert | Decoration.Bold)
+                )
         ).Render(options, maxWidth);
     }
 }

@@ -40,7 +40,7 @@ public class FileListWidget(
             var cols = new List<IRenderable>();
             var fg = filesList[itemIndex].HasChanges ? Color.Red : Color.Default;
             var bg = focusedIndex == itemIndex ? Color.Grey : Color.Default;
-            var selectedMarker = filesList[itemIndex].IsSelected ? "[x] " : "[ ] ";
+            var selectedMarker = filesList[itemIndex].IsSelected ? "* " : "  ";
             cols.Add(new Text(selectedMarker, new Style(fg, bg)));
             if (path.Length + selectedMarker.Length > maxWidth)
             {
@@ -54,7 +54,7 @@ public class FileListWidget(
         }
 
         IRenderable content = new Rows(
-            new SectionHeaderWidget($"Files ({filesList.Count}) - [e] toggle, [t] tree view:"),
+            new SectionHeaderWidget($"Files ({filesList.Count}):"),
             new Rows(items)
         );
 
