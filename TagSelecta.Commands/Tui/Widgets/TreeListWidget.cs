@@ -42,15 +42,15 @@ public class TreeListWidget(
 
             var selectedMarker = treeLine.File is not null
                 ? treeLine.File.IsSelected
-                    ? "* "
-                    : "  "
+                    ? "|*| "
+                    : "| | "
                 : "   ";
 
             var indent = new string(' ', treeLine.Depth * 2);
             var prefix = treeLine.File is null ? "/" : " ";
 
             var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
-            text = text.Substring(0, Math.Min(text.Length, maxWidth)).PadRight(maxWidth);
+            text = text[..Math.Min(text.Length, maxWidth)].PadRight(maxWidth);
 
             var style = new Style(
                 treeLine.File is not null && treeLine.File.HasChanges ? Color.Red : Color.Default,

@@ -7,6 +7,11 @@ public class HeaderWidget : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
+        if (maxWidth <= 0)
+        {
+            return [];
+        }
+
         var keys = new List<(string Key, string Action)>
         {
             ("q", "quit"),
@@ -19,28 +24,21 @@ public class HeaderWidget : Renderable
         };
 
         var keyLine = string.Join(", ", keys.Select(x => $"[{x.Key}] {x.Action}"));
-        var headerLine = $"{keyLine}";
 
-        var visibleHeaderLine = headerLine;
-        if (maxWidth <= 0)
+        const string title = "Tagselecta";
+        var text = $"{title} {keyLine}";
+        return ((IRenderable)new SectionHeaderWidget(text)).Render(options, maxWidth);
+
+        var titleVisible = title[..Math.Min(title.Length, maxWidth)];
+        var remaining = maxWidth - titleVisible.Length;
+
+        var tailVisible = "";
+        if (remaining > 0)
         {
-            visibleHeaderLine = "";
-        }
-        else if (headerLine.Length > maxWidth)
-        {
-            visibleHeaderLine = headerLine[..maxWidth];
-        }
-        else
-        {
-            visibleHeaderLine = headerLine.PadRight(maxWidth);
+            var tail = "  " + keyLine;
+            tailVisible = tail.Length > remaining ? tail[..remaining] : tail.PadRight(remaining);
         }
 
-        IRenderable content = new Rows(
-            new Text(
-                visibleHeaderLine,
-                new Style(Color.Default, Color.Default, Decoration.Invert | Decoration.Bold)
-            )
-        );
-        return content.Render(options, maxWidth);
+        return [new Segment(titleVisible, new Style(Color.Black, Color.Green))];
     }
 }

@@ -33,40 +33,37 @@ public class CommandPromptWidget : Renderable
             fullText = fullText[..Math.Min(maxWidth, fullText.Length)];
         }
 
-        var cols = new List<IRenderable>();
+        var segments = new List<Segment>();
 
-        AddTextSegment(cols, fullText[..cursorPos], TokenKind.Default);
-        AddTextSegment(cols, fullText[cursorPos].ToString(), TokenKind.Cursor);
+        AddTextSegment(segments, fullText[..cursorPos], TokenKind.Default);
+        AddTextSegment(segments, fullText[cursorPos].ToString(), TokenKind.Cursor);
 
         if (_completion.Length > 0)
         {
             var afterCompletionStart = cursorPos + _completion.Length;
             AddTextSegment(
-                cols,
+                segments,
                 fullText[(cursorPos + 1)..afterCompletionStart],
                 TokenKind.Completion
             );
-            AddTextSegment(cols, fullText[afterCompletionStart..], TokenKind.Default);
+            AddTextSegment(segments, fullText[afterCompletionStart..], TokenKind.Default);
         }
         else
         {
-            AddTextSegment(cols, fullText[(cursorPos + 1)..], TokenKind.Default);
+            AddTextSegment(segments, fullText[(cursorPos + 1)..], TokenKind.Default);
         }
 
-        return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
-            options,
-            maxWidth
-        );
+        return segments;
     }
 
-    private static void AddTextSegment(List<IRenderable> cols, string value, TokenKind kind)
+    private static void AddTextSegment(List<Segment> segments, string value, TokenKind kind)
     {
         if (value.Length == 0)
         {
             return;
         }
 
-        cols.Add(new Text(value, GetTokenStyle(kind)));
+        segments.Add(new Segment(value, GetTokenStyle(kind)));
     }
 
     private static Style GetTokenStyle(TokenKind kind)
