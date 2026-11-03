@@ -4,6 +4,7 @@ using Spectre.Console.Rendering;
 namespace TagSelecta.Commands.Tui.Widgets;
 
 public class FileListWidget(
+    TuiAppTheme theme,
     IEnumerable<TagDataActionTarget> files,
     TagDataActionTarget? focusedFile,
     int windowSize
@@ -53,11 +54,9 @@ public class FileListWidget(
             items.Add(new Columns(cols) { Expand = false, Padding = new Padding(0) });
         }
 
-        IRenderable content = new Rows(
-            new SectionHeaderWidget($"Files ({filesList.Count}):"),
+        return new Rows(
+            new SectionHeaderWidget(theme, $"Files ({filesList.Count}):"),
             new Rows(items)
-        );
-
-        return content.Render(options, maxWidth);
+        ).ToSegments(options, maxWidth);
     }
 }

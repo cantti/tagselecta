@@ -4,16 +4,17 @@ using TagLib;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class PictureWidget(TagDataActionTarget? focusedFile, int maxHeight) : Renderable
+public class PictureWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile, int maxHeight)
+    : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         var rows = new List<IRenderable>();
-        rows.Add(new SectionHeaderWidget("Picture:"));
+        rows.Add(new SectionHeaderWidget(theme, "Picture:"));
 
         if (focusedFile == null)
         {
-            return ((IRenderable)new Rows(rows)).Render(options, maxWidth);
+            return new Rows(rows).ToSegments(options, maxWidth);
         }
 
         var picture = focusedFile
@@ -30,7 +31,7 @@ public class PictureWidget(TagDataActionTarget? focusedFile, int maxHeight) : Re
 
         if (picture == null)
         {
-            return ((IRenderable)new Rows(rows)).Render(options, maxWidth);
+            return new Rows(rows).ToSegments(options, maxWidth);
         }
 
         var image = new CanvasImage(picture.Data.ToArray());
@@ -44,6 +45,6 @@ public class PictureWidget(TagDataActionTarget? focusedFile, int maxHeight) : Re
         image.MaxWidth(newWidth);
         rows.Add(image);
 
-        return ((IRenderable)new Rows(rows)).Render(options, maxWidth);
+        return new Rows(rows).ToSegments(options, maxWidth);
     }
 }

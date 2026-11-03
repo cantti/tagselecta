@@ -3,12 +3,12 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class CommandHelpWidget : Renderable
+public class CommandHelpWidget(TuiAppTheme theme) : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         IRenderable content = new Rows(
-            new SectionHeaderWidget("Command help:"),
+            new SectionHeaderWidget(theme, "Command help:"),
             CommandHelp(),
             Text.Empty,
             EditableFieldsHelp()

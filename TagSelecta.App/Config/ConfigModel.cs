@@ -1,3 +1,5 @@
+using TagSelecta.Commands.Tui;
+
 namespace TagSelecta.App.Config;
 
 public class ConfigModel
@@ -6,4 +8,5 @@ public class ConfigModel
     public Dictionary<string, string> Macros { get; set; } = new();
     public DiscogsSection Discogs { get; set; } = new();
     public MusicBrainzSection MusicBrainz { get; set; } = new();
+    public TuiAppTheme Theme { get; set; } = new();
 }

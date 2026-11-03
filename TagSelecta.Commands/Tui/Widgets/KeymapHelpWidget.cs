@@ -3,7 +3,7 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class KeymapHelpWidget : Renderable
+public class KeymapHelpWidget(TuiAppTheme theme) : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
@@ -40,7 +40,7 @@ public class KeymapHelpWidget : Renderable
             );
         }
 
-        IRenderable content = new Rows(new SectionHeaderWidget("Keymap help:"), grid);
+        IRenderable content = new Rows(new SectionHeaderWidget(theme, "Keymap help:"), grid);
         return content.Render(options, maxWidth);
     }
 }

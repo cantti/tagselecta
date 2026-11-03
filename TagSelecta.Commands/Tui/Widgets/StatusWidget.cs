@@ -8,6 +8,6 @@ public class StatusWidget(string message) : Renderable
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         var text = message;
-        return ((IRenderable)new Text(text)).Render(options, maxWidth);
+        return new Text(text).ToSegments(options, maxWidth);
     }
 }

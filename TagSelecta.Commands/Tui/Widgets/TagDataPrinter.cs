@@ -7,7 +7,7 @@ namespace TagSelecta.Commands.Tui.Widgets;
 
 public static class TagDataPrinter
 {
-    public static IRenderable PrintComparison(TagDataActionTarget f)
+    public static IRenderable PrintComparison(TuiAppTheme theme, TagDataActionTarget f)
     {
         var tagData = f.CurrentTagData;
         var backupTagData = f.BackupTagData;
@@ -18,7 +18,7 @@ public static class TagDataPrinter
         table.AddColumn("");
         table.HideHeaders();
 
-        AddFieldComparison(table, "Path", f.BackupPath, f.CurrentPath);
+        AddFieldComparison(theme, table, "Path", f.BackupPath, f.CurrentPath);
 
         foreach (
             var key in backupTagData
@@ -31,7 +31,7 @@ public static class TagDataPrinter
                 backupTagData.Fields.SingleOrDefault(x => x.Key == key)?.Text ?? []
             );
             var value2 = ListToStr(tagData.Fields.SingleOrDefault(x => x.Key == key)?.Text ?? []);
-            AddFieldComparison(table, key, value1, value2);
+            AddFieldComparison(theme, table, key, value1, value2);
         }
 
         if (backupTagData.Picture.Count > 0 || tagData.Picture.Count > 0)
@@ -60,6 +60,7 @@ public static class TagDataPrinter
                     var value1 = PictureToStr(p1);
                     var value2 = PictureToStr(p2);
                     AddFieldComparison(
+                        theme,
                         table,
                         type.ToString(),
                         value1,
@@ -74,6 +75,7 @@ public static class TagDataPrinter
     }
 
     private static void AddFieldComparison(
+        TuiAppTheme theme,
         Table table,
         string key,
         string value1,
@@ -86,7 +88,7 @@ public static class TagDataPrinter
             return;
         }
 
-        var keyCol = new Text(key, new Style(Color.Blue));
+        var keyCol = new Text(key, new Style(Color.FromHex(theme.KeyFg)));
 
         var elements = new List<IRenderable>();
         if (eq ?? value1 == value2)

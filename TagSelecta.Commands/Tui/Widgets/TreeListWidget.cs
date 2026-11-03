@@ -5,6 +5,7 @@ using TagSelecta.Shared.IO;
 namespace TagSelecta.Commands.Tui.Widgets;
 
 public class TreeListWidget(
+    TuiAppTheme theme,
     IEnumerable<TagDataActionTarget> files,
     TagDataActionTarget? focusedFile,
     int windowSize
@@ -62,12 +63,10 @@ public class TreeListWidget(
             items.Add(new Text(text, style));
         }
 
-        IRenderable content = new Rows(
-            new SectionHeaderWidget($"Files ({_files.Count}):"),
+        return new Rows(
+            new SectionHeaderWidget(theme, $"Files ({_files.Count}):"),
             new Rows(items)
-        );
-
-        return content.Render(options, maxWidth);
+        ).ToSegments(options, maxWidth);
     }
 
     private List<TreeLine> BuildTreeLines()

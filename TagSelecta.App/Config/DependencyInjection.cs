@@ -25,6 +25,7 @@ public static class DependencyInjection
                 StartupCommand = configModel.General.StartupCommand,
             }
         );
+        services.AddSingleton(configModel.Theme);
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));
         services.AddSingleton(CreateMusicBrainzConfig(configModel.MusicBrainz));
         services.AddSingleton(CreateTaggerConfig(configModel.General));

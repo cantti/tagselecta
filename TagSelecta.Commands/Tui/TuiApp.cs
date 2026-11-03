@@ -14,6 +14,7 @@ public class TuiApp(
     IAudioFileScanner audioFileScanner,
     ITuiCommandDispatcher commandDispatcher,
     TuiAppConfig config,
+    TuiAppTheme theme,
     InputHandler inputHandler,
     HotkeyMap hotkeys,
     ICompletionProvider completionProvider
@@ -243,7 +244,7 @@ public class TuiApp(
         {
             actualHeaderSize = headerSize;
             children.Add(
-                new Layout(headerLayoutKey).Size(actualHeaderSize).Update(new HeaderWidget())
+                new Layout(headerLayoutKey).Size(actualHeaderSize).Update(new HeaderWidget(theme))
             );
         }
 
@@ -251,10 +252,11 @@ public class TuiApp(
         {
             children.Add(
                 new Layout(filesLayoutKey).Update(
-                    KeymapHelpEnabled ? new KeymapHelpWidget()
-                    : CommandHelpEnabled ? new CommandHelpWidget()
+                    KeymapHelpEnabled ? new KeymapHelpWidget(theme)
+                    : CommandHelpEnabled ? new CommandHelpWidget(theme)
                     : PictureEnabled
                         ? new PictureWidget(
+                            theme,
                             FocusedFile,
                             console.Profile.Height - actualHeaderSize - statusBarHeight
                         )
@@ -283,11 +285,13 @@ public class TuiApp(
                         .Update(
                             TreeEnabled
                                 ? new TreeListWidget(
+                                    theme,
                                     VisibleFiles,
                                     FocusedFile,
                                     filesContentHeight - 1
                                 )
                                 : new FileListWidget(
+                                    theme,
                                     VisibleFiles,
                                     FocusedFile,
                                     filesContentHeight - 1
@@ -297,7 +301,7 @@ public class TuiApp(
             }
 
             children.Add(
-                new Layout(tagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
+                new Layout(tagDataLayoutKey).Ratio(1).Update(new TagDataWidget(theme, FocusedFile))
             );
         }
 
