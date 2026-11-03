@@ -54,9 +54,11 @@ public class TreeListWidget(
             text = text[..Math.Min(text.Length, maxWidth)].PadRight(maxWidth);
 
             var style = new Style(
-                treeLine.File is not null && treeLine.File.HasChanges ? Color.Red : Color.Default,
+                treeLine.File is not null && treeLine.File.HasChanges
+                    ? Color.FromHex(theme.DangerFg)
+                    : Color.Default,
                 treeLine.File is not null && treeLine.File == focusedFile
-                    ? Color.Grey
+                    ? Color.FromHex(theme.SurfaceBg)
                     : Color.Default
             );
 

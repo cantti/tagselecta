@@ -34,8 +34,8 @@ public class KeymapHelpWidget(TuiAppTheme theme) : Renderable
         foreach (var key in keys)
         {
             grid.AddRow(
-                $"[bold blue]{Markup.Escape(key.Key)}[/]",
-                $"[bold blue]{Markup.Escape(key.AltKey)}[/]",
+                $"[bold {theme.AccentFg}]{Markup.Escape(key.Key)}[/]",
+                $"[bold {theme.AccentFg}]{Markup.Escape(key.AltKey)}[/]",
                 key.Action
             );
         }

@@ -12,8 +12,8 @@ public class SectionHeaderWidget(TuiAppTheme theme, string text) : Renderable
         return new Text(
             visibleText,
             new Style(
-                Color.FromHex(theme.HeaderLineFg),
-                Color.FromHex(theme.HeaderLineBg),
+                Color.FromHex(theme.TextFg),
+                Color.FromHex(theme.SurfaceBg),
                 Decoration.Bold
             )
         ).ToSegments(options, maxWidth);

@@ -32,8 +32,8 @@ public class HeaderWidget(TuiAppTheme theme) : Renderable
         return new Text(
             text,
             new Style(
-                Color.FromHex(theme.HeaderLineFg),
-                Color.FromHex(theme.HeaderLineBg),
+                Color.FromHex(theme.TextFg),
+                Color.FromHex(theme.SurfaceBg),
                 Decoration.Bold
             )
         ).ToSegments(options, maxWidth);

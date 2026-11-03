@@ -88,28 +88,28 @@ public static class TagDataPrinter
             return;
         }
 
-        var keyCol = new Text(key, new Style(Color.FromHex(theme.KeyFg)));
+        var keyCol = new Text(key, new Style(Color.FromHex(theme.AccentFg)));
 
         var elements = new List<IRenderable>();
         if (eq ?? value1 == value2)
         {
-            elements.Add(new Text(value1, new Style(Color.Default)));
+            elements.Add(new Text(value1, new Style(Color.FromHex(theme.TextFg))));
         }
         else
         {
             if (!string.IsNullOrEmpty(value1))
             {
-                elements.Add(new Text(value1, new Style(Color.Red)));
+                elements.Add(new Text(value1, new Style(Color.FromHex(theme.DangerFg))));
             }
 
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(value1))
             {
-                elements.Add(new Text(">"));
+                elements.Add(new Text(">", new Style(Color.FromHex(theme.TextFg))));
             }
 
             if (!string.IsNullOrEmpty(value2))
             {
-                elements.Add(new Text(value2, new Style(Color.Green)));
+                elements.Add(new Text(value2, new Style(Color.FromHex(theme.SuccessFg))));
             }
         }
 

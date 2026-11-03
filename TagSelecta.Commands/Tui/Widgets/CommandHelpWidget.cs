@@ -16,9 +16,9 @@ public class CommandHelpWidget(TuiAppTheme theme) : Renderable
         return content.Render(options, maxWidth);
     }
 
-    private static IRenderable CommandHelp()
+    private IRenderable CommandHelp()
     {
-        var commandColor = Color.Blue;
+        var commandColor = theme.AccentFg;
         var commands = new List<(string Command, string Action)>
         {
             ($"[bold {commandColor}]:selectdir[/]", "Select all files in dir"),
@@ -57,7 +57,7 @@ public class CommandHelpWidget(TuiAppTheme theme) : Renderable
         return result;
     }
 
-    private static IRenderable EditableFieldsHelp()
+    private IRenderable EditableFieldsHelp()
     {
         var fields = new[]
         {
@@ -79,6 +79,6 @@ public class CommandHelpWidget(TuiAppTheme theme) : Renderable
             "tracknumber",
             "tracktotal",
         };
-        return new Markup($"[bold {Color.Blue}]Standard fields[/]: {string.Join(", ", fields)}");
+        return new Markup($"[bold {theme.TextFg}]Standard fields[/]: {string.Join(", ", fields)}");
     }
 }

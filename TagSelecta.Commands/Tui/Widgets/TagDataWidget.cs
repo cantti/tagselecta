@@ -12,7 +12,12 @@ public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile) 
 
         if (focusedFile?.Exception is not null)
         {
-            rows.Add(new Text($"Error: {focusedFile.Exception.Message}", new Style(Color.Red)));
+            rows.Add(
+                new Text(
+                    $"Error: {focusedFile.Exception.Message}",
+                    new Style(Color.FromHex(theme.DangerFg))
+                )
+            );
         }
 
         var tagDataRenderable = focusedFile is not null

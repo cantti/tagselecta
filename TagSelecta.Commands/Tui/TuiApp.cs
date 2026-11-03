@@ -311,6 +311,7 @@ public class TuiApp(
                 .Update(
                     inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(
+                            theme,
                             inputHandler.Input,
                             inputHandler.CursorPos,
                             inputHandler.Completion

@@ -7,10 +7,12 @@ public class CommandPromptWidget : Renderable
 {
     private readonly string _completion;
     private readonly int _cursorPos;
+    private readonly TuiAppTheme _theme;
     private readonly string _text;
 
-    public CommandPromptWidget(string text, int cursorPos, string completion)
+    public CommandPromptWidget(TuiAppTheme theme, string text, int cursorPos, string completion)
     {
+        _theme = theme;
         _text = text;
         _cursorPos = cursorPos;
         _completion = completion;
@@ -32,6 +34,8 @@ public class CommandPromptWidget : Renderable
         {
             fullText = fullText[..Math.Min(maxWidth, fullText.Length)];
         }
+
+        fullText = fullText.PadRight(maxWidth);
 
         var segments = new List<Segment>();
 
@@ -56,7 +60,7 @@ public class CommandPromptWidget : Renderable
         return segments;
     }
 
-    private static void AddTextSegment(List<Segment> segments, string value, TokenKind kind)
+    private void AddTextSegment(List<Segment> segments, string value, TokenKind kind)
     {
         if (value.Length == 0)
         {
@@ -66,13 +70,16 @@ public class CommandPromptWidget : Renderable
         segments.Add(new Segment(value, GetTokenStyle(kind)));
     }
 
-    private static Style GetTokenStyle(TokenKind kind)
+    private Style GetTokenStyle(TokenKind kind)
     {
         return kind switch
         {
-            TokenKind.Completion => new Style(Color.Grey),
+            TokenKind.Completion => new Style(
+                Color.FromHex(_theme.MutedFg),
+                Color.FromHex(_theme.SurfaceBg)
+            ),
             TokenKind.Cursor => new Style(decoration: Decoration.Invert),
-            _ => Style.Plain,
+            _ => new Style(Color.FromHex(_theme.TextFg), Color.FromHex(_theme.SurfaceBg)),
         };
     }
 
