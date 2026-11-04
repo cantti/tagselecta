@@ -42,10 +42,7 @@ public class FileListWidget(
             var fg = filesList[itemIndex].HasChanges
                 ? Color.FromHex(theme.DangerFg)
                 : Color.Default;
-            var bg =
-                focusedIndex == itemIndex
-                    ? Color.FromHex(theme.SurfaceBg)
-                    : Color.Default;
+            var bg = focusedIndex == itemIndex ? Color.FromHex(theme.SurfaceBg) : Color.Default;
             var selectedMarker = filesList[itemIndex].IsSelected ? "|*| " : "    ";
             cols.Add(new Text(selectedMarker, new Style(fg, bg)));
             if (path.Length + selectedMarker.Length > maxWidth)
@@ -60,7 +57,7 @@ public class FileListWidget(
         }
 
         return new Rows(
-            new SectionHeaderWidget(theme, $"Files ({filesList.Count}):"),
+            new SectionHeaderWidget(theme, $"Explorer ({filesList.Count}):"),
             new Rows(items)
         ).ToSegments(options, maxWidth);
     }

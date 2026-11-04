@@ -16,7 +16,7 @@ public class KeymapHelpWidget(TuiAppTheme theme) : Renderable
             ("A", "", "Select all files in directory"),
             ("j", "down", "Move down"),
             ("k", "up", "Move up"),
-            ("e", "", "Toggle file list (explorer)"),
+            ("e", "", "Toggle file explorer"),
             ("t", "", "Toggle tree"),
             ("f", "", "Toggle filter"),
             ("p", "", "Toggle picture"),

@@ -66,7 +66,7 @@ public class TreeListWidget(
         }
 
         return new Rows(
-            new SectionHeaderWidget(theme, $"Files ({_files.Count}):"),
+            new SectionHeaderWidget(theme, $"Explorer ({_files.Count}):"),
             new Rows(items)
         ).ToSegments(options, maxWidth);
     }

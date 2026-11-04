@@ -17,7 +17,7 @@ public class HeaderWidget(TuiAppTheme theme) : Renderable
             ("q", "quit"),
             ("j/k", "move"),
             ("space", "select"),
-            ("e", "file list"),
+            ("e", "explorer"),
             ("p", "picture"),
             ("h", "command help"),
             ("?", "hotkeys"),
@@ -31,11 +31,7 @@ public class HeaderWidget(TuiAppTheme theme) : Renderable
 
         return new Text(
             text,
-            new Style(
-                Color.FromHex(theme.TextFg),
-                Color.FromHex(theme.SurfaceBg),
-                Decoration.Bold
-            )
+            new Style(Color.FromHex(theme.TextFg), Color.FromHex(theme.SurfaceBg), Decoration.Bold)
         ).ToSegments(options, maxWidth);
     }
 }
