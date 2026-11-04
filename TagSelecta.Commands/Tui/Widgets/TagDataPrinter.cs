@@ -37,7 +37,12 @@ public static class TagDataPrinter
         if (backupTagData.Picture.Count > 0 || tagData.Picture.Count > 0)
         {
             table.AddEmptyRow();
-            table.AddRow("[i]Pictures:[/]");
+            table.AddRow(
+                new Text(
+                    "Pictures:",
+                    new Style(Color.FromHex(theme.AccentFg), decoration: Decoration.Italic)
+                )
+            );
 
             // collect unique picture types
             var types = backupTagData
