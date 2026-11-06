@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
     <AssemblyName>tagselecta</AssemblyName>
+    <PublishTrimmed>true</PublishTrimmed>
     <Version>0.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
