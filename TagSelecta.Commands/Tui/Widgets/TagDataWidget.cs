@@ -21,7 +21,7 @@ public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile, 
         }
 
         var tagDataRenderable = focusedFile is not null
-            ? TagDataPrinter.PrintComparison(theme, focusedFile, offset)
+            ? TagDataPrinter.CreateComparisonTable(theme, focusedFile, offset)
             : Text.Empty;
 
         rows.Add(tagDataRenderable);

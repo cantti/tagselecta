@@ -7,7 +7,11 @@ namespace TagSelecta.Commands.Tui.Widgets;
 
 public static class TagDataPrinter
 {
-    public static IRenderable PrintComparison(TuiAppTheme theme, TagDataActionTarget f, int offset)
+    public static IRenderable CreateComparisonTable(
+        TuiAppTheme theme,
+        TagDataActionTarget f,
+        int offset
+    )
     {
         var table = new Table();
         table.Border(TableBorder.None);
@@ -36,14 +40,7 @@ public static class TagDataPrinter
                 pictureHeaderAdded = true;
             }
 
-            AddFieldComparison(
-                theme,
-                table,
-                field.Key,
-                field.OldValue,
-                field.NewValue,
-                field.Equal
-            );
+            AddComparisonRow(theme, table, field.Key, field.OldValue, field.NewValue, field.Equal);
         }
 
         return table;
@@ -126,7 +123,7 @@ public static class TagDataPrinter
         }
     }
 
-    private static void AddFieldComparison(
+    private static void AddComparisonRow(
         TuiAppTheme theme,
         Table table,
         string key,
@@ -156,7 +153,7 @@ public static class TagDataPrinter
 
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(value1))
             {
-                elements.Add(new Text(">", new Style(Color.FromHex(theme.TextFg))));
+                elements.Add(new Text(theme.ChangeSymbol, new Style(Color.FromHex(theme.MutedFg))));
             }
 
             if (!string.IsNullOrEmpty(value2))

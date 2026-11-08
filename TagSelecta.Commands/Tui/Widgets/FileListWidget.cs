@@ -44,17 +44,19 @@ public class FileListWidget(
                 ? Color.FromHex(theme.DangerFg)
                 : Color.FromHex(theme.TextFg);
             var bg = focusedIndex == itemIndex ? Color.FromHex(theme.FocusedBg) : Color.Default;
-            var selectedMarker = filesList[itemIndex].IsSelected ? " ✓ " : "   ";
+            var selectedMarker = ExplorerPanel.GetSelectionMarker(
+                filesList[itemIndex].IsSelected,
+                theme.SelectionSymbol
+            );
             cols.Add(new Text(selectedMarker, new Style(fg, bg)));
-            if (path.Length + selectedMarker.Length > contentWidth)
+            var markerWidth = new Segment(selectedMarker).CellCount();
+            var pathSegment = new Segment(path);
+            var pathWidth = pathSegment.CellCount();
+            if (pathWidth + markerWidth > contentWidth)
             {
-                var start = Math.Clamp(
-                    path.Length + selectedMarker.Length + 3 - contentWidth,
-                    0,
-                    path.Length
-                );
+                var start = Math.Clamp(pathWidth + markerWidth + 3 - contentWidth, 0, pathWidth);
                 cols.Add(new Text("...", new Style(fg, bg)));
-                path = path.Substring(start);
+                path = pathSegment.Split(start).Second?.Text ?? "";
             }
 
             cols.Add(new Text(path, new Style(fg, bg)));

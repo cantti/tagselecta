@@ -13,6 +13,11 @@ internal static class ExplorerPanel
         return Math.Max(0, maxWidth - BorderWidth - ContentPadding.Left - ContentPadding.Right);
     }
 
+    public static string GetSelectionMarker(bool selected, string symbol)
+    {
+        return selected ? $" {symbol} " : new string(' ', new Segment(symbol).CellCount() + 2);
+    }
+
     public static Panel Create(int fileCount, IRenderable content, TuiAppTheme theme)
     {
         var panel = SectionPanel.Create($"Explorer ({fileCount})", content, theme.Border);

@@ -42,17 +42,22 @@ public class TreeListWidget(
             var itemIndex = windowStart + i;
             var treeLine = treeLines[itemIndex];
 
-            var selectedMarker = treeLine.File?.IsSelected == true ? " ✓ " : "   ";
+            var selectedMarker = ExplorerPanel.GetSelectionMarker(
+                treeLine.File?.IsSelected == true,
+                theme.SelectionSymbol
+            );
 
             var indent = new string(' ', treeLine.Depth * 2);
             var prefix = treeLine.File is null ? "/" : " ";
 
             var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
-            text = text[..Math.Min(text.Length, contentWidth)].PadRight(contentWidth);
+            var visible = Segment.Truncate(new Segment(text), contentWidth);
+            text =
+                (visible?.Text ?? "") + new string(' ', contentWidth - (visible?.CellCount() ?? 0));
 
             var style = new Style(
-                treeLine.File is not null && treeLine.File.HasChanges
-                    ? Color.FromHex(theme.DangerFg)
+                treeLine.File is null ? Color.FromHex(theme.MutedFg)
+                    : treeLine.File.HasChanges ? Color.FromHex(theme.DangerFg)
                     : Color.FromHex(theme.TextFg),
                 treeLine.File is not null && treeLine.File == focusedFile
                     ? Color.FromHex(theme.FocusedBg)

@@ -34,6 +34,11 @@ header_visible = true
 # command to run automatically on startup
 startup_command = "selectall && run reggae"
 
+[theme]
+# symbols used in the explorer and metadata comparisons
+selection_symbol = "✓"
+change_symbol = "→"
+
 [macros]
 # example of macro. You can add as many as you want similarly.
 reggae="edit genre=\"Reggae\""
