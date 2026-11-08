@@ -20,14 +20,17 @@ public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile, 
             );
         }
 
+        var fieldCount = focusedFile is not null ? TagDataRenderer.GetFieldCount(focusedFile) : 0;
+        var visibleOffset = Math.Clamp(offset, 0, Math.Max(0, fieldCount - 1));
         var tagDataRenderable = focusedFile is not null
-            ? TagDataPrinter.CreateComparisonTable(theme, focusedFile, offset)
+            ? TagDataRenderer.CreateComparisonTable(theme, focusedFile, visibleOffset)
             : Text.Empty;
 
         rows.Add(tagDataRenderable);
 
+        var header = $"Metadata ({fieldCount})";
         return SectionPanel
-            .Create("Metadata", new Rows(rows), theme.Border)
+            .Create(header, new Rows(rows), theme.Border)
             .ToSegments(options, maxWidth);
     }
 }

@@ -5,7 +5,7 @@ using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public static class TagDataPrinter
+public static class TagDataRenderer
 {
     public static IRenderable CreateComparisonTable(
         TuiAppTheme theme,

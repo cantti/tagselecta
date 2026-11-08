@@ -12,7 +12,7 @@ public class MetadataUpCommand : ITuiCommand
     )
     {
         var maxOffset = context.FocusedFile is { } file
-            ? Math.Max(0, TagDataPrinter.GetFieldCount(file) - 1)
+            ? Math.Max(0, TagDataRenderer.GetFieldCount(file) - 1)
             : 0;
         context.MetadataOffset = Math.Max(0, Math.Min(context.MetadataOffset, maxOffset) - 1);
         return Task.CompletedTask;

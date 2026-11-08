@@ -13,7 +13,7 @@ public class MetadataDownCommand : ITuiCommand
     {
         if (context.FocusedFile is { } file)
         {
-            var maxOffset = Math.Max(0, TagDataPrinter.GetFieldCount(file) - 1);
+            var maxOffset = Math.Max(0, TagDataRenderer.GetFieldCount(file) - 1);
             context.MetadataOffset = Math.Min(context.MetadataOffset + 1, maxOffset);
         }
         return Task.CompletedTask;
