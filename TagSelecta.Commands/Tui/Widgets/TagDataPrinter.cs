@@ -7,18 +7,60 @@ namespace TagSelecta.Commands.Tui.Widgets;
 
 public static class TagDataPrinter
 {
-    public static IRenderable PrintComparison(TuiAppTheme theme, TagDataActionTarget f)
+    public static IRenderable PrintComparison(TuiAppTheme theme, TagDataActionTarget f, int offset)
     {
-        var tagData = f.CurrentTagData;
-        var backupTagData = f.BackupTagData;
-
         var table = new Table();
         table.Border(TableBorder.None);
         table.AddColumn("", c => c.Width(null));
         table.AddColumn("");
         table.HideHeaders();
 
-        AddFieldComparison(theme, table, "Path", f.BackupPath, f.CurrentPath);
+        var fields = GetFields(f);
+        offset = Math.Clamp(offset, 0, Math.Max(0, fields.Count - 1));
+        var pictureHeaderAdded = false;
+        foreach (var field in fields.Skip(offset))
+        {
+            if (field.IsPicture && !pictureHeaderAdded)
+            {
+                if (table.Rows.Count > 0)
+                {
+                    table.AddEmptyRow();
+                }
+
+                table.AddRow(
+                    new Text(
+                        "Pictures:",
+                        new Style(Color.FromHex(theme.AccentFg), decoration: Decoration.Italic)
+                    )
+                );
+                pictureHeaderAdded = true;
+            }
+
+            AddFieldComparison(
+                theme,
+                table,
+                field.Key,
+                field.OldValue,
+                field.NewValue,
+                field.Equal
+            );
+        }
+
+        return table;
+    }
+
+    public static int GetFieldCount(TagDataActionTarget f)
+    {
+        return GetFields(f).Count;
+    }
+
+    private static List<ComparisonField> GetFields(TagDataActionTarget f)
+    {
+        var tagData = f.CurrentTagData;
+        var backupTagData = f.BackupTagData;
+        var fields = new List<ComparisonField>();
+
+        AddField("Path", f.BackupPath, f.CurrentPath);
 
         foreach (
             var key in backupTagData
@@ -31,19 +73,11 @@ public static class TagDataPrinter
                 backupTagData.Fields.SingleOrDefault(x => x.Key == key)?.Text ?? []
             );
             var value2 = ListToStr(tagData.Fields.SingleOrDefault(x => x.Key == key)?.Text ?? []);
-            AddFieldComparison(theme, table, key, value1, value2);
+            AddField(key, value1, value2);
         }
 
         if (backupTagData.Picture.Count > 0 || tagData.Picture.Count > 0)
         {
-            table.AddEmptyRow();
-            table.AddRow(
-                new Text(
-                    "Pictures:",
-                    new Style(Color.FromHex(theme.AccentFg), decoration: Decoration.Italic)
-                )
-            );
-
             // collect unique picture types
             var types = backupTagData
                 .Picture.Select(p => p.Type)
@@ -64,19 +98,32 @@ public static class TagDataPrinter
                     var p2 = i < list2.Count ? list2[i] : null;
                     var value1 = PictureToStr(p1);
                     var value2 = PictureToStr(p2);
-                    AddFieldComparison(
-                        theme,
-                        table,
+                    AddField(
                         type.ToString(),
                         value1,
                         value2,
-                        TagDataComparer.PictureEq(p1, p2)
+                        TagDataComparer.PictureEq(p1, p2),
+                        isPicture: true
                     );
                 }
             }
         }
 
-        return table;
+        return fields;
+
+        void AddField(
+            string key,
+            string oldValue,
+            string newValue,
+            bool? equal = null,
+            bool isPicture = false
+        )
+        {
+            if (!string.IsNullOrEmpty(oldValue) || !string.IsNullOrEmpty(newValue))
+            {
+                fields.Add(new ComparisonField(key, oldValue, newValue, equal, isPicture));
+            }
+        }
     }
 
     private static void AddFieldComparison(
@@ -131,4 +178,12 @@ public static class TagDataPrinter
     {
         return string.Join("\n", list);
     }
+
+    private record ComparisonField(
+        string Key,
+        string OldValue,
+        string NewValue,
+        bool? Equal,
+        bool IsPicture
+    );
 }

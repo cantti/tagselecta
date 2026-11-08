@@ -3,7 +3,8 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile) : Renderable
+public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile, int offset)
+    : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
@@ -20,7 +21,7 @@ public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile) 
         }
 
         var tagDataRenderable = focusedFile is not null
-            ? TagDataPrinter.PrintComparison(theme, focusedFile)
+            ? TagDataPrinter.PrintComparison(theme, focusedFile, offset)
             : Text.Empty;
 
         rows.Add(tagDataRenderable);

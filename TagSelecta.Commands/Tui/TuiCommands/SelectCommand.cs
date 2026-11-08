@@ -18,6 +18,7 @@ public class SelectCommand : ITuiCommand
         var newIndex = context.FocusedFileIndex + 1;
         if (newIndex < context.VisibleFiles.Count())
         {
+            context.MetadataOffset = 0;
             context.FocusedFileIndex = newIndex;
         }
 

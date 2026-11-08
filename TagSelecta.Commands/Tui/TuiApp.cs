@@ -42,6 +42,8 @@ public class TuiApp(
 
     public int FocusedFileIndex { get; set; }
 
+    public int MetadataOffset { get; set; }
+
     public bool TreeEnabled { get; set; } = config.TreeEnabled;
 
     public bool FilterEnabled { get; set; }
@@ -77,6 +79,7 @@ public class TuiApp(
 
     public void SetFiles(IEnumerable<TagDataActionTarget> files)
     {
+        MetadataOffset = 0;
         Files = files.ToList();
         completionProvider.GenerateCompletions(
             Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
@@ -291,7 +294,9 @@ public class TuiApp(
             }
 
             children.Add(
-                new Layout(tagDataLayoutKey).Ratio(1).Update(new TagDataWidget(theme, FocusedFile))
+                new Layout(tagDataLayoutKey)
+                    .Ratio(1)
+                    .Update(new TagDataWidget(theme, FocusedFile, MetadataOffset))
             );
         }
 
@@ -340,6 +345,8 @@ public class TuiApp(
         hotkeys.Bind(HotkeyTokens.Up, "moveup");
         hotkeys.Bind("j", "movedown");
         hotkeys.Bind("k", "moveup");
+        hotkeys.Bind("J", "metadatadown");
+        hotkeys.Bind("K", "metadataup");
         hotkeys.Bind("g", "movestart");
         hotkeys.Bind("G", "moveend");
         hotkeys.Bind("q", "quit");
@@ -385,6 +392,7 @@ public class TuiApp(
 
         _currentCommandTask = Task.Run(async () =>
         {
+            var focusedFile = FocusedFile;
             try
             {
                 var executed = await commandDispatcher.Execute(
@@ -408,6 +416,11 @@ public class TuiApp(
             }
             finally
             {
+                if (!ReferenceEquals(focusedFile, FocusedFile))
+                {
+                    MetadataOffset = 0;
+                }
+
                 hotkeys.Bind("esc", "escape");
                 Invalidate();
             }

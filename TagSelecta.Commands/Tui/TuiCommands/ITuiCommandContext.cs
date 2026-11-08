@@ -3,6 +3,7 @@ namespace TagSelecta.Commands.Tui.TuiCommands;
 public interface ITuiCommandContext
 {
     int FocusedFileIndex { get; set; }
+    int MetadataOffset { get; set; }
     IEnumerable<TagDataActionTarget> Files { get; }
     IEnumerable<TagDataActionTarget> SelectedFiles { get; }
     TagDataActionTarget? FocusedFile { get; }
