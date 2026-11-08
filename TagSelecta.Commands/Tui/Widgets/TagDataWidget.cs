@@ -8,7 +8,6 @@ public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile) 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
         var rows = new List<IRenderable>();
-        rows.Add(new SectionHeaderWidget(theme, "Metadata:"));
 
         if (focusedFile?.Exception is not null)
         {
@@ -26,6 +25,8 @@ public class TagDataWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile) 
 
         rows.Add(tagDataRenderable);
 
-        return new Rows(rows).ToSegments(options, maxWidth);
+        return SectionPanel
+            .Create("Metadata", new Rows(rows), theme.Border)
+            .ToSegments(options, maxWidth);
     }
 }

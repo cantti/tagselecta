@@ -232,21 +232,11 @@ public class TuiApp(
 
     private IRenderable DrawLayout()
     {
-        const string headerLayoutKey = "navigation";
         const string tagDataLayoutKey = "body";
         const string statusLayoutKey = "status";
         const string filesLayoutKey = "files";
-        const int headerSize = 1;
-        var actualHeaderSize = 0;
-        const int statusBarHeight = 1;
+        const int statusBarHeight = SectionPanel.VerticalPadding + 1;
         var children = new List<Layout>();
-        if (config.HeaderVisible)
-        {
-            actualHeaderSize = headerSize;
-            children.Add(
-                new Layout(headerLayoutKey).Size(actualHeaderSize).Update(new HeaderWidget(theme))
-            );
-        }
 
         if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
         {
@@ -258,7 +248,7 @@ public class TuiApp(
                         ? new PictureWidget(
                             theme,
                             FocusedFile,
-                            console.Profile.Height - actualHeaderSize - statusBarHeight
+                            console.Profile.Height - statusBarHeight
                         )
                     : Text.Empty
                 )
@@ -270,7 +260,7 @@ public class TuiApp(
             {
                 const int fileListPadding = 1;
                 var filesContentHeight = (int)(
-                    (Console.WindowHeight - actualHeaderSize - statusBarHeight - fileListPadding)
+                    (Console.WindowHeight - statusBarHeight - fileListPadding)
                     * config.FileListRatio
                 );
                 if (filesContentHeight < 1)
@@ -288,13 +278,13 @@ public class TuiApp(
                                     theme,
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentHeight - 1
+                                    Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
                                 )
                                 : new FileListWidget(
                                     theme,
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentHeight - 1
+                                    Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
                                 )
                         )
                 );
@@ -316,7 +306,7 @@ public class TuiApp(
                             inputHandler.CursorPos,
                             inputHandler.Completion
                         )
-                        : new StatusWidget(_statusMessage)
+                        : new StatusWidget(theme, _statusMessage)
                 )
         );
         var layout = new Layout("root").SplitRows(children.ToArray());

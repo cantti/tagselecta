@@ -35,40 +35,36 @@ public class TreeListWidget(
         }
 
         var items = new List<IRenderable>(linesToPrint);
+        var contentWidth = ExplorerPanel.GetContentWidth(maxWidth);
 
         for (var i = 0; i < linesToPrint; i++)
         {
             var itemIndex = windowStart + i;
             var treeLine = treeLines[itemIndex];
 
-            var selectedMarker = treeLine.File is not null
-                ? treeLine.File.IsSelected
-                    ? "|*| "
-                    : "| | "
-                : "   ";
+            var selectedMarker = treeLine.File?.IsSelected == true ? " ✓ " : "   ";
 
             var indent = new string(' ', treeLine.Depth * 2);
             var prefix = treeLine.File is null ? "/" : " ";
 
             var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
-            text = text[..Math.Min(text.Length, maxWidth)].PadRight(maxWidth);
+            text = text[..Math.Min(text.Length, contentWidth)].PadRight(contentWidth);
 
             var style = new Style(
                 treeLine.File is not null && treeLine.File.HasChanges
                     ? Color.FromHex(theme.DangerFg)
-                    : Color.Default,
+                    : Color.FromHex(theme.TextFg),
                 treeLine.File is not null && treeLine.File == focusedFile
-                    ? Color.FromHex(theme.SurfaceBg)
+                    ? Color.FromHex(theme.FocusedBg)
                     : Color.Default
             );
 
             items.Add(new Text(text, style));
         }
 
-        return new Rows(
-            new SectionHeaderWidget(theme, $"Explorer ({_files.Count}):"),
-            new Rows(items)
-        ).ToSegments(options, maxWidth);
+        return ExplorerPanel
+            .Create(_files.Count, new Rows(items), theme)
+            .ToSegments(options, maxWidth);
     }
 
     private List<TreeLine> BuildTreeLines()

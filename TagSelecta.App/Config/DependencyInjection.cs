@@ -21,7 +21,6 @@ public static class DependencyInjection
                 FileListRatio = configModel.General.FileListRatio,
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
                 TreeEnabled = configModel.General.TreeEnabled,
-                HeaderVisible = configModel.General.HeaderVisible,
                 StartupCommand = configModel.General.StartupCommand,
             }
         );

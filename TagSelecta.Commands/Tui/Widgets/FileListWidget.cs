@@ -32,6 +32,7 @@ public class FileListWidget(
         }
 
         var items = new List<IRenderable>();
+        var contentWidth = ExplorerPanel.GetContentWidth(maxWidth);
 
         for (var i = 0; i < linesToPrint; i++)
         {
@@ -41,13 +42,17 @@ public class FileListWidget(
             var cols = new List<IRenderable>();
             var fg = filesList[itemIndex].HasChanges
                 ? Color.FromHex(theme.DangerFg)
-                : Color.Default;
-            var bg = focusedIndex == itemIndex ? Color.FromHex(theme.SurfaceBg) : Color.Default;
-            var selectedMarker = filesList[itemIndex].IsSelected ? "|*| " : "    ";
+                : Color.FromHex(theme.TextFg);
+            var bg = focusedIndex == itemIndex ? Color.FromHex(theme.FocusedBg) : Color.Default;
+            var selectedMarker = filesList[itemIndex].IsSelected ? " ✓ " : "   ";
             cols.Add(new Text(selectedMarker, new Style(fg, bg)));
-            if (path.Length + selectedMarker.Length > maxWidth)
+            if (path.Length + selectedMarker.Length > contentWidth)
             {
-                var start = path.Length + selectedMarker.Length + 3 - maxWidth;
+                var start = Math.Clamp(
+                    path.Length + selectedMarker.Length + 3 - contentWidth,
+                    0,
+                    path.Length
+                );
                 cols.Add(new Text("...", new Style(fg, bg)));
                 path = path.Substring(start);
             }
@@ -56,9 +61,8 @@ public class FileListWidget(
             items.Add(new Columns(cols) { Expand = false, Padding = new Padding(0) });
         }
 
-        return new Rows(
-            new SectionHeaderWidget(theme, $"Explorer ({filesList.Count}):"),
-            new Rows(items)
-        ).ToSegments(options, maxWidth);
+        return ExplorerPanel
+            .Create(filesList.Count, new Rows(items), theme)
+            .ToSegments(options, maxWidth);
     }
 }

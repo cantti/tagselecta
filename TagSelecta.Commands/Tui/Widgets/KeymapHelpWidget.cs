@@ -40,7 +40,6 @@ public class KeymapHelpWidget(TuiAppTheme theme) : Renderable
             );
         }
 
-        IRenderable content = new Rows(new SectionHeaderWidget(theme, "Keymap help:"), grid);
-        return content.Render(options, maxWidth);
+        return SectionPanel.Create("Keymap help", grid, theme.Border).ToSegments(options, maxWidth);
     }
 }

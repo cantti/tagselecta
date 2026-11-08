@@ -7,13 +7,10 @@ public class CommandHelpWidget(TuiAppTheme theme) : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        IRenderable content = new Rows(
-            new SectionHeaderWidget(theme, "Command help:"),
-            CommandHelp(),
-            Text.Empty,
-            EditableFieldsHelp()
-        );
-        return content.Render(options, maxWidth);
+        var content = new Rows(CommandHelp(), Text.Empty, EditableFieldsHelp());
+        return SectionPanel
+            .Create("Command help", content, theme.Border)
+            .ToSegments(options, maxWidth);
     }
 
     private IRenderable CommandHelp()

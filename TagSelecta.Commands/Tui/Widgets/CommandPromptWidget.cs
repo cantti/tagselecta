@@ -20,73 +20,36 @@ public class CommandPromptWidget : Renderable
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
+        var contentWidth = maxWidth - SectionPanel.HorizontalPadding;
+        if (contentWidth <= 0)
+        {
+            return SectionPanel
+                .Create("Command", Text.Empty, _theme.CommandBorder)
+                .ToSegments(options, maxWidth);
+        }
+
         var fullText = ":" + _text[.._cursorPos] + _completion + _text[_cursorPos..] + " ";
         var cursorPos = _cursorPos + 1; // compensate :
-
         var completionEnd = cursorPos + _completion.Length;
-        if (completionEnd >= maxWidth)
-        {
-            var windowStart = completionEnd - maxWidth + 1;
-            fullText = fullText[windowStart..(windowStart + maxWidth)];
-            cursorPos -= windowStart;
-        }
-        else
-        {
-            fullText = fullText[..Math.Min(maxWidth, fullText.Length)];
-        }
+        var windowStart = Math.Min(Math.Max(0, completionEnd - contentWidth + 1), cursorPos);
+        fullText = fullText[windowStart..Math.Min(fullText.Length, windowStart + contentWidth)]
+            .PadRight(contentWidth);
+        cursorPos -= windowStart;
+        completionEnd = Math.Min(completionEnd - windowStart, contentWidth);
 
-        fullText = fullText.PadRight(maxWidth);
+        var normalStyle = new Style(Color.FromHex(_theme.TextFg));
+        var completionStyle = new Style(Color.FromHex(_theme.MutedFg));
+        var cursorStyle = new Style(decoration: Decoration.Invert);
+        var afterCursor = cursorPos + 1;
+        var afterCompletion = Math.Max(afterCursor, completionEnd);
+        var paragraph = new Paragraph()
+            .Append(fullText[..cursorPos], normalStyle)
+            .Append(fullText[cursorPos].ToString(), cursorStyle)
+            .Append(fullText[afterCursor..afterCompletion], completionStyle)
+            .Append(fullText[afterCompletion..], normalStyle);
 
-        var segments = new List<Segment>();
-
-        AddTextSegment(segments, fullText[..cursorPos], TokenKind.Default);
-        AddTextSegment(segments, fullText[cursorPos].ToString(), TokenKind.Cursor);
-
-        if (_completion.Length > 0)
-        {
-            var afterCompletionStart = cursorPos + _completion.Length;
-            AddTextSegment(
-                segments,
-                fullText[(cursorPos + 1)..afterCompletionStart],
-                TokenKind.Completion
-            );
-            AddTextSegment(segments, fullText[afterCompletionStart..], TokenKind.Default);
-        }
-        else
-        {
-            AddTextSegment(segments, fullText[(cursorPos + 1)..], TokenKind.Default);
-        }
-
-        return segments;
-    }
-
-    private void AddTextSegment(List<Segment> segments, string value, TokenKind kind)
-    {
-        if (value.Length == 0)
-        {
-            return;
-        }
-
-        segments.Add(new Segment(value, GetTokenStyle(kind)));
-    }
-
-    private Style GetTokenStyle(TokenKind kind)
-    {
-        return kind switch
-        {
-            TokenKind.Completion => new Style(
-                Color.FromHex(_theme.MutedFg),
-                Color.FromHex(_theme.SurfaceBg)
-            ),
-            TokenKind.Cursor => new Style(decoration: Decoration.Invert),
-            _ => new Style(Color.FromHex(_theme.TextFg), Color.FromHex(_theme.SurfaceBg)),
-        };
-    }
-
-    private enum TokenKind
-    {
-        Default,
-        Completion,
-        Cursor,
+        return SectionPanel
+            .Create("Command", paragraph, _theme.CommandBorder)
+            .ToSegments(options, maxWidth);
     }
 }
