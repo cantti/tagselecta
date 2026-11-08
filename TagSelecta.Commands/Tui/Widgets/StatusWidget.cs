@@ -9,7 +9,7 @@ public class StatusWidget(TuiAppTheme theme, string message) : Renderable
     {
         var text = !string.IsNullOrEmpty(message)
             ? message
-            : "[q] quit, [?] all hotkeys, [h] commands";
+            : "[q] quit, [?] hotkeys, [h] command help";
         return SectionPanel
             .Create("Status", new Text(text, new Style(Color.FromHex(theme.TextFg))), theme.Border)
             .ToSegments(options, maxWidth);
