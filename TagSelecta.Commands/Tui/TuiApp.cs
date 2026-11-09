@@ -416,11 +416,6 @@ public class TuiApp(
             }
             finally
             {
-                if (!ReferenceEquals(focusedFile, FocusedFile))
-                {
-                    MetadataOffset = 0;
-                }
-
                 hotkeys.Bind("esc", "escape");
                 Invalidate();
             }

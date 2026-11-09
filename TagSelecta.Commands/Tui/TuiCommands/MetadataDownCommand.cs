@@ -11,9 +11,9 @@ public class MetadataDownCommand : ITuiCommand
         CancellationToken token
     )
     {
-        if (context.FocusedFile is { } file)
+        if (context.FocusedFile is not null)
         {
-            var maxOffset = Math.Max(0, TagDataRenderer.GetFieldCount(file) - 1);
+            var maxOffset = Math.Max(0, TagDataRenderer.GetFieldCount(context.FocusedFile) - 1);
             context.MetadataOffset = Math.Min(context.MetadataOffset + 1, maxOffset);
         }
         return Task.CompletedTask;
