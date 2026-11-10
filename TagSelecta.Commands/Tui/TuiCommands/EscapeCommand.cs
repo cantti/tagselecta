@@ -16,6 +16,7 @@ public class EscapeCommand : ITuiCommand
 
         context.CommandHelpEnabled = false;
         context.KeymapHelpEnabled = false;
+        context.PictureEnabled = false;
 
         return Task.CompletedTask;
     }
