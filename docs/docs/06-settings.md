@@ -39,6 +39,9 @@ startup_command = "selectall && run reggae"
 selection_symbol = "✓"
 change_symbol = "→"
 
+# show metadata icons when using a nerd font
+use_nerd_font_icons = false
+
 [macros]
 # example of macro. You can add as many as you want similarly.
 reggae="edit genre=\"Reggae\""

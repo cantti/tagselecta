@@ -22,9 +22,10 @@ public static class DependencyInjection
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
                 TreeEnabled = configModel.General.TreeEnabled,
                 StartupCommand = configModel.General.StartupCommand,
+                FieldIcons = configModel.Icons,
+                Theme = configModel.Theme,
             }
         );
-        services.AddSingleton(configModel.Theme);
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));
         services.AddSingleton(CreateMusicBrainzConfig(configModel.MusicBrainz));
         services.AddSingleton(CreateTaggerConfig(configModel.General));

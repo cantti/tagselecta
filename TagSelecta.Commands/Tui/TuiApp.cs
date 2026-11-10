@@ -14,7 +14,6 @@ public class TuiApp(
     IAudioFileScanner audioFileScanner,
     ITuiCommandDispatcher commandDispatcher,
     TuiAppConfig config,
-    TuiAppTheme theme,
     InputHandler inputHandler,
     HotkeyMap hotkeys,
     ICompletionProvider completionProvider
@@ -245,11 +244,11 @@ public class TuiApp(
         {
             children.Add(
                 new Layout(filesLayoutKey).Update(
-                    KeymapHelpEnabled ? new KeymapHelpWidget(theme)
-                    : CommandHelpEnabled ? new CommandHelpWidget(theme)
+                    KeymapHelpEnabled ? new KeymapHelpWidget(config.Theme)
+                    : CommandHelpEnabled ? new CommandHelpWidget(config.Theme)
                     : PictureEnabled
                         ? new PictureWidget(
-                            theme,
+                            config.Theme,
                             FocusedFile,
                             console.Profile.Height - statusBarHeight
                         )
@@ -278,13 +277,13 @@ public class TuiApp(
                         .Update(
                             TreeEnabled
                                 ? new TreeListWidget(
-                                    theme,
+                                    config.Theme,
                                     VisibleFiles,
                                     FocusedFile,
                                     Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
                                 )
                                 : new FileListWidget(
-                                    theme,
+                                    config.Theme,
                                     VisibleFiles,
                                     FocusedFile,
                                     Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
@@ -296,7 +295,14 @@ public class TuiApp(
             children.Add(
                 new Layout(tagDataLayoutKey)
                     .Ratio(1)
-                    .Update(new TagDataWidget(theme, FocusedFile, MetadataOffset))
+                    .Update(
+                        new TagDataWidget(
+                            config.Theme,
+                            config.FieldIcons,
+                            FocusedFile,
+                            MetadataOffset
+                        )
+                    )
             );
         }
 
@@ -306,12 +312,12 @@ public class TuiApp(
                 .Update(
                     inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(
-                            theme,
+                            config.Theme,
                             inputHandler.Input,
                             inputHandler.CursorPos,
                             inputHandler.Completion
                         )
-                        : new StatusWidget(theme, _statusMessage)
+                        : new StatusWidget(config.Theme, _statusMessage)
                 )
         );
         var layout = new Layout("root").SplitRows(children.ToArray());
@@ -392,7 +398,6 @@ public class TuiApp(
 
         _currentCommandTask = Task.Run(async () =>
         {
-            var focusedFile = FocusedFile;
             try
             {
                 var executed = await commandDispatcher.Execute(

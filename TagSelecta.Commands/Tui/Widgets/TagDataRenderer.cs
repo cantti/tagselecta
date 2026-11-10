@@ -9,6 +9,7 @@ public static class TagDataRenderer
 {
     public static IRenderable CreateComparisonTable(
         TuiAppTheme theme,
+        Dictionary<string, string> fieldIcons,
         TagDataActionTarget f,
         int offset
     )
@@ -40,7 +41,7 @@ public static class TagDataRenderer
                 pictureHeaderAdded = true;
             }
 
-            AddComparisonRow(theme, table, field.Key, field.OldValue, field.NewValue, field.Equal);
+            AddComparisonRow(theme, fieldIcons, table, field);
         }
 
         return table;
@@ -125,40 +126,41 @@ public static class TagDataRenderer
 
     private static void AddComparisonRow(
         TuiAppTheme theme,
+        Dictionary<string, string> fieldIcons,
         Table table,
-        string key,
-        string value1,
-        string value2,
-        bool? eq = null
+        ComparisonField field
     )
     {
-        if (string.IsNullOrEmpty(value1) && string.IsNullOrEmpty(value2))
+        if (string.IsNullOrEmpty(field.OldValue) && string.IsNullOrEmpty(field.NewValue))
         {
             return;
         }
 
-        var keyCol = new Text(key, new Style(Color.FromHex(theme.AccentFg)));
+        var label = theme.UseNerdFontIcons
+            ? $"{fieldIcons.GetValueOrDefault(field.IsPicture ? "picture" : field.Key, " ")}  {field.Key}"
+            : field.Key;
+        var keyCol = new Text(label, new Style(Color.FromHex(theme.AccentFg)));
 
         var elements = new List<IRenderable>();
-        if (eq ?? value1 == value2)
+        if (field.Equal ?? field.OldValue == field.NewValue)
         {
-            elements.Add(new Text(value1, new Style(Color.FromHex(theme.TextFg))));
+            elements.Add(new Text(field.OldValue, new Style(Color.FromHex(theme.TextFg))));
         }
         else
         {
-            if (!string.IsNullOrEmpty(value1))
+            if (!string.IsNullOrEmpty(field.OldValue))
             {
-                elements.Add(new Text(value1, new Style(Color.FromHex(theme.DangerFg))));
+                elements.Add(new Text(field.OldValue, new Style(Color.FromHex(theme.DangerFg))));
             }
 
-            if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(value1))
+            if (!string.IsNullOrEmpty(field.NewValue) && !string.IsNullOrEmpty(field.OldValue))
             {
                 elements.Add(new Text(theme.ChangeSymbol, new Style(Color.FromHex(theme.MutedFg))));
             }
 
-            if (!string.IsNullOrEmpty(value2))
+            if (!string.IsNullOrEmpty(field.NewValue))
             {
-                elements.Add(new Text(value2, new Style(Color.FromHex(theme.SuccessFg))));
+                elements.Add(new Text(field.NewValue, new Style(Color.FromHex(theme.SuccessFg))));
             }
         }
 

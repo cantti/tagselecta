@@ -6,4 +6,6 @@ public class TuiAppConfig
     public bool AutoCompletionEnabled { get; init; }
     public bool TreeEnabled { get; init; }
     public string StartupCommand { get; set; } = "";
+    public Dictionary<string, string> FieldIcons { get; set; } = new();
+    public TuiAppTheme Theme { get; init; } = new();
 }
