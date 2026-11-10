@@ -3,6 +3,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TagSelecta.App.Config;
 using TagSelecta.Commands;
+using TagSelecta.Commands.Tui;
 using TagSelecta.Shared;
 
 namespace TagSelecta.App;
@@ -33,6 +34,7 @@ internal class Program
             config.AddCommands(services);
             config.SetApplicationVersion(AppVersion.Get());
         });
+        app.SetDefaultCommand<TuiApp>();
         return app.Run(args, cst.Token);
     }
 

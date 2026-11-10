@@ -113,7 +113,7 @@ public class TuiApp(
 
             if (scannerResult.Count == 0)
             {
-                Print("No audio files found. Try :open <path> or tagselecta ui <path>.");
+                Print("No audio files found. Try :open <path> or tagselecta <path>.");
             }
 
             Files = scannerResult.Select(x => new TagDataActionTarget(x.Path, x.TagData)).ToList();

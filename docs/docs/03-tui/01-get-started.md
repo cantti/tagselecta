@@ -3,8 +3,10 @@
 Great way to get started is to use the interactive UI (TUI). Open directory with album (audio files) and run:
 
 ```sh
-tagselecta ui .
+tagselecta
 ```
+
+This opens the current directory. Use `tagselecta <path>` or `tagselecta ui <path>` to open a specific path.
 
 >Important: Do not run it from the root of your music library, because it will scan all files in the directory!
 
