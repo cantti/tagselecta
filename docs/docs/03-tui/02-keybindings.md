@@ -8,11 +8,13 @@ Below is the list of keybindings (keymap) for the TUI.
 |------------------|--------------------------------------|
 | `:`              | Command mode                         |
 | `space` or `tab` | Select                               |
-| `escape`         | Clear selection                      |
+| `escape`         | Clear selection and close help or picture |
 | `a` or `*`       | Select all                           |
 | `A`              | Select all files in directory        |
 | `j` or `down`    | Move down                            |
 | `k` or `up`      | Move up                              |
+| `J`              | Scroll metadata down                 |
+| `K`              | Scroll metadata up                   |
 | `e`              | Toggle file list (explorer)          |
 | `t`              | Toggle tree                          |
 | `f`              | Toggle filter                        |

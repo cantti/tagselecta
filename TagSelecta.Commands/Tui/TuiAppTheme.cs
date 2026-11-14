@@ -12,5 +12,5 @@ public class TuiAppTheme
     public string CommandBorder { get; set; } = "#D4A35F";
     public string SelectionSymbol { get; set; } = "✓";
     public string ChangeSymbol { get; set; } = "→";
-    public bool UseNerdFontIcons { get; set; } = true;
+    public bool UseNerdFontIcons { get; set; } = false;
 }

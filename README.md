@@ -8,7 +8,7 @@ TagSelecta is a cross-platform, opinionated command-line tool for managing audio
 
 The tool supports two modes: interactive UI (TUI) and command-line interface (CLI).
 
-To run the TUI, simply run `tagselecta ui <path>`.
+Run `tagselecta` to open the TUI in the current directory, or `tagselecta <path>` to open a file or directory. `tagselecta ui <path>` also works.
 
 To execute commands from the CLI, run `tagselecta <command> <path>`.
 
@@ -38,6 +38,7 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - Macros support
 - Preview of changes before applying them
 - Tree view of files
+- Metadata scrolling, configurable colors, and Nerd Font icons
 - Command history and autocompletion
 - Startup command that runs automatically when the TUI starts
 
@@ -116,7 +117,7 @@ Ensure `"$HOME/.local/bin"` is in your `PATH`.
 Great way to get started is to use the interactive UI (TUI). Open directory with album (audio files) and run:
 
 ```sh
-tagselecta ui .
+tagselecta
 ```
 
 > Important: Do not run it from the root of your music library, because it will scan all files in the directory!
@@ -125,8 +126,8 @@ Conceptually, the UI is divided into two parts: top panel with list of files and
 
 **Navigation**
 
-Navigate through files using arrow keys or vim bindings (`jk`). Use `q` to exit.
-Use `tab` or `space` to select file. Use `esc` to unselect.
+Navigate through files using arrow keys or vim bindings (`jk`). Use `J` and `K` to scroll metadata.
+Use `tab` or `space` to select a file, `esc` to clear the selection or close help and pictures, and `q` to exit.
 
 **Edit tags**
 
@@ -184,7 +185,7 @@ Basic syntax:
 
 ```
 USAGE:
-    tagselecta.dll [OPTIONS] <COMMAND>
+    tagselecta.dll [path] [OPTIONS] [COMMAND]
 
 EXAMPLES:
     tagselecta.dll edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' --key description --value test

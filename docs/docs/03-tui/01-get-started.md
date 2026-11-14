@@ -6,16 +6,17 @@ Great way to get started is to use the interactive UI (TUI). Open directory with
 tagselecta
 ```
 
-This opens the current directory. Use `tagselecta <path>` or `tagselecta ui <path>` to open a specific path.
+This opens the current directory. Use `tagselecta <path>` or `tagselecta ui <path>` to open a specific file or directory.
+If a path has the same name as a command, prefix it with `./`, for example `tagselecta ./edit`.
 
 >Important: Do not run it from the root of your music library, because it will scan all files in the directory!
 
-Conceptually, the UI is divided into two parts: top panel with list of files and bottom panel with file details.
+The explorer shows your files, the metadata panel shows the focused file, and the status panel shows messages and shortcuts. The metadata count includes the path and picture entries.
 
 ## Navigation
 
-Navigate through files using arrow keys or vim bindings (`jk`). Use `q` to exit. 
-Use `tab` or `space` to select file. Use `esc` to unselect.
+Navigate through files using arrow keys or vim bindings (`jk`). Use `J` and `K` to scroll metadata. The metadata position resets when you switch files.
+Use `tab` or `space` to select a file, `esc` to clear the selection or close help and pictures, and `q` to exit.
 
 ## Edit tags
 
