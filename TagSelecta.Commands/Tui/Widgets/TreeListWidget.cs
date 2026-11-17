@@ -5,7 +5,7 @@ using TagSelecta.Shared.IO;
 namespace TagSelecta.Commands.Tui.Widgets;
 
 public class TreeListWidget(
-    TuiAppTheme theme,
+    TuiConfig config,
     IEnumerable<TagDataActionTarget> files,
     TagDataActionTarget? focusedFile,
     int windowSize
@@ -44,7 +44,7 @@ public class TreeListWidget(
 
             var selectedMarker = ExplorerPanel.GetSelectionMarker(
                 treeLine.File?.IsSelected == true,
-                theme.SelectionSymbol
+                config
             );
 
             if (treeLine.File is null)
@@ -61,11 +61,11 @@ public class TreeListWidget(
                 (visible?.Text ?? "") + new string(' ', contentWidth - (visible?.CellCount() ?? 0));
 
             var style = new Style(
-                treeLine.File is null ? Color.FromHex(theme.MutedFg)
-                    : treeLine.File.HasChanges ? Color.FromHex(theme.DangerFg)
-                    : Color.FromHex(theme.TextFg),
+                treeLine.File is null ? Color.FromHex(config.Colors.MutedFg)
+                    : treeLine.File.HasChanges ? Color.FromHex(config.Colors.DangerFg)
+                    : Color.FromHex(config.Colors.TextFg),
                 treeLine.File is not null && treeLine.File == focusedFile
-                    ? Color.FromHex(theme.FocusedBg)
+                    ? Color.FromHex(config.Colors.FocusedBg)
                     : Color.Default
             );
 
@@ -73,7 +73,7 @@ public class TreeListWidget(
         }
 
         return ExplorerPanel
-            .Create(_files.Count, new Rows(items), theme)
+            .Create(_files.Count, new Rows(items), config)
             .ToSegments(options, maxWidth);
     }
 

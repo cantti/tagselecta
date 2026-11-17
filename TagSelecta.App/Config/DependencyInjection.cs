@@ -16,14 +16,17 @@ public static class DependencyInjection
     {
         services.AddSingleton(new MacroConfig { Macros = configModel.Macros });
         services.AddSingleton(
-            new TuiAppConfig
+            new TuiConfig
             {
                 FileListRatio = configModel.General.FileListRatio,
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
                 TreeEnabled = configModel.General.TreeEnabled,
                 StartupCommand = configModel.General.StartupCommand,
-                FieldIcons = configModel.Icons,
-                Theme = configModel.Theme,
+                ChangeSymbol = configModel.General.ChangeSymbol,
+                SelectionSymbol = configModel.General.SelectionSymbol,
+                FieldIconsEnabled = configModel.General.FieldIconsEnabled,
+                FieldIcons = configModel.FieldIcons,
+                Colors = configModel.ColorScheme,
             }
         );
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));

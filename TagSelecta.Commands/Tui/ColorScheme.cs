@@ -1,6 +1,6 @@
 namespace TagSelecta.Commands.Tui;
 
-public class TuiAppTheme
+public class ColorScheme
 {
     public string TextFg { get; set; } = "#D9E0EB";
     public string AccentFg { get; set; } = "#B2CDE3";
@@ -10,7 +10,4 @@ public class TuiAppTheme
     public string FocusedBg { get; set; } = "#334155";
     public string Border { get; set; } = "#AD97C2";
     public string CommandBorder { get; set; } = "#D4A35F";
-    public string SelectionSymbol { get; set; } = "✓";
-    public string ChangeSymbol { get; set; } = "→";
-    public bool UseNerdFontIcons { get; set; } = false;
 }

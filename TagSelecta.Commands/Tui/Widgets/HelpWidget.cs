@@ -3,7 +3,7 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class HelpWidget(TuiAppTheme theme, string topic = "") : Renderable
+public class HelpWidget(ColorScheme theme, string topic = "") : Renderable
 {
     private const string Fields =
         "album, albumartist, artist, bpm, comment, composer, conductor, copyright, date, discnumber, disctotal, genre, isrc, publisher, title, tracknumber, tracktotal";

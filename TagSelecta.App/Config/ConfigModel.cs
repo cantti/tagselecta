@@ -1,4 +1,5 @@
 using TagSelecta.Commands.Tui;
+using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.App.Config;
 
@@ -8,28 +9,28 @@ public class ConfigModel
     public Dictionary<string, string> Macros { get; set; } = new();
     public DiscogsSection Discogs { get; set; } = new();
     public MusicBrainzSection MusicBrainz { get; set; } = new();
-    public TuiAppTheme Theme { get; set; } = new();
-    public Dictionary<string, string> Icons { get; set; } =
+    public ColorScheme ColorScheme { get; set; } = new();
+    public Dictionary<string, string> FieldIcons { get; set; } =
         new()
         {
             ["path"] = "\uf07b",
-            ["artist"] = "\uf007",
-            ["albumartist"] = "\uf0c0",
-            ["album"] = "\uf51f",
-            ["bpm"] = "\uf21e",
-            ["comment"] = "\uf075",
-            ["composer"] = "\uf040",
-            ["conductor"] = "\uf007",
-            ["copyright"] = "\uf1f9",
-            ["discnumber"] = "\uf51f",
-            ["disctotal"] = "\uf51f",
-            ["isrc"] = "\uf02a",
-            ["publisher"] = "\uf1ad",
-            ["title"] = "\uf001",
-            ["tracknumber"] = "\uf292",
-            ["tracktotal"] = "\uf0ca",
-            ["date"] = "\uf073",
-            ["genre"] = "\uf02b",
+            [FieldName.Artist] = "\uf007",
+            [FieldName.AlbumArtist] = "\uf0c0",
+            [FieldName.Album] = "\U000f0025",
+            [FieldName.Bpm] = "\U000f07da",
+            [FieldName.Comment] = "\uf075",
+            [FieldName.Composer] = "\uf040",
+            [FieldName.Conductor] = "\uf007",
+            [FieldName.Copyright] = "\uf1f9",
+            [FieldName.DiscNumber] = "\uede9",
+            [FieldName.DiscTotal] = "\U000f0199",
+            [FieldName.Isrc] = "\uf02a",
+            [FieldName.Publisher] = "\uf1ad",
+            [FieldName.Title] = "\uf001",
+            [FieldName.TrackNumber] = "\uf292",
+            [FieldName.TrackTotal] = "\uf0ca",
+            [FieldName.Date] = "\uf073",
+            [FieldName.Genre] = "\uf02b",
             ["picture"] = "\uf03e",
         };
 }

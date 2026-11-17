@@ -13,16 +13,16 @@ internal static class ExplorerPanel
         return Math.Max(0, maxWidth - BorderWidth - ContentPadding.Left - ContentPadding.Right);
     }
 
-    public static string GetSelectionMarker(bool selected, string symbol)
+    public static string GetSelectionMarker(bool selected, TuiConfig config)
     {
         return selected
-            ? $" [{symbol}] "
-            : $" [{new string(' ', new Segment(symbol).CellCount())}] ";
+            ? $" [{config.SelectionSymbol}] "
+            : $" [{new string(' ', new Segment(config.SelectionSymbol).CellCount())}] ";
     }
 
-    public static Panel Create(int fileCount, IRenderable content, TuiAppTheme theme)
+    public static Panel Create(int fileCount, IRenderable content, TuiConfig config)
     {
-        var panel = SectionPanel.Create($"Explorer ({fileCount})", content, theme.Border);
+        var panel = SectionPanel.Create($"Explorer ({fileCount})", content, config.Colors.Border);
         panel.Padding = ContentPadding;
         return panel;
     }

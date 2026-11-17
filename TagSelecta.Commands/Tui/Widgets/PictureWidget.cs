@@ -4,7 +4,7 @@ using TagLib;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class PictureWidget(TuiAppTheme theme, TagDataActionTarget? focusedFile, int maxHeight)
+public class PictureWidget(ColorScheme theme, TagDataActionTarget? focusedFile, int maxHeight)
     : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)

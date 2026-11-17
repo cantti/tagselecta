@@ -30,7 +30,14 @@ keep_id3v1 = false
 # command to run automatically on startup
 startup_command = "selectall && run reggae"
 
-[theme]
+# symbols used in the explorer and metadata comparisons
+selection_symbol = "✓"
+change_symbol = "→"
+
+# show metadata icons when using a nerd font
+field_icons_enabled = false
+
+[color_scheme]
 # colors in hexadecimal format
 text_fg = "#D9E0EB"
 accent_fg = "#B2CDE3"
@@ -41,14 +48,7 @@ focused_bg = "#334155"
 border = "#AD97C2"
 command_border = "#D4A35F"
 
-# symbols used in the explorer and metadata comparisons
-selection_symbol = "✓"
-change_symbol = "→"
-
-# show metadata icons when using a nerd font
-use_nerd_font_icons = false
-
-[icons]
+[field_icons]
 # example overrides for metadata field icons
 artist = "@"
 picture = "*"
@@ -76,7 +76,7 @@ barcode = "{{ release.barcode }}"
 musicbrainz_album_id = "{{ release.id }}"
 ```
 
-Nerd Font icons are disabled by default. Set `use_nerd_font_icons` to `true` if your terminal uses a Nerd Font. The `[icons]` section overrides individual metadata field icons; other fields keep their defaults.
+Customize colors in `[color_scheme]` and selection and change symbols in `[general]`. Metadata field icons are disabled by default. Set `field_icons_enabled = true` in `[general]` if your terminal uses a Nerd Font. The `[field_icons]` section overrides individual metadata field icons; other fields keep their defaults.
 
 The old `header_visible` setting has been removed. The status panel now shows common shortcuts.
 

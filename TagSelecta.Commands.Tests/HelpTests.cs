@@ -154,7 +154,7 @@ public class HelpTests
             new AnsiConsoleSettings { Ansi = AnsiSupport.No, Out = new AnsiConsoleOutput(writer) }
         );
         console.Profile.Width = 120;
-        console.Write(new HelpWidget(new TuiAppTheme(), topic));
+        console.Write(new HelpWidget(new ColorScheme(), topic));
 
         Assert.Contains(expected, writer.ToString());
     }
@@ -173,7 +173,7 @@ public class HelpTests
     [InlineData("notfound", "Unknown help topic", false)]
     public void HelpWidget_UsesThemeColors(string topic, string text, bool accent)
     {
-        var theme = new TuiAppTheme { TextFg = "#123456", AccentFg = "#234567" };
+        var theme = new ColorScheme { TextFg = "#123456", AccentFg = "#234567" };
         var console = AnsiConsole.Create(new AnsiConsoleSettings { Ansi = AnsiSupport.No });
         var options = new RenderOptions(console.Profile.Capabilities, new Size(120, 50));
         var segments = new HelpWidget(theme, topic).ToSegments(options, 120);

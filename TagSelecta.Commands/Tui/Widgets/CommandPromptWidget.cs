@@ -7,10 +7,10 @@ public class CommandPromptWidget : Renderable
 {
     private readonly string _completion;
     private readonly int _cursorPos;
-    private readonly TuiAppTheme _theme;
+    private readonly ColorScheme _theme;
     private readonly string _text;
 
-    public CommandPromptWidget(TuiAppTheme theme, string text, int cursorPos, string completion)
+    public CommandPromptWidget(ColorScheme theme, string text, int cursorPos, string completion)
     {
         _theme = theme;
         _text = text;

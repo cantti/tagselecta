@@ -3,12 +3,8 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class TagDataWidget(
-    TuiAppTheme theme,
-    Dictionary<string, string> fieldIcons,
-    TagDataActionTarget? focusedFile,
-    int offset
-) : Renderable
+public class TagDataWidget(TuiConfig config, TagDataActionTarget? focusedFile, int offset)
+    : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
@@ -19,7 +15,7 @@ public class TagDataWidget(
             rows.Add(
                 new Text(
                     $"Error: {focusedFile.Exception.Message}",
-                    new Style(Color.FromHex(theme.DangerFg))
+                    new Style(Color.FromHex(config.Colors.DangerFg))
                 )
             );
         }
@@ -34,7 +30,7 @@ public class TagDataWidget(
 
         var header = $"Metadata ({fields.Count})";
         return SectionPanel
-            .Create(header, new Rows(rows), theme.Border)
+            .Create(header, new Rows(rows), config.Colors.Border)
             .ToSegments(options, maxWidth);
     }
 
@@ -62,7 +58,10 @@ public class TagDataWidget(
                 table.AddRow(
                     new Text(
                         "Pictures:",
-                        new Style(Color.FromHex(theme.AccentFg), decoration: Decoration.Italic)
+                        new Style(
+                            Color.FromHex(config.Colors.AccentFg),
+                            decoration: Decoration.Italic
+                        )
                     )
                 );
                 pictureHeaderAdded = true;
@@ -76,33 +75,35 @@ public class TagDataWidget(
 
     private void AddComparisonRow(Table table, TagDataComparison.Field field)
     {
-        var label = theme.UseNerdFontIcons
-            ? $"{fieldIcons.GetValueOrDefault(field.IsPicture ? "picture" : field.Key, " ")}  {field.Key}"
+        var label = config.FieldIconsEnabled
+            ? $"{config.FieldIcons.GetValueOrDefault(field.IsPicture ? "picture" : field.Key, " ")}  {field.Key}"
             : field.Key;
-        var keyCol = new Text(label, new Style(Color.FromHex(theme.AccentFg)));
+        var keyCol = new Text(label, new Style(Color.FromHex(config.Colors.AccentFg)));
         var oldValue = field.IsPicture ? field.OldValue.EscapeMarkup() : field.OldValue;
         var newValue = field.IsPicture ? field.NewValue.EscapeMarkup() : field.NewValue;
 
         var elements = new List<IRenderable>();
         if (field.Equal)
         {
-            elements.Add(new Text(oldValue, new Style(Color.FromHex(theme.TextFg))));
+            elements.Add(new Text(oldValue, new Style(Color.FromHex(config.Colors.TextFg))));
         }
         else
         {
             if (!string.IsNullOrEmpty(oldValue))
             {
-                elements.Add(new Text(oldValue, new Style(Color.FromHex(theme.DangerFg))));
+                elements.Add(new Text(oldValue, new Style(Color.FromHex(config.Colors.DangerFg))));
             }
 
             if (!string.IsNullOrEmpty(newValue) && !string.IsNullOrEmpty(oldValue))
             {
-                elements.Add(new Text(theme.ChangeSymbol, new Style(Color.FromHex(theme.MutedFg))));
+                elements.Add(
+                    new Text(config.ChangeSymbol, new Style(Color.FromHex(config.Colors.MutedFg)))
+                );
             }
 
             if (!string.IsNullOrEmpty(newValue))
             {
-                elements.Add(new Text(newValue, new Style(Color.FromHex(theme.SuccessFg))));
+                elements.Add(new Text(newValue, new Style(Color.FromHex(config.Colors.SuccessFg))));
             }
         }
 

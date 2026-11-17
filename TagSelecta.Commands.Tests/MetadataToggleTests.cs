@@ -38,7 +38,7 @@ public class MetadataToggleTests
             AnsiConsole.Create(new AnsiConsoleSettings()),
             null!,
             null!,
-            new TuiAppConfig(),
+            new TuiConfig(),
             inputHandler,
             hotkeys,
             completionProvider
@@ -116,7 +116,7 @@ public class MetadataToggleTests
             AnsiConsole.Create(new AnsiConsoleSettings()),
             null!,
             null!,
-            new TuiAppConfig { FileListRatio = 0.5 },
+            new TuiConfig { FileListRatio = 0.5 },
             new InputHandler(hotkeys, completionProvider),
             hotkeys,
             completionProvider

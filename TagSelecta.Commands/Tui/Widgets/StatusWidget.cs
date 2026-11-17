@@ -3,7 +3,7 @@ using Spectre.Console.Rendering;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class StatusWidget(TuiAppTheme theme, string message) : Renderable
+public class StatusWidget(ColorScheme theme, string message) : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {

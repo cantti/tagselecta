@@ -4,7 +4,7 @@ using Spectre.Console.Rendering;
 namespace TagSelecta.Commands.Tui.Widgets;
 
 public class FileListWidget(
-    TuiAppTheme theme,
+    TuiConfig config,
     IEnumerable<TagDataActionTarget> files,
     TagDataActionTarget? focusedFile,
     int windowSize
@@ -41,12 +41,13 @@ public class FileListWidget(
 
             var cols = new List<IRenderable>();
             var fg = filesList[itemIndex].HasChanges
-                ? Color.FromHex(theme.DangerFg)
-                : Color.FromHex(theme.TextFg);
-            var bg = focusedIndex == itemIndex ? Color.FromHex(theme.FocusedBg) : Color.Default;
+                ? Color.FromHex(config.Colors.DangerFg)
+                : Color.FromHex(config.Colors.TextFg);
+            var bg =
+                focusedIndex == itemIndex ? Color.FromHex(config.Colors.FocusedBg) : Color.Default;
             var selectedMarker = ExplorerPanel.GetSelectionMarker(
                 filesList[itemIndex].IsSelected,
-                theme.SelectionSymbol
+                config
             );
             cols.Add(new Text(selectedMarker, new Style(fg, bg)));
             var markerWidth = new Segment(selectedMarker).CellCount();
@@ -64,7 +65,7 @@ public class FileListWidget(
         }
 
         return ExplorerPanel
-            .Create(filesList.Count, new Rows(items), theme)
+            .Create(filesList.Count, new Rows(items), config)
             .ToSegments(options, maxWidth);
     }
 }

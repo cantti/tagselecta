@@ -13,7 +13,7 @@ public class TuiApp(
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
     ITuiCommandDispatcher commandDispatcher,
-    TuiAppConfig config,
+    TuiConfig config,
     InputHandler inputHandler,
     HotkeyMap hotkeys,
     ICompletionProvider completionProvider
@@ -246,10 +246,10 @@ public class TuiApp(
         {
             children.Add(
                 new Layout(filesLayoutKey).Update(
-                    CommandHelpEnabled ? new HelpWidget(config.Theme, HelpTopic)
+                    CommandHelpEnabled ? new HelpWidget(config.Colors, HelpTopic)
                     : PictureEnabled
                         ? new PictureWidget(
-                            config.Theme,
+                            config.Colors,
                             FocusedFile,
                             console.Profile.Height - statusBarHeight
                         )
@@ -276,13 +276,13 @@ public class TuiApp(
                         .Update(
                             TreeEnabled
                                 ? new TreeListWidget(
-                                    config.Theme,
+                                    config,
                                     VisibleFiles,
                                     FocusedFile,
                                     Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
                                 )
                                 : new FileListWidget(
-                                    config.Theme,
+                                    config,
                                     VisibleFiles,
                                     FocusedFile,
                                     Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
@@ -296,14 +296,7 @@ public class TuiApp(
                 children.Add(
                     new Layout(tagDataLayoutKey)
                         .Ratio(1)
-                        .Update(
-                            new TagDataWidget(
-                                config.Theme,
-                                config.FieldIcons,
-                                FocusedFile,
-                                MetadataOffset
-                            )
-                        )
+                        .Update(new TagDataWidget(config, FocusedFile, MetadataOffset))
                 );
             }
             else if (!FileListEnabled)
@@ -318,12 +311,12 @@ public class TuiApp(
                 .Update(
                     inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(
-                            config.Theme,
+                            config.Colors,
                             inputHandler.Input,
                             inputHandler.CursorPos,
                             inputHandler.Completion
                         )
-                        : new StatusWidget(config.Theme, _statusMessage)
+                        : new StatusWidget(config.Colors, _statusMessage)
                 )
         );
         var layout = new Layout("root").SplitRows(children.ToArray());
