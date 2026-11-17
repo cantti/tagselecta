@@ -48,7 +48,7 @@ public class TreeListWidget(
             );
 
             var indent = new string(' ', treeLine.Depth * 2);
-            var prefix = treeLine.File is null ? "/" : " ";
+            var prefix = treeLine.File is null && treeLine.Depth > 0 ? "/" : " ";
 
             var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
             var visible = Segment.Truncate(new Segment(text), contentWidth);
