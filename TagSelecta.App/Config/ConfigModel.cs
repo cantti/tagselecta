@@ -23,7 +23,7 @@ public class ConfigModel
             [FieldName.Conductor] = "\uf007",
             [FieldName.Copyright] = "\uf1f9",
             [FieldName.DiscNumber] = "\uede9",
-            [FieldName.DiscTotal] = "\U000f0199",
+            [FieldName.DiscTotal] = "\uf1c0",
             [FieldName.Isrc] = "\uf02a",
             [FieldName.Publisher] = "\uf1ad",
             [FieldName.Title] = "\uf001",
