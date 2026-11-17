@@ -10,6 +10,8 @@ public class CompletionProviderTests
     [Theory]
     [InlineData("ru", "n")]
     [InlineData("selecta", "ll")]
+    [InlineData("togglemeta", "data")]
+    [InlineData("help togglemeta", "data")]
     [InlineData("help edi", "t")]
     [InlineData("help templ", "ates")]
     [InlineData("h templ", "ate")]

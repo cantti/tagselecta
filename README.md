@@ -127,6 +127,7 @@ Conceptually, the UI is divided into two parts: top panel with list of files and
 **Navigation**
 
 Navigate through files using arrow keys or vim bindings (`jk`). Use `J` and `K` to scroll metadata.
+Press `m` (or run `:togglemetadata`) to hide or show the metadata panel and `e` to toggle the explorer. Hiding metadata gives the explorer the full available height.
 Use `tab` or `space` to select a file, `esc` to clear the selection or close help and pictures, and `q` to exit.
 
 **Edit tags**

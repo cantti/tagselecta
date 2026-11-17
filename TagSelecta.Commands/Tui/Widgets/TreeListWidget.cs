@@ -47,6 +47,11 @@ public class TreeListWidget(
                 theme.SelectionSymbol
             );
 
+            if (treeLine.File is null)
+            {
+                selectedMarker = new string(' ', new Segment(selectedMarker).CellCount());
+            }
+
             var indent = new string(' ', treeLine.Depth * 2);
             var prefix = treeLine.File is null && treeLine.Depth > 0 ? "/" : " ";
 

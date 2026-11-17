@@ -16,6 +16,7 @@ Below is the list of keybindings (keymap) for the TUI.
 | `J`              | Scroll metadata down                 |
 | `K`              | Scroll metadata up                   |
 | `e`              | Toggle file list (explorer)          |
+| `m`              | Toggle metadata panel                |
 | `t`              | Toggle tree                          |
 | `f`              | Toggle filter                        |
 | `p`              | Toggle picture                       |

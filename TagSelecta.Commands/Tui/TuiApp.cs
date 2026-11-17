@@ -53,6 +53,8 @@ public class TuiApp(
 
     public bool FileListEnabled { get; set; } = true;
 
+    public bool MetadataEnabled { get; set; } = true;
+
     public bool PictureEnabled { get; set; }
 
     public void SetCommandPromptText(string text)
@@ -259,11 +261,9 @@ public class TuiApp(
         {
             if (FileListEnabled)
             {
-                const int fileListPadding = 1;
-                var filesContentHeight = (int)(
-                    (Console.WindowHeight - statusBarHeight - fileListPadding)
-                    * config.FileListRatio
-                );
+                var filesContentHeight = MetadataEnabled
+                    ? (int)((Console.WindowHeight - statusBarHeight) * config.FileListRatio)
+                    : Console.WindowHeight - statusBarHeight;
                 if (filesContentHeight < 1)
                 {
                     // min size supported by spectre layout
@@ -291,18 +291,25 @@ public class TuiApp(
                 );
             }
 
-            children.Add(
-                new Layout(tagDataLayoutKey)
-                    .Ratio(1)
-                    .Update(
-                        new TagDataWidget(
-                            config.Theme,
-                            config.FieldIcons,
-                            FocusedFile,
-                            MetadataOffset
+            if (MetadataEnabled)
+            {
+                children.Add(
+                    new Layout(tagDataLayoutKey)
+                        .Ratio(1)
+                        .Update(
+                            new TagDataWidget(
+                                config.Theme,
+                                config.FieldIcons,
+                                FocusedFile,
+                                MetadataOffset
+                            )
                         )
-                    )
-            );
+                );
+            }
+            else if (!FileListEnabled)
+            {
+                children.Add(new Layout(tagDataLayoutKey).Update(Text.Empty));
+            }
         }
 
         children.Add(
@@ -361,6 +368,7 @@ public class TuiApp(
         hotkeys.Bind("h", "togglecommandhelp");
         hotkeys.Bind("H", "opendocs");
         hotkeys.Bind("e", "togglefilelist");
+        hotkeys.Bind("m", "togglemetadata");
         hotkeys.Bind("u", "undo");
         hotkeys.Bind(HotkeyTokens.Tab, "select");
         hotkeys.Bind(HotkeyTokens.Space, "select");

@@ -12,6 +12,7 @@ public interface ITuiCommandContext
     bool CommandHelpEnabled { get; set; }
     string HelpTopic { get; set; }
     bool FileListEnabled { get; set; }
+    bool MetadataEnabled { get; set; }
     IEnumerable<TagDataActionTarget> VisibleFiles { get; }
     bool PictureEnabled { get; set; }
     void Quit();

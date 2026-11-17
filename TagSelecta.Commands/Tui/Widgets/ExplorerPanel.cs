@@ -15,7 +15,9 @@ internal static class ExplorerPanel
 
     public static string GetSelectionMarker(bool selected, string symbol)
     {
-        return selected ? $" {symbol} " : new string(' ', new Segment(symbol).CellCount() + 2);
+        return selected
+            ? $" [{symbol}] "
+            : $" [{new string(' ', new Segment(symbol).CellCount())}] ";
     }
 
     public static Panel Create(int fileCount, IRenderable content, TuiAppTheme theme)

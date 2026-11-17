@@ -134,6 +134,7 @@ public class HelpTests
     [InlineData("move", ":help templates")]
     [InlineData("fields", "Unknown help topic: fields")]
     [InlineData("keymap", "Keymap help")]
+    [InlineData("keymap", "Toggle metadata panel")]
     [InlineData("KEYMAP", "Show keymap help")]
     [InlineData("keymap", "Clear selection and close help or picture")]
     [InlineData("selectall", "Select all files")]
@@ -141,6 +142,7 @@ public class HelpTests
     [InlineData("q", "Exit the TUI")]
     [InlineData("version", "current and latest")]
     [InlineData("togglefilter", "filter for changed files")]
+    [InlineData("togglemetadata", "Toggle the metadata panel.")]
     [InlineData("autotrack", "keepdisk")]
     [InlineData("extractpicture", "written immediately")]
     [InlineData("notfound", "Unknown help topic: notfound")]
@@ -238,6 +240,7 @@ public class HelpTests
         public bool CommandHelpEnabled { get; set; }
         public string HelpTopic { get; set; } = "";
         public bool FileListEnabled { get; set; }
+        public bool MetadataEnabled { get; set; } = true;
         public IEnumerable<TagDataActionTarget> VisibleFiles { get; } = [];
         public bool PictureEnabled { get; set; }
 

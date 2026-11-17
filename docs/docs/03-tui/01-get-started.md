@@ -13,6 +13,8 @@ If a path has the same name as a command, prefix it with `./`, for example `tags
 
 The explorer shows your files, the metadata panel shows the focused file, and the status panel shows messages and shortcuts. The metadata count includes the path and picture entries.
 
+Press `m` or run `:togglemetadata` to hide or show the metadata panel. Metadata is visible by default; hiding it gives the explorer the full available height. Press `e` to toggle the explorer independently.
+
 ## Navigation
 
 Navigate through files using arrow keys or vim bindings (`jk`). Use `J` and `K` to scroll metadata. The metadata position resets when you switch files.
