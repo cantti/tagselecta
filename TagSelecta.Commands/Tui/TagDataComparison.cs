@@ -51,7 +51,7 @@ internal static class TagDataComparison
                     var p1 = i < list1.Count ? list1[i] : null;
                     var p2 = i < list2.Count ? list2[i] : null;
                     AddField(
-                        type.ToString(),
+                        type.ToString().ToLower(),
                         PictureToStr(p1),
                         PictureToStr(p2),
                         TagDataComparer.PictureEq(p1, p2),
