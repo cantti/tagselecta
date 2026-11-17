@@ -9,8 +9,8 @@ public interface ITuiCommandContext
     TagDataActionTarget? FocusedFile { get; }
     bool TreeEnabled { get; set; }
     bool FilterEnabled { get; set; }
-    bool KeymapHelpEnabled { get; set; }
     bool CommandHelpEnabled { get; set; }
+    string HelpTopic { get; set; }
     bool FileListEnabled { get; set; }
     IEnumerable<TagDataActionTarget> VisibleFiles { get; }
     bool PictureEnabled { get; set; }

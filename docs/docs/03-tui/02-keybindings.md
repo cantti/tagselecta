@@ -23,8 +23,8 @@ Below is the list of keybindings (keymap) for the TUI.
 | `u`              | Undo                                 |
 | `g`              | Go to start                          |
 | `G`              | Go to end                            |
-| `?`              | Toggle this help                     |
-| `h`              | Toggle command help                  |
+| `?`              | Show keymap help                     |
+| `h`              | Show command help                    |
 | `H`              | Open docs in browser                 |
 | `q`              | Quit                                 |
 

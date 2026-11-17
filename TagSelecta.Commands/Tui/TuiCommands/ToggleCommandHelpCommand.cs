@@ -9,8 +9,8 @@ public class ToggleCommandHelpCommand : ITuiCommand
         CancellationToken token
     )
     {
-        context.KeymapHelpEnabled = false;
-        context.CommandHelpEnabled = !context.CommandHelpEnabled;
+        context.CommandHelpEnabled = true;
+        context.HelpTopic = "";
         return Task.CompletedTask;
     }
 }

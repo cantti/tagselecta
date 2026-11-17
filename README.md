@@ -26,8 +26,8 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - `:move` command to move and rename files
 - `:extractpicture` command to extract pictures to files
 - `:titlecase` command to convert all fields to title case
-- `:split` command to split artists, album artists and composers
-- `:autotrack` command to automatically set track number and total tracks based on disc and disc total
+- `:split` command to split artists, album artists, composers and genres
+- `:autotrack` command to set track number and track total based on file position in the directory
 - `:discogs` command to update album metadata from Discogs release
 - `:musicbrainz` command to update album metadata from Musicbrainz release
 - `:clear` command to clear specified tag fields
@@ -202,12 +202,12 @@ COMMANDS:
     edit <path>              Edit tags (read/write). To edit any field, use the --key key1 --value value1 options
     extractpicture <path>    Extract pictures to files
     titlecase <path>         Convert all fields to title case
-    split <path>             Split artists, album artists and composers
-    discogs <path>           Update album from discogs. You can pass discogs release id (not master) or query to search
+    split <path>             Split artists, album artists, composers and genres
+    discogs <path>           Update album from a Discogs release or master URL
     autotrack <path>         Auto track
     move <path>              Move (rename) files to another directory
     find <path>              Find files by metadata
-    musicbrainz <path>       Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search
+    musicbrainz <path>       Update album from a MusicBrainz release URL or release ID
     ui <path>                Interactive UI (TUI)
 ```
 

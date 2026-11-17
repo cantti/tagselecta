@@ -47,9 +47,9 @@ public class TuiApp(
 
     public bool FilterEnabled { get; set; }
 
-    public bool KeymapHelpEnabled { get; set; }
-
     public bool CommandHelpEnabled { get; set; }
+
+    public string HelpTopic { get; set; } = "";
 
     public bool FileListEnabled { get; set; } = true;
 
@@ -240,12 +240,11 @@ public class TuiApp(
         const int statusBarHeight = SectionPanel.VerticalPadding + 1;
         var children = new List<Layout>();
 
-        if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
+        if (CommandHelpEnabled || PictureEnabled)
         {
             children.Add(
                 new Layout(filesLayoutKey).Update(
-                    KeymapHelpEnabled ? new KeymapHelpWidget(config.Theme)
-                    : CommandHelpEnabled ? new CommandHelpWidget(config.Theme)
+                    CommandHelpEnabled ? new HelpWidget(config.Theme, HelpTopic)
                     : PictureEnabled
                         ? new PictureWidget(
                             config.Theme,

@@ -31,8 +31,8 @@ The program is primarily designed for use in TUI mode. However, the CLI mode is 
 - `:move` command to move and rename files
 - `:extractpicture` command to extract pictures to files
 - `:titlecase` command to convert all fields to title case
-- `:split` command to split artists, album artists and composers
-- `:autotrack` command to automatically set track number and total tracks based on disc and disc total
+- `:split` command to split artists, album artists, composers and genres
+- `:autotrack` command to set track number and track total based on file position in the directory
 - `:discogs` command to update album metadata from Discogs release
 - `:musicbrainz` command to update album metadata from Musicbrainz release
 - `:clear` command to clear specified tag fields

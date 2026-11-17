@@ -1,5 +1,7 @@
 using System.Reflection;
 using Spectre.Console.Cli;
+using TagSelecta.Commands.Tui.TuiCommands;
+using TagSelecta.Commands.Tui.Widgets;
 using TagSelecta.TagDataActions.Abstractions;
 
 namespace TagSelecta.Commands.Tui.Completion;
@@ -8,14 +10,17 @@ public class CompletionProvider : ICompletionProvider
 {
     private readonly List<CompletionSpec> _completionSpecs = [];
     private readonly IEnumerable<ITagDataAction> _tagDataActions;
+    private readonly MacroConfig _macroConfig;
 
-    public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions)
+    public CompletionProvider(IEnumerable<ITagDataAction> tagDataActions, MacroConfig macroConfig)
     {
         _tagDataActions = tagDataActions;
+        _macroConfig = macroConfig;
     }
 
     public void GenerateCompletions(IEnumerable<string> fieldNames)
     {
+        _completionSpecs.Clear();
         var fieldNamesList = fieldNames.ToList();
         foreach (var action in _tagDataActions)
         {
@@ -76,8 +81,31 @@ public class CompletionProvider : ICompletionProvider
             _completionSpecs.Add(new CompletionSpec(commandNames, options));
         }
 
-        _completionSpecs.Add(new CompletionSpec(["version"], []));
-        _completionSpecs.Add(new CompletionSpec(["open"], []));
+        // todo: rewrite command completion logic
+        var commandAttributes = typeof(ITuiCommand)
+            .Assembly.GetTypes()
+            .Where(type =>
+                type.IsClass
+                && !type.IsAbstract
+                && type != typeof(ExecuteTagDataActionCommand)
+                && typeof(ITuiCommand).IsAssignableFrom(type)
+            )
+            .Select(type => type.GetCustomAttribute<TuiCommandAttribute>())
+            .Where(attribute => attribute is not null);
+
+        foreach (var attribute in commandAttributes)
+        {
+            var names = attribute!.Names.ToList();
+            var options = names[0] switch
+            {
+                "help" => HelpWidget.Topics.Select(x => new OptionSpec(x, true)).ToList(),
+                "macro" or "run" => _macroConfig
+                    .Macros.Keys.Select(x => new OptionSpec(x, true))
+                    .ToList(),
+                _ => [],
+            };
+            _completionSpecs.Add(new CompletionSpec(names, options));
+        }
     }
 
     public IEnumerable<string> GetCompletions(string input, int cursorPos)

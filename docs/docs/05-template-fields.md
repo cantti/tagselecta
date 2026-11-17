@@ -1,6 +1,6 @@
 # Template fields
 
-When using templates (for example in `:move t=`), you can access any fild just by using `{{ fieldname }}` syntax.
+When using Scriban templates (for example in `:move t=`), you can access any field using `{{ fieldname }}` syntax. In the TUI, use `:help templates` for examples.
 
 For example `{{ artist }}`.
 

@@ -7,6 +7,6 @@ namespace TagSelecta.TagDataActions.AutoTrack;
 public class AutoTrackSettings : TagDataActionSettings
 {
     [CommandOption("--keepdisk")]
-    [Description("Remove Disc and DiscTotal")]
+    [Description("Keep disc number and disc total")]
     public bool KeepDisk { get; set; }
 }
