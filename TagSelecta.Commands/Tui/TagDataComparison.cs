@@ -16,7 +16,7 @@ internal static class TagDataComparison
         var backupTagData = file.BackupTagData;
         var fields = new List<Field>();
 
-        AddField("Path", file.BackupPath, file.CurrentPath, file.BackupPath == file.CurrentPath);
+        AddField("path", file.BackupPath, file.CurrentPath, file.BackupPath == file.CurrentPath);
 
         foreach (
             var key in backupTagData
