@@ -30,10 +30,10 @@ keep_id3v1 = false
 # command to run automatically on startup
 startup_command = "selectall && run reggae"
 
+[appearance]
 # show metadata icons when using a nerd font
 field_icons_enabled = false
 
-[appearance]
 # symbols used in the explorer and metadata comparisons
 selection_symbol = "✓"
 change_symbol = "→"
@@ -76,9 +76,9 @@ barcode = "{{ release.barcode }}"
 musicbrainz_album_id = "{{ release.id }}"
 ```
 
-Customize colors and selection and change symbols in `[appearance]`. Metadata field icons are disabled by default. Set `field_icons_enabled = true` in `[general]` if your terminal uses a Nerd Font. The `[field_icons]` section overrides individual metadata field icons; other fields keep their defaults.
+Customize colors and selection and change symbols in `[appearance]`. See [field icons](04-field-icons.md) for icon settings.
 
-If you have an existing config, move `selection_symbol` and `change_symbol` from `[general]` to `[appearance]` and rename `[color_scheme]` to `[appearance]`. Old settings in those locations are ignored.
+If you have an existing config, move `selection_symbol`, `change_symbol`, and `field_icons_enabled` from `[general]` to `[appearance]` and rename `[color_scheme]` to `[appearance]`. Old settings in those locations are ignored.
 
 The old `header_visible` setting has been removed. The status panel now shows common shortcuts.
 

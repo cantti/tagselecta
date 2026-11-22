@@ -2,6 +2,7 @@ namespace TagSelecta.Commands.Tui;
 
 public class Appearance
 {
+    public bool FieldIconsEnabled { get; set; } = false;
     public string SelectionSymbol { get; set; } = "✓";
     public string ChangeSymbol { get; set; } = "→";
     public string TextFg { get; set; } = "#D9E0EB";

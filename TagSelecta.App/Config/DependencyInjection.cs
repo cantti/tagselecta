@@ -22,7 +22,6 @@ public static class DependencyInjection
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
                 TreeEnabled = configModel.General.TreeEnabled,
                 StartupCommand = configModel.General.StartupCommand,
-                FieldIconsEnabled = configModel.General.FieldIconsEnabled,
                 FieldIcons = configModel.FieldIcons,
                 Appearance = configModel.Appearance,
             }

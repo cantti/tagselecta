@@ -75,7 +75,7 @@ public class TagDataWidget(TuiConfig config, TagDataActionTarget? focusedFile, i
 
     private void AddComparisonRow(Table table, TagDataComparison.Field field)
     {
-        var label = config.FieldIconsEnabled
+        var label = config.Appearance.FieldIconsEnabled
             ? $"{config.FieldIcons.GetValueOrDefault(field.IsPicture ? "picture" : field.Key, " ")}  {field.Key}"
             : field.Key;
         var keyCol = new Text(label, new Style(Color.FromHex(config.Appearance.AccentFg)));

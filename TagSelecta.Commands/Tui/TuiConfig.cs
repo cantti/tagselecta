@@ -8,5 +8,4 @@ public class TuiConfig
     public string StartupCommand { get; set; } = "";
     public Dictionary<string, string> FieldIcons { get; set; } = new();
     public Appearance Appearance { get; init; } = new();
-    public bool FieldIconsEnabled { get; set; } = false;
 }

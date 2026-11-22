@@ -14,6 +14,7 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TagSelecta.App\TagSelecta.App.csproj" />
     <ProjectReference Include="..\TagSelecta.Commands\TagSelecta.Commands.csproj" />
     <ProjectReference Include="..\TagSelecta.TagDataActions\TagSelecta.TagDataActions.csproj" />
   </ItemGroup>
