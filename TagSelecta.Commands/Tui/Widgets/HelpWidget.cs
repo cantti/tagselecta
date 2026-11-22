@@ -15,7 +15,7 @@ public class HelpWidget(Appearance theme, string topic = "") : Renderable
             "h",
             "Show help",
             ":help [topic]",
-            "Show general help or help for a command or topic. Press esc to close help and clear selection."
+            "Show general help or help for a command or topic. Press esc to close help."
         ),
         new(
             "edit",
@@ -137,7 +137,7 @@ public class HelpWidget(Appearance theme, string topic = "") : Renderable
     private static readonly HelpEntry[] NavigationEntries =
     [
         Navigation("select", "Toggle selection of the focused file and move down."),
-        Navigation("escape", "Clear selection and close help or pictures."),
+        Navigation("escape", "Close help or pictures; otherwise, clear selection."),
         Navigation("moveup", "Move focus up."),
         Navigation("movedown", "Move focus down."),
         Navigation("movestart", "Move focus to the first file."),
@@ -190,7 +190,7 @@ public class HelpWidget(Appearance theme, string topic = "") : Renderable
 
             content = new Rows(
                 ThemeText(
-                    "Use :help <command>, :help templates or :help keymap. Esc closes help and clears selection."
+                    "Use :help <command>, :help templates or :help keymap. Press esc to close help."
                 ),
                 Text.Empty,
                 grid
@@ -280,7 +280,7 @@ public class HelpWidget(Appearance theme, string topic = "") : Renderable
         {
             (":", "", "Command mode"),
             ("space", "tab", "Select"),
-            ("escape", "", "Clear selection and close help or picture"),
+            ("escape", "", "Close help or picture; otherwise, clear selection"),
             ("a", "*", "Select all"),
             ("Shift+A", "", "Select all files in directory"),
             ("j", "down", "Move down"),

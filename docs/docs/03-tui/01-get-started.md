@@ -18,7 +18,7 @@ Press `m` or run `:togglemetadata` to hide or show the metadata panel. Metadata 
 ## Navigation
 
 Navigate through files using arrow keys or vim bindings (`jk`). Use `Shift+J` and `Shift+K` to scroll metadata. The metadata position resets when you switch files.
-Use `tab` or `space` to select a file, `esc` to clear the selection and close help or pictures, and `q` to exit.
+Use `tab` or `space` to select a file, `esc` to close help or pictures (or clear the selection when neither is open), and `q` to exit.
 
 Use `:help` (or `:h`) to show command help, `:help edit` for the edit command and standard tag fields, `:help templates` for template examples, or `:help keymap` for shortcuts. The `h` key also opens general help.
 

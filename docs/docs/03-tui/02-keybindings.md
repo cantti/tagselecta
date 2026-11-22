@@ -8,7 +8,7 @@ Below is the list of keybindings (keymap) for the TUI.
 |------------------|--------------------------------------|
 | `:`              | Command mode                         |
 | `space` or `tab` | Select                               |
-| `escape`         | Clear selection and close help or picture |
+| `escape`         | Close help or picture; otherwise, clear selection |
 | `a` or `*`       | Select all                           |
 | `Shift+A`        | Select all files in directory        |
 | `j` or `down`    | Move down                            |
