@@ -9,7 +9,11 @@ public class MoveStartCommand : ITuiCommand
         CancellationToken token
     )
     {
-        context.FocusedFileIndex = 0;
+        if (context.FocusedFileIndex != 0)
+        {
+            context.MetadataOffset = 0;
+            context.FocusedFileIndex = 0;
+        }
         return Task.CompletedTask;
     }
 }

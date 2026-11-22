@@ -9,8 +9,8 @@ public class ToggleKeymapHelpCommand : ITuiCommand
         CancellationToken token
     )
     {
-        context.CommandHelpEnabled = false;
-        context.KeymapHelpEnabled = !context.KeymapHelpEnabled;
+        context.CommandHelpEnabled = true;
+        context.HelpTopic = "keymap";
         return Task.CompletedTask;
     }
 }

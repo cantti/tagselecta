@@ -6,7 +6,7 @@ Basic syntax:
 
 ```
 USAGE:
-    tagselecta.dll [OPTIONS] <COMMAND>
+    tagselecta [path] [OPTIONS] [COMMAND]
 
 EXAMPLES:
     tagselecta.dll edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' --key description --value test
@@ -18,16 +18,19 @@ EXAMPLES:
 OPTIONS:
     -h, --help       Prints help information
     -v, --version    Prints version information
+        --no-recursive    Do not scan subdirectories
 
 COMMANDS:
     edit <path>              Edit tags (read/write). To edit any field, use the --key key1 --value value1 options
     extractpicture <path>    Extract pictures to files
     titlecase <path>         Convert all fields to title case
-    split <path>             Split artists, album artists and composers
-    discogs <path>           Update album from discogs. You can pass discogs release id (not master) or query to search
+    split <path>             Split artists, album artists, composers and genres
+    discogs <path>           Update album from a Discogs release or master URL
     autotrack <path>         Auto track
     move <path>              Move (rename) files to another directory
     find <path>              Find files by metadata
-    musicbrainz <path>       Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search
-    ui <path>                Interactive UI (TUI)
+    musicbrainz <path>       Update album from a MusicBrainz release URL or release ID
+    clearexcept <path>       Clear all tag fields except the specified ones
+    clear <path>             Clear specified tag fields
+    ui                       Interactive UI (TUI)
 ```

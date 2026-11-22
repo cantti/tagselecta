@@ -7,10 +7,12 @@ public class CommandPromptWidget : Renderable
 {
     private readonly string _completion;
     private readonly int _cursorPos;
+    private readonly Appearance _theme;
     private readonly string _text;
 
-    public CommandPromptWidget(string text, int cursorPos, string completion)
+    public CommandPromptWidget(Appearance theme, string text, int cursorPos, string completion)
     {
+        _theme = theme;
         _text = text;
         _cursorPos = cursorPos;
         _completion = completion;
@@ -18,71 +20,36 @@ public class CommandPromptWidget : Renderable
 
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
+        var contentWidth = maxWidth - SectionPanel.HorizontalPadding;
+        if (contentWidth <= 0)
+        {
+            return SectionPanel
+                .Create("Command", Text.Empty, _theme.CommandBorder)
+                .ToSegments(options, maxWidth);
+        }
+
         var fullText = ":" + _text[.._cursorPos] + _completion + _text[_cursorPos..] + " ";
         var cursorPos = _cursorPos + 1; // compensate :
-
         var completionEnd = cursorPos + _completion.Length;
-        if (completionEnd >= maxWidth)
-        {
-            var windowStart = completionEnd - maxWidth + 1;
-            fullText = fullText[windowStart..(windowStart + maxWidth)];
-            cursorPos -= windowStart;
-        }
-        else
-        {
-            fullText = fullText[..Math.Min(maxWidth, fullText.Length)];
-        }
+        var windowStart = Math.Min(Math.Max(0, completionEnd - contentWidth + 1), cursorPos);
+        fullText = fullText[windowStart..Math.Min(fullText.Length, windowStart + contentWidth)]
+            .PadRight(contentWidth);
+        cursorPos -= windowStart;
+        completionEnd = Math.Min(completionEnd - windowStart, contentWidth);
 
-        var cols = new List<IRenderable>();
+        var normalStyle = new Style(Color.FromHex(_theme.TextFg));
+        var completionStyle = new Style(Color.FromHex(_theme.MutedFg));
+        var cursorStyle = new Style(decoration: Decoration.Invert);
+        var afterCursor = cursorPos + 1;
+        var afterCompletion = Math.Max(afterCursor, completionEnd);
+        var paragraph = new Paragraph()
+            .Append(fullText[..cursorPos], normalStyle)
+            .Append(fullText[cursorPos].ToString(), cursorStyle)
+            .Append(fullText[afterCursor..afterCompletion], completionStyle)
+            .Append(fullText[afterCompletion..], normalStyle);
 
-        AddTextSegment(cols, fullText[..cursorPos], TokenKind.Default);
-        AddTextSegment(cols, fullText[cursorPos].ToString(), TokenKind.Cursor);
-
-        if (_completion.Length > 0)
-        {
-            var afterCompletionStart = cursorPos + _completion.Length;
-            AddTextSegment(
-                cols,
-                fullText[(cursorPos + 1)..afterCompletionStart],
-                TokenKind.Completion
-            );
-            AddTextSegment(cols, fullText[afterCompletionStart..], TokenKind.Default);
-        }
-        else
-        {
-            AddTextSegment(cols, fullText[(cursorPos + 1)..], TokenKind.Default);
-        }
-
-        return ((IRenderable)new Columns(cols) { Expand = false, Padding = new Padding(0) }).Render(
-            options,
-            maxWidth
-        );
-    }
-
-    private static void AddTextSegment(List<IRenderable> cols, string value, TokenKind kind)
-    {
-        if (value.Length == 0)
-        {
-            return;
-        }
-
-        cols.Add(new Text(value, GetTokenStyle(kind)));
-    }
-
-    private static Style GetTokenStyle(TokenKind kind)
-    {
-        return kind switch
-        {
-            TokenKind.Completion => new Style(Color.Grey),
-            TokenKind.Cursor => new Style(decoration: Decoration.Invert),
-            _ => Style.Plain,
-        };
-    }
-
-    private enum TokenKind
-    {
-        Default,
-        Completion,
-        Cursor,
+        return SectionPanel
+            .Create("Command", paragraph, _theme.CommandBorder)
+            .ToSegments(options, maxWidth);
     }
 }

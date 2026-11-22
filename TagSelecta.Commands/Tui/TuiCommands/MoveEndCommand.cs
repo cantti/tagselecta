@@ -15,7 +15,11 @@ public class MoveEndCommand : ITuiCommand
             return Task.CompletedTask;
         }
 
-        context.FocusedFileIndex = newIndex;
+        if (context.FocusedFileIndex != newIndex)
+        {
+            context.MetadataOffset = 0;
+            context.FocusedFileIndex = newIndex;
+        }
         return Task.CompletedTask;
     }
 }

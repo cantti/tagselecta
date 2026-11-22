@@ -16,13 +16,15 @@ public static class DependencyInjection
     {
         services.AddSingleton(new MacroConfig { Macros = configModel.Macros });
         services.AddSingleton(
-            new TuiAppConfig
+            new TuiConfig
             {
                 FileListRatio = configModel.General.FileListRatio,
                 AutoCompletionEnabled = configModel.General.AutoCompletionEnabled,
                 TreeEnabled = configModel.General.TreeEnabled,
-                HeaderVisible = configModel.General.HeaderVisible,
                 StartupCommand = configModel.General.StartupCommand,
+                FieldIconsEnabled = configModel.General.FieldIconsEnabled,
+                FieldIcons = configModel.FieldIcons,
+                Appearance = configModel.Appearance,
             }
         );
         services.AddSingleton(CreateDiscogsConfig(configModel.Discogs));

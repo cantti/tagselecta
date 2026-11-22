@@ -5,37 +5,28 @@
 
 ```
 USAGE:
-    tagselecta [OPTIONS] <COMMAND>
+    tagselecta [path] [OPTIONS] [COMMAND]
 
-EXAMPLES:
-    tagselecta edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' 
---key description --value test
-    tagselecta edit song.mp3 --comment 'url=https://github.com'
-    tagselecta edit song.mp3 --artist '{{ artist | regex.replace "^VA$" 
-"Various Artists" "-i" }}'
-    tagselecta discogs . --release 
-https://www.discogs.com/release/4202979-King-Tubby-Dub-From-The-Roots
-    tagselecta find . --query "{{ title | string.downcase |  string.contains
-'dub' }}"
+ARGUMENTS:
+    [path]     
 
 OPTIONS:
-    -h, --help       Prints help information   
-    -v, --version    Prints version information
+    -h, --help            Prints help information   
+    -v, --version         Prints version information
+        --no-recursive    Do not scan subdirectories
 
 COMMANDS:
     edit <path>              Edit tags (read/write). To edit any field, use the 
                              --key key1 --value value1 options                  
     extractpicture <path>    Extract pictures to files                          
     titlecase <path>         Convert all fields to title case                   
-    split <path>             Split artists, album artists and composers         
-    discogs <path>           Update album from discogs. You can pass discogs    
-                             release id (not master) or query to search         
+    split <path>             Split artists, album artists, composers and genres 
+    discogs <path>           Update album from a Discogs release or master URL  
     autotrack <path>         Auto track                                         
     move <path>              Move (rename) files to another directory           
     find <path>              Find files by metadata                             
-    musicbrainz <path>       Update album from musicbrainz. You can pass        
-                             musicbrainz release id (not master) or query to    
-                             search                                             
+    musicbrainz <path>       Update album from a MusicBrainz release URL or     
+                             release ID                                         
     clearexcept <path>       Clear all tag fields except the specified ones and 
                              optionally keep the picture                        
     clear <path>             Clear specified tag fields                         
@@ -125,7 +116,7 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Split artists, album artists and composers
+Split artists, album artists, composers and genres
 
 USAGE:
     tagselecta split <path> [OPTIONS]
@@ -177,7 +168,7 @@ OPTIONS:
     -h, --help           Prints help information                          
         --norecursive    Do not scan subdirectories                       
         --yes            Skip confirmation before writing changes to files
-        --keepdisk       Remove Disc and DiscTotal
+        --keepdisk       Keep disc number and disc total
 ```
 
 ### Find command
@@ -207,8 +198,7 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Update album from discogs. You can pass discogs release id (not master) or query
-to search
+Update album from a Discogs release or master URL
 
 USAGE:
     tagselecta discogs <path> [OPTIONS]
@@ -231,8 +221,7 @@ OPTIONS:
 
 ```
 DESCRIPTION:
-Update album from musicbrainz. You can pass musicbrainz release id (not master) 
-or query to search
+Update album from a MusicBrainz release URL or release ID
 
 USAGE:
     tagselecta musicbrainz <path> [OPTIONS]

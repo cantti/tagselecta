@@ -4,6 +4,7 @@ using Spectre.Console.Rendering;
 namespace TagSelecta.Commands.Tui.Widgets;
 
 public class FileListWidget(
+    TuiConfig config,
     IEnumerable<TagDataActionTarget> files,
     TagDataActionTarget? focusedFile,
     int windowSize
@@ -31,6 +32,7 @@ public class FileListWidget(
         }
 
         var items = new List<IRenderable>();
+        var contentWidth = ExplorerPanel.GetContentWidth(maxWidth);
 
         for (var i = 0; i < linesToPrint; i++)
         {
@@ -38,26 +40,34 @@ public class FileListWidget(
             var path = filesList[itemIndex].BackupPath;
 
             var cols = new List<IRenderable>();
-            var fg = filesList[itemIndex].HasChanges ? Color.Red : Color.Default;
-            var bg = focusedIndex == itemIndex ? Color.Grey : Color.Default;
-            var selectedMarker = filesList[itemIndex].IsSelected ? "[x] " : "[ ] ";
+            var fg = filesList[itemIndex].HasChanges
+                ? Color.FromHex(config.Appearance.DangerFg)
+                : Color.FromHex(config.Appearance.TextFg);
+            var bg =
+                focusedIndex == itemIndex
+                    ? Color.FromHex(config.Appearance.FocusedBg)
+                    : Color.Default;
+            var selectedMarker = ExplorerPanel.GetSelectionMarker(
+                filesList[itemIndex].IsSelected,
+                config
+            );
             cols.Add(new Text(selectedMarker, new Style(fg, bg)));
-            if (path.Length + selectedMarker.Length > maxWidth)
+            var markerWidth = new Segment(selectedMarker).CellCount();
+            var pathSegment = new Segment(path);
+            var pathWidth = pathSegment.CellCount();
+            if (pathWidth + markerWidth > contentWidth)
             {
-                var start = path.Length + selectedMarker.Length + 3 - maxWidth;
+                var start = Math.Clamp(pathWidth + markerWidth + 3 - contentWidth, 0, pathWidth);
                 cols.Add(new Text("...", new Style(fg, bg)));
-                path = path.Substring(start);
+                path = pathSegment.Split(start).Second?.Text ?? "";
             }
 
             cols.Add(new Text(path, new Style(fg, bg)));
             items.Add(new Columns(cols) { Expand = false, Padding = new Padding(0) });
         }
 
-        IRenderable content = new Rows(
-            new SectionHeaderWidget($"Files ({filesList.Count}) - [e] toggle, [t] tree view:"),
-            new Rows(items)
-        );
-
-        return content.Render(options, maxWidth);
+        return ExplorerPanel
+            .Create(filesList.Count, new Rows(items), config)
+            .ToSegments(options, maxWidth);
     }
 }

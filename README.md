@@ -8,7 +8,7 @@ TagSelecta is a cross-platform, opinionated command-line tool for managing audio
 
 The tool supports two modes: interactive UI (TUI) and command-line interface (CLI).
 
-To run the TUI, simply run `tagselecta ui <path>`.
+Run `tagselecta` to open the TUI in the current directory, or `tagselecta <path>` to open a file or directory. `tagselecta ui <path>` also works.
 
 To execute commands from the CLI, run `tagselecta <command> <path>`.
 
@@ -26,8 +26,8 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - `:move` command to move and rename files
 - `:extractpicture` command to extract pictures to files
 - `:titlecase` command to convert all fields to title case
-- `:split` command to split artists, album artists and composers
-- `:autotrack` command to automatically set track number and total tracks based on disc and disc total
+- `:split` command to split artists, album artists, composers and genres
+- `:autotrack` command to set track number and track total based on file position in the directory
 - `:discogs` command to update album metadata from Discogs release
 - `:musicbrainz` command to update album metadata from Musicbrainz release
 - `:clear` command to clear specified tag fields
@@ -38,6 +38,7 @@ and [TagLibSharp](https://github.com/mono/taglib-sharp) for tag manipulation.
 - Macros support
 - Preview of changes before applying them
 - Tree view of files
+- Metadata scrolling, configurable colors, and Nerd Font icons
 - Command history and autocompletion
 - Startup command that runs automatically when the TUI starts
 
@@ -116,7 +117,7 @@ Ensure `"$HOME/.local/bin"` is in your `PATH`.
 Great way to get started is to use the interactive UI (TUI). Open directory with album (audio files) and run:
 
 ```sh
-tagselecta ui .
+tagselecta
 ```
 
 > Important: Do not run it from the root of your music library, because it will scan all files in the directory!
@@ -125,8 +126,9 @@ Conceptually, the UI is divided into two parts: top panel with list of files and
 
 **Navigation**
 
-Navigate through files using arrow keys or vim bindings (`jk`). Use `q` to exit.
-Use `tab` or `space` to select file. Use `esc` to unselect.
+Navigate through files using arrow keys or vim bindings (`jk`). Use `Shift+J` and `Shift+K` to scroll metadata.
+Press `m` (or run `:togglemetadata`) to hide or show the metadata panel and `e` to toggle the explorer. Hiding metadata gives the explorer the full available height.
+Use `tab` or `space` to select a file, `esc` to clear the selection or close help and pictures, and `q` to exit.
 
 **Edit tags**
 
@@ -184,7 +186,7 @@ Basic syntax:
 
 ```
 USAGE:
-    tagselecta.dll [OPTIONS] <COMMAND>
+    tagselecta.dll [path] [OPTIONS] [COMMAND]
 
 EXAMPLES:
     tagselecta.dll edit song.mp3 --title 'Song 1' --artist 'Artist1;Artist 2' --key description --value test
@@ -201,12 +203,12 @@ COMMANDS:
     edit <path>              Edit tags (read/write). To edit any field, use the --key key1 --value value1 options
     extractpicture <path>    Extract pictures to files
     titlecase <path>         Convert all fields to title case
-    split <path>             Split artists, album artists and composers
-    discogs <path>           Update album from discogs. You can pass discogs release id (not master) or query to search
+    split <path>             Split artists, album artists, composers and genres
+    discogs <path>           Update album from a Discogs release or master URL
     autotrack <path>         Auto track
     move <path>              Move (rename) files to another directory
     find <path>              Find files by metadata
-    musicbrainz <path>       Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search
+    musicbrainz <path>       Update album from a MusicBrainz release URL or release ID
     ui <path>                Interactive UI (TUI)
 ```
 
