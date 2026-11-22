@@ -112,7 +112,7 @@ public class DiscogsAction : ITagDataAction<DiscogsSettings>
         tagData.RemoveField(FieldName.DiscNumber);
         tagData.RemoveField(FieldName.DiscTotal);
 
-        tagData.Picture = [new Picture(_releaseImage)];
+        tagData.Picture = [new TagPicture(new Picture(_releaseImage))];
 
         context.Target.UpdateTagData(tagData);
 

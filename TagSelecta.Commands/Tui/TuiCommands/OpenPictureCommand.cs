@@ -36,7 +36,7 @@ public class OpenPictureCommand : ITuiCommand
             return Task.CompletedTask;
         }
 
-        OpenInDefaultViewer(picture.Data.ToArray(), Picture.GetExtensionFromData(picture.Data));
+        OpenInDefaultViewer(picture.Data.ToArray(), picture.GetExtension());
 
         return Task.CompletedTask;
     }

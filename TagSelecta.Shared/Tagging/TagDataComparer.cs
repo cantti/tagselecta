@@ -1,5 +1,3 @@
-using TagLib;
-
 namespace TagSelecta.Shared.Tagging;
 
 public static class TagDataComparer
@@ -19,7 +17,7 @@ public static class TagDataComparer
         return PictureListEq(a.Picture, b.Picture) && FieldListEq(a.Fields, b.Fields);
     }
 
-    private static bool PictureListEq(List<Picture>? a, List<Picture>? b)
+    private static bool PictureListEq(List<TagPicture>? a, List<TagPicture>? b)
     {
         if (ReferenceEquals(a, b))
         {
@@ -47,7 +45,7 @@ public static class TagDataComparer
         return true;
     }
 
-    public static bool PictureEq(Picture? a, Picture? b)
+    public static bool PictureEq(TagPicture? a, TagPicture? b)
     {
         if (ReferenceEquals(a, b))
         {
@@ -62,8 +60,7 @@ public static class TagDataComparer
         return a.Type == b.Type
             && a.MimeType == b.MimeType
             && a.Description == b.Description
-            && a.MimeType == b.MimeType
-            && a.Data?.Data.SequenceEqual(b.Data?.Data ?? []) == true;
+            && a.Data.SequenceEqual(b.Data);
     }
 
     private static bool FieldListEq(IReadOnlyList<TagField>? a, IReadOnlyList<TagField>? b)

@@ -127,7 +127,7 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
 
                 tagData.Picture.RemoveAll(x => x.Type == picture.Type);
 
-                tagData.Picture.Add(picture);
+                tagData.Picture.Add(new TagPicture(picture));
             }
         }
     }

@@ -1,12 +1,10 @@
-using TagLib;
-
 namespace TagSelecta.Shared.Tagging;
 
 public class TagData
 {
     private readonly List<TagField> _fields = [];
 
-    public List<Picture> Picture { get; set; } = [];
+    public List<TagPicture> Picture { get; set; } = [];
 
     public IReadOnlyList<TagField> Fields =>
         _fields.OrderBy(cf => cf.Key).Select(x => new TagField(x.Key, x.Text)).ToList();

@@ -57,7 +57,7 @@ public class Id3TagDataProcessor : TagDataProcessor
             tagData.SetValue(key, userTextField.Text.JoinTagValues());
         }
 
-        tagData.Picture = id3v2.Pictures.Select(x => new Picture(x)).ToList();
+        tagData.Picture = id3v2.Pictures.Select(x => new TagPicture(x)).ToList();
         return tagData;
     }
 
@@ -87,7 +87,7 @@ public class Id3TagDataProcessor : TagDataProcessor
             data.GetValue(FieldName.TrackNumber).JoinTagValues(),
             data.GetValue(FieldName.TrackTotal).JoinTagValues()
         );
-        id3v2.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
+        id3v2.Pictures = data.Picture.Select(p => p.ToTagLibPicture()).ToArray<IPicture>();
         ClearUserTextFrames();
         foreach (var field in data.Fields.Where(f => !FieldName.All().Contains(f.Key)))
         {

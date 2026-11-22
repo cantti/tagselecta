@@ -55,7 +55,7 @@ public class ExtractPictureAction : ITagDataAction<ExtractPictureSettings>
             }
 
             var picture = pictures[i];
-            var ext = Picture.GetExtensionFromData(picture.Data);
+            var ext = picture.GetExtension();
 
             var output = context.Settings.Output;
 

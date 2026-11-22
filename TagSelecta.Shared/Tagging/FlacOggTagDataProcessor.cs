@@ -2,7 +2,6 @@ using TagLib;
 using TagLib.Flac;
 using TagLib.Ogg;
 using File = TagLib.File;
-using Picture = TagLib.Picture;
 
 namespace TagSelecta.Shared.Tagging;
 
@@ -39,7 +38,7 @@ public class FlacOggTagDataProcessor : TagDataProcessor
         }
 
         var pictures = _flac is not null ? _flac.Pictures : _xiph.Pictures;
-        tagData.Picture = pictures.Select(x => new Picture(x)).ToList();
+        tagData.Picture = pictures.Select(x => new TagPicture(x)).ToList();
         return tagData;
     }
 
@@ -55,7 +54,7 @@ public class FlacOggTagDataProcessor : TagDataProcessor
             _xiph.SetField(field.Key, field.Text.ToArray());
         }
 
-        var pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
+        var pictures = data.Picture.Select(p => p.ToTagLibPicture()).ToArray<IPicture>();
         if (_flac is not null)
         {
             _flac.Pictures = pictures;
