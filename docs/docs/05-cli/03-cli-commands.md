@@ -188,10 +188,12 @@ ARGUMENTS:
     <path>     
 
 OPTIONS:
-    -h, --help           Prints help information                          
-        --norecursive    Do not scan subdirectories                       
-        --yes            Skip confirmation before writing changes to files
-    -q, --query          Find query
+    -h, --help           Prints help information                                
+        --norecursive    Do not scan subdirectories                             
+        --yes            Skip confirmation before writing changes to files      
+    -q, --query          Find query                                             
+        --exec           Run a program for each match. Pass its arguments after 
+                         --; {} represents the file path
 ```
 
 ### Discogs command
