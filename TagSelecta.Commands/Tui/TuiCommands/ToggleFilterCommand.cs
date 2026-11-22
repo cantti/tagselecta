@@ -11,6 +11,7 @@ public class ToggleFilterCommand : ITuiCommand
     {
         context.FilterEnabled = !context.FilterEnabled;
         context.FocusedFileIndex = 0;
+        context.MetadataOffset = 0;
         return Task.CompletedTask;
     }
 }

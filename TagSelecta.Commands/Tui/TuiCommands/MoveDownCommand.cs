@@ -15,6 +15,7 @@ public class MoveDownCommand : ITuiCommand
             return Task.CompletedTask;
         }
 
+        context.MetadataOffset = 0;
         context.FocusedFileIndex = newIndex;
         return Task.CompletedTask;
     }

@@ -4,16 +4,16 @@ using TagLib;
 
 namespace TagSelecta.Commands.Tui.Widgets;
 
-public class PictureWidget(TagDataActionTarget? focusedFile, int maxHeight) : Renderable
+public class PictureWidget(Appearance theme, TagDataActionTarget? focusedFile, int maxHeight)
+    : Renderable
 {
     protected override IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
     {
-        var rows = new List<IRenderable>();
-        rows.Add(new SectionHeaderWidget("Picture:"));
-
         if (focusedFile == null)
         {
-            return ((IRenderable)new Rows(rows)).Render(options, maxWidth);
+            return SectionPanel
+                .Create("Picture", Text.Empty, theme.Border)
+                .ToSegments(options, maxWidth);
         }
 
         var picture = focusedFile
@@ -30,20 +30,21 @@ public class PictureWidget(TagDataActionTarget? focusedFile, int maxHeight) : Re
 
         if (picture == null)
         {
-            return ((IRenderable)new Rows(rows)).Render(options, maxWidth);
+            return SectionPanel
+                .Create("Picture", Text.Empty, theme.Border)
+                .ToSegments(options, maxWidth);
         }
 
         var image = new CanvasImage(picture.Data.ToArray());
         var width = image.Width;
         var height = image.Height;
-        var scale = height > 0 ? Math.Min(1.0, (double)maxHeight / height) : 1.0;
+        var contentHeight = Math.Max(1, maxHeight - SectionPanel.VerticalPadding);
+        var scale = height > 0 ? Math.Min(1.0, (double)contentHeight / height) : 1.0;
         var newWidth = (int)Math.Floor(width * scale);
 
-        newWidth = Math.Clamp(newWidth, 1, Math.Max(1, maxWidth));
+        newWidth = Math.Clamp(newWidth, 1, Math.Max(1, maxWidth - SectionPanel.HorizontalPadding));
 
         image.MaxWidth(newWidth);
-        rows.Add(image);
-
-        return ((IRenderable)new Rows(rows)).Render(options, maxWidth);
+        return SectionPanel.Create("Picture", image, theme.Border).ToSegments(options, maxWidth);
     }
 }

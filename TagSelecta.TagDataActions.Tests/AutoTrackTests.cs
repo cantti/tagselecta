@@ -52,4 +52,35 @@ public class AutoTrackTests
         Assert.Equal(["1"], currentTagData2.GetValue(FieldName.DiscNumber));
         Assert.Equal(["1"], currentTagData2.GetValue(FieldName.DiscTotal));
     }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task AutoTrack_KeepDiskControlsDiscFields(bool keepDisk)
+    {
+        var scanner = Substitute.For<IAudioFileScanner>();
+        scanner.Search(new List<string>(), true).ReturnsForAnyArgs(["file.mp3"]);
+        ITagDataAction action = new AutoTrackAction(scanner);
+        var item = new TestTarget("file.mp3", new TagData());
+        item.CurrentTagData.SetValue(FieldName.DiscNumber, "1");
+        item.CurrentTagData.SetValue(FieldName.DiscTotal, "2");
+
+        await action.Execute(
+            new TagDataActionExecuteContext
+            {
+                Settings = new AutoTrackSettings { KeepDisk = keepDisk },
+                Target = item,
+            },
+            CancellationToken.None
+        );
+
+        Assert.Equal(
+            keepDisk ? ["1"] : Array.Empty<string>(),
+            item.CurrentTagData.GetValue(FieldName.DiscNumber)
+        );
+        Assert.Equal(
+            keepDisk ? ["2"] : Array.Empty<string>(),
+            item.CurrentTagData.GetValue(FieldName.DiscTotal)
+        );
+    }
 }

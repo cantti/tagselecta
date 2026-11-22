@@ -84,9 +84,7 @@ public static class CommandRegistration
 
         configurator
             .AddTagDataAction<DiscogsAction>(services)
-            .WithDescription(
-                "Update album from discogs. You can pass discogs release id (not master) or query to search."
-            )
+            .WithDescription("Update album from a Discogs release or master URL.")
             .WithExample(
                 "discogs",
                 ".",
@@ -113,7 +111,7 @@ public static class CommandRegistration
     {
         configurator
             .AddTagDataAction<SplitAction>(services)
-            .WithDescription("Split artists, album artists and composers");
+            .WithDescription("Split artists, album artists, composers and genres");
     }
 
     private static void AddTitleCase(IConfigurator configurator, IServiceCollection services)
@@ -143,9 +141,7 @@ public static class CommandRegistration
             .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://musicbrainz.org/ws/2"));
         configurator
             .AddTagDataAction<MusicBrainzAction>(services)
-            .WithDescription(
-                "Update album from musicbrainz. You can pass musicbrainz release id (not master) or query to search."
-            );
+            .WithDescription("Update album from a MusicBrainz release URL or release ID.");
     }
 
     private static void AddClearExcept(IConfigurator configurator, IServiceCollection services)

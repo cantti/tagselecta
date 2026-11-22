@@ -5,6 +5,7 @@ using TagSelecta.Shared.IO;
 namespace TagSelecta.Commands.Tui.Widgets;
 
 public class TreeListWidget(
+    TuiConfig config,
     IEnumerable<TagDataActionTarget> files,
     TagDataActionTarget? focusedFile,
     int windowSize
@@ -34,40 +35,46 @@ public class TreeListWidget(
         }
 
         var items = new List<IRenderable>(linesToPrint);
+        var contentWidth = ExplorerPanel.GetContentWidth(maxWidth);
 
         for (var i = 0; i < linesToPrint; i++)
         {
             var itemIndex = windowStart + i;
             var treeLine = treeLines[itemIndex];
 
-            var selectedMarker = treeLine.File is not null
-                ? treeLine.File.IsSelected
-                    ? "[x]"
-                    : "[ ]"
-                : "   ";
+            var selectedMarker = ExplorerPanel.GetSelectionMarker(
+                treeLine.File?.IsSelected == true,
+                config
+            );
+
+            if (treeLine.File is null)
+            {
+                selectedMarker = new string(' ', new Segment(selectedMarker).CellCount());
+            }
 
             var indent = new string(' ', treeLine.Depth * 2);
-            var prefix = treeLine.File is null ? "▸ " : "  ";
+            var prefix = treeLine.File is null && treeLine.Depth > 0 ? "/" : " ";
 
             var text = $"{selectedMarker}{indent}{prefix}{treeLine.Name}";
-            text = text.Substring(0, Math.Min(text.Length, maxWidth)).PadRight(maxWidth);
+            var visible = Segment.Truncate(new Segment(text), contentWidth);
+            text =
+                (visible?.Text ?? "") + new string(' ', contentWidth - (visible?.CellCount() ?? 0));
 
             var style = new Style(
-                treeLine.File is not null && treeLine.File.HasChanges ? Color.Red : Color.Default,
+                treeLine.File is null ? Color.FromHex(config.Appearance.MutedFg)
+                    : treeLine.File.HasChanges ? Color.FromHex(config.Appearance.DangerFg)
+                    : Color.FromHex(config.Appearance.TextFg),
                 treeLine.File is not null && treeLine.File == focusedFile
-                    ? Color.Grey
+                    ? Color.FromHex(config.Appearance.FocusedBg)
                     : Color.Default
             );
 
             items.Add(new Text(text, style));
         }
 
-        IRenderable content = new Rows(
-            new SectionHeaderWidget($"Files ({_files.Count}) - [e] toggle, [t] list view:"),
-            new Rows(items)
-        );
-
-        return content.Render(options, maxWidth);
+        return ExplorerPanel
+            .Create(_files.Count, new Rows(items), config)
+            .ToSegments(options, maxWidth);
     }
 
     private List<TreeLine> BuildTreeLines()

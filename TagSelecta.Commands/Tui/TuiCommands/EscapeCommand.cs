@@ -9,13 +9,19 @@ public class EscapeCommand : ITuiCommand
         CancellationToken token
     )
     {
-        foreach (var file in context.SelectedFiles)
+        if (context.CommandHelpEnabled || context.PictureEnabled)
         {
-            file.IsSelected = false;
+            context.CommandHelpEnabled = false;
+            context.HelpTopic = "";
+            context.PictureEnabled = false;
         }
-
-        context.CommandHelpEnabled = false;
-        context.KeymapHelpEnabled = false;
+        else
+        {
+            foreach (var file in context.SelectedFiles)
+            {
+                file.IsSelected = false;
+            }
+        }
 
         return Task.CompletedTask;
     }

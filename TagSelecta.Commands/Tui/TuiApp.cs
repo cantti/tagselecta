@@ -13,7 +13,7 @@ public class TuiApp(
     IAnsiConsole console,
     IAudioFileScanner audioFileScanner,
     ITuiCommandDispatcher commandDispatcher,
-    TuiAppConfig config,
+    TuiConfig config,
     InputHandler inputHandler,
     HotkeyMap hotkeys,
     ICompletionProvider completionProvider
@@ -41,15 +41,19 @@ public class TuiApp(
 
     public int FocusedFileIndex { get; set; }
 
+    public int MetadataOffset { get; set; }
+
     public bool TreeEnabled { get; set; } = config.TreeEnabled;
 
     public bool FilterEnabled { get; set; }
 
-    public bool KeymapHelpEnabled { get; set; }
-
     public bool CommandHelpEnabled { get; set; }
 
+    public string HelpTopic { get; set; } = "";
+
     public bool FileListEnabled { get; set; } = true;
+
+    public bool MetadataEnabled { get; set; } = true;
 
     public bool PictureEnabled { get; set; }
 
@@ -76,6 +80,7 @@ public class TuiApp(
 
     public void SetFiles(IEnumerable<TagDataActionTarget> files)
     {
+        MetadataOffset = 0;
         Files = files.ToList();
         completionProvider.GenerateCompletions(
             Files.SelectMany(x => x.CurrentTagData.Fields).Select(x => x.Key)
@@ -110,7 +115,7 @@ public class TuiApp(
 
             if (scannerResult.Count == 0)
             {
-                Print("No audio files found. Try :open <path> or tagselecta ui <path>.");
+                Print("No audio files found. Try :open <path> or tagselecta <path>.");
             }
 
             Files = scannerResult.Select(x => new TagDataActionTarget(x.Path, x.TagData)).ToList();
@@ -231,30 +236,22 @@ public class TuiApp(
 
     private IRenderable DrawLayout()
     {
-        const string headerLayoutKey = "navigation";
         const string tagDataLayoutKey = "body";
         const string statusLayoutKey = "status";
         const string filesLayoutKey = "files";
-        const int headerSize = 3;
-        var actualHeaderSize = 0;
-        const int statusBarHeight = 1;
+        const int statusBarHeight = SectionPanel.VerticalPadding + 1;
         var children = new List<Layout>();
-        if (config.HeaderVisible)
-        {
-            actualHeaderSize = headerSize;
-            children.Add(new Layout(headerLayoutKey).Size(actualHeaderSize).Update(RenderHeader()));
-        }
 
-        if (KeymapHelpEnabled || CommandHelpEnabled || PictureEnabled)
+        if (CommandHelpEnabled || PictureEnabled)
         {
             children.Add(
                 new Layout(filesLayoutKey).Update(
-                    KeymapHelpEnabled ? new KeymapHelpWidget()
-                    : CommandHelpEnabled ? new CommandHelpWidget()
+                    CommandHelpEnabled ? new HelpWidget(config.Appearance, HelpTopic)
                     : PictureEnabled
                         ? new PictureWidget(
+                            config.Appearance,
                             FocusedFile,
-                            console.Profile.Height - actualHeaderSize - statusBarHeight
+                            console.Profile.Height - statusBarHeight
                         )
                     : Text.Empty
                 )
@@ -264,11 +261,9 @@ public class TuiApp(
         {
             if (FileListEnabled)
             {
-                const int fileListPadding = 1;
-                var filesContentHeight = (int)(
-                    (Console.WindowHeight - actualHeaderSize - statusBarHeight - fileListPadding)
-                    * config.FileListRatio
-                );
+                var filesContentHeight = MetadataEnabled
+                    ? (int)((Console.WindowHeight - statusBarHeight) * config.FileListRatio)
+                    : Console.WindowHeight - statusBarHeight;
                 if (filesContentHeight < 1)
                 {
                     // min size supported by spectre layout
@@ -281,22 +276,33 @@ public class TuiApp(
                         .Update(
                             TreeEnabled
                                 ? new TreeListWidget(
+                                    config,
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentHeight - 2
+                                    Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
                                 )
                                 : new FileListWidget(
+                                    config,
                                     VisibleFiles,
                                     FocusedFile,
-                                    filesContentHeight - 2
+                                    Math.Max(0, filesContentHeight - SectionPanel.VerticalPadding)
                                 )
                         )
                 );
             }
 
-            children.Add(
-                new Layout(tagDataLayoutKey).Ratio(1).Update(new TagDataWidget(FocusedFile))
-            );
+            if (MetadataEnabled)
+            {
+                children.Add(
+                    new Layout(tagDataLayoutKey)
+                        .Ratio(1)
+                        .Update(new TagDataWidget(config, FocusedFile, MetadataOffset))
+                );
+            }
+            else if (!FileListEnabled)
+            {
+                children.Add(new Layout(tagDataLayoutKey).Update(Text.Empty));
+            }
         }
 
         children.Add(
@@ -305,11 +311,12 @@ public class TuiApp(
                 .Update(
                     inputHandler.Mode == InputMode.Command
                         ? new CommandPromptWidget(
+                            config.Appearance,
                             inputHandler.Input,
                             inputHandler.CursorPos,
                             inputHandler.Completion
                         )
-                        : new StatusWidget(_statusMessage)
+                        : new StatusWidget(config.Appearance, _statusMessage)
                 )
         );
         var layout = new Layout("root").SplitRows(children.ToArray());
@@ -336,25 +343,6 @@ public class TuiApp(
         return true;
     }
 
-    private IRenderable RenderHeader()
-    {
-        var keys = new List<(string Key, string Action)>
-        {
-            ("q", "Quit"),
-            ("h", "Command help"),
-            ("?", "Keymap help"),
-        };
-        var cols1 = new List<IRenderable>();
-        cols1.AddRange(keys.Select(x => new Markup($"[bold blue]{x.Key}[/] {x.Action}")).ToList());
-        cols1.Add(
-            new Markup("[bold blue]Documentation[/]: [link]https://cantti.github.io/tagselecta[/]")
-        );
-        return new Rows(
-            new SectionHeaderWidget("Tagselecta"),
-            new Columns(cols1) { Padding = new Padding(2, 0, 2, 0), Expand = false }
-        );
-    }
-
     private void BindHotkeys()
     {
         hotkeys.Bind(HotkeyTokens.Esc, "escape");
@@ -362,6 +350,8 @@ public class TuiApp(
         hotkeys.Bind(HotkeyTokens.Up, "moveup");
         hotkeys.Bind("j", "movedown");
         hotkeys.Bind("k", "moveup");
+        hotkeys.Bind("J", "metadatadown");
+        hotkeys.Bind("K", "metadataup");
         hotkeys.Bind("g", "movestart");
         hotkeys.Bind("G", "moveend");
         hotkeys.Bind("q", "quit");
@@ -371,6 +361,7 @@ public class TuiApp(
         hotkeys.Bind("h", "togglecommandhelp");
         hotkeys.Bind("H", "opendocs");
         hotkeys.Bind("e", "togglefilelist");
+        hotkeys.Bind("m", "togglemetadata");
         hotkeys.Bind("u", "undo");
         hotkeys.Bind(HotkeyTokens.Tab, "select");
         hotkeys.Bind(HotkeyTokens.Space, "select");

@@ -1,10 +1,12 @@
 # Settings
 
-Config file location: 
+On Unix, the config file is at:
 
 ```
 ~/.config/tagselecta/config.toml
 ```
+
+If `XDG_CONFIG_HOME` is set, it is at `$XDG_CONFIG_HOME/tagselecta/config.toml` instead. On Windows, it is at `%APPDATA%\tagselecta\config.toml`.
 
 Below is an example of the config file with comments.
 
@@ -20,19 +22,36 @@ file_list_ratio = 0.3
 auto_completion_enabled = true
 
 # enable tree view by default
-tree_enabled = false
+tree_enabled = true
 
 # preserve id3v1 tags
 keep_id3v1 = false
 
-# show header in tui mode (app name and common shortcuts)
-header_visible = true
-
-# show header in tui mode (app name and common shortcuts)
-header_visible = true
-
 # command to run automatically on startup
 startup_command = "selectall && run reggae"
+
+[appearance]
+# show metadata icons when using a nerd font
+field_icons_enabled = false
+
+# symbols used in the explorer and metadata comparisons
+selection_symbol = "✓"
+change_symbol = "→"
+
+# colors in hexadecimal format
+text_fg = "#D9E0EB"
+accent_fg = "#B2CDE3"
+muted_fg = "#92A0B2"
+success_fg = "#86EFAC"
+danger_fg = "#FB7185"
+focused_bg = "#334155"
+border = "#AD97C2"
+command_border = "#D4A35F"
+
+[field_icons]
+# example overrides for metadata field icons
+artist = "@"
+picture = "*"
 
 [macros]
 # example of macro. You can add as many as you want similarly.
@@ -56,6 +75,12 @@ label = "{{ release.labelinfo | array.map 'label' | array.map 'name' | joined }}
 barcode = "{{ release.barcode }}"
 musicbrainz_album_id = "{{ release.id }}"
 ```
+
+Customize colors and selection and change symbols in `[appearance]`. See [field icons](04-field-icons.md) for icon settings.
+
+If you have an existing config, move `selection_symbol`, `change_symbol`, and `field_icons_enabled` from `[general]` to `[appearance]` and rename `[color_scheme]` to `[appearance]`. Old settings in those locations are ignored.
+
+The old `header_visible` setting has been removed. The status panel now shows common shortcuts.
 
 `discogs.map` customizes how `:discogs` writes tags.
 
