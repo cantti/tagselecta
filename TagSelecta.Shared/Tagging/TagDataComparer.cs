@@ -17,7 +17,7 @@ public static class TagDataComparer
         return PictureListEq(a.Picture, b.Picture) && FieldListEq(a.Fields, b.Fields);
     }
 
-    private static bool PictureListEq(List<TagPicture>? a, List<TagPicture>? b)
+    private static bool PictureListEq(IReadOnlyList<TagPicture>? a, IReadOnlyList<TagPicture>? b)
     {
         if (ReferenceEquals(a, b))
         {

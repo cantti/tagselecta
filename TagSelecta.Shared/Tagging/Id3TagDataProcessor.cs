@@ -57,7 +57,11 @@ public class Id3TagDataProcessor : TagDataProcessor
             tagData.SetValue(key, userTextField.Text.JoinTagValues());
         }
 
-        tagData.Picture = id3v2.Pictures.Select(x => new TagPicture(x)).ToList();
+        foreach (var picture in id3v2.Pictures)
+        {
+            tagData.AddPicture(new TagPicture(picture));
+        }
+
         return tagData;
     }
 

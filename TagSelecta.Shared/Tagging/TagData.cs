@@ -1,13 +1,21 @@
+using TagLib;
+
 namespace TagSelecta.Shared.Tagging;
 
 public class TagData
 {
     private readonly List<TagField> _fields = [];
 
-    public List<TagPicture> Picture { get; set; } = [];
+    private readonly List<TagPicture> _picture = [];
+
+    public IReadOnlyList<TagPicture> Picture => _picture.AsReadOnly();
 
     public IReadOnlyList<TagField> Fields =>
-        _fields.OrderBy(cf => cf.Key).Select(x => new TagField(x.Key, x.Text)).ToList();
+        _fields
+            .OrderBy(cf => cf.Key)
+            .Select(x => new TagField(x.Key, x.Text))
+            .ToList()
+            .AsReadOnly();
 
     public void Clear()
     {
@@ -16,7 +24,7 @@ public class TagData
 
     public void ClearPicture()
     {
-        Picture.Clear();
+        _picture.Clear();
     }
 
     public void SetValue(string key, IEnumerable<string> value)
@@ -71,5 +79,15 @@ public class TagData
     public TagData Clone()
     {
         return TagDataCloner.Clone(this);
+    }
+
+    public void AddPicture(TagPicture picture)
+    {
+        _picture.Add(picture);
+    }
+
+    public void RemovePicture(PictureType type)
+    {
+        _picture.RemoveAll(x => x.Type == type);
     }
 }

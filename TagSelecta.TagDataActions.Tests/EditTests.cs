@@ -40,7 +40,7 @@ public class EditTests
             Value = ["test_value"],
         };
 
-        var tagData = new TagData { Picture = [] };
+        var tagData = new TagData();
         tagData.SetValue(FieldName.Album, "Original Album");
         tagData.SetValue(FieldName.AlbumArtist, ["Original Album Artist"]);
         tagData.SetValue(FieldName.Artist, ["Original Artist"]);

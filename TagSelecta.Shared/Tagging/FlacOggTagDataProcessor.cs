@@ -38,7 +38,11 @@ public class FlacOggTagDataProcessor : TagDataProcessor
         }
 
         var pictures = _flac is not null ? _flac.Pictures : _xiph.Pictures;
-        tagData.Picture = pictures.Select(x => new TagPicture(x)).ToList();
+
+        foreach (var picture in pictures)
+        {
+            tagData.AddPicture(new TagPicture(picture));
+        }
         return tagData;
     }
 

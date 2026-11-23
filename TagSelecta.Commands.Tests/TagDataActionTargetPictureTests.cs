@@ -1,5 +1,4 @@
 using TagLib;
-using TagSelecta.Commands;
 using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Commands.Tests;
@@ -10,14 +9,16 @@ public class TagDataActionTargetPictureTests
     public void Pictures_AreSharedAcrossSnapshotsButListEditsCanBeUndone()
     {
         var picture = new TagPicture(new Picture { Data = new ByteVector(1, 2, 3) });
-        var target = new TagDataActionTarget("file.mp3", new TagData { Picture = [picture] });
+        var tagData = new TagData();
+        tagData.AddPicture(picture);
+        var target = new TagDataActionTarget("file.mp3", tagData);
 
         var current = target.CurrentTagData;
         var backup = target.BackupTagData;
         Assert.Same(picture, current.Picture[0]);
         Assert.Same(picture, backup.Picture[0]);
 
-        current.Picture.Clear();
+        current.ClearPicture();
         Assert.Single(target.CurrentTagData.Picture);
         target.UpdateTagData(current);
         Assert.True(target.HasChanges);

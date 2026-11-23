@@ -8,22 +8,20 @@ public class TagDataClonerTests
     [Fact]
     public void Clone_CopiesFieldsAndListsButSharesPictures()
     {
-        var original = new TagData
-        {
-            Picture =
-            [
-                new TagPicture(
-                    new Picture
-                    {
-                        Data = new ByteVector(1, 2, 3),
-                        Description = "desc",
-                        Filename = "file.jpg",
-                        MimeType = "image/jpeg",
-                        Type = PictureType.FrontCover,
-                    }
-                ),
-            ],
-        };
+        var original = new TagData();
+
+        original.AddPicture(
+            new TagPicture(
+                new Picture
+                {
+                    Data = new ByteVector(1, 2, 3),
+                    Description = "desc",
+                    Filename = "file.jpg",
+                    MimeType = "image/jpeg",
+                    Type = PictureType.FrontCover,
+                }
+            )
+        );
 
         original.SetValue(FieldName.Album, "Test Album");
         original.SetValue(FieldName.AlbumArtist, ["Artist1", "Artist2"]);
@@ -70,7 +68,7 @@ public class TagDataClonerTests
         Assert.Equal(original.Picture.Count, clone.Picture.Count);
         Assert.NotSame(original.Picture, clone.Picture);
         Assert.Same(original.Picture[0], clone.Picture[0]);
-        clone.Picture.Clear();
+        clone.ClearPicture();
         Assert.Single(original.Picture);
         Assert.Equal(original.Fields.Count, clone.Fields.Count);
 
