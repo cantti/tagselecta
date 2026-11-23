@@ -14,6 +14,10 @@ public class TuiSettings : CommandSettings
     [Description("Do not scan subdirectories.")]
     public bool NoRecursive { get; set; }
 
+    [CommandOption("--filter")]
+    [Description("Optional expression to filter files at startup.")]
+    public string Filter { get; set; } = "";
+
     public override ValidationResult Validate()
     {
         foreach (var path in Path)

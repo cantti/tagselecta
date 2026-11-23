@@ -6,6 +6,7 @@ using TagSelecta.Commands.Tui.Completion;
 using TagSelecta.Commands.Tui.TuiCommands;
 using TagSelecta.Commands.Tui.Widgets;
 using TagSelecta.Shared.IO;
+using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Commands.Tui;
 
@@ -113,12 +114,22 @@ public class TuiApp(
                 ct
             );
 
+            Files = scannerResult
+                .Where(x =>
+                    string.IsNullOrWhiteSpace(settings.Filter)
+                    || new TagDataFormatter(x.TagData, x.Path).Format(settings.Filter) == "true"
+                )
+                .Select(x => new TagDataActionTarget(x.Path, x.TagData))
+                .ToList();
+
             if (scannerResult.Count == 0)
             {
                 Print("No audio files found. Try :open <path> or tagselecta <path>.");
             }
-
-            Files = scannerResult.Select(x => new TagDataActionTarget(x.Path, x.TagData)).ToList();
+            else if (!Files.Any())
+            {
+                Print("No audio files match the filter. Try a different --filter or omit it.");
+            }
 
             completionProvider.GenerateCompletions(
                 scannerResult.Select(x => x.TagData).SelectMany(x => x.Fields).Select(x => x.Key)

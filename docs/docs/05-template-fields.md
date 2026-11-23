@@ -1,6 +1,6 @@
 # Templates
 
-TagSelecta uses [Scriban](https://scriban.github.io/) templates to format text from file metadata. Templates are supported in `:edit` values, `:move` destinations, and the CLI [`find` query](05-cli/02-find.md). In the TUI, `:help templates` shows a quick reference.
+TagSelecta uses [Scriban](https://scriban.github.io/) templates to format text from file metadata. Templates are supported in `:edit` values, `:move` destinations, the TUI [`--filter` option](03-tui/01-get-started.md#filter-files-at-startup), and the CLI [`find` query](05-cli/02-find.md). In the TUI, `:help templates` shows a quick reference.
 
 ## Use fields
 

@@ -15,6 +15,16 @@ The explorer shows your files, the metadata panel shows the focused file, and th
 
 Press `m` or run `:togglemetadata` to hide or show the metadata panel. Metadata is visible by default; hiding it gives the explorer the full available height. Press `e` to toggle the explorer independently.
 
+## Filter files at startup
+
+Use `--filter` to load only files matching a [Scriban template](../05-template-fields.md). The template must render exactly `true` after trimming whitespace:
+
+```sh
+tagselecta ui . --filter "{{ genre == 'Reggae' }}"
+```
+
+Omitting `--filter` or passing an empty value loads all files. If no files match, the status panel displays a message. This filter only applies at startup, not to files loaded later with `:open`.
+
 ## Navigation
 
 Navigate through files using arrow keys or vim bindings (`jk`). Use `Shift+J` and `Shift+K` to scroll metadata. The metadata position resets when you switch files.

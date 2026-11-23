@@ -21,21 +21,18 @@ public class TagDataFormatter
             _tagDataForTemplate.Add(field.Key, S(field.Text.JoinTagValues()));
         }
 
-        _tagDataForTemplate.Add("path", S(path));
-        _tagDataForTemplate.Add("filename", S(PathUtils.GetFileNameWithoutExtension(path)));
-        _tagDataForTemplate.Add("ext", S(PathUtils.GetExtension(path).TrimStart('.')));
-        _tagDataForTemplate.Add(
-            "year",
-            DateTime.TryParseExact(
-                tagData.GetValue(FieldName.Date).FirstOrDefault(),
-                ["yyyy", "yyyy-MM-dd", "yyyy/MM/dd"],
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out var d
-            )
-                ? d.Year.ToString()
-                : ""
-        );
+        _tagDataForTemplate["path"] = S(path);
+        _tagDataForTemplate["filename"] = S(PathUtils.GetFileNameWithoutExtension(path));
+        _tagDataForTemplate["ext"] = S(PathUtils.GetExtension(path).TrimStart('.'));
+        _tagDataForTemplate["year"] = DateTime.TryParseExact(
+            tagData.GetValue(FieldName.Date).FirstOrDefault(),
+            ["yyyy", "yyyy-MM-dd", "yyyy/MM/dd"],
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var d
+        )
+            ? d.Year.ToString()
+            : "";
     }
 
     private string S(string input)
