@@ -4,7 +4,7 @@ namespace TagSelecta.Shared.Tagging;
 
 public sealed class TagPicture
 {
-    private readonly byte[] _data;
+    private readonly IReadOnlyList<byte> _data;
 
     public TagPicture(IPicture picture)
     {
@@ -12,7 +12,7 @@ public sealed class TagPicture
         Filename = picture.Filename;
         MimeType = picture.MimeType;
         Description = picture.Description;
-        _data = picture.Data.ToArray();
+        _data = Array.AsReadOnly(picture.Data.ToArray());
     }
 
     public PictureType Type { get; }
@@ -23,7 +23,7 @@ public sealed class TagPicture
 
     public string Description { get; }
 
-    public ReadOnlySpan<byte> Data => _data;
+    public IReadOnlyList<byte> Data => _data;
 
     public Picture ToTagLibPicture()
     {
@@ -33,12 +33,12 @@ public sealed class TagPicture
             Filename = Filename,
             MimeType = MimeType,
             Description = Description,
-            Data = new ByteVector(_data.ToArray()),
+            Data = [.. _data.ToArray()],
         };
     }
 
     public string GetExtension()
     {
-        return Picture.GetExtensionFromData(new ByteVector(_data.ToArray()));
+        return Picture.GetExtensionFromData([.. _data.ToArray()]);
     }
 }

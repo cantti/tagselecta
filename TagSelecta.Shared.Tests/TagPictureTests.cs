@@ -31,6 +31,8 @@ public class TagPictureTests
 
         converted.Data[1] = 9;
         converted.Type = PictureType.FrontCover;
+        Assert.False(picture.Data is byte[]);
+        Assert.Throws<NotSupportedException>(() => ((IList<byte>)picture.Data)[0] = 9);
         Assert.Equal(new byte[] { 1, 2, 3 }, picture.Data.ToArray());
         Assert.Equal(PictureType.BackCover, picture.Type);
     }

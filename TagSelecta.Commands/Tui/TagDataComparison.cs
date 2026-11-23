@@ -79,7 +79,7 @@ internal static class TagDataComparison
 
     private static string PictureToStr(TagPicture? picture)
     {
-        return picture is not null ? $"{picture.Data.Length / 1024} KB, {picture.MimeType}" : "";
+        return picture is not null ? $"{picture.Data.Count / 1024} KB, {picture.MimeType}" : "";
     }
 
     private static string ListToStr(List<string> list)
