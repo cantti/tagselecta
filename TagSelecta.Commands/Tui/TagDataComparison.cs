@@ -82,7 +82,7 @@ internal static class TagDataComparison
         return picture is not null ? $"{picture.Data.Count / 1024} KB, {picture.MimeType}" : "";
     }
 
-    private static string ListToStr(List<string> list)
+    private static string ListToStr(IEnumerable<string> list)
     {
         return string.Join("\n", list);
     }

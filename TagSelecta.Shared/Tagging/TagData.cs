@@ -10,12 +10,7 @@ public class TagData
 
     public IReadOnlyList<TagPicture> Picture => _picture.AsReadOnly();
 
-    public IReadOnlyList<TagField> Fields =>
-        _fields
-            .OrderBy(cf => cf.Key)
-            .Select(x => new TagField(x.Key, x.Text))
-            .ToList()
-            .AsReadOnly();
+    public IReadOnlyList<TagField> Fields => _fields.OrderBy(cf => cf.Key).ToList().AsReadOnly();
 
     public void Clear()
     {
@@ -70,7 +65,7 @@ public class TagData
         }
     }
 
-    public List<string> GetValue(string key)
+    public IReadOnlyList<string> GetValue(string key)
     {
         key = key.NormalizeKey();
         return _fields.Find(cf => cf.Key == key)?.Text ?? [];

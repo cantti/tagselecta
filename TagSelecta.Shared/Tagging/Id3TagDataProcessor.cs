@@ -128,7 +128,7 @@ public class Id3TagDataProcessor : TagDataProcessor
         return frame == null ? [] : frame.Text.ToList();
     }
 
-    private void WriteValue(string ident, List<string> text)
+    private void WriteValue(string ident, IEnumerable<string> text)
     {
         id3v2.SetTextFrame(ident, text.ToArray());
     }
