@@ -35,7 +35,7 @@ public class SplitAction : ITagDataAction<SplitSettings>
         return Task.CompletedTask;
     }
 
-    private static List<string> Split(List<string> input, string[] settingsSeparator)
+    private static List<string> Split(IEnumerable<string> input, string[] settingsSeparator)
     {
         return input
             .SelectMany(x => x.Split(settingsSeparator, StringSplitOptions.RemoveEmptyEntries))

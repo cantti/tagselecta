@@ -57,7 +57,11 @@ public class Id3TagDataProcessor : TagDataProcessor
             tagData.SetValue(key, userTextField.Text.JoinTagValues());
         }
 
-        tagData.Picture = id3v2.Pictures.Select(x => new Picture(x)).ToList();
+        foreach (var picture in id3v2.Pictures)
+        {
+            tagData.AddPicture(new TagPicture(picture));
+        }
+
         return tagData;
     }
 
@@ -87,7 +91,7 @@ public class Id3TagDataProcessor : TagDataProcessor
             data.GetValue(FieldName.TrackNumber).JoinTagValues(),
             data.GetValue(FieldName.TrackTotal).JoinTagValues()
         );
-        id3v2.Pictures = data.Picture.Select(p => new Picture(p)).ToArray<IPicture>();
+        id3v2.Pictures = data.Picture.Select(p => p.ToTagLibPicture()).ToArray<IPicture>();
         ClearUserTextFrames();
         foreach (var field in data.Fields.Where(f => !FieldName.All().Contains(f.Key)))
         {
@@ -124,7 +128,7 @@ public class Id3TagDataProcessor : TagDataProcessor
         return frame == null ? [] : frame.Text.ToList();
     }
 
-    private void WriteValue(string ident, List<string> text)
+    private void WriteValue(string ident, IEnumerable<string> text)
     {
         id3v2.SetTextFrame(ident, text.ToArray());
     }

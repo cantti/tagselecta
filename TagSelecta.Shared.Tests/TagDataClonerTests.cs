@@ -6,12 +6,12 @@ namespace TagSelecta.Shared.Tests;
 public class TagDataClonerTests
 {
     [Fact]
-    public void Clone_CreatesDeepCopyOfTagData()
+    public void Clone_CopiesFieldsAndListsButSharesPictures()
     {
-        var original = new TagData
-        {
-            Picture =
-            [
+        var original = new TagData();
+
+        original.AddPicture(
+            new TagPicture(
                 new Picture
                 {
                     Data = new ByteVector(1, 2, 3),
@@ -19,9 +19,9 @@ public class TagDataClonerTests
                     Filename = "file.jpg",
                     MimeType = "image/jpeg",
                     Type = PictureType.FrontCover,
-                },
-            ],
-        };
+                }
+            )
+        );
 
         original.SetValue(FieldName.Album, "Test Album");
         original.SetValue(FieldName.AlbumArtist, ["Artist1", "Artist2"]);
@@ -66,8 +66,10 @@ public class TagDataClonerTests
         }
 
         Assert.Equal(original.Picture.Count, clone.Picture.Count);
-        Assert.NotSame(original.Picture[0], clone.Picture[0]);
-        Assert.Equal(original.Picture[0].Data, clone.Picture[0].Data);
+        Assert.NotSame(original.Picture, clone.Picture);
+        Assert.Same(original.Picture[0], clone.Picture[0]);
+        clone.ClearPicture();
+        Assert.Single(original.Picture);
         Assert.Equal(original.Fields.Count, clone.Fields.Count);
 
         for (var i = 0; i < original.Fields.Count; i++)

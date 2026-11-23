@@ -16,4 +16,11 @@
   <ItemGroup>
     <ProjectReference Include="..\TagSelecta.Shared\TagSelecta.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None
+      Include="..\TestData\Album\01 Song 1.mp3"
+      Link="TestData\song.mp3"
+      CopyToOutputDirectory="PreserveNewest"
+    />
+  </ItemGroup>
 </Project>

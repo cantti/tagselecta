@@ -94,7 +94,7 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
     {
         if (context.Settings.ClearPicture)
         {
-            tagData.Picture = [];
+            tagData.ClearPicture();
         }
 
         if (context.Settings.Picture is not null)
@@ -125,9 +125,8 @@ public class EditAction(IDownloader downloader) : ITagDataAction<EditSettings>
                         ? type
                         : PictureType.FrontCover;
 
-                tagData.Picture.RemoveAll(x => x.Type == picture.Type);
-
-                tagData.Picture.Add(picture);
+                tagData.RemovePicture(picture.Type);
+                tagData.AddPicture(new TagPicture(picture));
             }
         }
     }

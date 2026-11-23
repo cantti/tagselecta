@@ -126,8 +126,9 @@ public class MusicBrainzAction : ITagDataAction<MusicBrainzSettings>
 
         if (_releaseImage is { Length: > 0 })
         {
+            tagData.ClearPicture();
             var cover = new Picture(_releaseImage) { Type = PictureType.FrontCover };
-            tagData.Picture = [cover];
+            tagData.AddPicture(new TagPicture(cover));
         }
 
         context.Target.UpdateTagData(tagData);

@@ -1,4 +1,3 @@
-using TagLib;
 using TagSelecta.Shared.Tagging;
 
 namespace TagSelecta.Commands.Tui;
@@ -78,12 +77,12 @@ internal static class TagDataComparison
         }
     }
 
-    private static string PictureToStr(Picture? picture)
+    private static string PictureToStr(TagPicture? picture)
     {
         return picture is not null ? $"{picture.Data.Count / 1024} KB, {picture.MimeType}" : "";
     }
 
-    private static string ListToStr(List<string> list)
+    private static string ListToStr(IEnumerable<string> list)
     {
         return string.Join("\n", list);
     }
