@@ -27,7 +27,7 @@ Omitting `--filter` or passing an empty value loads all files. If no files match
 
 ## Navigation
 
-Navigate through files using arrow keys or vim bindings (`jk`). Use `Shift+J` and `Shift+K` to scroll metadata. The metadata position resets when you switch files.
+Navigate through files using arrow keys or vim bindings (`jk`). Use `J` and `K` (Shift+j/k) to jump to the next and previous directory. Use `Ctrl+d` and `Ctrl+u`, or `PageDown` and `PageUp`, to scroll metadata one field at a time. The metadata position resets when you switch files.
 Use `tab` or `space` to select a file, `esc` to close help or pictures (or clear the selection when neither is open), and `q` to exit.
 
 Use `:help` (or `:h`) to show command help, `:help edit` for the edit command and standard tag fields, `:help templates` for template examples, or `:help keymap` for shortcuts. The `h` key also opens general help.

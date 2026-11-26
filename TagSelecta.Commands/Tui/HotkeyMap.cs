@@ -37,6 +37,14 @@ public sealed class HotkeyMap
 
     private static string? ToToken(ConsoleKeyInfo key)
     {
+        if (
+            key.Modifiers.HasFlag(ConsoleModifiers.Control)
+            && key.Key is >= ConsoleKey.A and <= ConsoleKey.Z
+        )
+        {
+            return $"ctrl+{key.Key.ToString().ToLowerInvariant()}";
+        }
+
         return key.Key switch
         {
             ConsoleKey.Escape => HotkeyTokens.Esc,

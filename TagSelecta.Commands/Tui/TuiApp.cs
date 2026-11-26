@@ -361,8 +361,12 @@ public class TuiApp(
         hotkeys.Bind(HotkeyTokens.Up, "moveup");
         hotkeys.Bind("j", "movedown");
         hotkeys.Bind("k", "moveup");
-        hotkeys.Bind("J", "metadatadown");
-        hotkeys.Bind("K", "metadataup");
+        hotkeys.Bind("J", "nextdir");
+        hotkeys.Bind("K", "prevdir");
+        hotkeys.Bind("ctrl+d", "metadatadown");
+        hotkeys.Bind("ctrl+u", "metadataup");
+        hotkeys.Bind(HotkeyTokens.PageDown, "metadatadown");
+        hotkeys.Bind(HotkeyTokens.PageUp, "metadataup");
         hotkeys.Bind("g", "movestart");
         hotkeys.Bind("G", "moveend");
         hotkeys.Bind("q", "quit");
